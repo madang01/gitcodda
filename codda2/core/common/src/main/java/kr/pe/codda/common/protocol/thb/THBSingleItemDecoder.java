@@ -21,7 +21,7 @@ import java.util.logging.Logger;
 
 import kr.pe.codda.common.etc.CommonStaticFinalVars;
 import kr.pe.codda.common.exception.BodyFormatException;
-import kr.pe.codda.common.io.BinaryInputStreamIF;
+import kr.pe.codda.common.io.StreamBuffer;
 import kr.pe.codda.common.protocol.SingleItemDecoderIF;
 import kr.pe.codda.common.type.SingleItemType;
 
@@ -63,17 +63,17 @@ public class THBSingleItemDecoder implements SingleItemDecoderIF {
 			throw new IllegalArgumentException("the parameter readableMiddleObject is null");
 		}
 		
-		if (!(readableMiddleObject instanceof BinaryInputStreamIF)) {
+		if (!(readableMiddleObject instanceof StreamBuffer)) {
 			String errorMessage = new StringBuilder("the parameter readableMiddleObject's class[")
 					.append(readableMiddleObject.getClass().getCanonicalName())
-					.append("] is not a BinaryInputStreamIF class").toString();
+					.append("] is not a StreamBuffer class").toString();
 			throw new IllegalArgumentException(errorMessage);
 		}
 		
 		int itemTypeID = singleItemType.getItemTypeID();
 		String itemTypeName = singleItemType.getItemTypeName();
 		
-		BinaryInputStreamIF binaryInputStream = (BinaryInputStreamIF)readableMiddleObject;
+		StreamBuffer binaryInputStream = (StreamBuffer)readableMiddleObject;
 		Object retObj = null;
 		try {
 			AbstractTHBSingleItemDecoder thbTypeSingleItemDecoder = thbSingleItemDecoderMacher.get(itemTypeID);
@@ -122,8 +122,8 @@ public class THBSingleItemDecoder implements SingleItemDecoderIF {
 	}
 	
 	@Override
-	public void closeReadableMiddleObjectWithValidCheck(Object readableMiddleObject) throws BodyFormatException {
-		if (!(readableMiddleObject instanceof BinaryInputStreamIF)) {
+	public void checkValid(Object readableMiddleObject) throws BodyFormatException {
+		if (!(readableMiddleObject instanceof StreamBuffer)) {
 			String errorMessage = new StringBuilder("the parameter readableMiddleObject's class[")
 					.append(readableMiddleObject.getClass().getCanonicalName())
 					.append("] is not a BinaryInputStreamIF class").toString();
@@ -132,10 +132,8 @@ public class THBSingleItemDecoder implements SingleItemDecoderIF {
 			throw new IllegalArgumentException(errorMessage);
 		}
 		
-		BinaryInputStreamIF binaryInputStream = (BinaryInputStreamIF)readableMiddleObject;
-		long remainingBytes = binaryInputStream.available();
-		
-		binaryInputStream.close();
+		StreamBuffer binaryInputStream = (StreamBuffer)readableMiddleObject;
+		long remainingBytes = binaryInputStream.remaining();
 		
 		if (0 > remainingBytes) {
 			String errorMessage = 

@@ -9,9 +9,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import kr.pe.codda.common.etc.CommonStaticFinalVars;
-import kr.pe.codda.common.exception.BufferOverflowExceptionWithMessage;
 import kr.pe.codda.common.exception.NoMoreDataPacketBufferException;
-import kr.pe.codda.common.io.BinaryOutputStreamIF;
+import kr.pe.codda.common.io.StreamBuffer;
 import kr.pe.codda.common.type.SelfExn;
 import kr.pe.codda.common.type.SingleItemType;
 
@@ -86,8 +85,8 @@ public class THBSingleItemEncoderMatcher implements THBSingleItemEncoderMatcherI
 	private final class THBSelfExnErrorPlaceSingleItemEncoder extends AbstractTHBSingleItemEncoder {
 		@Override
 		public void putValue(int itemTypeID, String itemName, Object nativeItemValue, int itemSize,
-				String nativeItemCharset, BinaryOutputStreamIF binaryOutputStream)
-				throws BufferOverflowException, BufferOverflowExceptionWithMessage, NoMoreDataPacketBufferException {			
+				String nativeItemCharset, StreamBuffer binaryOutputStream)
+				throws BufferOverflowException, BufferOverflowException, NoMoreDataPacketBufferException {			
 			SelfExn.ErrorPlace itemValue = (SelfExn.ErrorPlace) nativeItemValue;
 
 			writeItemID(itemTypeID, binaryOutputStream);
@@ -102,8 +101,8 @@ public class THBSingleItemEncoderMatcher implements THBSingleItemEncoderMatcherI
 	private final class THBSelfExnErrorTypeSingleItemEncoder extends AbstractTHBSingleItemEncoder {
 		@Override
 		public void putValue(int itemTypeID, String itemName, Object nativeItemValue, int itemSize,
-				String nativeItemCharset, BinaryOutputStreamIF binaryOutputStream)
-				throws BufferOverflowException, BufferOverflowExceptionWithMessage, NoMoreDataPacketBufferException {			
+				String nativeItemCharset, StreamBuffer binaryOutputStream)
+				throws BufferOverflowException, BufferOverflowException, NoMoreDataPacketBufferException {			
 			SelfExn.ErrorType itemValue = (SelfExn.ErrorType) nativeItemValue;
 
 			writeItemID(itemTypeID, binaryOutputStream);
@@ -120,7 +119,7 @@ public class THBSingleItemEncoderMatcher implements THBSingleItemEncoderMatcherI
 	private final class THBByteSingleItemEncoder extends AbstractTHBSingleItemEncoder {
 		@Override
 		public void putValue(int itemTypeID, String itemName, Object nativeItemValue, int itemSize,
-				String nativeItemCharset, BinaryOutputStreamIF binaryOutputStream)
+				String nativeItemCharset, StreamBuffer binaryOutputStream)
 				throws Exception {			
 			byte itemValue = (Byte) nativeItemValue;
 			writeItemID(itemTypeID, binaryOutputStream);
@@ -137,7 +136,7 @@ public class THBSingleItemEncoderMatcher implements THBSingleItemEncoderMatcherI
 
 		@Override
 		public void putValue(int itemTypeID, String itemName, Object nativeItemValue, int itemSize,
-				String nativeItemCharset, BinaryOutputStreamIF binaryOutputStream)
+				String nativeItemCharset, StreamBuffer binaryOutputStream)
 				throws Exception {
 			short itemValue = (Short) nativeItemValue;
 			
@@ -154,7 +153,7 @@ public class THBSingleItemEncoderMatcher implements THBSingleItemEncoderMatcherI
 	private final class THBShortSingleItemEncoder extends AbstractTHBSingleItemEncoder {
 		@Override
 		public void putValue(int itemTypeID, String itemName, Object nativeItemValue, int itemSize,
-				String nativeItemCharset, BinaryOutputStreamIF binaryOutputStream)
+				String nativeItemCharset, StreamBuffer binaryOutputStream)
 				throws Exception {
 			short itemValue = (Short) nativeItemValue;
 			
@@ -172,7 +171,7 @@ public class THBSingleItemEncoderMatcher implements THBSingleItemEncoderMatcherI
 		
 		@Override
 		public void putValue(int itemTypeID, String itemName, Object nativeItemValue, int itemSize,
-				String nativeItemCharset, BinaryOutputStreamIF binaryOutputStream)
+				String nativeItemCharset, StreamBuffer binaryOutputStream)
 				throws Exception {
 			int itemValue = (Integer) nativeItemValue;
 
@@ -190,7 +189,7 @@ public class THBSingleItemEncoderMatcher implements THBSingleItemEncoderMatcherI
 		
 		@Override
 		public void putValue(int itemTypeID, String itemName, Object nativeItemValue, int itemSize,
-				String nativeItemCharset, BinaryOutputStreamIF binaryOutputStream)
+				String nativeItemCharset, StreamBuffer binaryOutputStream)
 				throws Exception {
 			int itemValue = (Integer) nativeItemValue;
 			
@@ -209,7 +208,7 @@ public class THBSingleItemEncoderMatcher implements THBSingleItemEncoderMatcherI
 		
 		@Override
 		public void putValue(int itemTypeID, String itemName, Object nativeItemValue, int itemSize,
-				String nativeItemCharset, BinaryOutputStreamIF binaryOutputStream)
+				String nativeItemCharset, StreamBuffer binaryOutputStream)
 				throws Exception {
 			long itemValue = (Long) nativeItemValue;
 			
@@ -226,7 +225,7 @@ public class THBSingleItemEncoderMatcher implements THBSingleItemEncoderMatcherI
 	private final class THBLongSingleItemEncoder extends AbstractTHBSingleItemEncoder {		
 		@Override
 		public void putValue(int itemTypeID, String itemName, Object nativeItemValue, int itemSize,
-				String nativeItemCharset, BinaryOutputStreamIF binaryOutputStream)
+				String nativeItemCharset, StreamBuffer binaryOutputStream)
 				throws Exception {
 			long itemValue = (Long) nativeItemValue;
 			
@@ -243,7 +242,7 @@ public class THBSingleItemEncoderMatcher implements THBSingleItemEncoderMatcherI
 	private final class THBUBPascalStringSingleItemEncoder extends AbstractTHBSingleItemEncoder {		
 		@Override
 		public void putValue(int itemTypeID, String itemName, Object nativeItemValue, int itemSize,
-				String nativeItemCharset, BinaryOutputStreamIF binaryOutputStream)
+				String nativeItemCharset, StreamBuffer binaryOutputStream)
 				throws Exception {
 			String itemValue = (String) nativeItemValue;
 			
@@ -274,7 +273,7 @@ public class THBSingleItemEncoderMatcher implements THBSingleItemEncoderMatcherI
 	private final class THBUSPascalStringSingleItemEncoder extends AbstractTHBSingleItemEncoder {
 		@Override
 		public void putValue(int itemTypeID, String itemName, Object nativeItemValue, int itemSize,
-				String nativeItemCharset, BinaryOutputStreamIF binaryOutputStream)
+				String nativeItemCharset, StreamBuffer binaryOutputStream)
 				throws Exception {
 			String itemValue = (String) nativeItemValue;
 			
@@ -306,7 +305,7 @@ public class THBSingleItemEncoderMatcher implements THBSingleItemEncoderMatcherI
 	private final class THBSIPascalStringSingleItemEncoder extends AbstractTHBSingleItemEncoder {
 		@Override
 		public void putValue(int itemTypeID, String itemName, Object nativeItemValue, int itemSize,
-				String nativeItemCharset, BinaryOutputStreamIF binaryOutputStream)
+				String nativeItemCharset, StreamBuffer binaryOutputStream)
 				throws Exception {
 			String itemValue = (String) nativeItemValue;			
 			
@@ -336,7 +335,7 @@ public class THBSingleItemEncoderMatcher implements THBSingleItemEncoderMatcherI
 	private final class THBFixedLengthStringSingleItemEncoder extends AbstractTHBSingleItemEncoder {
 		@Override
 		public void putValue(int itemTypeID, String itemName, Object nativeItemValue, int itemSize,
-				String nativeItemCharset, BinaryOutputStreamIF binaryOutputStream)
+				String nativeItemCharset, StreamBuffer binaryOutputStream)
 				throws Exception {
 			if (itemSize < 0) {
 				String errorMesage = new StringBuilder("the parameter itemSize[")
@@ -383,7 +382,7 @@ public class THBSingleItemEncoderMatcher implements THBSingleItemEncoderMatcherI
 	private final class THBUBVariableLengthBytesSingleItemEncoder extends AbstractTHBSingleItemEncoder {
 		@Override
 		public void putValue(int itemTypeID, String itemName, Object nativeItemValue, int itemSize,
-				String nativeItemCharset, BinaryOutputStreamIF binaryOutputStream)
+				String nativeItemCharset, StreamBuffer binaryOutputStream)
 				throws Exception {
 			writeItemID(itemTypeID, binaryOutputStream);			
 			
@@ -401,7 +400,7 @@ public class THBSingleItemEncoderMatcher implements THBSingleItemEncoderMatcherI
 	private final class THBUSVariableLengthBytesSingleItemEncoder extends AbstractTHBSingleItemEncoder {
 		@Override
 		public void putValue(int itemTypeID, String itemName, Object nativeItemValue, int itemSize,
-				String nativeItemCharset, BinaryOutputStreamIF binaryOutputStream)
+				String nativeItemCharset, StreamBuffer binaryOutputStream)
 				throws Exception {
 			writeItemID(itemTypeID, binaryOutputStream);
 			
@@ -419,7 +418,7 @@ public class THBSingleItemEncoderMatcher implements THBSingleItemEncoderMatcherI
 	private final class THBSIVariableLengthBytesSingleItemEncoder extends AbstractTHBSingleItemEncoder {
 		@Override
 		public void putValue(int itemTypeID, String itemName, Object nativeItemValue, int itemSize,
-				String nativeItemCharset, BinaryOutputStreamIF binaryOutputStream)
+				String nativeItemCharset, StreamBuffer binaryOutputStream)
 				throws Exception {
 			
 			writeItemID(itemTypeID, binaryOutputStream);
@@ -438,7 +437,7 @@ public class THBSingleItemEncoderMatcher implements THBSingleItemEncoderMatcherI
 	private final class THBFixedLengthBytesSingleItemEncoder extends AbstractTHBSingleItemEncoder {
 		@Override
 		public void putValue(int itemTypeID, String itemName, Object nativeItemValue, int itemSize,
-				String nativeItemCharset, BinaryOutputStreamIF binaryOutputStream)
+				String nativeItemCharset, StreamBuffer binaryOutputStream)
 				throws Exception {
 			if (itemSize < 0) {
 				String errorMesage = new StringBuilder("the parameter itemSize[")
@@ -466,7 +465,7 @@ public class THBSingleItemEncoderMatcher implements THBSingleItemEncoderMatcherI
 		@Override
 		public void putValue(int itemTypeID, String itemName, Object nativeItemValue,
 				int itemSize, String nativeItemCharset,
-				BinaryOutputStreamIF binaryOutputStream) throws Exception {
+				StreamBuffer binaryOutputStream) throws Exception {
 			
 			java.sql.Date itemValue = (java.sql.Date)nativeItemValue;
 			long resultValue = itemValue.getTime();
@@ -486,7 +485,7 @@ public class THBSingleItemEncoderMatcher implements THBSingleItemEncoderMatcherI
 		@Override
 		public void putValue(int itemTypeID, String itemName, Object nativeItemValue,
 				int itemSize, String nativeItemCharset,
-				BinaryOutputStreamIF binaryOutputStream) throws Exception {			
+				StreamBuffer binaryOutputStream) throws Exception {			
 			java.sql.Timestamp itemValue = (java.sql.Timestamp)nativeItemValue;
 			long resultValue = itemValue.getTime();
 			
@@ -504,7 +503,7 @@ public class THBSingleItemEncoderMatcher implements THBSingleItemEncoderMatcherI
 		@Override
 		public void putValue(int itemTypeID, String itemName, Object nativeItemValue,
 				int itemSize, String nativeItemCharset,
-				BinaryOutputStreamIF binaryOutputStream) throws Exception {			
+				StreamBuffer binaryOutputStream) throws Exception {			
 			boolean itemValue = (Boolean)nativeItemValue;		
 			
 			byte resultValue = (itemValue) ? 1 : CommonStaticFinalVars.ZERO_BYTE;

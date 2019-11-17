@@ -16,14 +16,13 @@
  */
 package kr.pe.codda.common.protocol;
 
-import java.util.ArrayDeque;
-
 import kr.pe.codda.common.exception.BodyFormatException;
 import kr.pe.codda.common.exception.HeaderFormatException;
 import kr.pe.codda.common.exception.NoMoreDataPacketBufferException;
-import kr.pe.codda.common.io.SocketReadStream;
-import kr.pe.codda.common.io.WrapBuffer;
+import kr.pe.codda.common.io.InputStreamResource;
+import kr.pe.codda.common.io.StreamBuffer;
 import kr.pe.codda.common.message.AbstractMessage;
+import kr.pe.codda.common.message.codec.AbstractMessageDecoder;
 import kr.pe.codda.common.message.codec.AbstractMessageEncoder;
 
 /**
@@ -35,15 +34,17 @@ import kr.pe.codda.common.message.codec.AbstractMessageEncoder;
 public interface MessageProtocolIF {
 	
 	
-	public ArrayDeque<WrapBuffer> M2S(AbstractMessage inputMessage, AbstractMessageEncoder messageEncoder) 
+	public StreamBuffer M2S(AbstractMessage inputMessage, AbstractMessageEncoder messageEncoder) 
 			throws NoMoreDataPacketBufferException, BodyFormatException, HeaderFormatException;
 	
-	public void S2MList(SocketReadStream socketReadStream, ReceivedMessageForwarderIF receivedMessageForwarder) 
+	public void S2O(InputStreamResource inputStreamResource, ReceivedMessageForwarderIF receivedMessageForwarder) 
 					throws HeaderFormatException, NoMoreDataPacketBufferException, InterruptedException;
 	
 	
-	//public SingleItemDecoderIF getSingleItemDecoder();
+	public AbstractMessage O2M(AbstractMessageDecoder messageDecoder, int mailboxID, int mailID, String messageID, Object readableMiddleObject) throws BodyFormatException;
 	
-	// public int getMessageHeaderSize();
+	public void closeReadableMiddleObject(int mailboxID, int mailID, String messageID, Object readableMiddleObject);
+	
+	public int getDataPacketBufferMaxCntPerMessage();
 }
 

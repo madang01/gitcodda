@@ -63,16 +63,10 @@ public interface SingleItemDecoderIF {
 	
 	/**
 	 * <pre>
-	 * MiddleReadableObject 가 가진 자원 반환을 하는 장소는  2군데이다.
-	 * 첫번째 장소는 메시지 추출 후 쓰임이 다해서 호출하는 SingleItemDecoderIF#closeReadableMiddleObjectWithValidCheck 이며
-	 * 두번째 장소는  MiddleReadableObject 를 전달 받는 인터페이스를 정의한 'ReceivedMessageBlockingQueueIF' 구현체이다.
-	 *   
-	 * MiddleReadableObject 는 자원으로 반듯이 자원 회수를 무조건 보장해 주어야 한다.
-	 * 하여 자원 반환은 2번 연속 호출해도 무방하므로 전달 받은 곳에서 finally 문으로 책임지고 자원 반환을 보장해야 한다.
-	 *    
+	 * 메시지 디코딩이 끝난 후 유효성 검사, 예를 들면 DHB, THB 프로토콜의 경우 남아 있는 데이터가 있는지 검사    
 	 * </pre>
 	 */
-	public void closeReadableMiddleObjectWithValidCheck(Object readableMiddleObject) throws BodyFormatException;
+	public void checkValid(Object readableMiddleObject) throws BodyFormatException;
 }
 
 

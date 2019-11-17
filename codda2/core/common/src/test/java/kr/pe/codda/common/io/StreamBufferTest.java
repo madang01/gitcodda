@@ -1,5 +1,6 @@
 package kr.pe.codda.common.io;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
@@ -9,6 +10,8 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetEncoder;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Random;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Handler;
@@ -20,10 +23,13 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import kr.pe.codda.common.etc.CommonStaticFinalVars;
+import kr.pe.codda.common.etc.StreamCharsetFamily;
 import kr.pe.codda.common.util.CustomLogFormatter;
+import kr.pe.codda.common.util.HexUtil;
 
 public class StreamBufferTest {
 
@@ -61,13 +67,13 @@ public class StreamBufferTest {
 	}
 
 	@Test
-	public void testConstructor_theParameterDefaultCharsetIsNull() {
+	public void testConstructor_theParameterStreamCharsetFamilyIsNull() {
 		try {
-			new StreamBuffer(null, null, 1);
+			new StreamBuffer(null, 1, null);
 
 			fail("no IllegalArgumentException");
 		} catch (IllegalArgumentException e) {
-			String expecedErrorMessage = "the parameter defaultCharset is null";
+			String expecedErrorMessage = "the parameter streamCharsetFamily is null";
 			String actualErrorMessage = e.getMessage();
 			assertEquals(expecedErrorMessage, actualErrorMessage);
 		}
@@ -75,8 +81,9 @@ public class StreamBufferTest {
 
 	@Test
 	public void testConstructor_theParameterWrapBufferPoolIsNull() {
+		StreamCharsetFamily streamCharsetFamily = new StreamCharsetFamily(Charset.defaultCharset());
 		try {
-			new StreamBuffer(Charset.defaultCharset(), null, 1);
+			new StreamBuffer(streamCharsetFamily, 1, null);
 
 			fail("no IllegalArgumentException");
 		} catch (IllegalArgumentException e) {
@@ -88,34 +95,35 @@ public class StreamBufferTest {
 
 	@Test
 	public void testConstructor_theParameterDataPacketBufferMaxCountIsLessThanOrEqualToZero() {
+		StreamCharsetFamily streamCharsetFamily = new StreamCharsetFamily(Charset.defaultCharset());
 		WrapBufferPoolIF wrapBufferPool = new WrapBufferPool(false, ByteOrder.LITTLE_ENDIAN, 2048, 10);
 
 		try {
-			new StreamBuffer(Charset.defaultCharset(), wrapBufferPool, 0);
+			new StreamBuffer(streamCharsetFamily, 0, wrapBufferPool);
 
 			fail("no IllegalArgumentException");
 		} catch (IllegalArgumentException e) {
-			String expecedErrorMessage = "the parameter dataPacketBufferMaxCount is less than or equal to zero";
+			String expecedErrorMessage = "the parameter maxOfWrapBuffer is less than or equal to zero";
 			String actualErrorMessage = e.getMessage();
 			assertEquals(expecedErrorMessage, actualErrorMessage);
 		}
 
 		try {
-			new StreamBuffer(Charset.defaultCharset(), wrapBufferPool, -1);
+			new StreamBuffer(streamCharsetFamily, -1, wrapBufferPool);
 
 			fail("no IllegalArgumentException");
 		} catch (IllegalArgumentException e) {
-			String expecedErrorMessage = "the parameter dataPacketBufferMaxCount is less than or equal to zero";
+			String expecedErrorMessage = "the parameter maxOfWrapBuffer is less than or equal to zero";
 			String actualErrorMessage = e.getMessage();
 			assertEquals(expecedErrorMessage, actualErrorMessage);
 		}
 
 		try {
-			new StreamBuffer(Charset.defaultCharset(), wrapBufferPool, -1000000);
+			new StreamBuffer(streamCharsetFamily, -1000000, wrapBufferPool);
 
 			fail("no IllegalArgumentException");
 		} catch (IllegalArgumentException e) {
-			String expecedErrorMessage = "the parameter dataPacketBufferMaxCount is less than or equal to zero";
+			String expecedErrorMessage = "the parameter maxOfWrapBuffer is less than or equal to zero";
 			String actualErrorMessage = e.getMessage();
 			assertEquals(expecedErrorMessage, actualErrorMessage);
 		}
@@ -123,9 +131,10 @@ public class StreamBufferTest {
 
 	@Test
 	public void testConstructor_ok() {
+		StreamCharsetFamily streamCharsetFamily = new StreamCharsetFamily(Charset.defaultCharset());
 		WrapBufferPoolIF wrapBufferPool = new WrapBufferPool(false, ByteOrder.LITTLE_ENDIAN, 1024, 10);
 
-		StreamBuffer sb = new StreamBuffer(Charset.defaultCharset(), wrapBufferPool, 5);
+		StreamBuffer sb = new StreamBuffer(streamCharsetFamily, 5, wrapBufferPool);
 
 		assertEquals(Charset.defaultCharset(), sb.getCharset());
 
@@ -137,7 +146,7 @@ public class StreamBufferTest {
 
 		wrapBufferPool = new WrapBufferPool(false, ByteOrder.BIG_ENDIAN, 2048, 10);
 
-		sb = new StreamBuffer(Charset.defaultCharset(), wrapBufferPool, 3);
+		sb = new StreamBuffer(streamCharsetFamily, 3, wrapBufferPool);
 
 		assertEquals(ByteOrder.BIG_ENDIAN, sb.getByteOder());
 
@@ -147,9 +156,10 @@ public class StreamBufferTest {
 
 	@Test
 	public void testSetPosition_lessThanZero() {
+		StreamCharsetFamily streamCharsetFamily = new StreamCharsetFamily(Charset.defaultCharset());
 		WrapBufferPoolIF wrapBufferPool = new WrapBufferPool(false, ByteOrder.LITTLE_ENDIAN, 512, 10);
 
-		StreamBuffer sb = new StreamBuffer(Charset.defaultCharset(), wrapBufferPool, 2);
+		StreamBuffer sb = new StreamBuffer(streamCharsetFamily, 2, wrapBufferPool);
 
 		long newPosition = -1;
 		try {
@@ -167,9 +177,10 @@ public class StreamBufferTest {
 
 	@Test
 	public void testSetPosition_greaterThanLimit() {
+		StreamCharsetFamily streamCharsetFamily = new StreamCharsetFamily(Charset.defaultCharset());
 		WrapBufferPoolIF wrapBufferPool = new WrapBufferPool(false, ByteOrder.LITTLE_ENDIAN, 512, 10);
 
-		StreamBuffer sb = new StreamBuffer(Charset.defaultCharset(), wrapBufferPool, 2);
+		StreamBuffer sb = new StreamBuffer(streamCharsetFamily, 2, wrapBufferPool);
 
 		long newPosition = sb.getLimit() + 1;
 		try {
@@ -185,9 +196,10 @@ public class StreamBufferTest {
 
 	@Test
 	public void testSetPosition_ok() {
+		StreamCharsetFamily streamCharsetFamily = new StreamCharsetFamily(Charset.defaultCharset());
 		WrapBufferPoolIF wrapBufferPool = new WrapBufferPool(false, ByteOrder.LITTLE_ENDIAN, 512, 10);
 
-		StreamBuffer sb = new StreamBuffer(Charset.defaultCharset(), wrapBufferPool, 2);
+		StreamBuffer sb = new StreamBuffer(streamCharsetFamily, 2, wrapBufferPool);
 
 		long newPosition = 0;
 		try {
@@ -205,9 +217,10 @@ public class StreamBufferTest {
 
 	@Test
 	public void testSetLimit_lessThanZero() {
+		StreamCharsetFamily streamCharsetFamily = new StreamCharsetFamily(Charset.defaultCharset());
 		WrapBufferPoolIF wrapBufferPool = new WrapBufferPool(false, ByteOrder.LITTLE_ENDIAN, 512, 10);
 
-		StreamBuffer sb = new StreamBuffer(Charset.defaultCharset(), wrapBufferPool, 2);
+		StreamBuffer sb = new StreamBuffer(streamCharsetFamily, 2, wrapBufferPool);
 
 		long newLimit = -1;
 		try {
@@ -224,9 +237,10 @@ public class StreamBufferTest {
 
 	@Test
 	public void testSetLimit_lessThanPosition() {
+		StreamCharsetFamily streamCharsetFamily = new StreamCharsetFamily(Charset.defaultCharset());
 		WrapBufferPoolIF wrapBufferPool = new WrapBufferPool(false, ByteOrder.LITTLE_ENDIAN, 512, 10);
 
-		StreamBuffer sb = new StreamBuffer(Charset.defaultCharset(), wrapBufferPool, 2);
+		StreamBuffer sb = new StreamBuffer(streamCharsetFamily, 2, wrapBufferPool);
 
 		long newPosition = 1;
 		long newLimit = 0;
@@ -246,9 +260,10 @@ public class StreamBufferTest {
 
 	@Test
 	public void testSetLimit_greaterThanCapacity() {
+		StreamCharsetFamily streamCharsetFamily = new StreamCharsetFamily(Charset.defaultCharset());
 		WrapBufferPoolIF wrapBufferPool = new WrapBufferPool(false, ByteOrder.LITTLE_ENDIAN, 512, 10);
 
-		StreamBuffer sb = new StreamBuffer(Charset.defaultCharset(), wrapBufferPool, 2);
+		StreamBuffer sb = new StreamBuffer(streamCharsetFamily, 2, wrapBufferPool);
 
 		long newLimit = sb.getCapacity() + 1;
 		try {
@@ -265,9 +280,10 @@ public class StreamBufferTest {
 
 	@Test
 	public void testSetLimit_ok() {
+		StreamCharsetFamily streamCharsetFamily = new StreamCharsetFamily(Charset.defaultCharset());
 		WrapBufferPoolIF wrapBufferPool = new WrapBufferPool(false, ByteOrder.LITTLE_ENDIAN, 512, 10);
 
-		StreamBuffer sb = new StreamBuffer(Charset.defaultCharset(), wrapBufferPool, 2);
+		StreamBuffer sb = new StreamBuffer(streamCharsetFamily, 2, wrapBufferPool);
 		long newLimit = 0;
 		try {
 			sb.setLimit(newLimit);
@@ -282,6 +298,7 @@ public class StreamBufferTest {
 
 	@Test
 	public void testPutByte_최소최대중간값쓰고읽기() {
+		StreamCharsetFamily streamCharsetFamily = new StreamCharsetFamily(Charset.defaultCharset());
 		byte values[] = { Byte.MIN_VALUE, -11, -1, 0, 1, 21, Byte.MAX_VALUE };
 
 		ByteOrder[] streamByteOrderList = { ByteOrder.BIG_ENDIAN, ByteOrder.LITTLE_ENDIAN };
@@ -289,7 +306,7 @@ public class StreamBufferTest {
 		for (ByteOrder streamByteOrder : streamByteOrderList) {
 			WrapBufferPoolIF wrapBufferPool = new WrapBufferPool(false, streamByteOrder, 512, 10);
 
-			StreamBuffer sb = new StreamBuffer(Charset.defaultCharset(), wrapBufferPool, 2);
+			StreamBuffer sb = new StreamBuffer(streamCharsetFamily, 2, wrapBufferPool);
 
 			for (byte value : values) {
 				try {
@@ -314,14 +331,17 @@ public class StreamBufferTest {
 					fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
 				}
 			}
+			
+			sb.close();
 		}
 	}
 
 	@Test
 	public void testPutByte_첫번째버퍼첫번째위치에서쓰고읽기() {
+		StreamCharsetFamily streamCharsetFamily = new StreamCharsetFamily(Charset.defaultCharset());
 		WrapBufferPoolIF wrapBufferPool = new WrapBufferPool(false, ByteOrder.LITTLE_ENDIAN, 512, 10);
 
-		StreamBuffer sb = new StreamBuffer(Charset.defaultCharset(), wrapBufferPool, 2);
+		StreamBuffer sb = new StreamBuffer(streamCharsetFamily, 2, wrapBufferPool);
 
 		try {
 
@@ -343,13 +363,16 @@ public class StreamBufferTest {
 			log.log(Level.WARNING, "unknown error", e);
 			fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
 		}
+		
+		sb.close();
 	}
 
 	@Test
 	public void testPutByte_첫번째버퍼마지막위치에서쓰고읽기() {
+		StreamCharsetFamily streamCharsetFamily = new StreamCharsetFamily(Charset.defaultCharset());
 		WrapBufferPoolIF wrapBufferPool = new WrapBufferPool(false, ByteOrder.LITTLE_ENDIAN, 512, 10);
 
-		StreamBuffer sb = new StreamBuffer(Charset.defaultCharset(), wrapBufferPool, 3);
+		StreamBuffer sb = new StreamBuffer(streamCharsetFamily, 3, wrapBufferPool);
 
 		try {
 
@@ -376,13 +399,16 @@ public class StreamBufferTest {
 			log.log(Level.WARNING, "unknown error", e);
 			fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
 		}
+		
+		sb.close();
 	}
 
 	@Test
 	public void testPutByte_중간버퍼첫번째위치에서쓰고읽기() {
+		StreamCharsetFamily streamCharsetFamily = new StreamCharsetFamily(Charset.defaultCharset());
 		WrapBufferPoolIF wrapBufferPool = new WrapBufferPool(false, ByteOrder.LITTLE_ENDIAN, 512, 10);
 
-		StreamBuffer sb = new StreamBuffer(Charset.defaultCharset(), wrapBufferPool, 3);
+		StreamBuffer sb = new StreamBuffer(streamCharsetFamily, 3, wrapBufferPool);
 
 		try {
 
@@ -409,13 +435,16 @@ public class StreamBufferTest {
 			log.log(Level.WARNING, "unknown error", e);
 			fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
 		}
+		
+		sb.close();
 	}
 
 	@Test
 	public void testPutByte_중간버퍼마지막위치에서쓰고읽기() {
+		StreamCharsetFamily streamCharsetFamily = new StreamCharsetFamily(Charset.defaultCharset());
 		WrapBufferPoolIF wrapBufferPool = new WrapBufferPool(false, ByteOrder.LITTLE_ENDIAN, 512, 10);
 
-		StreamBuffer sb = new StreamBuffer(Charset.defaultCharset(), wrapBufferPool, 3);
+		StreamBuffer sb = new StreamBuffer(streamCharsetFamily, 3, wrapBufferPool);
 
 		try {
 
@@ -442,13 +471,16 @@ public class StreamBufferTest {
 			log.log(Level.WARNING, "unknown error", e);
 			fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
 		}
+		
+		sb.close();
 	}
 
 	@Test
 	public void testPutByte_마지막버퍼마지막위치에서쓰고읽기() {
+		StreamCharsetFamily streamCharsetFamily = new StreamCharsetFamily(Charset.defaultCharset());
 		WrapBufferPoolIF wrapBufferPool = new WrapBufferPool(false, ByteOrder.LITTLE_ENDIAN, 512, 10);
 
-		StreamBuffer sb = new StreamBuffer(Charset.defaultCharset(), wrapBufferPool, 3);
+		StreamBuffer sb = new StreamBuffer(streamCharsetFamily, 3, wrapBufferPool);
 
 		try {
 
@@ -475,13 +507,16 @@ public class StreamBufferTest {
 			log.log(Level.WARNING, "unknown error", e);
 			fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
 		}
+		
+		sb.close();
 	}
 
 	@Test
 	public void testPutByte_꽉찬상태에서쓰고읽기() {
+		StreamCharsetFamily streamCharsetFamily = new StreamCharsetFamily(Charset.defaultCharset());
 		WrapBufferPoolIF wrapBufferPool = new WrapBufferPool(false, ByteOrder.LITTLE_ENDIAN, 512, 10);
 
-		StreamBuffer sb = new StreamBuffer(Charset.defaultCharset(), wrapBufferPool, 3);
+		StreamBuffer sb = new StreamBuffer(streamCharsetFamily, 3, wrapBufferPool);
 
 		try {
 
@@ -526,13 +561,16 @@ public class StreamBufferTest {
 			log.log(Level.WARNING, "unknown error", e);
 			fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
 		}
+		
+		sb.close();
 	}
 
 	@Test
 	public void testPutUnsignedByte_음수() {
+		StreamCharsetFamily streamCharsetFamily = new StreamCharsetFamily(Charset.defaultCharset());
 		WrapBufferPoolIF wrapBufferPool = new WrapBufferPool(false, ByteOrder.LITTLE_ENDIAN, 512, 10);
 
-		StreamBuffer sb = new StreamBuffer(Charset.defaultCharset(), wrapBufferPool, 2);
+		StreamBuffer sb = new StreamBuffer(streamCharsetFamily, 2, wrapBufferPool);
 
 		short value = -1;
 		try {
@@ -550,13 +588,16 @@ public class StreamBufferTest {
 			log.log(Level.WARNING, "unknown error", e);
 			fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
 		}
+		
+		sb.close();
 	}
 
 	@Test
 	public void testPutUnsignedByte_최대값초가() {
+		StreamCharsetFamily streamCharsetFamily = new StreamCharsetFamily(Charset.defaultCharset());
 		WrapBufferPoolIF wrapBufferPool = new WrapBufferPool(false, ByteOrder.LITTLE_ENDIAN, 512, 10);
 
-		StreamBuffer sb = new StreamBuffer(Charset.defaultCharset(), wrapBufferPool, 2);
+		StreamBuffer sb = new StreamBuffer(streamCharsetFamily, 2, wrapBufferPool);
 
 		short value = CommonStaticFinalVars.UNSIGNED_BYTE_MAX + 1;
 		try {
@@ -575,10 +616,13 @@ public class StreamBufferTest {
 			log.log(Level.WARNING, "unknown error", e);
 			fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
 		}
+		
+		sb.close();
 	}
 
 	@Test
 	public void testPutUnsignedByte_최소최대중간값() {
+		StreamCharsetFamily streamCharsetFamily = new StreamCharsetFamily(Charset.defaultCharset());
 		short values[] = { 0, 1, 21, CommonStaticFinalVars.UNSIGNED_BYTE_MAX };
 
 		ByteOrder[] streamByteOrderList = { ByteOrder.BIG_ENDIAN, ByteOrder.LITTLE_ENDIAN };
@@ -586,7 +630,7 @@ public class StreamBufferTest {
 		for (ByteOrder streamByteOrder : streamByteOrderList) {
 			WrapBufferPoolIF wrapBufferPool = new WrapBufferPool(false, streamByteOrder, 512, 10);
 
-			StreamBuffer sb = new StreamBuffer(Charset.defaultCharset(), wrapBufferPool, 2);
+			StreamBuffer sb = new StreamBuffer(streamCharsetFamily, 2, wrapBufferPool);
 
 			for (short value : values) {
 
@@ -612,14 +656,17 @@ public class StreamBufferTest {
 					fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
 				}
 			}
+			
+			sb.close();
 		}
 	}
 
 	@Test
 	public void testPutUnsignedByte_첫번째버퍼첫번째위치에서쓰고읽기() {
+		StreamCharsetFamily streamCharsetFamily = new StreamCharsetFamily(Charset.defaultCharset());
 		WrapBufferPoolIF wrapBufferPool = new WrapBufferPool(false, ByteOrder.LITTLE_ENDIAN, 512, 10);
 
-		StreamBuffer sb = new StreamBuffer(Charset.defaultCharset(), wrapBufferPool, 2);
+		StreamBuffer sb = new StreamBuffer(streamCharsetFamily, 2, wrapBufferPool);
 
 		try {
 
@@ -642,13 +689,16 @@ public class StreamBufferTest {
 			log.log(Level.WARNING, "unknown error", e);
 			fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
 		}
+		
+		sb.close();
 	}
 
 	@Test
 	public void testPutUnsignedByte_첫번째버퍼마지막위치에서쓰고읽기() {
+		StreamCharsetFamily streamCharsetFamily = new StreamCharsetFamily(Charset.defaultCharset());
 		WrapBufferPoolIF wrapBufferPool = new WrapBufferPool(false, ByteOrder.LITTLE_ENDIAN, 512, 10);
 
-		StreamBuffer sb = new StreamBuffer(Charset.defaultCharset(), wrapBufferPool, 3);
+		StreamBuffer sb = new StreamBuffer(streamCharsetFamily, 3, wrapBufferPool);
 
 		try {
 
@@ -675,13 +725,16 @@ public class StreamBufferTest {
 			log.log(Level.WARNING, "unknown error", e);
 			fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
 		}
+		
+		sb.close();
 	}
 
 	@Test
 	public void testPutUnsignedByte_중간버퍼첫번째위치에서쓰고읽기() {
+		StreamCharsetFamily streamCharsetFamily = new StreamCharsetFamily(Charset.defaultCharset());
 		WrapBufferPoolIF wrapBufferPool = new WrapBufferPool(false, ByteOrder.LITTLE_ENDIAN, 512, 10);
 
-		StreamBuffer sb = new StreamBuffer(Charset.defaultCharset(), wrapBufferPool, 3);
+		StreamBuffer sb = new StreamBuffer(streamCharsetFamily, 3, wrapBufferPool);
 
 		try {
 
@@ -708,13 +761,16 @@ public class StreamBufferTest {
 			log.log(Level.WARNING, "unknown error", e);
 			fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
 		}
+		
+		sb.close();
 	}
 
 	@Test
 	public void testPutUnsignedByte_중간버퍼마지막위치에서쓰고읽기() {
+		StreamCharsetFamily streamCharsetFamily = new StreamCharsetFamily(Charset.defaultCharset());
 		WrapBufferPoolIF wrapBufferPool = new WrapBufferPool(false, ByteOrder.LITTLE_ENDIAN, 512, 10);
 
-		StreamBuffer sb = new StreamBuffer(Charset.defaultCharset(), wrapBufferPool, 3);
+		StreamBuffer sb = new StreamBuffer(streamCharsetFamily, 3, wrapBufferPool);
 
 		try {
 
@@ -741,13 +797,16 @@ public class StreamBufferTest {
 			log.log(Level.WARNING, "unknown error", e);
 			fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
 		}
+		
+		sb.close();
 	}
 
 	@Test
 	public void testPutUnsignedByte_마지막버퍼첫번째위치에서쓰고읽기() {
+		StreamCharsetFamily streamCharsetFamily = new StreamCharsetFamily(Charset.defaultCharset());
 		WrapBufferPoolIF wrapBufferPool = new WrapBufferPool(false, ByteOrder.LITTLE_ENDIAN, 512, 10);
 
-		StreamBuffer sb = new StreamBuffer(Charset.defaultCharset(), wrapBufferPool, 3);
+		StreamBuffer sb = new StreamBuffer(streamCharsetFamily, 3, wrapBufferPool);
 
 		try {
 
@@ -774,13 +833,16 @@ public class StreamBufferTest {
 			log.log(Level.WARNING, "unknown error", e);
 			fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
 		}
+		
+		sb.close();
 	}
 
 	@Test
 	public void testPutUnsignedByte_마지막버퍼마지막위치에서쓰고읽기() {
+		StreamCharsetFamily streamCharsetFamily = new StreamCharsetFamily(Charset.defaultCharset());
 		WrapBufferPoolIF wrapBufferPool = new WrapBufferPool(false, ByteOrder.LITTLE_ENDIAN, 512, 10);
 
-		StreamBuffer sb = new StreamBuffer(Charset.defaultCharset(), wrapBufferPool, 3);
+		StreamBuffer sb = new StreamBuffer(streamCharsetFamily, 3, wrapBufferPool);
 
 		try {
 
@@ -807,13 +869,16 @@ public class StreamBufferTest {
 			log.log(Level.WARNING, "unknown error", e);
 			fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
 		}
+		
+		sb.close();
 	}
 
 	@Test
 	public void testPutUnsignedByte_꽉찬상태에서쓰고읽기() {
+		StreamCharsetFamily streamCharsetFamily = new StreamCharsetFamily(Charset.defaultCharset());
 		WrapBufferPoolIF wrapBufferPool = new WrapBufferPool(false, ByteOrder.LITTLE_ENDIAN, 512, 10);
 
-		StreamBuffer sb = new StreamBuffer(Charset.defaultCharset(), wrapBufferPool, 3);
+		StreamBuffer sb = new StreamBuffer(streamCharsetFamily, 3, wrapBufferPool);
 
 		short value = 0x21;
 
@@ -859,13 +924,16 @@ public class StreamBufferTest {
 			log.log(Level.WARNING, "unknown error", e);
 			fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
 		}
+		
+		sb.close();
 	}
 
 	@Test
 	public void testPutShort_버퍼에남은용량이부족한경우() {
+		StreamCharsetFamily streamCharsetFamily = new StreamCharsetFamily(Charset.defaultCharset());
 		WrapBufferPoolIF wrapBufferPool = new WrapBufferPool(false, ByteOrder.LITTLE_ENDIAN, 512, 10);
 
-		StreamBuffer sb = new StreamBuffer(Charset.defaultCharset(), wrapBufferPool, 3);
+		StreamBuffer sb = new StreamBuffer(streamCharsetFamily, 3, wrapBufferPool);
 
 		short value = 21;
 
@@ -880,8 +948,7 @@ public class StreamBufferTest {
 			fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
 		}
 
-		
-		for (long targetPosition=sb.getLimit() - 2 + 1; targetPosition <= sb.getLimit(); targetPosition++) {
+		for (long targetPosition = sb.getLimit() - 2 + 1; targetPosition <= sb.getLimit(); targetPosition++) {
 			try {
 				sb.setPosition(targetPosition);
 				sb.putShort(value);
@@ -903,16 +970,18 @@ public class StreamBufferTest {
 			}
 		}
 
+		sb.close();
 	}
 
 	@Test
 	public void testPutShort_최소최대포함한값들로버퍼끝에서다름버퍼까지쓰고읽기() {
+		StreamCharsetFamily streamCharsetFamily = new StreamCharsetFamily(Charset.defaultCharset());
 		ByteOrder[] streamByteOrderList = { ByteOrder.BIG_ENDIAN, ByteOrder.LITTLE_ENDIAN };
 
 		for (ByteOrder streamByteOrder : streamByteOrderList) {
 			WrapBufferPoolIF wrapBufferPool = new WrapBufferPool(false, streamByteOrder, 512, 10);
 
-			StreamBuffer sb = new StreamBuffer(Charset.defaultCharset(), wrapBufferPool, 3);
+			StreamBuffer sb = new StreamBuffer(streamCharsetFamily, 3, wrapBufferPool);
 
 			short[] values = { Short.MIN_VALUE, -11, -1, 0, 1, 21, Short.MAX_VALUE };
 
@@ -943,14 +1012,17 @@ public class StreamBufferTest {
 				log.log(Level.WARNING, "unknown error", e);
 				fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
 			}
+			
+			sb.close();
 		}
 	}
 
 	@Test
 	public void testPutUnsignedShort_음수() {
+		StreamCharsetFamily streamCharsetFamily = new StreamCharsetFamily(Charset.defaultCharset());
 		WrapBufferPoolIF wrapBufferPool = new WrapBufferPool(false, ByteOrder.LITTLE_ENDIAN, 512, 10);
 
-		StreamBuffer sb = new StreamBuffer(Charset.defaultCharset(), wrapBufferPool, 3);
+		StreamBuffer sb = new StreamBuffer(streamCharsetFamily, 3, wrapBufferPool);
 
 		int value = -1;
 
@@ -969,13 +1041,16 @@ public class StreamBufferTest {
 			log.log(Level.WARNING, "unknown error", e);
 			fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
 		}
+		
+		sb.close();
 	}
 
 	@Test
 	public void testPutUnsignedShort_최대값초과() {
+		StreamCharsetFamily streamCharsetFamily = new StreamCharsetFamily(Charset.defaultCharset());
 		WrapBufferPoolIF wrapBufferPool = new WrapBufferPool(false, ByteOrder.LITTLE_ENDIAN, 512, 10);
 
-		StreamBuffer sb = new StreamBuffer(Charset.defaultCharset(), wrapBufferPool, 3);
+		StreamBuffer sb = new StreamBuffer(streamCharsetFamily, 3, wrapBufferPool);
 
 		int value = CommonStaticFinalVars.UNSIGNED_SHORT_MAX + 1;
 
@@ -997,13 +1072,16 @@ public class StreamBufferTest {
 			log.log(Level.WARNING, "unknown error", e);
 			fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
 		}
+		
+		sb.close();
 	}
 
 	@Test
 	public void testPutUnsignedShort_버퍼에남은용량이부족한경우() {
+		StreamCharsetFamily streamCharsetFamily = new StreamCharsetFamily(Charset.defaultCharset());
 		WrapBufferPoolIF wrapBufferPool = new WrapBufferPool(false, ByteOrder.LITTLE_ENDIAN, 512, 10);
 
-		StreamBuffer sb = new StreamBuffer(Charset.defaultCharset(), wrapBufferPool, 3);
+		StreamBuffer sb = new StreamBuffer(streamCharsetFamily, 3, wrapBufferPool);
 		int value = 21;
 
 		/** 남은 용량이 2가 남은 상태에서 정상 처리되는지 확인 */
@@ -1017,8 +1095,7 @@ public class StreamBufferTest {
 			fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
 		}
 
-		
-		for (long targetPosition=sb.getLimit() - 2 + 1; targetPosition <= sb.getLimit(); targetPosition++) {
+		for (long targetPosition = sb.getLimit() - 2 + 1; targetPosition <= sb.getLimit(); targetPosition++) {
 			try {
 				sb.setPosition(targetPosition);
 				sb.putUnsignedShort(value);
@@ -1039,17 +1116,20 @@ public class StreamBufferTest {
 				fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
 			}
 		}
+		
+		sb.close();
 
 	}
 
 	@Test
 	public void testPutUnsignedShort_최소최대포함한값들로버퍼끝에서다름버퍼까지쓰고읽기() {
+		StreamCharsetFamily streamCharsetFamily = new StreamCharsetFamily(Charset.defaultCharset());
 		ByteOrder[] streamByteOrderList = { ByteOrder.BIG_ENDIAN, ByteOrder.LITTLE_ENDIAN };
 
 		for (ByteOrder streamByteOrder : streamByteOrderList) {
 			WrapBufferPoolIF wrapBufferPool = new WrapBufferPool(false, streamByteOrder, 512, 10);
 
-			StreamBuffer sb = new StreamBuffer(Charset.defaultCharset(), wrapBufferPool, 3);
+			StreamBuffer sb = new StreamBuffer(streamCharsetFamily, 3, wrapBufferPool);
 
 			int[] values = { 0, 1, 21, CommonStaticFinalVars.UNSIGNED_SHORT_MAX };
 
@@ -1080,14 +1160,17 @@ public class StreamBufferTest {
 				log.log(Level.WARNING, "unknown error", e);
 				fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
 			}
-		}
+			
+			sb.close();
+		}		
 	}
 
 	@Test
 	public void testPutInt_버퍼에남은용량이부족한경우() {
+		StreamCharsetFamily streamCharsetFamily = new StreamCharsetFamily(Charset.defaultCharset());
 		WrapBufferPoolIF wrapBufferPool = new WrapBufferPool(false, ByteOrder.LITTLE_ENDIAN, 512, 10);
 
-		StreamBuffer sb = new StreamBuffer(Charset.defaultCharset(), wrapBufferPool, 3);
+		StreamBuffer sb = new StreamBuffer(streamCharsetFamily, 3, wrapBufferPool);
 
 		int value = 21;
 
@@ -1102,8 +1185,7 @@ public class StreamBufferTest {
 			fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
 		}
 
-		
-		for (long targetPosition=sb.getLimit() - 4 + 1; targetPosition <= sb.getLimit(); targetPosition++) {
+		for (long targetPosition = sb.getLimit() - 4 + 1; targetPosition <= sb.getLimit(); targetPosition++) {
 			try {
 				sb.setPosition(targetPosition);
 				sb.putInt(value);
@@ -1124,16 +1206,19 @@ public class StreamBufferTest {
 				fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
 			}
 		}
+		
+		sb.close();
 	}
 
 	@Test
 	public void testPutInt_최소최대포함한값들로버퍼끝에서다름버퍼까지쓰고읽기() {
+		StreamCharsetFamily streamCharsetFamily = new StreamCharsetFamily(Charset.defaultCharset());
 		ByteOrder[] streamByteOrderList = { ByteOrder.BIG_ENDIAN, ByteOrder.LITTLE_ENDIAN };
 
 		for (ByteOrder streamByteOrder : streamByteOrderList) {
 			WrapBufferPoolIF wrapBufferPool = new WrapBufferPool(false, streamByteOrder, 512, 10);
 
-			StreamBuffer sb = new StreamBuffer(Charset.defaultCharset(), wrapBufferPool, 3);
+			StreamBuffer sb = new StreamBuffer(streamCharsetFamily, 3, wrapBufferPool);
 
 			int[] values = { Integer.MIN_VALUE, -11, -1, 0, 1, 21, Integer.MAX_VALUE };
 
@@ -1164,14 +1249,17 @@ public class StreamBufferTest {
 				log.log(Level.WARNING, "unknown error", e);
 				fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
 			}
+			
+			sb.close();
 		}
 	}
 
 	@Test
 	public void testPutUnsignedInt_음수() {
+		StreamCharsetFamily streamCharsetFamily = new StreamCharsetFamily(Charset.defaultCharset());
 		WrapBufferPoolIF wrapBufferPool = new WrapBufferPool(false, ByteOrder.LITTLE_ENDIAN, 512, 10);
 
-		StreamBuffer sb = new StreamBuffer(Charset.defaultCharset(), wrapBufferPool, 3);
+		StreamBuffer sb = new StreamBuffer(streamCharsetFamily, 3, wrapBufferPool);
 
 		long value = -1;
 
@@ -1190,13 +1278,16 @@ public class StreamBufferTest {
 			log.log(Level.WARNING, "unknown error", e);
 			fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
 		}
+		
+		sb.close();
 	}
 
 	@Test
 	public void testPutUnsignedInt_최대값초과() {
+		StreamCharsetFamily streamCharsetFamily = new StreamCharsetFamily(Charset.defaultCharset());
 		WrapBufferPoolIF wrapBufferPool = new WrapBufferPool(false, ByteOrder.LITTLE_ENDIAN, 512, 10);
 
-		StreamBuffer sb = new StreamBuffer(Charset.defaultCharset(), wrapBufferPool, 3);
+		StreamBuffer sb = new StreamBuffer(streamCharsetFamily, 3, wrapBufferPool);
 
 		long value = CommonStaticFinalVars.UNSIGNED_INTEGER_MAX + 1;
 
@@ -1218,13 +1309,16 @@ public class StreamBufferTest {
 			log.log(Level.WARNING, "unknown error", e);
 			fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
 		}
+		
+		sb.close();
 	}
 
 	@Test
-	public void testPutUnsignedInt_버퍼남은용량이4보다작은경우() {
+	public void testPutUnsignedInt_버퍼에남은용량이부족한경우() {
+		StreamCharsetFamily streamCharsetFamily = new StreamCharsetFamily(Charset.defaultCharset());
 		WrapBufferPoolIF wrapBufferPool = new WrapBufferPool(false, ByteOrder.LITTLE_ENDIAN, 512, 10);
 
-		StreamBuffer sb = new StreamBuffer(Charset.defaultCharset(), wrapBufferPool, 3);
+		StreamBuffer sb = new StreamBuffer(streamCharsetFamily, 3, wrapBufferPool);
 
 		long value = 21L;
 
@@ -1262,16 +1356,19 @@ public class StreamBufferTest {
 				fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
 			}
 		}
+		
+		sb.close();
 	}
 
 	@Test
 	public void testPutUnsignedInt_최소최대포함한값들로버퍼끝에서다름버퍼까지쓰고읽기() {
+		StreamCharsetFamily streamCharsetFamily = new StreamCharsetFamily(Charset.defaultCharset());
 		ByteOrder[] streamByteOrderList = { ByteOrder.BIG_ENDIAN, ByteOrder.LITTLE_ENDIAN };
 
 		for (ByteOrder streamByteOrder : streamByteOrderList) {
 			WrapBufferPoolIF wrapBufferPool = new WrapBufferPool(false, streamByteOrder, 512, 10);
 
-			StreamBuffer sb = new StreamBuffer(Charset.defaultCharset(), wrapBufferPool, 3);
+			StreamBuffer sb = new StreamBuffer(streamCharsetFamily, 3, wrapBufferPool);
 
 			long[] values = { 0, 1, 21, CommonStaticFinalVars.UNSIGNED_INTEGER_MAX };
 
@@ -1302,15 +1399,18 @@ public class StreamBufferTest {
 				log.log(Level.WARNING, "unknown error", e);
 				fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
 			}
+			
+			sb.close();
 		}
 
 	}
 
 	@Test
 	public void testPutLong_버퍼에남은용량이부족한경우() {
+		StreamCharsetFamily streamCharsetFamily = new StreamCharsetFamily(Charset.defaultCharset());
 		WrapBufferPoolIF wrapBufferPool = new WrapBufferPool(false, ByteOrder.LITTLE_ENDIAN, 512, 10);
 
-		StreamBuffer sb = new StreamBuffer(Charset.defaultCharset(), wrapBufferPool, 3);
+		StreamBuffer sb = new StreamBuffer(streamCharsetFamily, 3, wrapBufferPool);
 
 		long value = Integer.MAX_VALUE + 21;
 
@@ -1325,8 +1425,7 @@ public class StreamBufferTest {
 			fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
 		}
 
-		
-		for (long targetPosition=sb.getLimit() - 8 + 1; targetPosition <= sb.getLimit(); targetPosition++) {
+		for (long targetPosition = sb.getLimit() - 8 + 1; targetPosition <= sb.getLimit(); targetPosition++) {
 			try {
 				sb.setPosition(targetPosition);
 				sb.putLong(value);
@@ -1347,16 +1446,19 @@ public class StreamBufferTest {
 				fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
 			}
 		}
+		
+		sb.close();
 	}
 
 	@Test
 	public void testPutLong_최소최대포함한값들로버퍼끝에서다름버퍼까지쓰고읽기() {
+		StreamCharsetFamily streamCharsetFamily = new StreamCharsetFamily(Charset.defaultCharset());
 		ByteOrder[] streamByteOrderList = { ByteOrder.BIG_ENDIAN, ByteOrder.LITTLE_ENDIAN };
 
 		for (ByteOrder streamByteOrder : streamByteOrderList) {
 			WrapBufferPoolIF wrapBufferPool = new WrapBufferPool(false, streamByteOrder, 512, 10);
 
-			StreamBuffer sb = new StreamBuffer(Charset.defaultCharset(), wrapBufferPool, 3);
+			StreamBuffer sb = new StreamBuffer(streamCharsetFamily, 3, wrapBufferPool);
 
 			long[] values = { Long.MIN_VALUE, -11, -1, 0, 1, 21, Long.MAX_VALUE };
 
@@ -1387,14 +1489,17 @@ public class StreamBufferTest {
 				log.log(Level.WARNING, "unknown error", e);
 				fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
 			}
+			
+			sb.close();
 		}
 	}
 
 	@Test
 	public void testPutBytes_전체바이트배열_TheParameterSrcIsNull() {
+		StreamCharsetFamily streamCharsetFamily = new StreamCharsetFamily(Charset.defaultCharset());
 		WrapBufferPoolIF wrapBufferPool = new WrapBufferPool(false, ByteOrder.LITTLE_ENDIAN, 512, 10);
 
-		StreamBuffer sb = new StreamBuffer(Charset.defaultCharset(), wrapBufferPool, 3);
+		StreamBuffer sb = new StreamBuffer(streamCharsetFamily, 3, wrapBufferPool);
 
 		try {
 			sb.putBytes((byte[]) null);
@@ -1413,13 +1518,16 @@ public class StreamBufferTest {
 			log.log(Level.WARNING, "unknown error", e);
 			fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
 		}
+		
+		sb.close();
 	}
 
 	@Test
 	public void testPutBytes_전체바이트배열_버퍼에남은용량이부족한경우() {
+		StreamCharsetFamily streamCharsetFamily = new StreamCharsetFamily(Charset.defaultCharset());
 		WrapBufferPoolIF wrapBufferPool = new WrapBufferPool(false, ByteOrder.LITTLE_ENDIAN, 512, 10);
 
-		StreamBuffer sb = new StreamBuffer(Charset.defaultCharset(), wrapBufferPool, 3);
+		StreamBuffer sb = new StreamBuffer(streamCharsetFamily, 3, wrapBufferPool);
 
 		byte[] sourceBytes = new byte[1200];
 		Random random = new Random();
@@ -1457,17 +1565,20 @@ public class StreamBufferTest {
 				fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
 			}
 		}
+		
+		sb.close();
 	}
 
 	@Test
 	public void testPutBytes_전체바이트배열_쓰기읽기() {
+		StreamCharsetFamily streamCharsetFamily = new StreamCharsetFamily(Charset.defaultCharset());
 		byte[] sourceBytes = new byte[1200];
 		Random random = new Random();
 		random.nextBytes(sourceBytes);
 
 		WrapBufferPoolIF wrapBufferPool = new WrapBufferPool(false, ByteOrder.LITTLE_ENDIAN, 512, 1000);
 
-		StreamBuffer sb = new StreamBuffer(Charset.defaultCharset(), wrapBufferPool, 10);
+		StreamBuffer sb = new StreamBuffer(streamCharsetFamily, 10, wrapBufferPool);
 
 		int bufferSize = wrapBufferPool.getDataPacketBufferSize();
 
@@ -1499,13 +1610,16 @@ public class StreamBufferTest {
 				fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
 			}
 		}
+		
+		sb.close();
 	}
 
 	@Test
 	public void testPutBytes_부분지정바이트배열_TheParameterSrcIsNull() {
+		StreamCharsetFamily streamCharsetFamily = new StreamCharsetFamily(Charset.defaultCharset());
 		WrapBufferPoolIF wrapBufferPool = new WrapBufferPool(false, ByteOrder.LITTLE_ENDIAN, 512, 10);
 
-		StreamBuffer sb = new StreamBuffer(Charset.defaultCharset(), wrapBufferPool, 3);
+		StreamBuffer sb = new StreamBuffer(streamCharsetFamily, 3, wrapBufferPool);
 
 		try {
 			sb.putBytes((byte[]) null, 0, 10);
@@ -1524,13 +1638,16 @@ public class StreamBufferTest {
 			log.log(Level.WARNING, "unknown error", e);
 			fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
 		}
+		
+		sb.close();
 	}
 
 	@Test
 	public void testPutBytes_부분지정바이트배열__thePameterOffsetIsLessThanZero() {
+		StreamCharsetFamily streamCharsetFamily = new StreamCharsetFamily(Charset.defaultCharset());
 		WrapBufferPoolIF wrapBufferPool = new WrapBufferPool(false, ByteOrder.LITTLE_ENDIAN, 512, 10);
 
-		StreamBuffer sb = new StreamBuffer(Charset.defaultCharset(), wrapBufferPool, 3);
+		StreamBuffer sb = new StreamBuffer(streamCharsetFamily, 3, wrapBufferPool);
 
 		byte[] sourceBytes = new byte[1200];
 		Random random = new Random();
@@ -1556,13 +1673,16 @@ public class StreamBufferTest {
 			log.log(Level.WARNING, "unknown error", e);
 			fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
 		}
+		
+		sb.close();
 	}
 
 	@Test
 	public void testPutBytes_부분지정바이트배열__thePameterOffsetIsGreaterThanOrEqualToSourceByteArrayLength() {
+		StreamCharsetFamily streamCharsetFamily = new StreamCharsetFamily(Charset.defaultCharset());
 		WrapBufferPoolIF wrapBufferPool = new WrapBufferPool(false, ByteOrder.LITTLE_ENDIAN, 512, 10);
 
-		StreamBuffer sb = new StreamBuffer(Charset.defaultCharset(), wrapBufferPool, 3);
+		StreamBuffer sb = new StreamBuffer(streamCharsetFamily, 3, wrapBufferPool);
 
 		byte[] sourceBytes = new byte[1200];
 		Random random = new Random();
@@ -1589,13 +1709,16 @@ public class StreamBufferTest {
 			log.log(Level.WARNING, "unknown error", e);
 			fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
 		}
+		
+		sb.close();
 	}
 
 	@Test
 	public void testPutBytes_부분지정바이트배열__thePameterLengthIsLessThanZero() {
+		StreamCharsetFamily streamCharsetFamily = new StreamCharsetFamily(Charset.defaultCharset());
 		WrapBufferPoolIF wrapBufferPool = new WrapBufferPool(false, ByteOrder.LITTLE_ENDIAN, 512, 10);
 
-		StreamBuffer sb = new StreamBuffer(Charset.defaultCharset(), wrapBufferPool, 3);
+		StreamBuffer sb = new StreamBuffer(streamCharsetFamily, 3, wrapBufferPool);
 
 		byte[] sourceBytes = new byte[1200];
 		Random random = new Random();
@@ -1621,13 +1744,16 @@ public class StreamBufferTest {
 			log.log(Level.WARNING, "unknown error", e);
 			fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
 		}
+		
+		sb.close();
 	}
 
 	@Test
 	public void testPutBytes_부분지정바이트배열_theSumOfThePameterOffsetAndthePameterLengthIsGreaterThanSourceByteArrayLength() {
+		StreamCharsetFamily streamCharsetFamily = new StreamCharsetFamily(Charset.defaultCharset());
 		WrapBufferPoolIF wrapBufferPool = new WrapBufferPool(false, ByteOrder.LITTLE_ENDIAN, 512, 10);
 
-		StreamBuffer sb = new StreamBuffer(Charset.defaultCharset(), wrapBufferPool, 3);
+		StreamBuffer sb = new StreamBuffer(streamCharsetFamily, 3, wrapBufferPool);
 
 		byte[] sourceBytes = new byte[1200];
 		Random random = new Random();
@@ -1655,13 +1781,16 @@ public class StreamBufferTest {
 			log.log(Level.WARNING, "unknown error", e);
 			fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
 		}
+		
+		sb.close();
 	}
 
 	@Test
 	public void testPutBytes_부분지정바이트배열_버퍼에남은용량이부족한경우() {
+		StreamCharsetFamily streamCharsetFamily = new StreamCharsetFamily(Charset.defaultCharset());
 		WrapBufferPoolIF wrapBufferPool = new WrapBufferPool(false, ByteOrder.LITTLE_ENDIAN, 512, 10);
 
-		StreamBuffer sb = new StreamBuffer(Charset.defaultCharset(), wrapBufferPool, 3);
+		StreamBuffer sb = new StreamBuffer(streamCharsetFamily, 3, wrapBufferPool);
 
 		byte[] sourceBytes = new byte[1200];
 		Random random = new Random();
@@ -1701,17 +1830,20 @@ public class StreamBufferTest {
 				fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
 			}
 		}
+		
+		sb.close();
 	}
 
 	@Test
 	public void testPutBytes_부분지정바이트배열_전체쓰기읽기() {
+		StreamCharsetFamily streamCharsetFamily = new StreamCharsetFamily(Charset.defaultCharset());
 		byte[] sourceBytes = new byte[1200];
 		Random random = new Random();
 		random.nextBytes(sourceBytes);
 
 		WrapBufferPoolIF wrapBufferPool = new WrapBufferPool(false, ByteOrder.LITTLE_ENDIAN, 512, 1000);
 
-		StreamBuffer sb = new StreamBuffer(Charset.defaultCharset(), wrapBufferPool, 10);
+		StreamBuffer sb = new StreamBuffer(streamCharsetFamily, 10, wrapBufferPool);
 
 		int bufferSize = wrapBufferPool.getDataPacketBufferSize();
 
@@ -1743,10 +1875,13 @@ public class StreamBufferTest {
 				fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
 			}
 		}
+		
+		sb.close();
 	}
 
 	@Test
 	public void testPutBytes_부분지정바이트배열_부분쓰기읽기() {
+		StreamCharsetFamily streamCharsetFamily = new StreamCharsetFamily(Charset.defaultCharset());
 		byte[] sourceBytes = new byte[1200];
 		int offset = 4;
 		int length = 10;
@@ -1755,7 +1890,7 @@ public class StreamBufferTest {
 
 		WrapBufferPoolIF wrapBufferPool = new WrapBufferPool(false, ByteOrder.LITTLE_ENDIAN, 512, 1000);
 
-		StreamBuffer sb = new StreamBuffer(Charset.defaultCharset(), wrapBufferPool, 10);
+		StreamBuffer sb = new StreamBuffer(streamCharsetFamily, 10, wrapBufferPool);
 
 		int bufferSize = wrapBufferPool.getDataPacketBufferSize();
 
@@ -1795,13 +1930,16 @@ public class StreamBufferTest {
 				fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
 			}
 		}
+		
+		sb.close();
 	}
 
 	@Test
 	public void testPutBytes_바이트버퍼_TheParameterSrcIsNull() {
+		StreamCharsetFamily streamCharsetFamily = new StreamCharsetFamily(Charset.defaultCharset());
 		WrapBufferPoolIF wrapBufferPool = new WrapBufferPool(false, ByteOrder.LITTLE_ENDIAN, 512, 10);
 
-		StreamBuffer sb = new StreamBuffer(Charset.defaultCharset(), wrapBufferPool, 3);
+		StreamBuffer sb = new StreamBuffer(streamCharsetFamily, 3, wrapBufferPool);
 
 		try {
 			sb.putBytes((ByteBuffer) null);
@@ -1820,13 +1958,16 @@ public class StreamBufferTest {
 			log.log(Level.WARNING, "unknown error", e);
 			fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
 		}
+		
+		sb.close();
 	}
 
 	@Test
 	public void testPutBytes_바이트버퍼_버퍼에남은용량이부족한경우() {
+		StreamCharsetFamily streamCharsetFamily = new StreamCharsetFamily(Charset.defaultCharset());
 		WrapBufferPoolIF wrapBufferPool = new WrapBufferPool(false, ByteOrder.LITTLE_ENDIAN, 512, 10);
 
-		StreamBuffer sb = new StreamBuffer(Charset.defaultCharset(), wrapBufferPool, 3);
+		StreamBuffer sb = new StreamBuffer(streamCharsetFamily, 3, wrapBufferPool);
 
 		byte[] sourceBytes = new byte[1200];
 		Random random = new Random();
@@ -1846,7 +1987,8 @@ public class StreamBufferTest {
 		}
 
 		// for (int i = 1; i <= sourceByteBuffer.remaining(); i++) {
-		for (long targetPosition=sb.getLimit() - sourceByteBuffer.remaining() + 1; targetPosition <= sb.getLimit(); targetPosition++) {
+		for (long targetPosition = sb.getLimit() - sourceByteBuffer.remaining() + 1; targetPosition <= sb
+				.getLimit(); targetPosition++) {
 			sb.setPosition(targetPosition);
 
 			try {
@@ -1868,10 +2010,13 @@ public class StreamBufferTest {
 				fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
 			}
 		}
+		
+		sb.close();
 	}
 
 	@Test
 	public void testPutBytes_바이트버퍼_전체쓰기읽기() {
+		StreamCharsetFamily streamCharsetFamily = new StreamCharsetFamily(Charset.defaultCharset());
 		byte[] sourceBytes = new byte[1200];
 		Random random = new Random();
 		random.nextBytes(sourceBytes);
@@ -1880,7 +2025,7 @@ public class StreamBufferTest {
 
 		WrapBufferPoolIF wrapBufferPool = new WrapBufferPool(false, ByteOrder.LITTLE_ENDIAN, 512, 1000);
 
-		StreamBuffer sb = new StreamBuffer(Charset.defaultCharset(), wrapBufferPool, 10);
+		StreamBuffer sb = new StreamBuffer(streamCharsetFamily, 10, wrapBufferPool);
 
 		int bufferSize = wrapBufferPool.getDataPacketBufferSize();
 
@@ -1915,10 +2060,13 @@ public class StreamBufferTest {
 				fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
 			}
 		}
+		
+		sb.close();
 	}
 
 	@Test
 	public void testPutBytes_바이트버퍼_부분쓰기읽기() {
+		StreamCharsetFamily streamCharsetFamily = new StreamCharsetFamily(Charset.defaultCharset());
 		byte[] sourceBytes = new byte[1200];
 		final int offset = 4;
 		final int length = 10;
@@ -1931,7 +2079,7 @@ public class StreamBufferTest {
 
 		WrapBufferPoolIF wrapBufferPool = new WrapBufferPool(false, ByteOrder.LITTLE_ENDIAN, 512, 1000);
 
-		StreamBuffer sb = new StreamBuffer(Charset.defaultCharset(), wrapBufferPool, 10);
+		StreamBuffer sb = new StreamBuffer(streamCharsetFamily, 10, wrapBufferPool);
 
 		int bufferSize = wrapBufferPool.getDataPacketBufferSize();
 
@@ -1973,6 +2121,8 @@ public class StreamBufferTest {
 				fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
 			}
 		}
+		
+		sb.close();
 	}
 
 	/**
@@ -2000,9 +2150,10 @@ public class StreamBufferTest {
 
 	@Test
 	public void test속도비교_putBytesVsPutBytes2() {
+		StreamCharsetFamily streamCharsetFamily = new StreamCharsetFamily(Charset.defaultCharset());
 		WrapBufferPoolIF wrapBufferPool = new WrapBufferPool(false, ByteOrder.LITTLE_ENDIAN, 512, 1000);
 
-		StreamBuffer sb = new StreamBuffer(Charset.defaultCharset(), wrapBufferPool, 10);
+		StreamBuffer sb = new StreamBuffer(streamCharsetFamily, 10, wrapBufferPool);
 
 		byte[] sourceBytes = new byte[4];
 		Random random = new Random();
@@ -2052,27 +2203,28 @@ public class StreamBufferTest {
 
 		System.out.printf("putByte::%d 번, 총 소요 시간=[%d] ms", retryCount, elapsedTime);
 		System.out.println();
+		
+		sb.close();
 	}
-	
+
 	@Test
 	public void testPutFixedLengthString_theParameterFixedLengthIsLessThanZero() {
+		StreamCharsetFamily streamCharsetFamily = new StreamCharsetFamily(Charset.defaultCharset());
 		WrapBufferPoolIF wrapBufferPool = new WrapBufferPool(false, ByteOrder.LITTLE_ENDIAN, 512, 1000);
 
-		StreamBuffer sb = new StreamBuffer(Charset.defaultCharset(), wrapBufferPool, 10);
-		
-		
+		StreamBuffer sb = new StreamBuffer(streamCharsetFamily, 10, wrapBufferPool);
+
 		int fixedLength = -1;
 		String src = "안녕하세요";
 		CharsetEncoder wantedCharsetEncoder = Charset.defaultCharset().newEncoder();
-		
+
 		try {
 			sb.putFixedLengthString(fixedLength, src, wantedCharsetEncoder);
-			
+
 			fail("no IllegalArgumentException");
 		} catch (IllegalArgumentException e) {
 			String acutalErrorMessage = e.getMessage();
-			String expectedErrorMessage = new StringBuilder().append("the parameter fixedLength[")
-					.append(fixedLength)
+			String expectedErrorMessage = new StringBuilder().append("the parameter fixedLength[").append(fixedLength)
 					.append("] is less than zero").toString();
 
 			System.out.println(acutalErrorMessage);
@@ -2083,22 +2235,24 @@ public class StreamBufferTest {
 			log.log(Level.WARNING, "unknown error", e);
 			fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
 		}
+		
+		sb.close();
 	}
-	
+
 	@Test
 	public void testPutFixedLengthString_theParameterSrcIsNull() {
+		StreamCharsetFamily streamCharsetFamily = new StreamCharsetFamily(Charset.defaultCharset());
 		WrapBufferPoolIF wrapBufferPool = new WrapBufferPool(false, ByteOrder.LITTLE_ENDIAN, 512, 1000);
 
-		StreamBuffer sb = new StreamBuffer(Charset.defaultCharset(), wrapBufferPool, 10);
-		
-		
+		StreamBuffer sb = new StreamBuffer(streamCharsetFamily, 10, wrapBufferPool);
+
 		int fixedLength = 20;
 		String src = null;
 		CharsetEncoder wantedCharsetEncoder = Charset.defaultCharset().newEncoder();
-		
+
 		try {
 			sb.putFixedLengthString(fixedLength, src, wantedCharsetEncoder);
-			
+
 			fail("no IllegalArgumentException");
 		} catch (IllegalArgumentException e) {
 			String acutalErrorMessage = e.getMessage();
@@ -2111,22 +2265,24 @@ public class StreamBufferTest {
 			log.log(Level.WARNING, "unknown error", e);
 			fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
 		}
+		
+		sb.close();
 	}
-	
+
 	@Test
 	public void testPutFixedLengthString_theParameterWantedCharsetEncoderIsNull() {
+		StreamCharsetFamily streamCharsetFamily = new StreamCharsetFamily(Charset.defaultCharset());
 		WrapBufferPoolIF wrapBufferPool = new WrapBufferPool(false, ByteOrder.LITTLE_ENDIAN, 512, 1000);
 
-		StreamBuffer sb = new StreamBuffer(Charset.defaultCharset(), wrapBufferPool, 10);
-		
-		
+		StreamBuffer sb = new StreamBuffer(streamCharsetFamily, 10, wrapBufferPool);
+
 		int fixedLength = 20;
 		String src = "한글사랑";
 		CharsetEncoder wantedCharsetEncoder = null;
-		
+
 		try {
 			sb.putFixedLengthString(fixedLength, src, wantedCharsetEncoder);
-			
+
 			fail("no IllegalArgumentException");
 		} catch (IllegalArgumentException e) {
 			String acutalErrorMessage = e.getMessage();
@@ -2139,39 +2295,40 @@ public class StreamBufferTest {
 			log.log(Level.WARNING, "unknown error", e);
 			fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
 		}
+		
+		sb.close();
 	}
-	
+
 	@Test
 	public void testPutFixedLengthString_버퍼에남은용량이부족한경우() {
+		StreamCharsetFamily streamCharsetFamily = new StreamCharsetFamily(Charset.defaultCharset());
 		WrapBufferPoolIF wrapBufferPool = new WrapBufferPool(false, ByteOrder.LITTLE_ENDIAN, 1, 1000);
 
-		StreamBuffer sb = new StreamBuffer(Charset.defaultCharset(), wrapBufferPool, 20);
-		
-		
+		StreamBuffer sb = new StreamBuffer(streamCharsetFamily, 20, wrapBufferPool);
+
 		int fixedLength = 20;
 		String src = "한글사랑";
 		Charset testCharset = Charset.forName("EUC-KR");
-		
+
 		try {
 			sb.setPosition(sb.getLimit() - fixedLength);
 			sb.putFixedLengthString(fixedLength, src, testCharset.newEncoder());
-			
+
 			sb.setPosition(sb.getLimit() - fixedLength);
 			String acutalValue = sb.getFixedLengthString(fixedLength, testCharset.newDecoder());
-			
+
 			assertEquals(src.trim(), acutalValue.trim());
 		} catch (Exception e) {
 			Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
 			log.log(Level.WARNING, "unknown error", e);
 			fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
 		}
-		
-		
-		for (long targetPosition=sb.getLimit() - fixedLength + 1; targetPosition <= sb.getLimit(); targetPosition++) {
+
+		for (long targetPosition = sb.getLimit() - fixedLength + 1; targetPosition <= sb.getLimit(); targetPosition++) {
 			try {
 				sb.setPosition(targetPosition);
 				sb.putFixedLengthString(fixedLength, src, testCharset.newEncoder());
-				
+
 				fail("no BufferOverflowException");
 			} catch (BufferOverflowException e) {
 				StackTraceElement se = e.getStackTrace()[0];
@@ -2187,39 +2344,459 @@ public class StreamBufferTest {
 				fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
 			}
 		}
+		
+		sb.close();
 	}
-	
+
 	@Test
 	public void testPutFixedLengthString_OK() {
+		StreamCharsetFamily streamCharsetFamily = new StreamCharsetFamily(Charset.defaultCharset());
 		WrapBufferPoolIF wrapBufferPool = new WrapBufferPool(false, ByteOrder.LITTLE_ENDIAN, 1, 1000);
 
-		StreamBuffer sb = new StreamBuffer(Charset.defaultCharset(), wrapBufferPool, 20);
-		
-		
-		int fixedLength = 20;
+		StreamBuffer sb = new StreamBuffer(streamCharsetFamily, 100, wrapBufferPool);
+
+		int fixedLength = 30;
 		String src = "한글사랑";
 		Charset testCharset = Charset.forName("EUC-KR");
-		
+
 		try {
 			sb.setPosition(sb.getLimit() - fixedLength);
 			sb.putFixedLengthString(fixedLength, src, testCharset.newEncoder());
-			
+
 			sb.setPosition(sb.getLimit() - fixedLength);
 			String acutalValue = sb.getFixedLengthString(fixedLength, testCharset.newDecoder());
-			
+
 			assertEquals(src.trim(), acutalValue.trim());
 		} catch (Exception e) {
 			Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
 			log.log(Level.WARNING, "unknown error", e);
 			fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
 		}
+		
+		sb.close();
+	}
+
+	@Test
+	public void testPutAllString_theParameterSrcIsNull() {
+		StreamCharsetFamily streamCharsetFamily = new StreamCharsetFamily(Charset.defaultCharset());
+		WrapBufferPoolIF wrapBufferPool = new WrapBufferPool(false, ByteOrder.LITTLE_ENDIAN, 1, 1000);
+
+		StreamBuffer sb = new StreamBuffer(streamCharsetFamily, 20, wrapBufferPool);
+
+		Charset testCharset = Charset.forName("EUC-KR");
+
+		try {
+			sb.putAllString(null, testCharset);
+
+			fail("no IllegalArgumentException");
+		} catch (IllegalArgumentException e) {
+			String acutalErrorMessage = e.getMessage();
+			String expectedErrorMessage = "the parameter src is null";
+
+			System.out.println(acutalErrorMessage);
+
+			assertEquals(expectedErrorMessage, acutalErrorMessage);
+		} catch (Exception e) {
+			Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
+			log.log(Level.WARNING, "unknown error", e);
+			fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
+		}
+		
+		sb.close();
+	}
+
+	@Test
+	public void testPutAllString_theParameterWantedCharsetIsNull() {
+		StreamCharsetFamily streamCharsetFamily = new StreamCharsetFamily(Charset.defaultCharset());
+		WrapBufferPoolIF wrapBufferPool = new WrapBufferPool(false, ByteOrder.LITTLE_ENDIAN, 1, 1000);
+
+		StreamBuffer sb = new StreamBuffer(streamCharsetFamily, 20, wrapBufferPool);
+
+		try {
+			sb.putAllString("한글사랑", null);
+
+			fail("no IllegalArgumentException");
+		} catch (IllegalArgumentException e) {
+			String acutalErrorMessage = e.getMessage();
+			String expectedErrorMessage = "the parameter wantedCharset is null";
+
+			System.out.println(acutalErrorMessage);
+
+			assertEquals(expectedErrorMessage, acutalErrorMessage);
+		} catch (Exception e) {
+			Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
+			log.log(Level.WARNING, "unknown error", e);
+			fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
+		}
+		
+		sb.close();
+	}
+
+	@Test
+	public void testPutAllString_OK() {
+		StreamCharsetFamily streamCharsetFamily = new StreamCharsetFamily(Charset.defaultCharset());
+		WrapBufferPoolIF wrapBufferPool = new WrapBufferPool(false, ByteOrder.LITTLE_ENDIAN, 512, 1000);
+
+		StreamBuffer sb = new StreamBuffer(streamCharsetFamily, 3, wrapBufferPool);
+
+		Charset wantedCharset = Charset.forName("EUC-KR");
+
+		String expectedValue = "한글사랑";
+
+		try {
+			sb.putAllString(expectedValue, wantedCharset);
+			long newLimit = sb.getPosition();
+
+			sb.setPosition(0);
+			sb.setLimit(newLimit);
+			String acutalValue = sb.getAllString(wantedCharset);
+
+			assertEquals(expectedValue, acutalValue);
+		} catch (Exception e) {
+			Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
+			log.log(Level.WARNING, "unknown error", e);
+			fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
+		}
+		
+		sb.close();
+	}
+
+	@Test
+	public void testPutPascalString_theParameterSrcIsNull() {
+		StreamCharsetFamily streamCharsetFamily = new StreamCharsetFamily(Charset.defaultCharset());
+		WrapBufferPoolIF wrapBufferPool = new WrapBufferPool(false, ByteOrder.LITTLE_ENDIAN, 1, 1000);
+
+		StreamBuffer sb = new StreamBuffer(streamCharsetFamily, 20, wrapBufferPool);
+
+		try {
+			sb.putPascalString(null, null);
+
+			fail("no IllegalArgumentException");
+		} catch (IllegalArgumentException e) {
+			String acutalErrorMessage = e.getMessage();
+			String expectedErrorMessage = "the parameter src is null";
+
+			System.out.println(acutalErrorMessage);
+
+			assertEquals(expectedErrorMessage, acutalErrorMessage);
+		} catch (Exception e) {
+			Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
+			log.log(Level.WARNING, "unknown error", e);
+			fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
+		}
+		
+		sb.close();
+	}
+
+	@Test
+	public void testPutPascalString_theParameterWantedCharsetIsNull() {
+		StreamCharsetFamily streamCharsetFamily = new StreamCharsetFamily(Charset.defaultCharset());
+		WrapBufferPoolIF wrapBufferPool = new WrapBufferPool(false, ByteOrder.LITTLE_ENDIAN, 1, 1000);
+
+		StreamBuffer sb = new StreamBuffer(streamCharsetFamily, 20, wrapBufferPool);
+
+		try {
+			sb.putPascalString("한글사랑", null);
+
+			fail("no IllegalArgumentException");
+		} catch (IllegalArgumentException e) {
+			String acutalErrorMessage = e.getMessage();
+			String expectedErrorMessage = "the parameter wantedCharset is null";
+
+			System.out.println(acutalErrorMessage);
+
+			assertEquals(expectedErrorMessage, acutalErrorMessage);
+		} catch (Exception e) {
+			Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
+			log.log(Level.WARNING, "unknown error", e);
+			fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
+		}
+		
+		sb.close();
+	}
+
+	@Test
+	public void testPutPascalString_OK() {
+		StreamCharsetFamily streamCharsetFamily = new StreamCharsetFamily(Charset.defaultCharset());
+		WrapBufferPoolIF wrapBufferPool = new WrapBufferPool(false, ByteOrder.LITTLE_ENDIAN, 512, 1000);
+
+		StreamBuffer sb = new StreamBuffer(streamCharsetFamily, 3, wrapBufferPool);
+
+		Charset wantedCharset = Charset.forName("EUC-KR");
+
+		String expectedValue = "한글사랑";
+
+		try {
+			sb.putPascalString(expectedValue, wantedCharset);
+
+			sb.setPosition(0);
+			String acutalValue = sb.getPascalString(wantedCharset);
+
+			assertEquals(expectedValue, acutalValue);
+		} catch (Exception e) {
+			Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
+			log.log(Level.WARNING, "unknown error", e);
+			fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
+		}
+		
+		sb.close();
+	}
+
+	@Test
+	public void testPutUBPascalString_theParameterSrcIsNull() {
+		StreamCharsetFamily streamCharsetFamily = new StreamCharsetFamily(Charset.defaultCharset());
+		WrapBufferPoolIF wrapBufferPool = new WrapBufferPool(false, ByteOrder.LITTLE_ENDIAN, 1, 1000);
+
+		StreamBuffer sb = new StreamBuffer(streamCharsetFamily, 20, wrapBufferPool);
+
+		try {
+			sb.putUBPascalString(null, null);
+
+			fail("no IllegalArgumentException");
+		} catch (IllegalArgumentException e) {
+			String acutalErrorMessage = e.getMessage();
+			String expectedErrorMessage = "the parameter src is null";
+
+			System.out.println(acutalErrorMessage);
+
+			assertEquals(expectedErrorMessage, acutalErrorMessage);
+		} catch (Exception e) {
+			Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
+			log.log(Level.WARNING, "unknown error", e);
+			fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
+		}
+		
+		sb.close();
+	}
+
+	@Test
+	public void testPutUBPascalString_theParameterWantedCharsetIsNull() {
+		StreamCharsetFamily streamCharsetFamily = new StreamCharsetFamily(Charset.defaultCharset());
+		WrapBufferPoolIF wrapBufferPool = new WrapBufferPool(false, ByteOrder.LITTLE_ENDIAN, 1, 1000);
+
+		StreamBuffer sb = new StreamBuffer(streamCharsetFamily, 20, wrapBufferPool);
+
+		try {
+			sb.putUBPascalString("한글사랑", null);
+
+			fail("no IllegalArgumentException");
+		} catch (IllegalArgumentException e) {
+			String acutalErrorMessage = e.getMessage();
+			String expectedErrorMessage = "the parameter wantedCharset is null";
+
+			System.out.println(acutalErrorMessage);
+
+			assertEquals(expectedErrorMessage, acutalErrorMessage);
+		} catch (Exception e) {
+			Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
+			log.log(Level.WARNING, "unknown error", e);
+			fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
+		}
+		
+		sb.close();
+	}
+
+	@Test
+	public void testPutUBPascalString_OK() {
+		StreamCharsetFamily streamCharsetFamily = new StreamCharsetFamily(Charset.defaultCharset());
+		WrapBufferPoolIF wrapBufferPool = new WrapBufferPool(false, ByteOrder.LITTLE_ENDIAN, 512, 1000);
+
+		StreamBuffer sb = new StreamBuffer(streamCharsetFamily, 3, wrapBufferPool);
+
+		Charset wantedCharset = Charset.forName("EUC-KR");
+
+		String expectedValue = "한글사랑";
+
+		try {
+			sb.putUBPascalString(expectedValue, wantedCharset);
+
+			sb.setPosition(0);
+			String acutalValue = sb.getUBPascalString(wantedCharset);
+
+			assertEquals(expectedValue, acutalValue);
+		} catch (Exception e) {
+			Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
+			log.log(Level.WARNING, "unknown error", e);
+			fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
+		}
+		
+		sb.close();
+	}
+
+	@Test
+	public void testPutUSPascalString_theParameterSrcIsNull() {
+		StreamCharsetFamily streamCharsetFamily = new StreamCharsetFamily(Charset.defaultCharset());
+		WrapBufferPoolIF wrapBufferPool = new WrapBufferPool(false, ByteOrder.LITTLE_ENDIAN, 1, 1000);
+
+		StreamBuffer sb = new StreamBuffer(streamCharsetFamily, 20, wrapBufferPool);
+
+		try {
+			sb.putUSPascalString(null, null);
+
+			fail("no IllegalArgumentException");
+		} catch (IllegalArgumentException e) {
+			String acutalErrorMessage = e.getMessage();
+			String expectedErrorMessage = "the parameter src is null";
+
+			System.out.println(acutalErrorMessage);
+
+			assertEquals(expectedErrorMessage, acutalErrorMessage);
+		} catch (Exception e) {
+			Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
+			log.log(Level.WARNING, "unknown error", e);
+			fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
+		}
+		
+		sb.close();
+	}
+
+	@Test
+	public void testPutUSPascalString_theParameterWantedCharsetIsNull() {
+		StreamCharsetFamily streamCharsetFamily = new StreamCharsetFamily(Charset.defaultCharset());
+		WrapBufferPoolIF wrapBufferPool = new WrapBufferPool(false, ByteOrder.LITTLE_ENDIAN, 1, 1000);
+
+		StreamBuffer sb = new StreamBuffer(streamCharsetFamily, 20, wrapBufferPool);
+
+		try {
+			sb.putUSPascalString("한글사랑", null);
+
+			fail("no IllegalArgumentException");
+		} catch (IllegalArgumentException e) {
+			String acutalErrorMessage = e.getMessage();
+			String expectedErrorMessage = "the parameter wantedCharset is null";
+
+			System.out.println(acutalErrorMessage);
+
+			assertEquals(expectedErrorMessage, acutalErrorMessage);
+		} catch (Exception e) {
+			Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
+			log.log(Level.WARNING, "unknown error", e);
+			fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
+		}
+		
+		sb.close();
+	}
+
+	@Test
+	public void testPutUSPascalString_OK() {
+		StreamCharsetFamily streamCharsetFamily = new StreamCharsetFamily(Charset.defaultCharset());
+		WrapBufferPoolIF wrapBufferPool = new WrapBufferPool(false, ByteOrder.LITTLE_ENDIAN, 512, 1000);
+
+		StreamBuffer sb = new StreamBuffer(streamCharsetFamily, 3, wrapBufferPool);
+
+		Charset wantedCharset = Charset.forName("EUC-KR");
+
+		String expectedValue = "한글사랑한글사랑한글사랑한글사랑한글사랑한글사랑한글사랑한글사랑한글사랑한글사랑한글사랑한글사랑한글사랑한글사랑한글사랑한글사랑한글사랑한글사랑한글사랑한글사랑한글사랑한글사랑한글사랑한글사랑한글사랑한글사랑한글사랑한글사랑한글사랑한글사랑한글사랑한글사랑한글사랑한글사랑한글사랑";
+
+		try {
+			sb.putUSPascalString(expectedValue, wantedCharset);
+
+			System.out.printf("문자열 bytes=%d", sb.getPosition());
+			System.out.println();
+
+			sb.setPosition(0);
+			String acutalValue = sb.getUSPascalString(wantedCharset);
+
+			assertEquals(expectedValue, acutalValue);
+		} catch (Exception e) {
+			Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
+			log.log(Level.WARNING, "unknown error", e);
+			fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
+		}
+		
+		sb.close();
+	}
+
+	@Test
+	public void testPutSIPascalString_theParameterSrcIsNull() {
+		StreamCharsetFamily streamCharsetFamily = new StreamCharsetFamily(Charset.defaultCharset());
+		WrapBufferPoolIF wrapBufferPool = new WrapBufferPool(false, ByteOrder.LITTLE_ENDIAN, 1, 1000);
+
+		StreamBuffer sb = new StreamBuffer(streamCharsetFamily, 20, wrapBufferPool);
+
+		try {
+			sb.putSIPascalString(null, null);
+
+			fail("no IllegalArgumentException");
+		} catch (IllegalArgumentException e) {
+			String acutalErrorMessage = e.getMessage();
+			String expectedErrorMessage = "the parameter src is null";
+
+			System.out.println(acutalErrorMessage);
+
+			assertEquals(expectedErrorMessage, acutalErrorMessage);
+		} catch (Exception e) {
+			Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
+			log.log(Level.WARNING, "unknown error", e);
+			fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
+		}
+		
+		sb.close();
+	}
+
+	@Test
+	public void testPutSIPascalString_theParameterWantedCharsetIsNull() {
+		StreamCharsetFamily streamCharsetFamily = new StreamCharsetFamily(Charset.defaultCharset());
+		WrapBufferPoolIF wrapBufferPool = new WrapBufferPool(false, ByteOrder.LITTLE_ENDIAN, 1, 1000);
+
+		StreamBuffer sb = new StreamBuffer(streamCharsetFamily, 20, wrapBufferPool);
+
+		try {
+			sb.putSIPascalString("한글사랑", null);
+
+			fail("no IllegalArgumentException");
+		} catch (IllegalArgumentException e) {
+			String acutalErrorMessage = e.getMessage();
+			String expectedErrorMessage = "the parameter wantedCharset is null";
+
+			System.out.println(acutalErrorMessage);
+
+			assertEquals(expectedErrorMessage, acutalErrorMessage);
+		} catch (Exception e) {
+			Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
+			log.log(Level.WARNING, "unknown error", e);
+			fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
+		}
+		
+		sb.close();
+	}
+
+	@Test
+	public void testPutSIPascalString_OK() {
+		StreamCharsetFamily streamCharsetFamily = new StreamCharsetFamily(Charset.defaultCharset());
+		WrapBufferPoolIF wrapBufferPool = new WrapBufferPool(false, ByteOrder.LITTLE_ENDIAN, 512, 1000);
+
+		StreamBuffer sb = new StreamBuffer(streamCharsetFamily, 3, wrapBufferPool);
+
+		Charset wantedCharset = Charset.forName("EUC-KR");
+
+		String expectedValue = "한글사랑한글사랑한글사랑한글사랑한글사랑한글사랑한글사랑한글사랑한글사랑한글사랑한글사랑한글사랑한글사랑한글사랑한글사랑한글사랑한글사랑한글사랑한글사랑한글사랑한글사랑한글사랑한글사랑한글사랑한글사랑한글사랑한글사랑한글사랑한글사랑한글사랑한글사랑한글사랑한글사랑한글사랑한글사랑";
+
+		try {
+			sb.putSIPascalString(expectedValue, wantedCharset);
+
+			System.out.printf("문자열 bytes=%d", sb.getPosition());
+			System.out.println();
+
+			sb.setPosition(0);
+			String acutalValue = sb.getSIPascalString(wantedCharset);
+
+			assertEquals(expectedValue, acutalValue);
+		} catch (Exception e) {
+			Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
+			log.log(Level.WARNING, "unknown error", e);
+			fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
+		}
+		
+		sb.close();
 	}
 
 	@Test
 	public void testgetByte_버퍼에남은용량이부족한경우() {
+		StreamCharsetFamily streamCharsetFamily = new StreamCharsetFamily(Charset.defaultCharset());
 		WrapBufferPoolIF wrapBufferPool = new WrapBufferPool(false, ByteOrder.LITTLE_ENDIAN, 512, 1000);
 
-		StreamBuffer sb = new StreamBuffer(Charset.defaultCharset(), wrapBufferPool, 10);
+		StreamBuffer sb = new StreamBuffer(streamCharsetFamily, 10, wrapBufferPool);
 		try {
 			sb.setPosition(sb.getLimit() - 1);
 			sb.getByte();
@@ -2228,7 +2805,7 @@ public class StreamBufferTest {
 			log.log(Level.WARNING, "unknown error", e);
 			fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
 		}
-		
+
 		try {
 			sb.getByte();
 			fail("no BufferUnderflowException");
@@ -2245,13 +2822,16 @@ public class StreamBufferTest {
 			log.log(Level.WARNING, "unknown error", e);
 			fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
 		}
+		
+		sb.close();
 	}
-	
+
 	@Test
 	public void testGetUnsignedByte_버퍼에남은용량이부족한경우() {
+		StreamCharsetFamily streamCharsetFamily = new StreamCharsetFamily(Charset.defaultCharset());
 		WrapBufferPoolIF wrapBufferPool = new WrapBufferPool(false, ByteOrder.LITTLE_ENDIAN, 512, 1000);
 
-		StreamBuffer sb = new StreamBuffer(Charset.defaultCharset(), wrapBufferPool, 10);
+		StreamBuffer sb = new StreamBuffer(streamCharsetFamily, 10, wrapBufferPool);
 		try {
 			sb.setPosition(sb.getLimit() - 1);
 			sb.getUnsignedByte();
@@ -2260,7 +2840,7 @@ public class StreamBufferTest {
 			log.log(Level.WARNING, "unknown error", e);
 			fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
 		}
-		
+
 		try {
 			sb.getUnsignedByte();
 			fail("no BufferUnderflowException");
@@ -2277,13 +2857,16 @@ public class StreamBufferTest {
 			log.log(Level.WARNING, "unknown error", e);
 			fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
 		}
+		
+		sb.close();
 	}
-	
+
 	@Test
 	public void testGetShort_버퍼에남은용량이부족한경우() {
+		StreamCharsetFamily streamCharsetFamily = new StreamCharsetFamily(Charset.defaultCharset());
 		WrapBufferPoolIF wrapBufferPool = new WrapBufferPool(false, ByteOrder.LITTLE_ENDIAN, 512, 1000);
 
-		StreamBuffer sb = new StreamBuffer(Charset.defaultCharset(), wrapBufferPool, 10);
+		StreamBuffer sb = new StreamBuffer(streamCharsetFamily, 10, wrapBufferPool);
 		try {
 			sb.setPosition(sb.getLimit() - 2);
 			sb.getShort();
@@ -2292,10 +2875,10 @@ public class StreamBufferTest {
 			log.log(Level.WARNING, "unknown error", e);
 			fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
 		}
-		
-		for (long targetPosition=sb.getLimit() - 2 + 1; targetPosition <= sb.getLimit(); targetPosition++) {
+
+		for (long targetPosition = sb.getLimit() - 2 + 1; targetPosition <= sb.getLimit(); targetPosition++) {
 			sb.setPosition(targetPosition);
-			
+
 			try {
 				sb.getShort();
 				fail("no BufferUnderflowException");
@@ -2312,6 +2895,944 @@ public class StreamBufferTest {
 				log.log(Level.WARNING, "unknown error", e);
 				fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
 			}
+		}
+		
+		sb.close();
+	}
+
+	@Test
+	public void testGetUnsignedShort_버퍼에남은용량이부족한경우() {
+		StreamCharsetFamily streamCharsetFamily = new StreamCharsetFamily(Charset.defaultCharset());
+		WrapBufferPoolIF wrapBufferPool = new WrapBufferPool(false, ByteOrder.LITTLE_ENDIAN, 512, 1000);
+
+		StreamBuffer sb = new StreamBuffer(streamCharsetFamily, 10, wrapBufferPool);
+		try {
+			sb.setPosition(sb.getLimit() - 2);
+			sb.getUnsignedShort();
+		} catch (Exception e) {
+			Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
+			log.log(Level.WARNING, "unknown error", e);
+			fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
+		}
+
+		for (long targetPosition = sb.getLimit() - 2 + 1; targetPosition <= sb.getLimit(); targetPosition++) {
+			sb.setPosition(targetPosition);
+
+			try {
+				sb.getUnsignedShort();
+				fail("no BufferUnderflowException");
+			} catch (BufferUnderflowException e) {
+				StackTraceElement se = e.getStackTrace()[0];
+				/**
+				 * 참고) BufferOverflowException 는 (1) 읽기 혹은 쓰기를 할 만큼의 여유 공간 검사를 수행할때 (2)
+				 * ByteBuffer 조작할때 발생한다. 하여 예외를 던진 클래스가 테스트 대상 클래스라면 읽기 혹은 쓰기 할 만큼의 여유 공간 검사때 던진
+				 * 예외이고 그외의 경우면 ByteBuffer 조작했을때임을 알 수 있다.
+				 */
+				assertEquals(StreamBuffer.class.getName(), se.getClassName());
+			} catch (Exception e) {
+				Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
+				log.log(Level.WARNING, "unknown error", e);
+				fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
+			}
+		}
+		
+		sb.close();
+	}
+
+	@Test
+	public void testGetInt_버퍼에남은용량이부족한경우() {
+		StreamCharsetFamily streamCharsetFamily = new StreamCharsetFamily(Charset.defaultCharset());
+		WrapBufferPoolIF wrapBufferPool = new WrapBufferPool(false, ByteOrder.LITTLE_ENDIAN, 512, 1000);
+
+		StreamBuffer sb = new StreamBuffer(streamCharsetFamily, 10, wrapBufferPool);
+		try {
+			sb.setPosition(sb.getLimit() - 4);
+			sb.getInt();
+		} catch (Exception e) {
+			Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
+			log.log(Level.WARNING, "unknown error", e);
+			fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
+		}
+
+		for (long targetPosition = sb.getLimit() - 4 + 1; targetPosition <= sb.getLimit(); targetPosition++) {
+			sb.setPosition(targetPosition);
+
+			try {
+				sb.getInt();
+				fail("no BufferUnderflowException");
+			} catch (BufferUnderflowException e) {
+				StackTraceElement se = e.getStackTrace()[0];
+				/**
+				 * 참고) BufferOverflowException 는 (1) 읽기 혹은 쓰기를 할 만큼의 여유 공간 검사를 수행할때 (2)
+				 * ByteBuffer 조작할때 발생한다. 하여 예외를 던진 클래스가 테스트 대상 클래스라면 읽기 혹은 쓰기 할 만큼의 여유 공간 검사때 던진
+				 * 예외이고 그외의 경우면 ByteBuffer 조작했을때임을 알 수 있다.
+				 */
+				assertEquals(StreamBuffer.class.getName(), se.getClassName());
+			} catch (Exception e) {
+				Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
+				log.log(Level.WARNING, "unknown error", e);
+				fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
+			}
+		}
+		
+		sb.close();
+	}
+
+	@Test
+	public void testGetUnsignedInt_버퍼에남은용량이부족한경우() {
+		StreamCharsetFamily streamCharsetFamily = new StreamCharsetFamily(Charset.defaultCharset());
+		WrapBufferPoolIF wrapBufferPool = new WrapBufferPool(false, ByteOrder.LITTLE_ENDIAN, 512, 1000);
+
+		StreamBuffer sb = new StreamBuffer(streamCharsetFamily, 10, wrapBufferPool);
+		try {
+			sb.setPosition(sb.getLimit() - 4);
+			sb.getUnsignedInt();
+		} catch (Exception e) {
+			Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
+			log.log(Level.WARNING, "unknown error", e);
+			fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
+		}
+
+		for (long targetPosition = sb.getLimit() - 4 + 1; targetPosition <= sb.getLimit(); targetPosition++) {
+			sb.setPosition(targetPosition);
+
+			try {
+				sb.getUnsignedInt();
+				fail("no BufferUnderflowException");
+			} catch (BufferUnderflowException e) {
+				StackTraceElement se = e.getStackTrace()[0];
+				/**
+				 * 참고) BufferOverflowException 는 (1) 읽기 혹은 쓰기를 할 만큼의 여유 공간 검사를 수행할때 (2)
+				 * ByteBuffer 조작할때 발생한다. 하여 예외를 던진 클래스가 테스트 대상 클래스라면 읽기 혹은 쓰기 할 만큼의 여유 공간 검사때 던진
+				 * 예외이고 그외의 경우면 ByteBuffer 조작했을때임을 알 수 있다.
+				 */
+				assertEquals(StreamBuffer.class.getName(), se.getClassName());
+			} catch (Exception e) {
+				Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
+				log.log(Level.WARNING, "unknown error", e);
+				fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
+			}
+		}
+		
+		sb.close();
+	}
+
+	@Test
+	public void testGetLong_버퍼에남은용량이부족한경우() {
+		StreamCharsetFamily streamCharsetFamily = new StreamCharsetFamily(Charset.defaultCharset());
+		WrapBufferPoolIF wrapBufferPool = new WrapBufferPool(false, ByteOrder.LITTLE_ENDIAN, 512, 1000);
+
+		StreamBuffer sb = new StreamBuffer(streamCharsetFamily, 10, wrapBufferPool);
+		try {
+			sb.setPosition(sb.getLimit() - 8);
+			sb.getLong();
+		} catch (Exception e) {
+			Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
+			log.log(Level.WARNING, "unknown error", e);
+			fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
+		}
+
+		for (long targetPosition = sb.getLimit() - 8 + 1; targetPosition <= sb.getLimit(); targetPosition++) {
+			sb.setPosition(targetPosition);
+
+			try {
+				sb.getLong();
+				fail("no BufferUnderflowException");
+			} catch (BufferUnderflowException e) {
+				StackTraceElement se = e.getStackTrace()[0];
+				/**
+				 * 참고) BufferOverflowException 는 (1) 읽기 혹은 쓰기를 할 만큼의 여유 공간 검사를 수행할때 (2)
+				 * ByteBuffer 조작할때 발생한다. 하여 예외를 던진 클래스가 테스트 대상 클래스라면 읽기 혹은 쓰기 할 만큼의 여유 공간 검사때 던진
+				 * 예외이고 그외의 경우면 ByteBuffer 조작했을때임을 알 수 있다.
+				 */
+				assertEquals(StreamBuffer.class.getName(), se.getClassName());
+			} catch (Exception e) {
+				Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
+				log.log(Level.WARNING, "unknown error", e);
+				fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
+			}
+		}
+		
+		sb.close();
+	}
+
+	@Test
+	public void testGetBytes_theParameterLengthIsLessThanZero() {
+		StreamCharsetFamily streamCharsetFamily = new StreamCharsetFamily(Charset.defaultCharset());
+		WrapBufferPoolIF wrapBufferPool = new WrapBufferPool(false, ByteOrder.LITTLE_ENDIAN, 512, 1000);
+
+		StreamBuffer sb = new StreamBuffer(streamCharsetFamily, 10, wrapBufferPool);
+
+		int length = -1;
+
+		try {
+			sb.getBytes(0);
+		} catch (Exception e) {
+			Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
+			log.log(Level.WARNING, "unknown error", e);
+			fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
+		}
+
+		try {
+			sb.getBytes(length);
+
+			fail("no IllegalArgumentException");
+		} catch (IllegalArgumentException e) {
+			String acutalErrorMessage = e.getMessage();
+			String expectedErrorMessage = new StringBuilder().append("the parameter length[").append(length)
+					.append("] is less than zero").toString();
+
+			System.out.println(acutalErrorMessage);
+
+			assertEquals(expectedErrorMessage, acutalErrorMessage);
+		} catch (Exception e) {
+			Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
+			log.log(Level.WARNING, "unknown error", e);
+			fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
+		}
+		
+		sb.close();
+	}
+
+	@Test
+	public void testGetBytes_버퍼에남은용량이부족한경우() {
+		StreamCharsetFamily streamCharsetFamily = new StreamCharsetFamily(Charset.defaultCharset());
+		WrapBufferPoolIF wrapBufferPool = new WrapBufferPool(false, ByteOrder.LITTLE_ENDIAN, 512, 1000);
+
+		StreamBuffer sb = new StreamBuffer(streamCharsetFamily, 10, wrapBufferPool);
+
+		final int length = 10;
+
+		try {
+			sb.setPosition(sb.getLimit() - length);
+			byte[] result = sb.getBytes(length);
+
+			assertEquals(length, result.length);
+
+		} catch (Exception e) {
+			Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
+			log.log(Level.WARNING, "unknown error", e);
+			fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
+		}
+
+		for (long targetPosition = sb.getLimit() - length + 1; targetPosition <= sb.getLimit(); targetPosition++) {
+			sb.setPosition(targetPosition);
+
+			try {
+				sb.getBytes(length);
+
+				fail("no BufferUnderflowException");
+			} catch (BufferUnderflowException e) {
+				StackTraceElement se = e.getStackTrace()[0];
+				/**
+				 * 참고) BufferOverflowException 는 (1) 읽기 혹은 쓰기를 할 만큼의 여유 공간 검사를 수행할때 (2)
+				 * ByteBuffer 조작할때 발생한다. 하여 예외를 던진 클래스가 테스트 대상 클래스라면 읽기 혹은 쓰기 할 만큼의 여유 공간 검사때 던진
+				 * 예외이고 그외의 경우면 ByteBuffer 조작했을때임을 알 수 있다.
+				 */
+				assertEquals(StreamBuffer.class.getName(), se.getClassName());
+			} catch (Exception e) {
+				Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
+				log.log(Level.WARNING, "unknown error", e);
+				fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
+			}
+		}
+		
+		sb.close();
+	}
+
+	@Test
+	public void testGetFixedLengthString_theParameterFixedLengthIsLessThanZero() {
+		StreamCharsetFamily streamCharsetFamily = new StreamCharsetFamily(Charset.defaultCharset());
+		WrapBufferPoolIF wrapBufferPool = new WrapBufferPool(false, ByteOrder.LITTLE_ENDIAN, 512, 1000);
+
+		StreamBuffer sb = new StreamBuffer(streamCharsetFamily, 10, wrapBufferPool);
+
+		int fixedLength = -1;
+
+		try {
+			sb.getFixedLengthString(fixedLength, null);
+
+			fail("no IllegalArgumentException");
+		} catch (IllegalArgumentException e) {
+			String acutalErrorMessage = e.getMessage();
+			String expectedErrorMessage = new StringBuilder().append("the parameter fixedLength[").append(fixedLength)
+					.append("] is less than zero").toString();
+
+			System.out.println(acutalErrorMessage);
+
+			assertEquals(expectedErrorMessage, acutalErrorMessage);
+		} catch (Exception e) {
+			Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
+			log.log(Level.WARNING, "unknown error", e);
+			fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
+		}
+		
+		sb.close();
+	}
+
+	@Test
+	public void testGetFixedLengthString_theParameterWantedCharsetDecoderIsNull() {
+		StreamCharsetFamily streamCharsetFamily = new StreamCharsetFamily(Charset.defaultCharset());
+		WrapBufferPoolIF wrapBufferPool = new WrapBufferPool(false, ByteOrder.LITTLE_ENDIAN, 512, 1000);
+
+		StreamBuffer sb = new StreamBuffer(streamCharsetFamily, 10, wrapBufferPool);
+
+		int fixedLength = 1;
+
+		try {
+			sb.getFixedLengthString(fixedLength, null);
+
+			fail("no IllegalArgumentException");
+		} catch (IllegalArgumentException e) {
+			String acutalErrorMessage = e.getMessage();
+			String expectedErrorMessage = "the parameter wantedCharsetDecoder is null";
+
+			System.out.println(acutalErrorMessage);
+
+			assertEquals(expectedErrorMessage, acutalErrorMessage);
+		} catch (Exception e) {
+			Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
+			log.log(Level.WARNING, "unknown error", e);
+			fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
+		}
+		
+		sb.close();
+	}
+
+	@Test
+	public void testGetFixedLengthString_버퍼에남은용량이부족한경우() {
+		StreamCharsetFamily streamCharsetFamily = new StreamCharsetFamily(Charset.defaultCharset());
+
+		WrapBufferPoolIF wrapBufferPool = new WrapBufferPool(false, ByteOrder.LITTLE_ENDIAN, 512, 1000);
+
+		StreamBuffer sb = new StreamBuffer(streamCharsetFamily, 10, wrapBufferPool);
+
+		Charset wantedCharset = Charset.forName("EUC-KR");
+
+		final int fixedLength = 10;
+
+		try {
+			sb.setPosition(sb.getLimit() - fixedLength);
+			sb.getFixedLengthString(fixedLength, wantedCharset.newDecoder());
+		} catch (Exception e) {
+			Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
+			log.log(Level.WARNING, "unknown error", e);
+			fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
+		}
+
+		for (long targetPosition = sb.getLimit() - fixedLength + 1; targetPosition <= sb.getLimit(); targetPosition++) {
+			sb.setPosition(targetPosition);
+
+			try {
+				sb.getFixedLengthString(fixedLength, wantedCharset.newDecoder());
+
+				fail("no BufferUnderflowException");
+			} catch (BufferUnderflowException e) {
+				StackTraceElement se = e.getStackTrace()[0];
+				/**
+				 * 참고) BufferOverflowException 는 (1) 읽기 혹은 쓰기를 할 만큼의 여유 공간 검사를 수행할때 (2)
+				 * ByteBuffer 조작할때 발생한다. 하여 예외를 던진 클래스가 테스트 대상 클래스라면 읽기 혹은 쓰기 할 만큼의 여유 공간 검사때 던진
+				 * 예외이고 그외의 경우면 ByteBuffer 조작했을때임을 알 수 있다.
+				 */
+				assertEquals(StreamBuffer.class.getName(), se.getClassName());
+			} catch (Exception e) {
+				Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
+				log.log(Level.WARNING, "unknown error", e);
+				fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
+			}
+		}
+		
+		sb.close();
+	}
+
+	@Test
+	public void testGetAllString_theParameterWantedCharsetIsNull() {
+		StreamCharsetFamily streamCharsetFamily = new StreamCharsetFamily(Charset.defaultCharset());
+		WrapBufferPoolIF wrapBufferPool = new WrapBufferPool(false, ByteOrder.LITTLE_ENDIAN, 512, 1000);
+
+		StreamBuffer sb = new StreamBuffer(streamCharsetFamily, 10, wrapBufferPool);
+
+		try {
+			sb.getAllString(null);
+
+			fail("no IllegalArgumentException");
+		} catch (IllegalArgumentException e) {
+			String acutalErrorMessage = e.getMessage();
+			String expectedErrorMessage = "the parameter wantedCharset is null";
+
+			System.out.println(acutalErrorMessage);
+
+			assertEquals(expectedErrorMessage, acutalErrorMessage);
+		} catch (Exception e) {
+			Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
+			log.log(Level.WARNING, "unknown error", e);
+			fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
+		}
+		
+		sb.close();
+	}
+	
+	@Ignore
+	public void testGetAllString_버퍼용량이Integer보다큰경우예외던지는지확인() {
+		StreamCharsetFamily streamCharsetFamily = new StreamCharsetFamily(Charset.defaultCharset());
+		WrapBufferPoolIF wrapBufferPool = new WrapBufferPool(false, ByteOrder.LITTLE_ENDIAN, 4096, 524300);
+
+		StreamBuffer sb = new StreamBuffer(streamCharsetFamily, 524288, wrapBufferPool);
+
+		try {
+			sb.getAllString();
+
+			fail("no IllegalStateException");
+		} catch (IllegalStateException e) {
+			String acutalErrorMessage = e.getMessage();
+			// String expectedErrorMessage = "the parameter wantedCharset is null";
+
+			System.out.println(acutalErrorMessage);
+
+			// assertEquals(expectedErrorMessage, acutalErrorMessage);
+		} catch (Exception e) {
+			Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
+			log.log(Level.WARNING, "unknown error", e);
+			fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
+		}
+		
+		sb.close();
+	}
+	
+	
+	@Test
+	public void testGetPascalString_theParameterWantedCharsetIsNull() {
+		StreamCharsetFamily streamCharsetFamily = new StreamCharsetFamily(Charset.defaultCharset());
+		WrapBufferPoolIF wrapBufferPool = new WrapBufferPool(false, ByteOrder.LITTLE_ENDIAN, 512, 1000);
+
+		StreamBuffer sb = new StreamBuffer(streamCharsetFamily, 10, wrapBufferPool);
+
+		try {
+			sb.getPascalString(null);
+
+			fail("no IllegalArgumentException");
+		} catch (IllegalArgumentException e) {
+			String acutalErrorMessage = e.getMessage();
+			String expectedErrorMessage = "the parameter wantedCharset is null";
+
+			System.out.println(acutalErrorMessage);
+
+			assertEquals(expectedErrorMessage, acutalErrorMessage);
+		} catch (Exception e) {
+			Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
+			log.log(Level.WARNING, "unknown error", e);
+			fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
+		}
+		
+		sb.close();
+	}
+	
+	@Test
+	public void testGetPascalString_버퍼에남은용량이부족한경우() {
+		StreamCharsetFamily streamCharsetFamily = new StreamCharsetFamily(Charset.defaultCharset());
+		WrapBufferPoolIF wrapBufferPool = new WrapBufferPool(false, ByteOrder.LITTLE_ENDIAN, 512, 1000);
+
+		StreamBuffer sb = new StreamBuffer(streamCharsetFamily, 10, wrapBufferPool);
+		
+		String expectedValue = "a";
+		Charset wantedCharset = Charset.forName("UTF-8");
+		
+		int length = 1 + expectedValue.getBytes(wantedCharset).length; 
+		long newPosition = sb.getLimit() - length;
+		
+		try {
+			sb.setPosition(newPosition);
+			sb.putPascalString(expectedValue, wantedCharset);
+			
+			sb.setPosition(newPosition);			
+			String actualValue = sb.getPascalString(wantedCharset);
+			
+			assertEquals(expectedValue, actualValue);
+		} catch (Exception e) {
+			Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
+			log.log(Level.WARNING, "unknown error", e);
+			fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
+		}
+
+		for (long newLimit = sb.getCapacity() - 1; newLimit >= newPosition; newLimit--) {
+			sb.setPosition(newPosition);
+			sb.setLimit(newLimit);
+
+			try {
+				sb.getPascalString(wantedCharset);
+
+				fail("no BufferUnderflowException");
+			} catch (BufferUnderflowException e) {
+				StackTraceElement se = e.getStackTrace()[0];
+				/**
+				 * 참고) BufferOverflowException 는 (1) 읽기 혹은 쓰기를 할 만큼의 여유 공간 검사를 수행할때 (2)
+				 * ByteBuffer 조작할때 발생한다. 하여 예외를 던진 클래스가 테스트 대상 클래스라면 읽기 혹은 쓰기 할 만큼의 여유 공간 검사때 던진
+				 * 예외이고 그외의 경우면 ByteBuffer 조작했을때임을 알 수 있다.
+				 */
+				assertEquals(StreamBuffer.class.getName(), se.getClassName());
+			} catch (Exception e) {
+				Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
+				log.log(Level.WARNING, "unknown error", e);
+				fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
+			}
+		}
+		
+		sb.close();
+	}
+	
+	@Test
+	public void testGetUBPascalString_theParameterWantedCharsetIsNull() {
+		StreamCharsetFamily streamCharsetFamily = new StreamCharsetFamily(Charset.defaultCharset());
+		WrapBufferPoolIF wrapBufferPool = new WrapBufferPool(false, ByteOrder.LITTLE_ENDIAN, 512, 1000);
+
+		StreamBuffer sb = new StreamBuffer(streamCharsetFamily, 10, wrapBufferPool);
+
+		try {
+			sb.getUBPascalString(null);
+
+			fail("no IllegalArgumentException");
+		} catch (IllegalArgumentException e) {
+			String acutalErrorMessage = e.getMessage();
+			String expectedErrorMessage = "the parameter wantedCharset is null";
+
+			System.out.println(acutalErrorMessage);
+
+			assertEquals(expectedErrorMessage, acutalErrorMessage);
+		} catch (Exception e) {
+			Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
+			log.log(Level.WARNING, "unknown error", e);
+			fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
+		}
+		
+		sb.close();
+	}
+	
+	@Test
+	public void testGetUBPascalString_버퍼에남은용량이부족한경우() {
+		StreamCharsetFamily streamCharsetFamily = new StreamCharsetFamily(Charset.defaultCharset());
+		WrapBufferPoolIF wrapBufferPool = new WrapBufferPool(false, ByteOrder.LITTLE_ENDIAN, 512, 1000);
+
+		StreamBuffer sb = new StreamBuffer(streamCharsetFamily, 10, wrapBufferPool);
+		
+		String expectedValue = "ab";
+		Charset wantedCharset = Charset.forName("UTF-8");
+		
+		int length = 1 + expectedValue.getBytes(wantedCharset).length; 
+		long newPosition = sb.getLimit() - length;
+		
+		try {
+			sb.setPosition(newPosition);
+			sb.putUBPascalString(expectedValue, wantedCharset);
+			
+			sb.setPosition(newPosition);			
+			String actualValue = sb.getUBPascalString(wantedCharset);
+			
+			assertEquals(expectedValue, actualValue);
+		} catch (Exception e) {
+			Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
+			log.log(Level.WARNING, "unknown error", e);
+			fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
+		}
+
+		for (long newLimit = sb.getCapacity() - 1; newLimit >= newPosition; newLimit--) {
+			sb.setPosition(newPosition);
+			sb.setLimit(newLimit);
+
+			try {
+				sb.getUBPascalString(wantedCharset);
+
+				fail("no BufferUnderflowException");
+			} catch (BufferUnderflowException e) {
+				StackTraceElement se = e.getStackTrace()[0];
+				/**
+				 * 참고) BufferOverflowException 는 (1) 읽기 혹은 쓰기를 할 만큼의 여유 공간 검사를 수행할때 (2)
+				 * ByteBuffer 조작할때 발생한다. 하여 예외를 던진 클래스가 테스트 대상 클래스라면 읽기 혹은 쓰기 할 만큼의 여유 공간 검사때 던진
+				 * 예외이고 그외의 경우면 ByteBuffer 조작했을때임을 알 수 있다.
+				 */
+				assertEquals(StreamBuffer.class.getName(), se.getClassName());
+			} catch (Exception e) {
+				Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
+				log.log(Level.WARNING, "unknown error", e);
+				fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
+			}
+		}
+		
+		sb.close();
+	}
+	
+	@Test
+	public void testGetUSPascalString_theParameterWantedCharsetIsNull() {
+		StreamCharsetFamily streamCharsetFamily = new StreamCharsetFamily(Charset.defaultCharset());
+		WrapBufferPoolIF wrapBufferPool = new WrapBufferPool(false, ByteOrder.LITTLE_ENDIAN, 512, 1000);
+
+		StreamBuffer sb = new StreamBuffer(streamCharsetFamily, 10, wrapBufferPool);
+
+		try {
+			sb.getUSPascalString(null);
+
+			fail("no IllegalArgumentException");
+		} catch (IllegalArgumentException e) {
+			String acutalErrorMessage = e.getMessage();
+			String expectedErrorMessage = "the parameter wantedCharset is null";
+
+			System.out.println(acutalErrorMessage);
+
+			assertEquals(expectedErrorMessage, acutalErrorMessage);
+		} catch (Exception e) {
+			Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
+			log.log(Level.WARNING, "unknown error", e);
+			fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
+		}
+		
+		sb.close();
+	}
+	
+	@Test
+	public void testGetUSPascalString_버퍼에남은용량이부족한경우() {
+		StreamCharsetFamily streamCharsetFamily = new StreamCharsetFamily(Charset.defaultCharset());
+		WrapBufferPoolIF wrapBufferPool = new WrapBufferPool(false, ByteOrder.LITTLE_ENDIAN, 512, 1000);
+
+		StreamBuffer sb = new StreamBuffer(streamCharsetFamily, 10, wrapBufferPool);
+		
+		String expectedValue = "ab";
+		Charset wantedCharset = Charset.forName("UTF-8");
+		
+		int length = 2 + expectedValue.getBytes(wantedCharset).length; 
+		long newPosition = sb.getLimit() - length;
+		
+		try {
+			sb.setPosition(newPosition);
+			sb.putUSPascalString(expectedValue, wantedCharset);
+			
+			sb.setPosition(newPosition);			
+			String actualValue = sb.getUSPascalString(wantedCharset);
+			
+			assertEquals(expectedValue, actualValue);
+		} catch (Exception e) {
+			Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
+			log.log(Level.WARNING, "unknown error", e);
+			fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
+		}
+
+		for (long newLimit = sb.getCapacity() - 1; newLimit >= newPosition; newLimit--) {
+			sb.setPosition(newPosition);
+			sb.setLimit(newLimit);
+
+			try {
+				sb.getUSPascalString(wantedCharset);
+
+				fail("no BufferUnderflowException");
+			} catch (BufferUnderflowException e) {
+				StackTraceElement se = e.getStackTrace()[0];
+				/**
+				 * 참고) BufferOverflowException 는 (1) 읽기 혹은 쓰기를 할 만큼의 여유 공간 검사를 수행할때 (2)
+				 * ByteBuffer 조작할때 발생한다. 하여 예외를 던진 클래스가 테스트 대상 클래스라면 읽기 혹은 쓰기 할 만큼의 여유 공간 검사때 던진
+				 * 예외이고 그외의 경우면 ByteBuffer 조작했을때임을 알 수 있다.
+				 */
+				assertEquals(StreamBuffer.class.getName(), se.getClassName());
+			} catch (Exception e) {
+				Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
+				log.log(Level.WARNING, "unknown error", e);
+				fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
+			}
+		}
+		
+		sb.close();
+	}
+	
+	@Test
+	public void testGetSIPascalString_theParameterWantedCharsetIsNull() {
+		StreamCharsetFamily streamCharsetFamily = new StreamCharsetFamily(Charset.defaultCharset());
+		WrapBufferPoolIF wrapBufferPool = new WrapBufferPool(false, ByteOrder.LITTLE_ENDIAN, 512, 1000);
+
+		StreamBuffer sb = new StreamBuffer(streamCharsetFamily, 10, wrapBufferPool);
+
+		try {
+			sb.getSIPascalString(null);
+
+			fail("no IllegalArgumentException");
+		} catch (IllegalArgumentException e) {
+			String acutalErrorMessage = e.getMessage();
+			String expectedErrorMessage = "the parameter wantedCharset is null";
+
+			System.out.println(acutalErrorMessage);
+
+			assertEquals(expectedErrorMessage, acutalErrorMessage);
+		} catch (Exception e) {
+			Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
+			log.log(Level.WARNING, "unknown error", e);
+			fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
+		}
+		
+		sb.close();
+		
+	}
+	
+	@Test
+	public void testGetSIPascalString_버퍼에남은용량이부족한경우() {
+		StreamCharsetFamily streamCharsetFamily = new StreamCharsetFamily(Charset.defaultCharset());
+		WrapBufferPoolIF wrapBufferPool = new WrapBufferPool(false, ByteOrder.LITTLE_ENDIAN, 512, 1000);
+
+		StreamBuffer sb = new StreamBuffer(streamCharsetFamily, 10, wrapBufferPool);
+		
+		String expectedValue = "ab";
+		Charset wantedCharset = Charset.forName("UTF-8");
+		
+		int length = 4 + expectedValue.getBytes(wantedCharset).length; 
+		long newPosition = sb.getLimit() - length;
+		
+		try {
+			sb.setPosition(newPosition);
+			sb.putSIPascalString(expectedValue, wantedCharset);
+			
+			sb.setPosition(newPosition);			
+			String actualValue = sb.getSIPascalString(wantedCharset);
+			
+			assertEquals(expectedValue, actualValue);
+		} catch (Exception e) {
+			Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
+			log.log(Level.WARNING, "unknown error", e);
+			fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
+		}
+
+		for (long newLimit = sb.getCapacity() - 1; newLimit >= newPosition; newLimit--) {
+			sb.setPosition(newPosition);
+			sb.setLimit(newLimit);
+
+			try {
+				sb.getSIPascalString(wantedCharset);
+
+				fail("no BufferUnderflowException");
+			} catch (BufferUnderflowException e) {
+				StackTraceElement se = e.getStackTrace()[0];
+				/**
+				 * 참고) BufferOverflowException 는 (1) 읽기 혹은 쓰기를 할 만큼의 여유 공간 검사를 수행할때 (2)
+				 * ByteBuffer 조작할때 발생한다. 하여 예외를 던진 클래스가 테스트 대상 클래스라면 읽기 혹은 쓰기 할 만큼의 여유 공간 검사때 던진
+				 * 예외이고 그외의 경우면 ByteBuffer 조작했을때임을 알 수 있다.
+				 */
+				assertEquals(StreamBuffer.class.getName(), se.getClassName());
+			} catch (Exception e) {
+				Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
+				log.log(Level.WARNING, "unknown error", e);
+				fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
+			}
+		}
+		
+		sb.close();
+	}
+	
+	@Test
+	public void testSkip_theParameterNIsLessThanOrEqualToZero() {
+		StreamCharsetFamily streamCharsetFamily = new StreamCharsetFamily(Charset.defaultCharset());
+		WrapBufferPoolIF wrapBufferPool = new WrapBufferPool(false, ByteOrder.LITTLE_ENDIAN, 512, 10);
+
+		StreamBuffer sb = new StreamBuffer(streamCharsetFamily, 2, wrapBufferPool);
+		
+		try {
+			
+			try {
+				sb.skip(0);
+
+				fail("no IllegalArgumentException");
+			} catch (IllegalArgumentException e) {
+				String expecedErrorMessage = new StringBuilder().append("the parameter n[").append(0)
+						.append("] is less than or equal to zero").toString();
+				String actualErrorMessage = e.getMessage();
+				assertEquals(expecedErrorMessage, actualErrorMessage);
+			} catch (Exception e) {
+				Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
+				log.log(Level.WARNING, "unknown error", e);
+				fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
+			}
+			
+			try {
+				sb.skip(-1);
+
+				fail("no IllegalArgumentException");
+			} catch (IllegalArgumentException e) {
+				String expecedErrorMessage = new StringBuilder().append("the parameter n[").append(-1)
+						.append("] is less than or equal to zero").toString();
+				String actualErrorMessage = e.getMessage();
+				assertEquals(expecedErrorMessage, actualErrorMessage);
+			} catch (Exception e) {
+				Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
+				log.log(Level.WARNING, "unknown error", e);
+				fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
+			}
+		} finally {
+			sb.close();
+		}		
+	}
+	
+	@Test
+	public void testSkip_버퍼에남은용량이부족한경우() {
+		StreamCharsetFamily streamCharsetFamily = new StreamCharsetFamily(Charset.defaultCharset());
+		WrapBufferPoolIF wrapBufferPool = new WrapBufferPool(false, ByteOrder.LITTLE_ENDIAN, 512, 10);
+
+		StreamBuffer sb = new StreamBuffer(streamCharsetFamily, 2, wrapBufferPool);
+		
+		try {
+			
+			try {
+				sb.skip(sb.getLimit());
+				
+				sb.setPosition(0);
+			} catch (Exception e) {
+				Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
+				log.log(Level.WARNING, "unknown error", e);
+				fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
+			}
+			
+			try {
+				sb.skip(sb.getLimit() + 1);
+
+				fail("no IllegalArgumentException");
+			} catch (IllegalArgumentException e) {
+				String expecedErrorMessage = new StringBuilder().append("the parameter n[").append(sb.getLimit()+1)
+						.append("] is greater than remaing bytes[")
+						.append(sb.getLimit())
+						.append("]").toString();
+				String actualErrorMessage = e.getMessage();
+				assertEquals(expecedErrorMessage, actualErrorMessage);
+				
+				System.out.println(actualErrorMessage);
+			} catch (Exception e) {
+				Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
+				log.log(Level.WARNING, "unknown error", e);
+				fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
+			}
+		} finally {
+			sb.close();
+		}		
+	}
+	
+	@Test
+	public void testGetMD5WithoutChange_버퍼3개중2개에꽉찬() {
+		StreamCharsetFamily streamCharsetFamily = new StreamCharsetFamily(Charset.forName("UTF-8"));
+		// Charset wantedCharset = Charset.forName("UTF-8");
+		
+		byte[] sourceBytes = new byte[512*2];
+		Random random = new Random();
+		random.nextBytes(sourceBytes);
+		
+		java.security.MessageDigest md5 = null;
+		try {
+			md5 = MessageDigest.getInstance("MD5");
+		} catch (NoSuchAlgorithmException e) {
+			e.printStackTrace();
+			System.exit(1);
+		}
+		
+		md5.reset();
+		md5.update(sourceBytes);
+		
+		byte[] expectedValues = md5.digest();
+		
+		WrapBufferPoolIF wrapBufferPool = new WrapBufferPool(false, ByteOrder.LITTLE_ENDIAN, 512, 10);
+
+		StreamBuffer sb = new StreamBuffer(streamCharsetFamily, 3, wrapBufferPool);
+		
+		try {
+			
+			try {				
+				long newPosition = sb.getPosition();
+				sb.putBytes(sourceBytes);
+				sb.putByte((byte)19);
+				
+				sb.setPosition(newPosition);
+				byte[] actualValues = sb.getMD5WithoutChange(sourceBytes.length);
+				
+				assertArrayEquals(expectedValues, actualValues);
+				
+				sb.checkValid();
+				
+			} catch (Exception e) {
+				Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
+				log.log(Level.WARNING, "unknown error", e);
+				fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
+			}			
+		} finally {
+			sb.close();
+		}	
+	}
+	
+	@Test
+	public void testGetMD5WithoutChange_버퍼3개중앞뒤로중간에걸친() {
+		StreamCharsetFamily streamCharsetFamily = new StreamCharsetFamily(Charset.forName("UTF-8"));
+		
+		byte[] sourceBytes = new byte[1200];
+		Random random = new Random();
+		random.nextBytes(sourceBytes);
+		
+		java.security.MessageDigest md5 = null;
+		try {
+			md5 = MessageDigest.getInstance("MD5");
+		} catch (NoSuchAlgorithmException e) {
+			e.printStackTrace();
+			System.exit(1);
+		}
+		
+		md5.update(sourceBytes);
+		
+		byte[] expectedValues = md5.digest();
+		
+		WrapBufferPoolIF wrapBufferPool = new WrapBufferPool(false, ByteOrder.LITTLE_ENDIAN, 512, 10);
+
+		StreamBuffer sb = new StreamBuffer(streamCharsetFamily, 3, wrapBufferPool);
+		
+		try {
+			try {
+				sb.skip(9);
+				sb.putByte((byte)17);
+				
+				long newPosition = sb.getPosition();
+				sb.putBytes(sourceBytes);
+				sb.putByte((byte)19);
+				
+				sb.setPosition(newPosition);
+				byte[] actualValues = sb.getMD5WithoutChange(sourceBytes.length);
+				
+				assertArrayEquals(expectedValues, actualValues);
+				
+				sb.checkValid();
+				
+			} catch (Exception e) {
+				Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
+				log.log(Level.WARNING, "unknown error", e);
+				fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
+			}			
+		} finally {
+			sb.close();
+		}	
+	}
+	
+	@Test
+	public void test() {
+		java.security.MessageDigest md5 = null;
+		try {
+			md5 = MessageDigest.getInstance("MD5");
+		} catch (NoSuchAlgorithmException e) {
+			e.printStackTrace();
+			System.exit(1);
+		}
+			
+		
+		byte[] retBytes = md5.digest();
+		
+		if (null == retBytes) {
+			System.out.println("1.retBytes is null");
+		} else {
+			System.out.printf("1.%s", HexUtil.getHexStringFromByteArray(retBytes));
+			System.out.println();
+		}
+		
+		retBytes = md5.digest();
+		
+		if (null == retBytes) {
+			System.out.println("2.retBytes is null");
+		} else {
+			System.out.printf("2.%s", HexUtil.getHexStringFromByteArray(retBytes));
+			System.out.println();
 		}
 		
 	}

@@ -8,7 +8,7 @@ import java.util.logging.Logger;
 
 import kr.pe.codda.common.etc.CommonStaticFinalVars;
 import kr.pe.codda.common.exception.BodyFormatException;
-import kr.pe.codda.common.io.BinaryInputStreamIF;
+import kr.pe.codda.common.io.StreamBuffer;
 import kr.pe.codda.common.type.SelfExn;
 import kr.pe.codda.common.type.SingleItemType;
 
@@ -82,7 +82,7 @@ public class THBSingleItemDecoderMatcher implements THBSingleItemDecoderMatcherI
 	private final class THBSelfExnErrorPlaceSingleItemDecoder extends AbstractTHBSingleItemDecoder {
 		@Override
 		public Object getValue(int itemTypeID, String itemName, int itemSize,
-				String nativeItemCharset, BinaryInputStreamIF binaryInputStream)
+				String nativeItemCharset, StreamBuffer binaryInputStream)
 				throws Exception  {
 			
 			throwExceptionIfItemTypeIsDifferent(itemTypeID, itemName, binaryInputStream);
@@ -99,7 +99,7 @@ public class THBSingleItemDecoderMatcher implements THBSingleItemDecoderMatcherI
 	private final class THBSelfExnErrorTypeSingleItemDecoder extends AbstractTHBSingleItemDecoder {
 		@Override
 		public Object getValue(int itemTypeID, String itemName, int itemSize,
-				String nativeItemCharset, BinaryInputStreamIF binaryInputStream)
+				String nativeItemCharset, StreamBuffer binaryInputStream)
 				throws Exception  {
 			
 			throwExceptionIfItemTypeIsDifferent(itemTypeID, itemName, binaryInputStream);
@@ -117,7 +117,7 @@ public class THBSingleItemDecoderMatcher implements THBSingleItemDecoderMatcherI
 	private final class THBByteSingleItemDecoder extends AbstractTHBSingleItemDecoder {
 		@Override
 		public Object getValue(int itemTypeID, String itemName, int itemSize,
-				String nativeItemCharset, BinaryInputStreamIF binaryInputStream)
+				String nativeItemCharset, StreamBuffer binaryInputStream)
 				throws Exception  {
 			
 			throwExceptionIfItemTypeIsDifferent(itemTypeID, itemName, binaryInputStream);
@@ -136,7 +136,7 @@ public class THBSingleItemDecoderMatcher implements THBSingleItemDecoderMatcherI
 
 		@Override
 		public Object getValue(int itemTypeID, String itemName, int itemSize,
-				String nativeItemCharset, BinaryInputStreamIF binaryInputStream)
+				String nativeItemCharset, StreamBuffer binaryInputStream)
 				throws Exception  {
 			throwExceptionIfItemTypeIsDifferent(itemTypeID, itemName, binaryInputStream);
 			
@@ -152,7 +152,7 @@ public class THBSingleItemDecoderMatcher implements THBSingleItemDecoderMatcherI
 	private final class THBShortSingleItemDecoder extends AbstractTHBSingleItemDecoder {
 		@Override
 		public Object getValue(int itemTypeID, String itemName, int itemSize,
-				String nativeItemCharset, BinaryInputStreamIF binaryInputStream)
+				String nativeItemCharset, StreamBuffer binaryInputStream)
 				throws Exception  {
 			throwExceptionIfItemTypeIsDifferent(itemTypeID, itemName, binaryInputStream);
 			
@@ -169,7 +169,7 @@ public class THBSingleItemDecoderMatcher implements THBSingleItemDecoderMatcherI
 		
 		@Override
 		public Object getValue(int itemTypeID, String itemName, int itemSize,
-				String nativeItemCharset, BinaryInputStreamIF binaryInputStream)
+				String nativeItemCharset, StreamBuffer binaryInputStream)
 				throws Exception  {
 			
 			throwExceptionIfItemTypeIsDifferent(itemTypeID, itemName, binaryInputStream);
@@ -187,7 +187,7 @@ public class THBSingleItemDecoderMatcher implements THBSingleItemDecoderMatcherI
 		
 		@Override
 		public Object getValue(int itemTypeID, String itemName, int itemSize,
-				String nativeItemCharset, BinaryInputStreamIF binaryInputStream)
+				String nativeItemCharset, StreamBuffer binaryInputStream)
 				throws Exception  {
 			throwExceptionIfItemTypeIsDifferent(itemTypeID, itemName, binaryInputStream);
 			
@@ -204,7 +204,7 @@ public class THBSingleItemDecoderMatcher implements THBSingleItemDecoderMatcherI
 		
 		@Override
 		public Object getValue(int itemTypeID, String itemName, int itemSize,
-				String nativeItemCharset, BinaryInputStreamIF binaryInputStream)
+				String nativeItemCharset, StreamBuffer binaryInputStream)
 				throws Exception  {
 			throwExceptionIfItemTypeIsDifferent(itemTypeID, itemName, binaryInputStream);
 			return binaryInputStream.getUnsignedInt();
@@ -219,7 +219,7 @@ public class THBSingleItemDecoderMatcher implements THBSingleItemDecoderMatcherI
 	private final class THBLongSingleItemDecoder extends AbstractTHBSingleItemDecoder {		
 		@Override
 		public Object getValue(int itemTypeID, String itemName, int itemSize,
-				String nativeItemCharset, BinaryInputStreamIF binaryInputStream)
+				String nativeItemCharset, StreamBuffer binaryInputStream)
 				throws Exception {
 			throwExceptionIfItemTypeIsDifferent(itemTypeID, itemName, binaryInputStream);
 			return binaryInputStream.getLong();
@@ -234,7 +234,7 @@ public class THBSingleItemDecoderMatcher implements THBSingleItemDecoderMatcherI
 	private final class THBUBPascalStringSingleItemDecoder extends AbstractTHBSingleItemDecoder {		
 		@Override
 		public Object getValue(int itemTypeID, String itemName, int itemSize,
-				String nativeItemCharset, BinaryInputStreamIF binaryInputStream)
+				String nativeItemCharset, StreamBuffer binaryInputStream)
 				throws Exception {			
 			Charset itemCharset = streamCharsetDecoder.charset();
 			
@@ -263,7 +263,7 @@ public class THBSingleItemDecoderMatcher implements THBSingleItemDecoderMatcherI
 	private final class THBUSPascalStringSingleItemDecoder extends AbstractTHBSingleItemDecoder {
 		@Override
 		public Object getValue(int itemTypeID, String itemName, int itemSize,
-				String nativeItemCharset, BinaryInputStreamIF binaryInputStream)
+				String nativeItemCharset, StreamBuffer binaryInputStream)
 				throws Exception {
 			Charset itemCharset = streamCharsetDecoder.charset();
 			
@@ -291,7 +291,7 @@ public class THBSingleItemDecoderMatcher implements THBSingleItemDecoderMatcherI
 	private final class THBSIPascalStringSingleItemDecoder extends AbstractTHBSingleItemDecoder {
 		@Override
 		public Object getValue(int itemTypeID, String itemName, int itemSize,
-				String nativeItemCharset, BinaryInputStreamIF binaryInputStream)
+				String nativeItemCharset, StreamBuffer binaryInputStream)
 				throws Exception {
 			Charset itemCharset = streamCharsetDecoder.charset();
 			
@@ -319,7 +319,7 @@ public class THBSingleItemDecoderMatcher implements THBSingleItemDecoderMatcherI
 	private final class THBFixedLengthStringSingleItemDecoder extends AbstractTHBSingleItemDecoder {
 		@Override
 		public Object getValue(int itemTypeID, String itemName, int itemSize,
-				String nativeItemCharset, BinaryInputStreamIF binaryInputStream)
+				String nativeItemCharset, StreamBuffer binaryInputStream)
 				throws Exception {
 			if (itemSize < 0) {
 				String errorMesage = new StringBuilder("the parameter itemSize[")
@@ -359,7 +359,7 @@ public class THBSingleItemDecoderMatcher implements THBSingleItemDecoderMatcherI
 	private final class THBUBVariableLengthBytesSingleItemDecoder extends AbstractTHBSingleItemDecoder {
 		@Override
 		public Object getValue(int itemTypeID, String itemName, int itemSize,
-				String nativeItemCharset, BinaryInputStreamIF binaryInputStream)
+				String nativeItemCharset, StreamBuffer binaryInputStream)
 				throws Exception {
 			throwExceptionIfItemTypeIsDifferent(itemTypeID, itemName, binaryInputStream);
 			
@@ -376,7 +376,7 @@ public class THBSingleItemDecoderMatcher implements THBSingleItemDecoderMatcherI
 	private final class THBUSVariableLengthBytesSingleItemDecoder extends AbstractTHBSingleItemDecoder {
 		@Override
 		public Object getValue(int itemTypeID, String itemName, int itemSize,
-				String nativeItemCharset, BinaryInputStreamIF binaryInputStream)
+				String nativeItemCharset, StreamBuffer binaryInputStream)
 				throws Exception {
 			throwExceptionIfItemTypeIsDifferent(itemTypeID, itemName, binaryInputStream);
 			
@@ -393,7 +393,7 @@ public class THBSingleItemDecoderMatcher implements THBSingleItemDecoderMatcherI
 	private final class THBSIVariableLengthBytesSingleItemDecoder extends AbstractTHBSingleItemDecoder {
 		@Override
 		public Object getValue(int itemTypeID, String itemName, int itemSize,
-				String nativeItemCharset, BinaryInputStreamIF binaryInputStream)
+				String nativeItemCharset, StreamBuffer binaryInputStream)
 				throws Exception {
 			throwExceptionIfItemTypeIsDifferent(itemTypeID, itemName, binaryInputStream);
 			int len = binaryInputStream.getInt();
@@ -409,7 +409,7 @@ public class THBSingleItemDecoderMatcher implements THBSingleItemDecoderMatcherI
 	private final class THBFixedLengthBytesSingleItemDecoder extends AbstractTHBSingleItemDecoder {
 		@Override
 		public Object getValue(int itemTypeID, String itemName, int itemSize,
-				String nativeItemCharset, BinaryInputStreamIF binaryInputStream)
+				String nativeItemCharset, StreamBuffer binaryInputStream)
 				throws Exception {
 			if (itemSize < 0) {
 				String errorMesage = new StringBuilder("the parameter itemSize[")
@@ -431,7 +431,7 @@ public class THBSingleItemDecoderMatcher implements THBSingleItemDecoderMatcherI
 	private final class THBJavaSqlDateSingleItemDecoder extends AbstractTHBSingleItemDecoder {
 		@Override
 		public Object getValue(int itemTypeID, String itemName, int itemSize,
-				String nativeItemCharset, BinaryInputStreamIF binaryInputStream) throws Exception {
+				String nativeItemCharset, StreamBuffer binaryInputStream) throws Exception {
 			throwExceptionIfItemTypeIsDifferent(itemTypeID, itemName, binaryInputStream);
 			
 			long javaSqlDateLongValue = binaryInputStream.getLong();			
@@ -447,7 +447,7 @@ public class THBSingleItemDecoderMatcher implements THBSingleItemDecoderMatcherI
 	private final class THBJavaSqlTimestampSingleItemDecoder extends AbstractTHBSingleItemDecoder {
 		@Override
 		public Object getValue(int itemTypeID, String itemName, int itemSize,
-				String nativeItemCharset, BinaryInputStreamIF binaryInputStream) throws Exception {
+				String nativeItemCharset, StreamBuffer binaryInputStream) throws Exception {
 			throwExceptionIfItemTypeIsDifferent(itemTypeID, itemName, binaryInputStream);
 			
 			long javaSqlDateLongValue = binaryInputStream.getLong();			
@@ -463,7 +463,7 @@ public class THBSingleItemDecoderMatcher implements THBSingleItemDecoderMatcherI
 	private final class THBBooleanSingleItemDecoder extends AbstractTHBSingleItemDecoder {
 		@Override
 		public Object getValue(int itemTypeID, String itemName, int itemSize,
-				String nativeItemCharset, BinaryInputStreamIF binaryInputStream) throws Exception {
+				String nativeItemCharset, StreamBuffer binaryInputStream) throws Exception {
 			throwExceptionIfItemTypeIsDifferent(itemTypeID, itemName, binaryInputStream);
 			
 			byte booleanByte = binaryInputStream.getByte();

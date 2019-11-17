@@ -19,6 +19,11 @@ package kr.pe.codda.common.etc;
 
 import java.nio.charset.Charset;
 
+import kr.pe.codda.impl.message.SelfExnRes.SelfExnResClientCodec;
+import kr.pe.codda.impl.message.SelfExnRes.SelfExnResDecoder;
+import kr.pe.codda.impl.message.SelfExnRes.SelfExnResEncoder;
+import kr.pe.codda.impl.message.SelfExnRes.SelfExnResServerCodec;
+
 /**
  * 공통 상수와 환경 변수 미 설정시 디폴트 값을 갖는 클래스
  * 
@@ -34,6 +39,13 @@ public abstract class CommonStaticFinalVars {
 	
 	public static final String ROOT_PROJECT_NAME = "codda";
 	public static final String CORE_LOG_NAME = "kr.pe.codda";
+	
+	public static final SelfExnResEncoder SELFEXN_ENCODER = new SelfExnResEncoder();
+	public static final SelfExnResDecoder SELFEXN_DECODER= new SelfExnResDecoder();
+	
+	public static final SelfExnResClientCodec SELFEXN_CLIENT_CODEC = new SelfExnResClientCodec();
+	public static final SelfExnResServerCodec SELFEXN_SERVER_CODEC= new SelfExnResServerCodec();
+	
 	
 	
 	/********** 동적 클래스 로딩 대상의 이름 시작 ***************/

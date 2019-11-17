@@ -45,7 +45,7 @@ public abstract class AbstractMessageDecoder {
 		 * 두번째 장소는 2번 연속 호출해도 무방하기때문에 안전하게 자원 반환을 보장하기위한 Executor#run 이다.
 		 * </pre>
 		 */		
-		singleItemDecoder.closeReadableMiddleObjectWithValidCheck(readableMiddleObject);
+		singleItemDecoder.checkValid(readableMiddleObject);
 		
 		
 		return retObj;

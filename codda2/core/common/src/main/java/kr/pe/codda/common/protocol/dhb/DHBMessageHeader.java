@@ -17,19 +17,6 @@
 
 package kr.pe.codda.common.protocol.dhb;
 
-import java.nio.BufferOverflowException;
-import java.nio.charset.Charset;
-import java.nio.charset.CharsetDecoder;
-
-import io.netty.util.internal.logging.InternalLogger;
-import io.netty.util.internal.logging.InternalLoggerFactory;
-import kr.pe.codda.common.etc.CommonStaticFinalVars;
-import kr.pe.codda.common.exception.CharsetEncoderException;
-import kr.pe.codda.common.exception.HeaderFormatException;
-import kr.pe.codda.common.exception.NoMoreDataPacketBufferException;
-import kr.pe.codda.common.exception.BufferOverflowExceptionWithMessage;
-import kr.pe.codda.common.io.BinaryInputStreamIF;
-import kr.pe.codda.common.io.BinaryOutputStreamIF;
 import kr.pe.codda.common.util.HexUtil;
 
 /**
@@ -54,15 +41,6 @@ import kr.pe.codda.common.util.HexUtil;
  * 
  */
 public class DHBMessageHeader {
-	private InternalLogger log = InternalLoggerFactory.getInstance(DHBMessageHeader.class);
-
-	/** messageID : String */
-	// public String messageID = null;
-	/** mailboxID : unsigned short 2byte */
-	// public int mailboxID = -1;
-	/** mailID : int 4byte */
-	// public int mailID = -1;
-
 	/** bodySize : long 8byte */
 	public long bodySize = -1;
 	/** bodyMD5 : byte array 16byte */
@@ -70,105 +48,7 @@ public class DHBMessageHeader {
 	/** headerMD5 : byte array 16byte */
 	public byte headerBodyMD5Bytes[] = null;
 	
-	public void onlyHeaderBodyPartToOutputStream(BinaryOutputStreamIF headerOutputStream, Charset headerCharset) throws IllegalArgumentException, BufferOverflowException,
-			BufferOverflowExceptionWithMessage, NoMoreDataPacketBufferException, CharsetEncoderException {
-		if (null == headerOutputStream) {
-			throw new IllegalArgumentException("the parameter headerOutputStream is null");
-		}
-		
-		if (null == headerCharset) {
-			throw new IllegalArgumentException("the parameter headerCharset is null");
-		}
-
-		/*if (null == messageID) {
-			String errorMessage = "the var messageID is null";
-			// log.warn(errorMessage);
-			throw new IllegalArgumentException(errorMessage);
-		}
-
-		if (mailboxID < 0) {
-			String errorMessage = String.format("the var mailboxID[%d] is less than zero", mailboxID);
-			// log.warn(errorMessage);
-			throw new IllegalArgumentException(errorMessage);
-		}*/
-
-		if (null == bodyMD5Bytes) {
-			String errorMessage = "the var bodyMD5Bytes is null";
-			// log.warn(errorMessage);
-			throw new IllegalArgumentException(errorMessage);
-		}
-
-		if (bodyMD5Bytes.length != CommonStaticFinalVars.MD5_BYTESIZE) {
-			String errorMessage = String.format("the var bodyMD5Bytes's length[%d] is not MD5.size[%d]",
-					bodyMD5Bytes.length, CommonStaticFinalVars.MD5_BYTESIZE);
-			// log.warn(errorMessage);
-			throw new IllegalArgumentException(errorMessage);
-		}
-		
-		/*byte[] messageIDBytes = messageID.getBytes(headerCharset);
-		if (messageIDBytes.length > messageIDFixedSize) {
-			String errorMessage= String.format("the var messageID[%s]'s charset bytes size[%d] is greater than the parameter messageIDFixedSize[%s]", 
-					messageID, messageIDBytes.length, messageIDFixedSize);
-			throw new IllegalArgumentException(errorMessage);
-		}
-		
-		ByteBuffer messageIDWrapBuffer = ByteBuffer.wrap(messageIDBytes);
-		
-		for (int i=0; i < messageIDFixedSize; i++) {
-			if (messageIDWrapBuffer.hasRemaining()) {
-				headerOutputStream.putByte(messageIDWrapBuffer.get());
-			} else {
-				headerOutputStream.putByte(CommonStaticFinalVars.ZERO_BYTE);
-			}
-		}		
-		
-		headerOutputStream.putUnsignedShort(mailboxID);
-		headerOutputStream.putInt(mailID);*/
-		headerOutputStream.putLong(bodySize);
-		headerOutputStream.putBytes(bodyMD5Bytes);
-	}
-
-	public void toOutputStream(BinaryOutputStreamIF headerOutputStream, 
-			Charset headerCharset) throws IllegalArgumentException, BufferOverflowException,
-			BufferOverflowExceptionWithMessage, NoMoreDataPacketBufferException, CharsetEncoderException {
-		onlyHeaderBodyPartToOutputStream(headerOutputStream, headerCharset);
-
-		if (null == headerBodyMD5Bytes) {
-			String errorMessage = "the var headerBodyMD5Bytes is null";
-			// log.warn(errorMessage);
-			throw new IllegalArgumentException(errorMessage);
-		}
-
-		if (headerBodyMD5Bytes.length != CommonStaticFinalVars.MD5_BYTESIZE) {
-			String errorMessage = String.format("the var headerBodyMD5Bytes's length[%d] is not MD5.size[%d]",
-					headerBodyMD5Bytes.length, CommonStaticFinalVars.MD5_BYTESIZE);
-			// log.warn(errorMessage);
-			throw new IllegalArgumentException(errorMessage);
-		}
-		
-		
-		headerOutputStream.putBytes(headerBodyMD5Bytes);
-
-	}
-
 	
-	public void fromInputStream(BinaryInputStreamIF headerInputStream, 
-			CharsetDecoder headerCharsetDecoder) throws HeaderFormatException {
-		try {
-			/*// this.messageID = headerInputStream.getFixedLengthString(messageIDFixedSize, headerCharsetDecoder).trim();
-			this.messageID = new String(headerInputStream.getBytes(messageIDFixedSize), headerCharsetDecoder.charset()).trim();
-			
-			this.mailboxID = headerInputStream.getUnsignedShort();
-			this.mailID = headerInputStream.getInt();*/
-			this.bodySize = headerInputStream.getLong();
-			this.bodyMD5Bytes = headerInputStream.getBytes(CommonStaticFinalVars.MD5_BYTESIZE);
-			this.headerBodyMD5Bytes = headerInputStream.getBytes(CommonStaticFinalVars.MD5_BYTESIZE);
-		} catch (Exception e) {
-			String errorMessage = new StringBuilder("dhb header parsing error::").append(e.getMessage()).toString();
-			log.warn(errorMessage, e);
-			throw new HeaderFormatException(errorMessage);
-		}
-	}
 
 	@Override
 	public String toString() {

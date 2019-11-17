@@ -66,7 +66,7 @@ public class HexUtil {
 		return retBytes;
 	}
 	
-	public static String getAllHexStringFromByteBuffer(ByteBuffer buffer) throws IllegalArgumentException {
+	public static String getHexStringForAllOfByteBuffer(ByteBuffer buffer) throws IllegalArgumentException {
 		if (null == buffer) {
 			throw new IllegalArgumentException("the parameter buffer is null");
 		}
@@ -118,14 +118,13 @@ public class HexUtil {
 				.toString();
 	}
 
-	public static String getHexStringFromByteBuffer(ByteBuffer buffer) throws IllegalArgumentException {
+	public static String getHexStringForRemaingOfByteBuffer(ByteBuffer buffer) throws IllegalArgumentException {
 		if (null == buffer) {
 			throw new IllegalArgumentException("the parameter buffer is null");
 		}
 		
-		int position = buffer.position();
-		int limit = buffer.limit();
-		return getHexStringFromByteBuffer(buffer, position, limit);
+		
+		return getHexStringFromByteBuffer(buffer, buffer.position(), buffer.remaining());
 	}
 
 	public static String getHexStringFromByteBuffer(ByteBuffer buffer, int offset,
@@ -138,12 +137,7 @@ public class HexUtil {
 			String errorMessage = String.format("the parameter offset[%d] less than zero", offset);
 			throw new IllegalArgumentException(errorMessage);
 		}
-
-		if (length < 0) {
-			String errorMessage = String.format("the parameter length[%d] less than zero", length);
-			throw new IllegalArgumentException(errorMessage);
-		}
-
+		
 		int capacity = buffer.capacity();
 
 		if (offset > capacity) {
@@ -151,10 +145,15 @@ public class HexUtil {
 			throw new IllegalArgumentException(errorMessage);
 		}
 
-		int size = offset + length;
+		if (length < 0) {
+			String errorMessage = String.format("the parameter length[%d] less than zero", length);
+			throw new IllegalArgumentException(errorMessage);
+		}
 
-		if (size > capacity) {
-			String errorMessage = String.format("the sum of the parameter offset[%d] and the parameter length[%d] is over than the parameter buffer'capacity[%d]", offset, length, capacity);
+		
+		if (offset > capacity - length) {
+			String errorMessage = String.format("the sum[] of the parameter offset[%d] and the parameter length[%d] is greater than the parameter buffer'capacity[%d]", 
+					length + offset, offset, length, capacity);
 			throw new IllegalArgumentException(errorMessage);
 		}
 
@@ -163,7 +162,7 @@ public class HexUtil {
 
 		StringBuffer strbuff = new StringBuffer();
 
-		for (int j = offset; j < size; j++) {
+		for (int j = offset, i=0; i < length; i++, j++) {
 			byte one_byte = dupBuffer.get(j);
 			// int inx = 0xff & one_byte;
 			strbuff.append(getHexString(one_byte));

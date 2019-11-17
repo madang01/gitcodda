@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<project name="codda_core_common" default="jar.junitlib" basedir=".">
+	<description>codda core common</description>
+	<!-- set global properties for this build -->
+	<property name="dir.mainsrc" location="src/main/java" />
+	<property name="dir.build" location="build" />
+	<property name="dir.dist" location="dist" />
+	<property name="dir.mainlib" location="lib/main" />
+	<property name="dir.testsrc" location="src/test/java" />
+	<property name="dir.testlib" location="lib/test" />
+	<property name="dir.report" location="report" />
+	<property name="dir.logger.build" location="../logger" />
+	<property name="dir.core.junitlib.build" location="../junitlib" />
+	<property name="core.logger.jar.name" value="codda-logger.jar" />
+	<property name="core.common.jar.name" value="codda-core-common.jar" />
+	<property name="core.junitlib.jar.name" value="codda-core-junitlib.jar" />
+	<property name="java.complile.option.debug" value="on" />
+	
+	<condition property="is.windows.yes">
+		<os family="windows" />
+	</condition>
+	
+	<condition property="is.unix.yes">
+		<os family="unix" />
+	</condition>
+	
+	<union id="logback.jarlibs">
+		<fileset file="${dir.logger.build}/lib/ex/slf4j-api-1.7.25.jar" />
+		<fileset file="${dir.logger.build}/lib/ex/logback-core-1.2.3.jar" />
+		<fileset file="${dir.logger.build}/lib/ex/logback-classic-1.2.3.jar" />
+		<!-- dbcp2 depends Apache commons-logging(=jcl-over-slf4j) -->
+		<fileset file="${dir.logger.build}/lib/ex/jcl-over-slf4j-1.7.25.jar" />
+	</union>
+	
+	<target name="clean">
+		<delete dir="${dir.build}" />
+		<delete dir="${dir.dist}" />
+	</target>
+
+	<target name="init">
+		<tstamp />
+		<mkdir dir="${dir.build}/main" />
+		<mkdir dir="${dir.build}/test" />
+		<mkdir dir="${dir.dist}" />		
+		<echo message="java.complile.option.debug=${java.complile.option.debug}" />
+	</target>
+	
+	<target name="exec.unix.core.logger" if="is.unix.yes" depends="init">
+		<exec dir="${dir.logger.build}" executable="ant" />
+	</target>
+	
+	<target name="exec.dos.core.logger" if="is.windows.yes" depends="exec.unix.core.logger">
+		<exec dir="${dir.logger.build}" executable="cmd">
+			<arg value="/c" />
+			<arg value="ant.bat" />
+		</exec>
+	</target>
+	
+	<target name="exec.logger" depends="exec.dos.core.logger" />	
+			
+	<target name="compile" depends="exec.logger">		
+		<javac debug="${java.complile.option.debug}" debuglevel="lines,vars,source" encoding="UTF-8" includeantruntime="false" srcdir="${dir.mainsrc}" destdir="${dir.build}/main">
+			<classpath>
+				<fileset file="${dir.logger.build}/dist/${core.logger.jar.name}" />
+				<fileset dir="${dir.mainlib}/in">
+					<include name="**/*.jar" />
+				</fileset>
+				<fileset dir="${dir.mainlib}/ex">
+					<include name="**/*.jar" />
+				</fileset>
+			</classpath>
+		</javac>
+	</target>
+
+	<target name="jar" depends="compile">
+		<jar jarfile="${dir.dist}/${core.common.jar.name}">
+			<fileset dir="${dir.build}/main" />
+			<restrict>
+				<name name="**/*.class" />
+				<archives>
+					<zips>
+						<fileset dir="${dir.mainlib}/in" includes="**/*.jar" />
+						<fileset file="${dir.logger.build}/dist/${core.logger.jar.name}" />
+					</zips>
+				</archives>
+			</restrict>
+		</jar>
+	</target>
+	
+	
+	<target name="compile.junitlib" depends="jar">	
+		<mkdir dir="${dir.build}/junitlib" />
+		<javac debug="${java.complile.option.debug}" debuglevel="lines,vars,source" encoding="UTF-8" includeantruntime="false" srcdir="${dir.testsrc}" destdir="${dir.build}/junitlib">
+			<include name="junitlib/**" />
+			<classpath>
+				<fileset file="${dir.dist}/${core.common.jar.name}" />
+				<fileset dir="${dir.mainlib}/in">
+					<include name="**/*.jar" />
+				</fileset>
+				<fileset dir="${dir.mainlib}/ex">
+					<include name="**/*.jar" />
+				</fileset>
+				<fileset dir="${dir.testlib}">
+					<include name="**/*.jar" />
+				</fileset>
+			</classpath>
+		</javac>
+	</target>
+	
+	<target name="jar.junitlib" depends="compile.junitlib">
+		<jar jarfile="${dir.dist}/${core.junitlib.jar.name}">
+			<fileset dir="${dir.build}/junitlib" />
+			<restrict>
+				<name name="**/*.class" />
+				<archives>
+					<zips>						
+					</zips>
+				</archives>
+			</restrict>
+		</jar>
+	</target>	
+</project>

@@ -1,18 +1,20 @@
 package kr.pe.codda.common.protocol.thb;
 
+import java.nio.BufferUnderflowException;
+
 import kr.pe.codda.common.exception.BodyFormatException;
-import kr.pe.codda.common.exception.BufferUnderflowExceptionWithMessage;
+import kr.pe.codda.common.exception.NoMoreDataPacketBufferException;
 import kr.pe.codda.common.exception.UnknownItemTypeException;
-import kr.pe.codda.common.io.BinaryInputStreamIF;
+import kr.pe.codda.common.io.StreamBuffer;
 import kr.pe.codda.common.message.builder.info.SingleItemTypeManger;
 import kr.pe.codda.common.type.SingleItemType;
 
 public abstract class AbstractTHBSingleItemDecoder {
 	abstract public Object getValue(int itemTypeID, String itemName, int itemSize,
-			String nativeItemCharset, BinaryInputStreamIF binaryInputStream) throws Exception;
+			String nativeItemCharset, StreamBuffer binaryInputStream) throws Exception;
 	
 	protected void throwExceptionIfItemTypeIsDifferent(int itemTypeID, String itemName,
-			BinaryInputStreamIF binaryInputStream) throws BufferUnderflowExceptionWithMessage, BodyFormatException {
+			StreamBuffer binaryInputStream) throws BufferUnderflowException, BodyFormatException, NoMoreDataPacketBufferException {
 		int receivedItemTypeID = binaryInputStream.getUnsignedByte();
 		if (itemTypeID != receivedItemTypeID) {
 			

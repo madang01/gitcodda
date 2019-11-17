@@ -17,53 +17,12 @@
 
 package kr.pe.codda.common.protocol.thb;
 
-import java.nio.BufferOverflowException;
-import java.nio.charset.Charset;
-import java.nio.charset.CharsetDecoder;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import kr.pe.codda.common.etc.CommonStaticFinalVars;
-import kr.pe.codda.common.exception.BufferOverflowExceptionWithMessage;
-import kr.pe.codda.common.exception.CharsetEncoderException;
-import kr.pe.codda.common.exception.HeaderFormatException;
-import kr.pe.codda.common.exception.NoMoreDataPacketBufferException;
-import kr.pe.codda.common.io.BinaryInputStreamIF;
-import kr.pe.codda.common.io.BinaryOutputStreamIF;
-
 /**
  * @author Won Jonghoon
  *
  */
-public class THBMessageHeader {
-	private Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);	
-	
+public class THBMessageHeader {	
 	public long bodySize= -1;
-	
-	
-	public void toOutputStream(BinaryOutputStreamIF headerOutputStream, Charset headerCharset) throws IllegalArgumentException, CharsetEncoderException, BufferOverflowException, BufferOverflowExceptionWithMessage, NoMoreDataPacketBufferException {
-		if (null == headerOutputStream) {
-			throw new IllegalArgumentException("the parameter headerOutputStream is null");
-		}
-		
-		if (null == headerCharset) {
-			throw new IllegalArgumentException("the parameter headerCharset is null");
-		}
-		
-		headerOutputStream.putLong(bodySize);
-		
-	}
-	
-	
-	public void fromInputStream(BinaryInputStreamIF headerInputStream, CharsetDecoder headerCharsetDecoder) throws HeaderFormatException {		
-		try {
-			this.bodySize = headerInputStream.getLong();
-		} catch (Exception e) {
-			String errorMessage = e.getMessage();
-			log.log(Level.WARNING, errorMessage, e);
-			throw new HeaderFormatException(errorMessage);
-		}
-	}
 	
 
 	@Override

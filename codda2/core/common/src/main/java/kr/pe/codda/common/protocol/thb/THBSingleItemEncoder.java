@@ -22,7 +22,7 @@ import java.util.logging.Logger;
 import kr.pe.codda.common.etc.CommonStaticFinalVars;
 import kr.pe.codda.common.exception.BodyFormatException;
 import kr.pe.codda.common.exception.NoMoreDataPacketBufferException;
-import kr.pe.codda.common.io.BinaryOutputStreamIF;
+import kr.pe.codda.common.io.StreamBuffer;
 import kr.pe.codda.common.protocol.SingleItemEncoderIF;
 import kr.pe.codda.common.type.SingleItemType;
 
@@ -73,7 +73,7 @@ public class THBSingleItemEncoder implements SingleItemEncoderIF {
 			throw new IllegalArgumentException("the parameter writableMiddleObject is null");
 		}
 		
-		if (! (writableMiddleObject instanceof BinaryOutputStreamIF)) {
+		if (! (writableMiddleObject instanceof StreamBuffer)) {
 			String errorMessage = new StringBuilder("the parameter writableMiddleObject's class[")
 					.append(writableMiddleObject.getClass().getCanonicalName())
 					.append("] is not a BinaryOutputStreamIF class").toString();
@@ -84,7 +84,7 @@ public class THBSingleItemEncoder implements SingleItemEncoderIF {
 		int itemTypeID = singleItemType.getItemTypeID();
 		String itemTypeName = singleItemType.getItemTypeName();
 		
-		BinaryOutputStreamIF binaryOutputStream = (BinaryOutputStreamIF)writableMiddleObject;		
+		StreamBuffer binaryOutputStream = (StreamBuffer)writableMiddleObject;		
 		try {
 			AbstractTHBSingleItemEncoder thbSingleItemEncoder = thbSingleItemEncoderMatcher.get(itemTypeID);
 			

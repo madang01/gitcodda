@@ -13,7 +13,12 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import kr.pe.codda.common.etc.CommonStaticFinalVars;
+import kr.pe.codda.common.exception.BodyFormatException;
 import kr.pe.codda.common.exception.DynamicClassCallException;
+import kr.pe.codda.common.io.StreamBuffer;
+import kr.pe.codda.common.message.AbstractMessage;
+import kr.pe.codda.common.message.codec.AbstractMessageDecoder;
+import kr.pe.codda.common.protocol.SingleItemDecoderIF;
 import kr.pe.codda.common.type.LineSeparatorType;
 import kr.pe.codda.common.type.ReadWriteMode;
 
@@ -579,5 +584,110 @@ public abstract class CommonStaticUtil {
 		}
 
 		return retObject;
+	}
+	
+	public static AbstractMessage O2M(AbstractMessageDecoder messageDecoder, SingleItemDecoderIF singleItemDecoder,  int mailboxID, int mailID, String messageID, Object readableMiddleObject) throws BodyFormatException {
+		if (null == messageDecoder) {
+			throw new IllegalArgumentException("the parameter messageDecoder is null");
+		}
+		
+		if (null == singleItemDecoder) {
+			throw new IllegalArgumentException("the parameter singleItemDecoder is null");
+		}
+		
+		if (null == messageID) {
+			throw new IllegalArgumentException("the parameter messageID is null");
+		}
+
+		if (null == readableMiddleObject) {
+			throw new IllegalArgumentException("the parameter readableMiddleObject is null");
+		}
+		
+		AbstractMessage outputMessage = null;
+		try {
+			outputMessage = messageDecoder.decode(singleItemDecoder, readableMiddleObject);
+			outputMessage.messageHeaderInfo.mailboxID = mailboxID;
+			outputMessage.messageHeaderInfo.mailID = mailID;
+		} catch (BodyFormatException e) {
+			/*
+			 * String errorMessage = new
+			 * StringBuilder("fail to decode the var 'readableMiddleObject' of the output message"
+			 * ) .append("mailboxID=") .append(mailboxID) .append(", mailID=")
+			 * .append(mailID) .append(", messageID=") .append(messageID)
+			 * .append("], errmsg=") .append("") .append(e.getMessage()) .toString();
+			 * 
+			 * Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
+			 * log.log(Level.WARNING, errorMessage);
+			 * 
+			 * SelfExnRes selfExnRes = new SelfExnRes();
+			 * selfExnRes.messageHeaderInfo.mailboxID = mailboxID;
+			 * selfExnRes.messageHeaderInfo.mailID = mailID;
+			 * selfExnRes.setErrorPlace(SelfExn.ErrorPlace.CLIENT);
+			 * selfExnRes.setErrorType(SelfExn.ErrorType.valueOf(BodyFormatException.class))
+			 * ;
+			 * 
+			 * selfExnRes.setErrorMessageID(messageID);
+			 * selfExnRes.setErrorReason(errorMessage);
+			 * 
+			 * return selfExnRes;
+			 */
+			throw e;
+		} catch (Exception | Error e) {
+			String errorMessage = new StringBuilder("unknow error::fail to decode the var 'readableMiddleObject' of the output message")
+					.append("mailboxID=")
+					.append(mailboxID)
+					.append(", mailID=")
+					.append(mailID)
+					.append(", messageID=")
+					.append(messageID)
+					.append("], errmsg=")
+					.append("")
+					.append(e.getMessage())
+					.toString();
+			
+			Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
+			log.log(Level.WARNING, errorMessage);
+			
+			/*
+			 * Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
+			 * log.log(Level.WARNING, errorMessage);
+			 * 
+			 * SelfExnRes selfExnRes = new SelfExnRes();
+			 * selfExnRes.messageHeaderInfo.mailboxID = mailboxID;
+			 * selfExnRes.messageHeaderInfo.mailID = mailID;
+			 * selfExnRes.setErrorPlace(SelfExn.ErrorPlace.CLIENT);
+			 * selfExnRes.setErrorType(SelfExn.ErrorType.valueOf(BodyFormatException.class))
+			 * ;
+			 * 
+			 * selfExnRes.setErrorMessageID(messageID);
+			 * selfExnRes.setErrorReason(errorMessage);
+			 * 
+			 * return selfExnRes;
+			 * 
+			 */
+			throw new BodyFormatException(errorMessage);
+		} finally {
+			if (readableMiddleObject instanceof StreamBuffer) {
+				StreamBuffer sb = (StreamBuffer)readableMiddleObject;
+				try {
+					sb.close();
+				} catch(Exception e) {
+					String errorMessage = new StringBuilder()
+							.append("fail to close the message body stream[messageID=")
+							.append(messageID)
+							.append(", mailboxID=")
+							.append(mailboxID)
+							.append(", mailID=")
+							.append(mailID)
+							.append("] body stream").toString();
+					Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
+					log.log(Level.WARNING, errorMessage, e);
+				}
+			}
+		}
+		
+		outputMessage.messageHeaderInfo.mailboxID = mailboxID;
+		outputMessage.messageHeaderInfo.mailID = mailID;
+		return outputMessage;
 	}
 }
