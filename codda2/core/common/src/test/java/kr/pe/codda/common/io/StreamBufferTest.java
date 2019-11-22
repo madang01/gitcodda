@@ -332,7 +332,7 @@ public class StreamBufferTest {
 				}
 			}
 			
-			sb.close();
+			sb.releaseAllWrapBuffers();
 		}
 	}
 
@@ -364,7 +364,7 @@ public class StreamBufferTest {
 			fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
 		}
 		
-		sb.close();
+		sb.releaseAllWrapBuffers();
 	}
 
 	@Test
@@ -400,7 +400,7 @@ public class StreamBufferTest {
 			fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
 		}
 		
-		sb.close();
+		sb.releaseAllWrapBuffers();
 	}
 
 	@Test
@@ -436,7 +436,7 @@ public class StreamBufferTest {
 			fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
 		}
 		
-		sb.close();
+		sb.releaseAllWrapBuffers();
 	}
 
 	@Test
@@ -472,7 +472,7 @@ public class StreamBufferTest {
 			fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
 		}
 		
-		sb.close();
+		sb.releaseAllWrapBuffers();
 	}
 
 	@Test
@@ -508,7 +508,7 @@ public class StreamBufferTest {
 			fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
 		}
 		
-		sb.close();
+		sb.releaseAllWrapBuffers();
 	}
 
 	@Test
@@ -562,7 +562,7 @@ public class StreamBufferTest {
 			fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
 		}
 		
-		sb.close();
+		sb.releaseAllWrapBuffers();
 	}
 
 	@Test
@@ -589,7 +589,7 @@ public class StreamBufferTest {
 			fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
 		}
 		
-		sb.close();
+		sb.releaseAllWrapBuffers();
 	}
 
 	@Test
@@ -617,7 +617,7 @@ public class StreamBufferTest {
 			fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
 		}
 		
-		sb.close();
+		sb.releaseAllWrapBuffers();
 	}
 
 	@Test
@@ -657,7 +657,7 @@ public class StreamBufferTest {
 				}
 			}
 			
-			sb.close();
+			sb.releaseAllWrapBuffers();
 		}
 	}
 
@@ -690,7 +690,7 @@ public class StreamBufferTest {
 			fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
 		}
 		
-		sb.close();
+		sb.releaseAllWrapBuffers();
 	}
 
 	@Test
@@ -726,7 +726,7 @@ public class StreamBufferTest {
 			fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
 		}
 		
-		sb.close();
+		sb.releaseAllWrapBuffers();
 	}
 
 	@Test
@@ -762,7 +762,7 @@ public class StreamBufferTest {
 			fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
 		}
 		
-		sb.close();
+		sb.releaseAllWrapBuffers();
 	}
 
 	@Test
@@ -798,7 +798,7 @@ public class StreamBufferTest {
 			fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
 		}
 		
-		sb.close();
+		sb.releaseAllWrapBuffers();
 	}
 
 	@Test
@@ -834,7 +834,7 @@ public class StreamBufferTest {
 			fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
 		}
 		
-		sb.close();
+		sb.releaseAllWrapBuffers();
 	}
 
 	@Test
@@ -870,7 +870,7 @@ public class StreamBufferTest {
 			fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
 		}
 		
-		sb.close();
+		sb.releaseAllWrapBuffers();
 	}
 
 	@Test
@@ -925,7 +925,7 @@ public class StreamBufferTest {
 			fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
 		}
 		
-		sb.close();
+		sb.releaseAllWrapBuffers();
 	}
 
 	@Test
@@ -970,7 +970,7 @@ public class StreamBufferTest {
 			}
 		}
 
-		sb.close();
+		sb.releaseAllWrapBuffers();
 	}
 
 	@Test
@@ -1013,7 +1013,7 @@ public class StreamBufferTest {
 				fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
 			}
 			
-			sb.close();
+			sb.releaseAllWrapBuffers();
 		}
 	}
 
@@ -1042,7 +1042,7 @@ public class StreamBufferTest {
 			fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
 		}
 		
-		sb.close();
+		sb.releaseAllWrapBuffers();
 	}
 
 	@Test
@@ -1073,7 +1073,7 @@ public class StreamBufferTest {
 			fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
 		}
 		
-		sb.close();
+		sb.releaseAllWrapBuffers();
 	}
 
 	@Test
@@ -1117,7 +1117,7 @@ public class StreamBufferTest {
 			}
 		}
 		
-		sb.close();
+		sb.releaseAllWrapBuffers();
 
 	}
 
@@ -1161,7 +1161,7 @@ public class StreamBufferTest {
 				fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
 			}
 			
-			sb.close();
+			sb.releaseAllWrapBuffers();
 		}		
 	}
 
@@ -1207,7 +1207,7 @@ public class StreamBufferTest {
 			}
 		}
 		
-		sb.close();
+		sb.releaseAllWrapBuffers();
 	}
 
 	@Test
@@ -1250,7 +1250,7 @@ public class StreamBufferTest {
 				fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
 			}
 			
-			sb.close();
+			sb.releaseAllWrapBuffers();
 		}
 	}
 
@@ -1279,7 +1279,7 @@ public class StreamBufferTest {
 			fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
 		}
 		
-		sb.close();
+		sb.releaseAllWrapBuffers();
 	}
 
 	@Test
@@ -1310,7 +1310,7 @@ public class StreamBufferTest {
 			fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
 		}
 		
-		sb.close();
+		sb.releaseAllWrapBuffers();
 	}
 
 	@Test
@@ -1357,7 +1357,7 @@ public class StreamBufferTest {
 			}
 		}
 		
-		sb.close();
+		sb.releaseAllWrapBuffers();
 	}
 
 	@Test
@@ -1400,7 +1400,7 @@ public class StreamBufferTest {
 				fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
 			}
 			
-			sb.close();
+			sb.releaseAllWrapBuffers();
 		}
 
 	}
@@ -1447,7 +1447,7 @@ public class StreamBufferTest {
 			}
 		}
 		
-		sb.close();
+		sb.releaseAllWrapBuffers();
 	}
 
 	@Test
@@ -1490,7 +1490,7 @@ public class StreamBufferTest {
 				fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
 			}
 			
-			sb.close();
+			sb.releaseAllWrapBuffers();
 		}
 	}
 
@@ -1519,7 +1519,7 @@ public class StreamBufferTest {
 			fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
 		}
 		
-		sb.close();
+		sb.releaseAllWrapBuffers();
 	}
 
 	@Test
@@ -1566,7 +1566,7 @@ public class StreamBufferTest {
 			}
 		}
 		
-		sb.close();
+		sb.releaseAllWrapBuffers();
 	}
 
 	@Test
@@ -1611,7 +1611,7 @@ public class StreamBufferTest {
 			}
 		}
 		
-		sb.close();
+		sb.releaseAllWrapBuffers();
 	}
 
 	@Test
@@ -1639,7 +1639,7 @@ public class StreamBufferTest {
 			fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
 		}
 		
-		sb.close();
+		sb.releaseAllWrapBuffers();
 	}
 
 	@Test
@@ -1674,7 +1674,7 @@ public class StreamBufferTest {
 			fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
 		}
 		
-		sb.close();
+		sb.releaseAllWrapBuffers();
 	}
 
 	@Test
@@ -1710,7 +1710,7 @@ public class StreamBufferTest {
 			fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
 		}
 		
-		sb.close();
+		sb.releaseAllWrapBuffers();
 	}
 
 	@Test
@@ -1745,7 +1745,7 @@ public class StreamBufferTest {
 			fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
 		}
 		
-		sb.close();
+		sb.releaseAllWrapBuffers();
 	}
 
 	@Test
@@ -1782,7 +1782,7 @@ public class StreamBufferTest {
 			fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
 		}
 		
-		sb.close();
+		sb.releaseAllWrapBuffers();
 	}
 
 	@Test
@@ -1831,7 +1831,7 @@ public class StreamBufferTest {
 			}
 		}
 		
-		sb.close();
+		sb.releaseAllWrapBuffers();
 	}
 
 	@Test
@@ -1876,7 +1876,7 @@ public class StreamBufferTest {
 			}
 		}
 		
-		sb.close();
+		sb.releaseAllWrapBuffers();
 	}
 
 	@Test
@@ -1931,7 +1931,7 @@ public class StreamBufferTest {
 			}
 		}
 		
-		sb.close();
+		sb.releaseAllWrapBuffers();
 	}
 
 	@Test
@@ -1959,7 +1959,7 @@ public class StreamBufferTest {
 			fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
 		}
 		
-		sb.close();
+		sb.releaseAllWrapBuffers();
 	}
 
 	@Test
@@ -2011,7 +2011,7 @@ public class StreamBufferTest {
 			}
 		}
 		
-		sb.close();
+		sb.releaseAllWrapBuffers();
 	}
 
 	@Test
@@ -2061,7 +2061,7 @@ public class StreamBufferTest {
 			}
 		}
 		
-		sb.close();
+		sb.releaseAllWrapBuffers();
 	}
 
 	@Test
@@ -2122,7 +2122,7 @@ public class StreamBufferTest {
 			}
 		}
 		
-		sb.close();
+		sb.releaseAllWrapBuffers();
 	}
 
 	/**
@@ -2204,7 +2204,7 @@ public class StreamBufferTest {
 		System.out.printf("putByte::%d 번, 총 소요 시간=[%d] ms", retryCount, elapsedTime);
 		System.out.println();
 		
-		sb.close();
+		sb.releaseAllWrapBuffers();
 	}
 
 	@Test
@@ -2236,7 +2236,7 @@ public class StreamBufferTest {
 			fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
 		}
 		
-		sb.close();
+		sb.releaseAllWrapBuffers();
 	}
 
 	@Test
@@ -2266,7 +2266,7 @@ public class StreamBufferTest {
 			fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
 		}
 		
-		sb.close();
+		sb.releaseAllWrapBuffers();
 	}
 
 	@Test
@@ -2296,7 +2296,7 @@ public class StreamBufferTest {
 			fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
 		}
 		
-		sb.close();
+		sb.releaseAllWrapBuffers();
 	}
 
 	@Test
@@ -2345,7 +2345,7 @@ public class StreamBufferTest {
 			}
 		}
 		
-		sb.close();
+		sb.releaseAllWrapBuffers();
 	}
 
 	@Test
@@ -2373,7 +2373,7 @@ public class StreamBufferTest {
 			fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
 		}
 		
-		sb.close();
+		sb.releaseAllWrapBuffers();
 	}
 
 	@Test
@@ -2402,7 +2402,7 @@ public class StreamBufferTest {
 			fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
 		}
 		
-		sb.close();
+		sb.releaseAllWrapBuffers();
 	}
 
 	@Test
@@ -2429,7 +2429,7 @@ public class StreamBufferTest {
 			fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
 		}
 		
-		sb.close();
+		sb.releaseAllWrapBuffers();
 	}
 
 	@Test
@@ -2458,7 +2458,7 @@ public class StreamBufferTest {
 			fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
 		}
 		
-		sb.close();
+		sb.releaseAllWrapBuffers();
 	}
 
 	@Test
@@ -2485,7 +2485,7 @@ public class StreamBufferTest {
 			fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
 		}
 		
-		sb.close();
+		sb.releaseAllWrapBuffers();
 	}
 
 	@Test
@@ -2512,7 +2512,7 @@ public class StreamBufferTest {
 			fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
 		}
 		
-		sb.close();
+		sb.releaseAllWrapBuffers();
 	}
 
 	@Test
@@ -2539,7 +2539,7 @@ public class StreamBufferTest {
 			fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
 		}
 		
-		sb.close();
+		sb.releaseAllWrapBuffers();
 	}
 
 	@Test
@@ -2566,7 +2566,7 @@ public class StreamBufferTest {
 			fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
 		}
 		
-		sb.close();
+		sb.releaseAllWrapBuffers();
 	}
 
 	@Test
@@ -2593,7 +2593,7 @@ public class StreamBufferTest {
 			fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
 		}
 		
-		sb.close();
+		sb.releaseAllWrapBuffers();
 	}
 
 	@Test
@@ -2620,7 +2620,7 @@ public class StreamBufferTest {
 			fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
 		}
 		
-		sb.close();
+		sb.releaseAllWrapBuffers();
 	}
 
 	@Test
@@ -2647,7 +2647,7 @@ public class StreamBufferTest {
 			fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
 		}
 		
-		sb.close();
+		sb.releaseAllWrapBuffers();
 	}
 
 	@Test
@@ -2674,7 +2674,7 @@ public class StreamBufferTest {
 			fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
 		}
 		
-		sb.close();
+		sb.releaseAllWrapBuffers();
 	}
 
 	@Test
@@ -2704,7 +2704,7 @@ public class StreamBufferTest {
 			fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
 		}
 		
-		sb.close();
+		sb.releaseAllWrapBuffers();
 	}
 
 	@Test
@@ -2731,7 +2731,7 @@ public class StreamBufferTest {
 			fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
 		}
 		
-		sb.close();
+		sb.releaseAllWrapBuffers();
 	}
 
 	@Test
@@ -2758,7 +2758,7 @@ public class StreamBufferTest {
 			fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
 		}
 		
-		sb.close();
+		sb.releaseAllWrapBuffers();
 	}
 
 	@Test
@@ -2788,7 +2788,7 @@ public class StreamBufferTest {
 			fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
 		}
 		
-		sb.close();
+		sb.releaseAllWrapBuffers();
 	}
 
 	@Test
@@ -2823,7 +2823,7 @@ public class StreamBufferTest {
 			fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
 		}
 		
-		sb.close();
+		sb.releaseAllWrapBuffers();
 	}
 
 	@Test
@@ -2858,7 +2858,7 @@ public class StreamBufferTest {
 			fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
 		}
 		
-		sb.close();
+		sb.releaseAllWrapBuffers();
 	}
 
 	@Test
@@ -2897,7 +2897,7 @@ public class StreamBufferTest {
 			}
 		}
 		
-		sb.close();
+		sb.releaseAllWrapBuffers();
 	}
 
 	@Test
@@ -2936,7 +2936,7 @@ public class StreamBufferTest {
 			}
 		}
 		
-		sb.close();
+		sb.releaseAllWrapBuffers();
 	}
 
 	@Test
@@ -2975,7 +2975,7 @@ public class StreamBufferTest {
 			}
 		}
 		
-		sb.close();
+		sb.releaseAllWrapBuffers();
 	}
 
 	@Test
@@ -3014,7 +3014,7 @@ public class StreamBufferTest {
 			}
 		}
 		
-		sb.close();
+		sb.releaseAllWrapBuffers();
 	}
 
 	@Test
@@ -3053,7 +3053,7 @@ public class StreamBufferTest {
 			}
 		}
 		
-		sb.close();
+		sb.releaseAllWrapBuffers();
 	}
 
 	@Test
@@ -3091,9 +3091,282 @@ public class StreamBufferTest {
 			fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
 		}
 		
-		sb.close();
+		sb.releaseAllWrapBuffers();
 	}
 
+	@Test
+	public void testGetBytes_목적지지정_theParameterDstIsNull() {
+		
+		StreamCharsetFamily streamCharsetFamily = new StreamCharsetFamily(Charset.defaultCharset());
+		WrapBufferPoolIF wrapBufferPool = new WrapBufferPool(false, ByteOrder.LITTLE_ENDIAN, 512, 1000);
+
+		StreamBuffer sb = new StreamBuffer(streamCharsetFamily, 10, wrapBufferPool);
+
+		final int length = 10;
+
+		try {
+			
+			sb.getBytes(null, 17, length);
+
+			fail("no IllegalArgumentException");
+		} catch (IllegalArgumentException e) {
+			String acutalErrorMessage = e.getMessage();
+			String expectedErrorMessage = "the parameter dst is null";
+
+			System.out.println(acutalErrorMessage);
+
+			assertEquals(expectedErrorMessage, acutalErrorMessage);
+		} catch (Exception e) {
+			Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
+			log.log(Level.WARNING, "unknown error", e);
+			fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
+		}
+	}
+	
+	@Test
+	public void testGetBytes_목적지지정_theParameterOffsetIsLessThanZero() {		
+		StreamCharsetFamily streamCharsetFamily = new StreamCharsetFamily(Charset.defaultCharset());
+		WrapBufferPoolIF wrapBufferPool = new WrapBufferPool(false, ByteOrder.LITTLE_ENDIAN, 512, 1000);
+
+		StreamBuffer sb = new StreamBuffer(streamCharsetFamily, 10, wrapBufferPool);
+
+		final int length = 10;
+		final int offset = -1;
+		byte[] dst = new byte[1024];
+
+		try {			
+			sb.getBytes(dst, offset, length);
+			fail("no IllegalArgumentException");
+		} catch (IllegalArgumentException e) {
+			String acutalErrorMessage = e.getMessage();
+			String expectedErrorMessage = new StringBuilder().append("the parameter offset[").append(offset)
+					.append("] is less than zero").toString();
+
+			System.out.println(acutalErrorMessage);
+
+			assertEquals(expectedErrorMessage, acutalErrorMessage);
+		} catch (Exception e) {
+			Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
+			log.log(Level.WARNING, "unknown error", e);
+			fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
+		}
+	}
+	
+	@Test
+	public void testGetBytes_목적지지정_theParameterOffsetIsEqualToLengthOfTheParameterDst() {
+		
+		StreamCharsetFamily streamCharsetFamily = new StreamCharsetFamily(Charset.defaultCharset());
+		WrapBufferPoolIF wrapBufferPool = new WrapBufferPool(false, ByteOrder.LITTLE_ENDIAN, 512, 1000);
+
+		StreamBuffer sb = new StreamBuffer(streamCharsetFamily, 10, wrapBufferPool);
+
+		byte[] dst = new byte[1024];
+		final int length = 10;
+		final int offset = dst.length;
+		
+		try {
+			
+			sb.getBytes(dst, offset, length);
+
+			fail("no IllegalArgumentException");
+		} catch (IllegalArgumentException e) {
+			String acutalErrorMessage = e.getMessage();
+			String expectedErrorMessage = new StringBuilder().append("the parameter offset[").append(offset)
+					.append("] is greater than or equal to the parameter dst's length[")
+					.append(dst.length)
+					.append("]").toString();
+
+			System.out.println(acutalErrorMessage);
+
+			assertEquals(expectedErrorMessage, acutalErrorMessage);
+		} catch (Exception e) {
+			Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
+			log.log(Level.WARNING, "unknown error", e);
+			fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
+		}
+	}
+	
+	@Test
+	public void testGetBytes_목적지지정_theParameterLengthIsLessThanZero() {
+		
+		StreamCharsetFamily streamCharsetFamily = new StreamCharsetFamily(Charset.defaultCharset());
+		WrapBufferPoolIF wrapBufferPool = new WrapBufferPool(false, ByteOrder.LITTLE_ENDIAN, 512, 1000);
+
+		StreamBuffer sb = new StreamBuffer(streamCharsetFamily, 10, wrapBufferPool);
+
+		byte[] dst = new byte[1024];
+		final int length = -1;
+		final int offset = dst.length - 1;
+		
+		try {
+			
+			sb.getBytes(dst, offset, length);
+
+			fail("no IllegalArgumentException");
+		} catch (IllegalArgumentException e) {
+			String acutalErrorMessage = e.getMessage();
+			String expectedErrorMessage = new StringBuilder().append("the parameter length[").append(length)
+					.append("] is less than zero").toString();
+
+			System.out.println(acutalErrorMessage);
+
+			assertEquals(expectedErrorMessage, acutalErrorMessage);
+		} catch (Exception e) {
+			Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
+			log.log(Level.WARNING, "unknown error", e);
+			fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
+		}
+	}
+	
+	@Test
+	public void testGetBytes_목적지지정_theSumOfParameterOffsetAndParameterLengthIsGreaterThanLengthOfTheParameterDst() {
+		
+		StreamCharsetFamily streamCharsetFamily = new StreamCharsetFamily(Charset.defaultCharset());
+		WrapBufferPoolIF wrapBufferPool = new WrapBufferPool(false, ByteOrder.LITTLE_ENDIAN, 512, 1000);
+
+		StreamBuffer sb = new StreamBuffer(streamCharsetFamily, 10, wrapBufferPool);
+
+		byte[] dst = new byte[1024];
+		final int length = 2;
+		final int offset = dst.length - 1;
+		
+		try {
+			
+			sb.getBytes(dst, offset, length);
+
+			fail("no IllegalArgumentException");
+		} catch (IllegalArgumentException e) {			
+			String acutalErrorMessage = e.getMessage();
+			long sumOfOffsetAndLength = ((long) offset + length);
+			String expectedErrorMessage = new StringBuilder().append("the sum[").append(sumOfOffsetAndLength)
+					.append("] of the parameter offset[").append(offset).append("] and the parameter length[")
+					.append(length).append("] is greater than the parameter dst's length[").append(dst.length)
+					.append("]").toString();
+
+			System.out.println(acutalErrorMessage);
+
+			assertEquals(expectedErrorMessage, acutalErrorMessage);
+		} catch (Exception e) {
+			Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
+			log.log(Level.WARNING, "unknown error", e);
+			fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
+		}
+	}
+	
+	@Test
+	public void testGetBytes_목적지지정_버퍼에남은용량이부족한경우() {
+		StreamCharsetFamily streamCharsetFamily = new StreamCharsetFamily(Charset.defaultCharset());
+		WrapBufferPoolIF wrapBufferPool = new WrapBufferPool(false, ByteOrder.LITTLE_ENDIAN, 512, 1000);
+
+		StreamBuffer sb = new StreamBuffer(streamCharsetFamily, 10, wrapBufferPool);
+
+		byte[] dst = new byte[1024];
+		final int length = 10;
+		final int offset = 17;
+		
+		try {
+			sb.setPosition(sb.getLimit() - length);
+			sb.getBytes(dst, offset, length);
+		} catch (Exception e) {
+			Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
+			log.log(Level.WARNING, "unknown error", e);
+			fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
+		}
+		
+		for (int i=0; i < length; i++) {
+			try {
+				sb.setPosition(sb.getLimit() - length + i + 1);
+				sb.getBytes(dst, offset, length);
+
+				fail("no BufferUnderflowException");
+			} catch (BufferUnderflowException e) {
+				System.out.printf("BufferUnderflowException::sb.remaining()=%d, length=%d", sb.remaining(), length);
+				System.out.println();
+				
+				StackTraceElement se = e.getStackTrace()[0];
+				/**
+				 * 참고) BufferOverflowException 는 (1) 읽기 혹은 쓰기를 할 만큼의 여유 공간 검사를 수행할때 (2)
+				 * ByteBuffer 조작할때 발생한다. 하여 예외를 던진 클래스가 테스트 대상 클래스라면 읽기 혹은 쓰기 할 만큼의 여유 공간 검사때 던진
+				 * 예외이고 그외의 경우면 ByteBuffer 조작했을때임을 알 수 있다.
+				 */
+				assertEquals(StreamBuffer.class.getName(), se.getClassName());
+				
+			} catch (Exception e) {
+				Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
+				log.log(Level.WARNING, "unknown error", e);
+				fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
+			}
+		}
+		
+		
+	}
+	
+	@Test
+	public void testGetBytes_목적지지정_정상_부분() {
+		StreamCharsetFamily streamCharsetFamily = new StreamCharsetFamily(Charset.defaultCharset());
+		WrapBufferPoolIF wrapBufferPool = new WrapBufferPool(false, ByteOrder.LITTLE_ENDIAN, 512, 1000);
+
+		StreamBuffer sb = new StreamBuffer(streamCharsetFamily, 10, wrapBufferPool);
+
+		Random random = new Random();
+		
+		byte[] src = new byte[1024];
+		
+		byte[] dst = new byte[1024];
+		final int length = 10;
+		final int offset = 17;
+		
+		
+		random.nextBytes(src);
+		
+		try {
+			sb.putBytes(src, offset, length);
+			
+			sb.setPosition(0);
+			sb.getBytes(dst, offset, length);
+		
+			for (int i=0, j=offset; i < length; i++, j++) {
+				assertEquals(i+" 번째 원소 비교", src[j], dst[j]);
+			}
+		} catch (Exception e) {
+			Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
+			log.log(Level.WARNING, "unknown error", e);
+			fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
+		}
+	}
+	
+	@Test
+	public void testGetBytes_목적지지정_정상_전체() {
+		StreamCharsetFamily streamCharsetFamily = new StreamCharsetFamily(Charset.defaultCharset());
+		WrapBufferPoolIF wrapBufferPool = new WrapBufferPool(false, ByteOrder.LITTLE_ENDIAN, 512, 1000);
+
+		StreamBuffer sb = new StreamBuffer(streamCharsetFamily, 10, wrapBufferPool);
+
+		Random random = new Random();
+		
+		byte[] src = new byte[1024];
+		
+		byte[] dst = new byte[1024];
+		final int length = 1024;
+		final int offset = 0;
+		
+		
+		random.nextBytes(src);
+		
+		try {
+			sb.putBytes(src, offset, length);
+			
+			sb.setPosition(0);
+			sb.getBytes(dst, offset, length);			
+			
+			assertArrayEquals(src, dst);
+		} catch (Exception e) {
+			Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
+			log.log(Level.WARNING, "unknown error", e);
+			fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
+		}
+	}
+	
 	@Test
 	public void testGetBytes_버퍼에남은용량이부족한경우() {
 		StreamCharsetFamily streamCharsetFamily = new StreamCharsetFamily(Charset.defaultCharset());
@@ -3137,7 +3410,7 @@ public class StreamBufferTest {
 			}
 		}
 		
-		sb.close();
+		sb.releaseAllWrapBuffers();
 	}
 
 	@Test
@@ -3167,7 +3440,7 @@ public class StreamBufferTest {
 			fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
 		}
 		
-		sb.close();
+		sb.releaseAllWrapBuffers();
 	}
 
 	@Test
@@ -3196,7 +3469,7 @@ public class StreamBufferTest {
 			fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
 		}
 		
-		sb.close();
+		sb.releaseAllWrapBuffers();
 	}
 
 	@Test
@@ -3242,7 +3515,7 @@ public class StreamBufferTest {
 			}
 		}
 		
-		sb.close();
+		sb.releaseAllWrapBuffers();
 	}
 
 	@Test
@@ -3269,7 +3542,7 @@ public class StreamBufferTest {
 			fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
 		}
 		
-		sb.close();
+		sb.releaseAllWrapBuffers();
 	}
 	
 	@Ignore
@@ -3296,7 +3569,7 @@ public class StreamBufferTest {
 			fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
 		}
 		
-		sb.close();
+		sb.releaseAllWrapBuffers();
 	}
 	
 	
@@ -3324,7 +3597,7 @@ public class StreamBufferTest {
 			fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
 		}
 		
-		sb.close();
+		sb.releaseAllWrapBuffers();
 	}
 	
 	@Test
@@ -3377,7 +3650,7 @@ public class StreamBufferTest {
 			}
 		}
 		
-		sb.close();
+		sb.releaseAllWrapBuffers();
 	}
 	
 	@Test
@@ -3404,7 +3677,7 @@ public class StreamBufferTest {
 			fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
 		}
 		
-		sb.close();
+		sb.releaseAllWrapBuffers();
 	}
 	
 	@Test
@@ -3457,7 +3730,7 @@ public class StreamBufferTest {
 			}
 		}
 		
-		sb.close();
+		sb.releaseAllWrapBuffers();
 	}
 	
 	@Test
@@ -3484,7 +3757,7 @@ public class StreamBufferTest {
 			fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
 		}
 		
-		sb.close();
+		sb.releaseAllWrapBuffers();
 	}
 	
 	@Test
@@ -3537,7 +3810,7 @@ public class StreamBufferTest {
 			}
 		}
 		
-		sb.close();
+		sb.releaseAllWrapBuffers();
 	}
 	
 	@Test
@@ -3564,7 +3837,7 @@ public class StreamBufferTest {
 			fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
 		}
 		
-		sb.close();
+		sb.releaseAllWrapBuffers();
 		
 	}
 	
@@ -3618,7 +3891,7 @@ public class StreamBufferTest {
 			}
 		}
 		
-		sb.close();
+		sb.releaseAllWrapBuffers();
 	}
 	
 	@Test
@@ -3660,7 +3933,7 @@ public class StreamBufferTest {
 				fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
 			}
 		} finally {
-			sb.close();
+			sb.releaseAllWrapBuffers();
 		}		
 	}
 	
@@ -3702,7 +3975,7 @@ public class StreamBufferTest {
 				fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
 			}
 		} finally {
-			sb.close();
+			sb.releaseAllWrapBuffers();
 		}		
 	}
 	
@@ -3752,7 +4025,7 @@ public class StreamBufferTest {
 				fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
 			}			
 		} finally {
-			sb.close();
+			sb.releaseAllWrapBuffers();
 		}	
 	}
 	
@@ -3802,7 +4075,7 @@ public class StreamBufferTest {
 				fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
 			}			
 		} finally {
-			sb.close();
+			sb.releaseAllWrapBuffers();
 		}	
 	}
 	

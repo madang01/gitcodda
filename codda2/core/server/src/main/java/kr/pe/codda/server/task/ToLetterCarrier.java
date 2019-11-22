@@ -114,10 +114,17 @@ public class ToLetterCarrier {
 	
 		/*log.info("classLoader[{}], serverTask[{}], create new messageEncoder of messageIDToClient={}",
 				classLoaderOfSererTask.hashCode(), inputMessageID, messageIDToClient);*/
-		StreamBuffer outputMesssageStreamBuffer = null;
+		StreamBuffer outputMesssageStreamBuffer = messageProtocol.createNewMessageStreamBuffer();
+		
 		try {
-			outputMesssageStreamBuffer = messageProtocol.M2S(outputMessage, messageEncoder);
+			messageProtocol.M2S(outputMessage, messageEncoder, outputMesssageStreamBuffer);
+			
+			outputMesssageStreamBuffer.flip();
+			
+			toAcceptedConnection.addOutputMessage(outputMesssageStreamBuffer);
 		} catch (NoMoreDataPacketBufferException e) {
+			outputMesssageStreamBuffer.releaseAllWrapBuffers();
+			
 			String errorMessage = new StringBuilder("fail to build a output message stream[")
 					.append(outputMessage.getMessageID())
 					.append("]::").append(e.getMessage()).toString();
@@ -130,6 +137,8 @@ public class ToLetterCarrier {
 			doAddOutputErrorMessage(toAcceptedConnection, errorType, errorReason, outputMessage, messageProtocol);
 			return;
 		} catch (BodyFormatException e) {
+			outputMesssageStreamBuffer.releaseAllWrapBuffers();
+			
 			String errorMessage = new StringBuilder("fail to build a output message stream[")
 					.append(outputMessage.getMessageID())
 					.append("]::").append(e.getMessage()).toString();
@@ -141,7 +150,9 @@ public class ToLetterCarrier {
 			
 			doAddOutputErrorMessage(toAcceptedConnection, errorType, errorReason, outputMessage, messageProtocol);
 			return;			
-		} catch (Exception | Error e) {	
+		} catch (Exception | Error e) {
+			outputMesssageStreamBuffer.releaseAllWrapBuffers();
+			
 			String errorMessage = new StringBuilder("unknown error::fail to build a output message stream[")
 					.append(outputMessage.getMessageID())
 					.append("]::").append(e.getMessage()).toString();
@@ -157,7 +168,7 @@ public class ToLetterCarrier {
 		}
 		
 		
-		toAcceptedConnection.addOutputMessage(outputMesssageStreamBuffer);
+		
 	}
 
 	private void doAddOutputErrorMessage(AcceptedConnection toAcceptedConnection,
@@ -172,11 +183,16 @@ public class ToLetterCarrier {
 				errorType,
 				errorReason);
 		
-		StreamBuffer selfExnResStreamBuffer = null;
+		StreamBuffer selfExnResStreamBuffer = messageProtocol.createNewMessageStreamBuffer();
 		try {
-			selfExnResStreamBuffer = messageProtocol.M2S(selfExnRes, CommonStaticFinalVars.SELFEXN_ENCODER);
+			messageProtocol.M2S(selfExnRes, CommonStaticFinalVars.SELFEXN_ENCODER, selfExnResStreamBuffer);
 			
+			selfExnResStreamBuffer.flip();
+			
+			toAcceptedConnection.addOutputMessage(selfExnResStreamBuffer);
 		} catch (Exception e) {
+			selfExnResStreamBuffer.releaseAllWrapBuffers();
+			
 			String errorMessage = new StringBuilder()
 					.append("fail to build a output stream of the output message SelfExnRes[")
 					.append(selfExnRes.toString())
@@ -188,8 +204,6 @@ public class ToLetterCarrier {
 			return;
 		}
 		
-		
-		toAcceptedConnection.addOutputMessage(selfExnResStreamBuffer);
 	}
 
 	
@@ -292,11 +306,16 @@ public class ToLetterCarrier {
 				errorType,
 				errorReason);
 
-		StreamBuffer selfExnResStreamBuffer = null;
+		StreamBuffer selfExnResStreamBuffer = messageProtocol.createNewMessageStreamBuffer();
 		try {
-			selfExnResStreamBuffer = messageProtocol.M2S(selfExnRes, CommonStaticFinalVars.SELFEXN_ENCODER);
+			messageProtocol.M2S(selfExnRes, CommonStaticFinalVars.SELFEXN_ENCODER, selfExnResStreamBuffer);
 			
+			selfExnResStreamBuffer.flip();
+		
+			fromAcceptedConnection.addOutputMessage(selfExnResStreamBuffer);
 		} catch (Exception e) {
+			selfExnResStreamBuffer.releaseAllWrapBuffers();
+			
 			Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
 			String errorMessage = new StringBuilder()
 					.append("fail to build a output stream of the output message SelfExnRes[")
@@ -309,6 +328,6 @@ public class ToLetterCarrier {
 			return;
 		}
 		
-		fromAcceptedConnection.addOutputMessage(selfExnResStreamBuffer);
+		
 	}	
 }

@@ -22,7 +22,7 @@ import kr.pe.codda.common.exception.NoMoreDataPacketBufferException;
 import kr.pe.codda.common.exception.NotSupportedException;
 import kr.pe.codda.common.exception.ServerTaskException;
 import kr.pe.codda.common.exception.ServerTaskPermissionException;
-import kr.pe.codda.common.io.InputStreamResource;
+import kr.pe.codda.common.io.IncomingStream;
 import kr.pe.codda.common.io.StreamBuffer;
 import kr.pe.codda.common.io.WrapBufferPoolIF;
 import kr.pe.codda.common.message.AbstractMessage;
@@ -46,8 +46,11 @@ public final class SyncNoShareConnection implements SyncConnectionIF {
 	// private final String serverHost;
 	// private final int serverPort;
 	// private final long socketTimeout;
-	// private final StreamCharsetFamily streamCharsetFamily;
-	// private final int clientDataPacketBufferSize;
+	
+	// private final int clientDataPacketBufferMaxCntPerMessage;
+	// private final StreamCharsetFamily streamCharsetFamily;	
+	// private final WrapBufferPoolIF wrapBufferPool;
+	private final StreamBuffer inputMessageStreamBuffer;
 	private final byte[] socketBuffer;
 
 	private final SocketChannel clientSC;
@@ -59,7 +62,7 @@ public final class SyncNoShareConnection implements SyncConnectionIF {
 	private transient java.util.Date finalReadTime = new java.util.Date();
 	private boolean isQueueIn = true;
 	private final SyncOutputMessageReceiver syncOutputMessageReceiver;
-	private final InputStreamResource isr;
+	private final IncomingStream incomingStream;
 	
 
 	public SyncNoShareConnection(String serverHost, int serverPort, long socketTimeout, 
@@ -76,11 +79,15 @@ public final class SyncNoShareConnection implements SyncConnectionIF {
 		// this.clientDataPacketBufferSize = clientDataPacketBufferSize;
 		this.messageProtocol = messageProtocol;
 		this.clientDataPacketBufferSize = clientDataPacketBufferSize;
+		// this.clientDataPacketBufferMaxCntPerMessage = clientDataPacketBufferMaxCntPerMessage;
+		// this.streamCharsetFamily = streamCharsetFamily;
+		// this.wrapBufferPool = wrapBufferPool;
 
+		inputMessageStreamBuffer = messageProtocol.createNewMessageStreamBuffer();
 		socketBuffer = new byte[clientDataPacketBufferSize];		
 		syncOutputMessageReceiver = new SyncOutputMessageReceiver(messageProtocol);
 		
-		isr = new InputStreamResource(streamCharsetFamily, clientDataPacketBufferMaxCntPerMessage, wrapBufferPool);
+		incomingStream = new IncomingStream(streamCharsetFamily, clientDataPacketBufferMaxCntPerMessage, wrapBufferPool);
 
 		// openSocketChannel();
 		clientSC = SocketChannel.open();
@@ -126,7 +133,8 @@ public final class SyncNoShareConnection implements SyncConnectionIF {
 	public AbstractMessage sendSyncInputMessage(MessageCodecMangerIF messageCodecManger, AbstractMessage inputMessage)
 			throws InterruptedException, IOException, NoMoreDataPacketBufferException, DynamicClassCallException,
 			BodyFormatException, ServerTaskException, ServerTaskPermissionException {
-
+		inputMessageStreamBuffer.clear();		
+		
 		if (Integer.MAX_VALUE == mailID) {
 			mailID = Integer.MIN_VALUE;
 		} else {
@@ -150,9 +158,8 @@ public final class SyncNoShareConnection implements SyncConnectionIF {
 			throw new DynamicClassCallException(errorMessage);
 		}
 
-		StreamBuffer inputMessageStreamBuffer = null;
 		try {
-			inputMessageStreamBuffer = messageProtocol.M2S(inputMessage, messageEncoder);
+			messageProtocol.M2S(inputMessage, messageEncoder, inputMessageStreamBuffer);
 		} catch (NoMoreDataPacketBufferException e) {
 			throw e;
 		} catch (BodyFormatException e) {
@@ -165,11 +172,16 @@ public final class SyncNoShareConnection implements SyncConnectionIF {
 			log.log(Level.SEVERE, errorMessage, e);
 			System.exit(1);
 		}
+		
+		inputMessageStreamBuffer.flip();
+		
 
 		while (! inputMessageStreamBuffer.hasRemaining()) {
-			byte[] buf = inputMessageStreamBuffer.getBytes((int)Math.min(clientDataPacketBufferSize, inputMessageStreamBuffer.remaining()));
+			int length = (int)Math.min(clientDataPacketBufferSize, inputMessageStreamBuffer.remaining());
+			
+			inputMessageStreamBuffer.getBytes(socketBuffer, 0, length);
 			try {
-				clientOutputStream.write(buf);
+				clientOutputStream.write(socketBuffer, 0, length);
 			} catch (IOException e) {
 				String errorMessage = new StringBuilder().append("the io error occurred while writing a input message[")
 						.append(inputMessage.toString())
@@ -189,6 +201,8 @@ public final class SyncNoShareConnection implements SyncConnectionIF {
 				throw new IOException(errorMessage);
 			}
 		}
+		
+		inputMessageStreamBuffer.releaseAllWrapBuffers();
 
 		try {
 			do {
@@ -196,11 +210,11 @@ public final class SyncNoShareConnection implements SyncConnectionIF {
 				// int numberOfReadBytes = receivedDataOnlyStream.read(clientInputStream, socketBuffer);
 				
 				if (numberOfReadBytes > 0) {
-					isr.putBytes(socketBuffer, 0, numberOfReadBytes);
+					incomingStream.putBytes(socketBuffer, 0, numberOfReadBytes);
 					
 					setFinalReadTime();
 
-					messageProtocol.S2O(isr, syncOutputMessageReceiver);
+					messageProtocol.S2O(incomingStream, syncOutputMessageReceiver);
 				}
 
 				if (numberOfReadBytes == -1) {
@@ -238,6 +252,12 @@ public final class SyncNoShareConnection implements SyncConnectionIF {
 			throw new IOException(errorMessage);
 		} finally {
 			Arrays.fill(socketBuffer, CommonStaticFinalVars.ZERO_BYTE);
+		}
+		
+		if (incomingStream.hasRemaining()) {
+			String errorMessage = "메시지 추출 후 잔존 데이터가 남아 있습니다";
+			close();
+			throw new IOException(errorMessage);
 		}
 		
 		if (syncOutputMessageReceiver.isError()) {
@@ -289,7 +309,9 @@ public final class SyncNoShareConnection implements SyncConnectionIF {
 			log.warning(errorMessage);
 		}
 
-		isr.close();
+		inputMessageStreamBuffer.releaseAllWrapBuffers();
+		
+		incomingStream.releaseAllWrapBuffers();
 
 		String infoMessage = new StringBuilder().append("this connection[")
 				.append(clientSC.hashCode())

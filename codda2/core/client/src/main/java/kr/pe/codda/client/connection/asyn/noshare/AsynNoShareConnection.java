@@ -3,6 +3,7 @@ package kr.pe.codda.client.connection.asyn.noshare;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
+import java.net.SocketTimeoutException;
 import java.net.StandardSocketOptions;
 import java.nio.channels.CancelledKeyException;
 import java.nio.channels.SelectionKey;
@@ -29,8 +30,8 @@ import kr.pe.codda.common.exception.NoMoreDataPacketBufferException;
 import kr.pe.codda.common.exception.NotSupportedException;
 import kr.pe.codda.common.exception.ServerTaskException;
 import kr.pe.codda.common.exception.ServerTaskPermissionException;
-import kr.pe.codda.common.io.InputStreamResource;
-import kr.pe.codda.common.io.OutputStreamResource;
+import kr.pe.codda.common.io.IncomingStream;
+import kr.pe.codda.common.io.OutgoingStream;
 import kr.pe.codda.common.io.StreamBuffer;
 import kr.pe.codda.common.io.WrapBufferPoolIF;
 import kr.pe.codda.common.message.AbstractMessage;
@@ -48,11 +49,12 @@ public class AsynNoShareConnection implements AsynConnectionIF, ClientIOEventHan
 	private final String projectName;
 	private final String serverHost;
 	private final int serverPort;
-	// private final long socketTimeout;
-	// private final int clientDataPacketBufferMaxCntPerMessage;
-	// private final int clientAsynOutputMessageQueueCapacity;
+	private final long socketTimeout;	
+	private final int clientDataPacketBufferMaxCntPerMessage;
+	private final StreamCharsetFamily streamCharsetFamily;	
+	private final WrapBufferPoolIF wrapBufferPool;
+ 
 	private final MessageProtocolIF messageProtocol;
-	// private final WrapBufferPoolIF wrapBufferPool;
 	private final ClientTaskMangerIF clientTaskManger;
 	private final AsynConnectedConnectionAdderIF asynConnectedConnectionAdder;
 	private final ClientIOEventControllerIF asynClientIOEventController;
@@ -62,8 +64,8 @@ public class AsynNoShareConnection implements AsynConnectionIF, ClientIOEventHan
 	private java.util.Date finalReadTime = new java.util.Date();
 
 	private final SyncMessageMailbox syncMessageMailbox;
-	private final InputStreamResource isr;
-	private final OutputStreamResource osr;
+	private final IncomingStream incomingStream;
+	private final OutgoingStream outgoingStream;
 
 	
 
@@ -79,11 +81,12 @@ public class AsynNoShareConnection implements AsynConnectionIF, ClientIOEventHan
 		this.projectName = projectName;
 		this.serverHost = serverHost;
 		this.serverPort = serverPort;
-		// this.socketTimeout = socketTimeout;
-		// this.clientDataPacketBufferMaxCntPerMessage = clientDataPacketBufferMaxCntPerMessage;
-		// this.clientAsynOutputMessageQueueCapacity = clientAsynOutputMessageQueueCapacity;
+		this.socketTimeout = socketTimeout;
+		this.clientDataPacketBufferMaxCntPerMessage = clientDataPacketBufferMaxCntPerMessage;
+		this.streamCharsetFamily = streamCharsetFamily;
+		this.wrapBufferPool = wrapBufferPool;
+		
 		this.messageProtocol = messageProtocol;
-		// this.wrapBufferPool = wrapBufferPool;
 		this.clientTaskManger = clientTaskManger;
 		this.asynConnectedConnectionAdder = asynConnectedConnectionAdder;
 		this.asynClientIOEventController = asynClientIOEventController;
@@ -96,8 +99,8 @@ public class AsynNoShareConnection implements AsynConnectionIF, ClientIOEventHan
 		clientSC.setOption(StandardSocketOptions.SO_REUSEADDR, true);
 
 		syncMessageMailbox = new SyncMessageMailbox(this, 1, socketTimeout, messageProtocol);
-		isr = new InputStreamResource(streamCharsetFamily, clientDataPacketBufferMaxCntPerMessage, wrapBufferPool);
-		osr = new OutputStreamResource(clientSC, clientAsynOutputMessageQueueCapacity, socketTimeout);
+		incomingStream = new IncomingStream(streamCharsetFamily, clientDataPacketBufferMaxCntPerMessage, wrapBufferPool);
+		outgoingStream = new OutgoingStream(clientAsynOutputMessageQueueCapacity);
 	}
 
 	/**
@@ -144,23 +147,43 @@ public class AsynNoShareConnection implements AsynConnectionIF, ClientIOEventHan
 			throw new DynamicClassCallException(errorMessage);
 		}
 
-		StreamBuffer inputMessageStreamBuffer = null;
+		StreamBuffer inputMessageStreamBuffer = new StreamBuffer(streamCharsetFamily, clientDataPacketBufferMaxCntPerMessage, wrapBufferPool);;
 		try {
-			inputMessageStreamBuffer = messageProtocol.M2S(inputMessage, messageEncoder);
+			messageProtocol.M2S(inputMessage, messageEncoder, inputMessageStreamBuffer);
+			
+			inputMessageStreamBuffer.flip();
 		} catch (NoMoreDataPacketBufferException e) {
+			inputMessageStreamBuffer.releaseAllWrapBuffers();
 			throw e;
 		} catch (BodyFormatException e) {
+			inputMessageStreamBuffer.releaseAllWrapBuffers();
 			throw e;
 		} catch (HeaderFormatException e) {
+			inputMessageStreamBuffer.releaseAllWrapBuffers();
 			throw e;
 		} catch (Exception e) {
+			inputMessageStreamBuffer.releaseAllWrapBuffers();
 			String errorMessage = new StringBuilder("unkown error::fail to get a input message encoder::")
 					.append(e.getMessage()).toString();
 			log.log(Level.SEVERE, errorMessage, e);
 			System.exit(1);
 		}
 		
-		osr.addInputMessageStreamBuffer(inputMessageStreamBuffer);
+		boolean isSuccess = outgoingStream.offer(inputMessageStreamBuffer, socketTimeout);
+		if (! isSuccess) {
+			String errorMessage = new StringBuilder()
+					.append("소켓 채널[")
+					.append(clientSC.hashCode())
+					.append("]에 지정한 시간[")
+					.append(socketTimeout)
+					.append(" ms] 안에 입력 메시지 내용[")
+					.append(inputMessage.toString())
+					.append("]이 담긴 스트림을 추가하는데 실패하였습니다").toString();
+			
+			inputMessageStreamBuffer.releaseAllWrapBuffers();
+			
+			throw new SocketTimeoutException(errorMessage);
+		}
 
 		try {
 			turnOnSocketWriteMode();				
@@ -238,8 +261,8 @@ public class AsynNoShareConnection implements AsynConnectionIF, ClientIOEventHan
 		asynClientIOEventController.cancel(personalSelectionKey);
 		
 		// FIXME!
-		isr.close();
-		osr.close();
+		incomingStream.releaseAllWrapBuffers();
+		outgoingStream.close();
 	}
 
 	@Override
@@ -336,13 +359,13 @@ public class AsynNoShareConnection implements AsynConnectionIF, ClientIOEventHan
 	@Override
 	public void onRead(SelectionKey selectedKey) throws Exception {
 		// synchronized (readMonitor) {
-		int numberOfReadBytes = isr.read(clientSC);
+		int numberOfReadBytes = incomingStream.read(clientSC);
 		
 		while (numberOfReadBytes > 0) {
 			setFinalReadTime();
-			messageProtocol.S2O(isr, this);
+			messageProtocol.S2O(incomingStream, this);
 
-			numberOfReadBytes = isr.read(clientSC);
+			numberOfReadBytes = incomingStream.read(clientSC);
 		} 
 		
 		if (-1 == numberOfReadBytes) {
@@ -363,10 +386,10 @@ public class AsynNoShareConnection implements AsynConnectionIF, ClientIOEventHan
 	@Override
 	public void onWrite(SelectionKey selectedKey) throws Exception {
 		
-		int numberOfWriteBytes = osr.write();
+		int numberOfWriteBytes = outgoingStream.write(clientSC);
 		
 		while (numberOfWriteBytes > 0) {
-			numberOfWriteBytes = osr.write();
+			numberOfWriteBytes = outgoingStream.write(clientSC);
 		}
 		
 		if (-1 == numberOfWriteBytes) {

@@ -22,7 +22,7 @@ import kr.pe.codda.common.exception.NoMoreDataPacketBufferException;
 import kr.pe.codda.common.exception.NotSupportedException;
 import kr.pe.codda.common.exception.ServerTaskException;
 import kr.pe.codda.common.exception.ServerTaskPermissionException;
-import kr.pe.codda.common.io.InputStreamResource;
+import kr.pe.codda.common.io.IncomingStream;
 import kr.pe.codda.common.io.StreamBuffer;
 import kr.pe.codda.common.io.WrapBufferPoolIF;
 import kr.pe.codda.common.message.AbstractMessage;
@@ -31,21 +31,28 @@ import kr.pe.codda.common.protocol.MessageProtocolIF;
 
 public final class SyncThreadSafeSingleConnection implements SyncConnectionIF {
 	private Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
+	
+	private final Object monitor = new Object();
 
 	
 	private final MessageProtocolIF messageProtocol;
 	private final int clientDataPacketBufferSize;
-	// private WrapBufferPoolIF wrapBufferPool = null;
 
 	private final SocketChannel clientSC;
-	private final Socket clientSocket;
+	private final Socket clientSocket;	
+	// private final int clientDataPacketBufferMaxCntPerMessage;
+	// private final StreamCharsetFamily streamCharsetFamily;	
+	// private final WrapBufferPoolIF wrapBufferPool;
+	private final StreamBuffer inputMessageStreamBuffer;
 	private final InputStream clientInputStream;
 	private final OutputStream clientOutputStream;
 	private final int mailboxID = 1;
 	private transient int mailID = Integer.MIN_VALUE;
-	private transient java.util.Date finalReadTime = new java.util.Date();
-	// private final SyncOutputMessageReceiver syncOutputMessageReceiver;
-	private final InputStreamResource isr;
+	private transient java.util.Date finalReadTime = new java.util.Date();	
+	private final IncomingStream incomingStream;
+	private final byte[] socketBuffer;
+	private final SyncOutputMessageReceiver syncOutputMessageReceiver;
+	
 
 	public SyncThreadSafeSingleConnection(String serverHost, int serverPort, long socketTimeout, 
 			StreamCharsetFamily streamCharsetFamily,
@@ -57,9 +64,14 @@ public final class SyncThreadSafeSingleConnection implements SyncConnectionIF {
 		
 		this.messageProtocol = messageProtocol;
 		this.clientDataPacketBufferSize = clientDataPacketBufferSize;
-
-		// SyncOutputMessageReceiver syncOutputMessageReceiver = new SyncOutputMessageReceiver(messageProtocol);
-		isr = new InputStreamResource(streamCharsetFamily, clientDataPacketBufferMaxCntPerMessage, wrapBufferPool);
+		// this.clientDataPacketBufferMaxCntPerMessage = clientDataPacketBufferMaxCntPerMessage;
+		// this.streamCharsetFamily = streamCharsetFamily;
+		// this.wrapBufferPool = wrapBufferPool;
+		
+		inputMessageStreamBuffer = messageProtocol.createNewMessageStreamBuffer();
+		socketBuffer = new byte[clientDataPacketBufferSize];
+		incomingStream = new IncomingStream(streamCharsetFamily, clientDataPacketBufferMaxCntPerMessage, wrapBufferPool);
+		syncOutputMessageReceiver = new SyncOutputMessageReceiver(messageProtocol);
 
 		clientSC = SocketChannel.open();
 		clientSC.configureBlocking(true);
@@ -135,7 +147,8 @@ public final class SyncThreadSafeSingleConnection implements SyncConnectionIF {
 			log.warning(errorMessage);
 		}
 
-		isr.close();
+		inputMessageStreamBuffer.releaseAllWrapBuffers();
+		incomingStream.releaseAllWrapBuffers();
 
 		String infoMessage = new StringBuilder().append("this connection[")
 				.append(clientSC.hashCode())
@@ -149,132 +162,138 @@ public final class SyncThreadSafeSingleConnection implements SyncConnectionIF {
 			throws InterruptedException, IOException, NoMoreDataPacketBufferException, DynamicClassCallException,
 			BodyFormatException, ServerTaskException, ServerTaskPermissionException {
 
-		// ClassLoader classloaderOfInputMessage = inputMessage.getClass().getClassLoader();
+		final AbstractMessage outputMessage;
+		final AbstractMessageEncoder messageEncoder;
 		
-		byte[] socketBuffer = new byte[clientDataPacketBufferSize];
+		synchronized (monitor) {
+			inputMessageStreamBuffer.clear();
+			
+			syncOutputMessageReceiver.ready(messageCodecManger);
 
-		SyncOutputMessageReceiver syncOutputMessageReceiver = new SyncOutputMessageReceiver(messageProtocol);
-		syncOutputMessageReceiver.ready(messageCodecManger);
+			if (Integer.MAX_VALUE == mailID) {
+				mailID = Integer.MIN_VALUE;
+			} else {
+				mailID++;
+			}
 
-		if (Integer.MAX_VALUE == mailID) {
-			mailID = Integer.MIN_VALUE;
-		} else {
-			mailID++;
-		}
+			inputMessage.messageHeaderInfo.mailboxID = mailboxID;
+			inputMessage.messageHeaderInfo.mailID = mailID;
 
-		inputMessage.messageHeaderInfo.mailboxID = mailboxID;
-		inputMessage.messageHeaderInfo.mailID = mailID;
-
-		AbstractMessageEncoder messageEncoder = null;
-
-		try {
-			messageEncoder = messageCodecManger.getMessageEncoder(inputMessage.getMessageID());
-		} catch (DynamicClassCallException e) {
-			throw e;
-		} catch (Exception e) {
-			String errorMessage = new StringBuilder("unkown error::fail to get a input message encoder::")
-					.append(e.getMessage()).toString();
-			log.log(Level.WARNING, errorMessage, e);
-			throw new DynamicClassCallException(errorMessage);
-		}
-
-		StreamBuffer inputMessageStreamBuffer = null;
-		try {
-			inputMessageStreamBuffer = messageProtocol.M2S(inputMessage, messageEncoder);
-		} catch (NoMoreDataPacketBufferException e) {
-			throw e;
-		} catch (BodyFormatException e) {
-			throw e;
-		} catch (HeaderFormatException e) {
-			throw e;
-		} catch (Exception e) {
-			String errorMessage = new StringBuilder("unkown error::fail to get a input message encoder::")
-					.append(e.getMessage()).toString();
-			log.log(Level.SEVERE, errorMessage, e);
-			System.exit(1);
-		}
-
-		while (! inputMessageStreamBuffer.hasRemaining()) {
-			byte[] buf = inputMessageStreamBuffer.getBytes((int)Math.min(clientDataPacketBufferSize, inputMessageStreamBuffer.remaining()));
 			try {
-				clientOutputStream.write(buf);
-			} catch (IOException e) {
-				String errorMessage = new StringBuilder().append("the io error occurred while writing a input message[")
-						.append(inputMessage.toString())
-						.append("] to the socket[")
-						.append(clientSC.hashCode()).append("], errmsg=")
-						.append(e.getMessage()).toString();
-				close();
-				throw new IOException(errorMessage);
+				messageEncoder = messageCodecManger.getMessageEncoder(inputMessage.getMessageID());
+			} catch (DynamicClassCallException e) {
+				throw e;
 			} catch (Exception e) {
-				String errorMessage = new StringBuilder().append("the unknown error occurred while writing a input message[")
-						.append(inputMessage.toString())
-						.append("] to the socket[")
-						.append(clientSC.hashCode()).append("], errmsg=")
+				String errorMessage = new StringBuilder("unkown error::fail to get a input message encoder::")
 						.append(e.getMessage()).toString();
 				log.log(Level.WARNING, errorMessage, e);
-				close();
-				throw new IOException(errorMessage);
+				throw new DynamicClassCallException(errorMessage);
 			}
-		}
+			
+			try {
+				messageProtocol.M2S(inputMessage, messageEncoder, inputMessageStreamBuffer);
+			} catch (NoMoreDataPacketBufferException e) {
+				throw e;
+			} catch (BodyFormatException e) {
+				throw e;
+			} catch (HeaderFormatException e) {
+				throw e;
+			} catch (Exception e) {
+				String errorMessage = new StringBuilder("unkown error::fail to get a input message encoder::")
+						.append(e.getMessage()).toString();
+				log.log(Level.SEVERE, errorMessage, e);
+				System.exit(1);
+			}
+			
+			inputMessageStreamBuffer.flip();
 
-		try {
-			do {
-				int numberOfReadBytes = clientInputStream.read(socketBuffer);
-				// int numberOfReadBytes = receivedDataOnlyStream.read(clientInputStream, socketBuffer);
+			while (! inputMessageStreamBuffer.hasRemaining()) {
+				int length = (int)Math.min(clientDataPacketBufferSize, inputMessageStreamBuffer.remaining());
 				
-				if (numberOfReadBytes > 0) {
-					isr.putBytes(socketBuffer, 0, numberOfReadBytes);
-					
-					setFinalReadTime();
-
-					messageProtocol.S2O(isr, syncOutputMessageReceiver);
-				}
-
-				if (numberOfReadBytes == -1) {
-					String errorMessage = new StringBuilder("this socket channel[").append(clientSC.hashCode())
-							.append("] has reached end-of-stream").toString();
-
-					log.warning(errorMessage);
+				inputMessageStreamBuffer.getBytes(socketBuffer, 0, length);
+				try {
+					clientOutputStream.write(socketBuffer, 0, length);
+				} catch (IOException e) {
+					String errorMessage = new StringBuilder().append("the io error occurred while writing a input message[")
+							.append(inputMessage.toString())
+							.append("] to the socket[")
+							.append(clientSC.hashCode()).append("], errmsg=")
+							.append(e.getMessage()).toString();
+					close();
+					throw new IOException(errorMessage);
+				} catch (Exception e) {
+					String errorMessage = new StringBuilder().append("the unknown error occurred while writing a input message[")
+							.append(inputMessage.toString())
+							.append("] to the socket[")
+							.append(clientSC.hashCode()).append("], errmsg=")
+							.append(e.getMessage()).toString();
+					log.log(Level.WARNING, errorMessage, e);
 					close();
 					throw new IOException(errorMessage);
 				}
+			}
+			
+			inputMessageStreamBuffer.releaseAllWrapBuffers();
 
-				
+			try {
+				do {
+					int numberOfReadBytes = clientInputStream.read(socketBuffer);
+					
+					if (numberOfReadBytes > 0) {
+						incomingStream.putBytes(socketBuffer, 0, numberOfReadBytes);
+						
+						setFinalReadTime();
 
-				// log.info("numberOfReadBytes={}, readableMiddleObjectWrapperQueue.isEmpty={}",
-				// numberOfReadBytes, readableMiddleObjectWrapperQueue.isEmpty());
-			} while (! syncOutputMessageReceiver.isReceivedMessage());
+						messageProtocol.S2O(incomingStream, syncOutputMessageReceiver);
+					}
 
-		} catch (NoMoreDataPacketBufferException e) {
-			String errorMessage = new StringBuilder()
-					.append("the no more data packet buffer error occurred while reading the socket[")
-					.append(clientSC.hashCode()).append("], errmsg=").append(e.getMessage()).toString();
-			close();
+					if (numberOfReadBytes == -1) {
+						String errorMessage = new StringBuilder("this socket channel[").append(clientSC.hashCode())
+								.append("] has reached end-of-stream").toString();
 
-			throw new NoMoreDataPacketBufferException(errorMessage);
-		} catch (IOException e) {
-			String errorMessage = new StringBuilder().append("the io error occurred while reading the socket[")
-					.append(clientSC.hashCode()).append("], errmsg=").append(e.getMessage()).toString();			
-			close();
-			throw new IOException(errorMessage);
-		} catch (Exception e) {
-			String errorMessage = new StringBuilder().append("the unknown error occurred while reading the socket[")
-					.append(clientSC.hashCode()).append("], errmsg=").append(e.getMessage()).toString();
-			log.log(Level.WARNING, errorMessage, e);
-			close();
-			throw new IOException(errorMessage);
-		} finally {
-			Arrays.fill(socketBuffer, CommonStaticFinalVars.ZERO_BYTE);
-		}
-		
-		if (syncOutputMessageReceiver.isError()) {
-			String errorMessage = "there are one or more recevied messages";
-			close();
-			throw new IOException(errorMessage);
-		}
+						log.warning(errorMessage);
+						close();
+						throw new IOException(errorMessage);
+					}
+					
+				} while (! syncOutputMessageReceiver.isReceivedMessage());
 
-		AbstractMessage outputMessage = syncOutputMessageReceiver.getReceiveMessage();
+			} catch (NoMoreDataPacketBufferException e) {
+				String errorMessage = new StringBuilder()
+						.append("the no more data packet buffer error occurred while reading the socket[")
+						.append(clientSC.hashCode()).append("], errmsg=").append(e.getMessage()).toString();
+				close();
+
+				throw new NoMoreDataPacketBufferException(errorMessage);
+			} catch (IOException e) {
+				String errorMessage = new StringBuilder().append("the io error occurred while reading the socket[")
+						.append(clientSC.hashCode()).append("], errmsg=").append(e.getMessage()).toString();			
+				close();
+				throw new IOException(errorMessage);
+			} catch (Exception e) {
+				String errorMessage = new StringBuilder().append("the unknown error occurred while reading the socket[")
+						.append(clientSC.hashCode()).append("], errmsg=").append(e.getMessage()).toString();
+				log.log(Level.WARNING, errorMessage, e);
+				close();
+				throw new IOException(errorMessage);
+			} finally {
+				Arrays.fill(socketBuffer, CommonStaticFinalVars.ZERO_BYTE);
+			}
+			
+			if (incomingStream.hasRemaining()) {
+				String errorMessage = "메시지 추출 후 잔존 데이터가 남아 있습니다";
+				close();
+				throw new IOException(errorMessage);
+			}
+			
+			if (syncOutputMessageReceiver.isError()) {
+				String errorMessage = "there are one or more recevied messages";
+				close();
+				throw new IOException(errorMessage);
+			}
+			
+			outputMessage = syncOutputMessageReceiver.getReceiveMessage();
+		}		
 
 		return outputMessage;
 	}

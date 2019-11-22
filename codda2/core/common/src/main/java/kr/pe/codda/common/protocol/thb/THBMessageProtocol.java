@@ -28,7 +28,7 @@ import kr.pe.codda.common.etc.StreamCharsetFamily;
 import kr.pe.codda.common.exception.BodyFormatException;
 import kr.pe.codda.common.exception.HeaderFormatException;
 import kr.pe.codda.common.exception.NoMoreDataPacketBufferException;
-import kr.pe.codda.common.io.InputStreamResource;
+import kr.pe.codda.common.io.IncomingStream;
 import kr.pe.codda.common.io.StreamBuffer;
 import kr.pe.codda.common.io.WrapBufferPoolIF;
 import kr.pe.codda.common.message.AbstractMessage;
@@ -113,21 +113,31 @@ public class THBMessageProtocol implements MessageProtocolIF {
 	}
 	
 	
+	public StreamBuffer createNewMessageStreamBuffer() {
+		StreamBuffer outputMesssageStreamBuffer = new StreamBuffer(streamCharsetFamily, dataPacketBufferMaxCntPerMessage, 
+				wrapBufferPool);
+		
+		return outputMesssageStreamBuffer;
+	}
+	
 	/**
-	 * 단위 테스트 특성상 이 메소드에 대한 기능 검증은 {@link #S2O(InputStreamResource, ReceivedMessageForwarderIF) } 와 쌍을 이루어 이루어진다.
+	 * 단위 테스트 특성상 이 메소드에 대한 기능 검증은 {@link #S2O(IncomingStream, ReceivedMessageForwarderIF) } 와 쌍을 이루어 이루어진다.
 	 * 하여 단위테스트를 원할 하게 하기 위해서 반환되는 리턴값의 타입을 InputStreamResource 으로 한다.
 	 */
 	@Override
-	public StreamBuffer M2S(AbstractMessage inputMessage, AbstractMessageEncoder messageEncoder) 
+	public void M2S(AbstractMessage inputMessage, AbstractMessageEncoder messageEncoder, StreamBuffer targetStreamBuffer) 
 			throws NoMoreDataPacketBufferException, BodyFormatException, HeaderFormatException {
 		String messageID = inputMessage.getMessageID();
 		int mailboxID = inputMessage.messageHeaderInfo.mailboxID;
 		int mailID = inputMessage.messageHeaderInfo.mailID;
 		
+		long messageStartPostion = targetStreamBuffer.getPosition();
+				
 		/**
 		 * 참고) 단위 테스트 특성상  쉽게 하기 위해서 StreamBuffer 이 아닌 InputStreamResource 클래스로 인스턴스로 만듬.
 		 */
-		StreamBuffer messageOutputStream = new InputStreamResource(streamCharsetFamily, dataPacketBufferMaxCntPerMessage, wrapBufferPool);
+		// StreamBuffer messageOutputStream = new IncomingStream(streamCharsetFamily, dataPacketBufferMaxCntPerMessage, wrapBufferPool);
+		
 
 		/**
 		 * THB 프로토콜 구조 = 헤더  + 바디
@@ -135,16 +145,17 @@ public class THBMessageProtocol implements MessageProtocolIF {
 		 * 바디 = 바디 헤더 + 메시지 바디 
 		 * 바디 헤더 = 1 byte unsigned byte 메시지 식별자 크기 + 2 byte unsigned short 메일박스 식별자 + 4 byte int 메일 식별자
 		 * 메시지 바디 = 메시지 내용 
-		 */
-		long bodyStartPosition = messageHeaderSize;
+		 */		
+		
+		long bodyStartPosition = messageStartPostion + messageHeaderSize;
 		
 		/** 바디헤더 */
 		try {
-			messageOutputStream.setPosition(messageHeaderSize);
+			targetStreamBuffer.setPosition(bodyStartPosition);
 			
-			messageOutputStream.putUBPascalString(messageID, headerCharset);
-			messageOutputStream.putUnsignedShort(mailboxID);
-			messageOutputStream.putInt(mailID);
+			targetStreamBuffer.putUBPascalString(messageID, headerCharset);
+			targetStreamBuffer.putUnsignedShort(mailboxID);
+			targetStreamBuffer.putInt(mailID);
 		} catch (NoMoreDataPacketBufferException e) {
 			throw e;
 		} catch (Exception e) {
@@ -157,7 +168,7 @@ public class THBMessageProtocol implements MessageProtocolIF {
 		
 		/** 메시지 바디 */
 		try {
-			messageEncoder.encode(inputMessage, thbSingleItemEncoder, messageOutputStream);
+			messageEncoder.encode(inputMessage, thbSingleItemEncoder, targetStreamBuffer);
 		} catch (NoMoreDataPacketBufferException e) {
 			throw e;
 		} catch (Exception e) {
@@ -171,12 +182,12 @@ public class THBMessageProtocol implements MessageProtocolIF {
 			throw new BodyFormatException(errorMessage);
 		}
 		
-		long bodyEndPostion = messageOutputStream.getPosition();
+		long bodyEndPostion = targetStreamBuffer.getPosition();
 
 		/** 헤더 */		
 		try {
-			messageOutputStream.setPosition(0);
-			messageOutputStream.putLong(bodyEndPostion  - bodyStartPosition);
+			targetStreamBuffer.setPosition(messageStartPostion);
+			targetStreamBuffer.putLong(bodyEndPostion  - bodyStartPosition);
 		} catch (NoMoreDataPacketBufferException e) {
 			throw e;
 		} catch (Exception e) {
@@ -190,19 +201,16 @@ public class THBMessageProtocol implements MessageProtocolIF {
 			throw new HeaderFormatException(errorMessage);
 		}	
 		
-		messageOutputStream.setPosition(0);
-		messageOutputStream.setLimit(bodyEndPostion);
+		targetStreamBuffer.setPosition(bodyEndPostion);
+		
 		
 		// log.debug(messageHeader.toString());
 		// log.debug(firstWorkBuffer.toString());
-		
-		
-		return messageOutputStream;
 	}
 	
 	
 	@Override
-	public void S2O(InputStreamResource inputStreamResource, ReceivedMessageForwarderIF receivedMessageForwarder) 
+	public void S2O(IncomingStream inputStreamResource, ReceivedMessageForwarderIF receivedMessageForwarder) 
 			throws HeaderFormatException, NoMoreDataPacketBufferException, InterruptedException {		
 		THBMessageHeader messageHeader = (THBMessageHeader)inputStreamResource.getUserDefObject();		
 				
@@ -283,7 +291,7 @@ public class THBMessageProtocol implements MessageProtocolIF {
 						try {
 							receivedMessageForwarder.putReceivedMessage(mailboxID, mailID, messageID, messageInputStream);
 						} catch(InterruptedException e) {
-							messageInputStream.close();							
+							messageInputStream.releaseAllWrapBuffers();							
 							throw e;
 						}
 
@@ -305,29 +313,8 @@ public class THBMessageProtocol implements MessageProtocolIF {
 	
 	
 	public AbstractMessage O2M(AbstractMessageDecoder messageDecoder, int mailboxID, int mailID, String messageID, Object readableMiddleObject) throws BodyFormatException {
-		AbstractMessage receivedMessage = null;
-		try {
-			receivedMessage = CommonStaticUtil.O2M(messageDecoder, thbSingleItemDecoder, mailboxID, mailID, messageID, readableMiddleObject);
-		} catch(IllegalArgumentException e) {
-			if (null != readableMiddleObject && readableMiddleObject instanceof StreamBuffer) {
-				StreamBuffer sb = (StreamBuffer)readableMiddleObject;
-				try {
-					sb.close();
-				} catch(Exception e1) {
-					String errorMessage = new StringBuilder()
-							.append("fail to close the message body stream[messageID=")
-							.append(messageID)
-							.append(", mailboxID=")
-							.append(mailboxID)
-							.append(", mailID=")
-							.append(mailID)
-							.append("] body stream").toString();
-					Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
-					log.log(Level.WARNING, errorMessage, e1);
-				}
-			}
-			throw e;
-		}
+		AbstractMessage receivedMessage = CommonStaticUtil.O2M(this, messageDecoder, thbSingleItemDecoder, mailboxID, mailID, messageID, readableMiddleObject);
+		
 		return receivedMessage;
 	}
 	
@@ -340,12 +327,13 @@ public class THBMessageProtocol implements MessageProtocolIF {
 		}
 		
 		StreamBuffer sb = (StreamBuffer)readableMiddleObject;
-		sb.close();		
+		sb.releaseAllWrapBuffers();		
 	}
 	
-	@Override
+	/*
 	public int getDataPacketBufferMaxCntPerMessage() {
 		return dataPacketBufferMaxCntPerMessage;
 	}
+	*/
 	
 }

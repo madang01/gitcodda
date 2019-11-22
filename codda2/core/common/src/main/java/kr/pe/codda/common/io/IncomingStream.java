@@ -12,10 +12,10 @@ import kr.pe.codda.common.exception.NoMoreDataPacketBufferException;
  * @author Won Jonghoon
  *
  */
-public final class InputStreamResource extends StreamBuffer {
+public final class IncomingStream extends StreamBuffer {
 	private Object userDefObject = null;
 
-	public InputStreamResource(StreamCharsetFamily streamCharsetFamily, int dataPacketBufferMaxCntPerMessage, WrapBufferPoolIF wrapBufferPool) {
+	public IncomingStream(StreamCharsetFamily streamCharsetFamily, int dataPacketBufferMaxCntPerMessage, WrapBufferPoolIF wrapBufferPool) {
 		super(streamCharsetFamily, dataPacketBufferMaxCntPerMessage, wrapBufferPool);
 	}
 	
@@ -66,9 +66,10 @@ public final class InputStreamResource extends StreamBuffer {
 		}
 		
 		
-		long cutEndPosition = wantedSizeToCut - 1;
-		int cutEndPostionIndex = (int) ( cutEndPosition / dataPacketBufferSize);
-		int cutEndPostionOffset = (int) (cutEndPosition % dataPacketBufferSize);
+		long cuttedBufferEndPosition = wantedSizeToCut - 1;
+		int bufferIndexForEndPostionOfCuttedBuffer = (int) ( cuttedBufferEndPosition / dataPacketBufferSize);
+		// int bufferOffsetForCutEndPostion = (int) (cutEndPosition % dataPacketBufferSize);
+		int numOfCuttedBuffers = bufferIndexForEndPostionOfCuttedBuffer + 1;
 		
 		// FIXME!
 		/*
@@ -82,25 +83,22 @@ public final class InputStreamResource extends StreamBuffer {
 				.append("]").toString());
 				*/		
 		
-		WrapBuffer targetWrapBufferArray[] = new WrapBuffer[cutEndPostionIndex + 1];
-		ByteBuffer targetByteBufferArray[] = new ByteBuffer[cutEndPostionIndex + 1];
+		WrapBuffer targetWrapBufferArray[] = new WrapBuffer[numOfCuttedBuffers];
+		ByteBuffer targetByteBufferArray[] = new ByteBuffer[numOfCuttedBuffers];
 		
-		for (int i = 0; i <= cutEndPostionIndex; i++) {
+		for (int i = 0; i <= bufferIndexForEndPostionOfCuttedBuffer; i++) {
 			targetWrapBufferArray[i] = wrapBufferArray[i];
 			targetByteBufferArray[i] = byteBufferArray[i];
 			
 			wrapBufferArray[i] = null;
 			byteBufferArray[i] = null;
-		}
-
-		/** 잘려진 크기에 맞도록 스트림이 담긴 마지막 버퍼의 limit 속성 설정 */
-		targetByteBufferArray[cutEndPostionIndex].limit(cutEndPostionOffset + 1);
+		}		
 				
 		if ((position - wantedSizeToCut) > 0) {
-			int remaingStartIndex = (int) (wantedSizeToCut / dataPacketBufferSize);
-			int remaingStartOffset = (int) (wantedSizeToCut % dataPacketBufferSize);
+			int bufferIndexForStartPostionOfRemaingBuffer = (int) (wantedSizeToCut / dataPacketBufferSize);
+			int bufferOffsetForStartPostionOfRemaingBuffer = (int) (wantedSizeToCut % dataPacketBufferSize);
 			
-			int remaingEndOffset = (int) ((position - 1) % dataPacketBufferSize);
+			
 			
 			// FIXME!
 			/*
@@ -115,30 +113,32 @@ public final class InputStreamResource extends StreamBuffer {
 					*/
 			
 			
-			ByteBuffer remaingStartByteBuffer = byteBufferArray[remaingStartIndex];
+			ByteBuffer remaingStartByteBuffer = byteBufferArray[bufferIndexForStartPostionOfRemaingBuffer];
 			if (null == remaingStartByteBuffer) {
 				/** (1) 잘려진 스트림을 담고 있는 마지막 랩 버퍼에 잔존 데이터가 존재하는 경우 */
+				
+				int bufferOffsetForEndPostionOfRemaingBuffer = (int) ((position - 1) % dataPacketBufferSize);
 				
 				// FIXME!
 				// log.log(Level.INFO, "잘려진 스트림을 담고 있는 마지막 랩 버퍼에 잔존 데이터가 존재하는 경우");
 				
-				ByteBuffer dupCuttingEndByteBuffer = targetByteBufferArray[cutEndPostionIndex].duplicate();
+				ByteBuffer dupCuttingEndByteBuffer = targetByteBufferArray[bufferIndexForEndPostionOfCuttedBuffer].duplicate();
 				dupCuttingEndByteBuffer.limit(dupCuttingEndByteBuffer.capacity());
-				dupCuttingEndByteBuffer.position(remaingStartOffset);
+				dupCuttingEndByteBuffer.position(bufferOffsetForStartPostionOfRemaingBuffer);
 				
 				ByteBuffer remaingEndByteBuffer = byteBufferArray[remaingEndIndex];
 				
 				/** (1-1) 잔존 데이터를 담고 있는 마지막 버퍼의 limit 속성 지정 하기 */				
 				if (null == remaingEndByteBuffer) {
 					/** (1-1-1) 잘려진 스트림을 담고 있는 마지막 랩 버퍼에 잔존 데이터가 모두 존재하는 경우 잔존 데이터를 담고 있는 마지막 버퍼는 잘려진 스트림을 담고 있는 마지막 랩 버퍼이다 */
-					dupCuttingEndByteBuffer.limit(remaingEndOffset + 1);
+					dupCuttingEndByteBuffer.limit(bufferOffsetForEndPostionOfRemaingBuffer + 1);
 					
 					// FIXME!
 					// log.log(Level.INFO, "after dupCuttingEndByteBuffer="+dupCuttingEndByteBuffer.toString());
 					// log.log(Level.INFO, "after remaingEndByteBuffer is null");
 				} else {
 					/** (1-1-2) 잘려진 스트림을 담고 있는 마지막 랩 버퍼에 잔존 데이터 일부만 존재하는 경우 잔존 데이터를 담고 있는 마지막 버퍼는 잔존데이터를 담고 있는 스트림의 마지막 랩 버퍼이다 */
-					remaingEndByteBuffer.limit(remaingEndOffset + 1);
+					remaingEndByteBuffer.limit(bufferOffsetForEndPostionOfRemaingBuffer + 1);
 					
 					// FIXME!
 					// log.log(Level.INFO, "after dupCuttingEndByteBuffer="+dupCuttingEndByteBuffer.toString());
@@ -160,7 +160,7 @@ public final class InputStreamResource extends StreamBuffer {
 				
 				/** (1-2-3) 스트림에 남아 있는 잔존 데이터를 앞쪽으로 옮기기   */
 				int newLastIndex=0;
-				for (int i=remaingStartIndex + 1; i <= remaingEndIndex; i++) {
+				for (int i=bufferIndexForStartPostionOfRemaingBuffer + 1; i <= remaingEndIndex; i++) {
 					
 					/** 잔존 데이터 담긴 랩 버퍼의 내용을 스트림 앞쪽으로 밀어 넣기 */
 					if (byteBufferArray[i].remaining() > byteBufferArray[newLastIndex].remaining()) {
@@ -205,7 +205,7 @@ public final class InputStreamResource extends StreamBuffer {
 				// log.log(Level.INFO, "잘려진 스트림을 담고 있는 랩 버퍼에는 잔존 데이터가 없는 경우");
 
 				int newLastIndex=-1;
-				for (int i=remaingStartIndex; i <= remaingEndIndex; i++) {
+				for (int i=bufferIndexForStartPostionOfRemaingBuffer; i <= remaingEndIndex; i++) {
 					newLastIndex++;
 					wrapBufferArray[newLastIndex] = wrapBufferArray[i];
 					byteBufferArray[newLastIndex] = byteBufferArray[i];

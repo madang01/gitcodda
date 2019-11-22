@@ -23,7 +23,7 @@ import kr.pe.codda.common.etc.CommonStaticFinalVars;
 import kr.pe.codda.common.etc.StreamCharsetFamily;
 import kr.pe.codda.common.exception.BodyFormatException;
 import kr.pe.codda.common.exception.DynamicClassCallException;
-import kr.pe.codda.common.io.InputStreamResource;
+import kr.pe.codda.common.io.IncomingStream;
 import kr.pe.codda.common.io.StreamBuffer;
 import kr.pe.codda.common.io.WrapBufferPool;
 import kr.pe.codda.common.io.WrapBufferPoolIF;
@@ -76,7 +76,7 @@ public class DHBMessageProtocolTest {
 		Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
 
 		int dataPacketBufferMaxCntPerMessage = 10;
-		StreamCharsetFamily scf = new StreamCharsetFamily(Charset.forName("utf-8"));
+		StreamCharsetFamily streamCharsetFamily = new StreamCharsetFamily(Charset.forName("utf-8"));
 
 		ByteOrder streamByteOrder = ByteOrder.LITTLE_ENDIAN;
 		WrapBufferPoolIF wrapBufferPool = null;
@@ -91,7 +91,7 @@ public class DHBMessageProtocolTest {
 			fail("unknown error::" + e.getMessage());
 		}
 
-		DHBMessageProtocol dhbMessageProtocol = new DHBMessageProtocol(dataPacketBufferMaxCntPerMessage, scf,
+		DHBMessageProtocol dhbMessageProtocol = new DHBMessageProtocol(dataPacketBufferMaxCntPerMessage, streamCharsetFamily,
 				wrapBufferPool);
 
 		SelfExnResEncoder selfExnEncoder = new SelfExnResEncoder();
@@ -224,7 +224,7 @@ public class DHBMessageProtocolTest {
 					if (null != readableMiddleObject && readableMiddleObject instanceof StreamBuffer) {
 						StreamBuffer sb = (StreamBuffer) readableMiddleObject;
 						try {
-							sb.close();
+							sb.releaseAllWrapBuffers();
 						} catch (Exception e) {
 							String errorMessage = new StringBuilder()
 									.append("fail to close the message body stream[messageID=").append(messageID)
@@ -264,23 +264,21 @@ public class DHBMessageProtocolTest {
 		for (int i = 0; i < retryCount; i++) {
 			long beforeLocalTime = new Date().getTime();
 
-			StreamBuffer sb = null;
+			IncomingStream isr = new IncomingStream(streamCharsetFamily, dataPacketBufferMaxCntPerMessage, 
+					wrapBufferPool);
 			try {
-				sb = dhbMessageProtocol.M2S(expectedSelfExnRes, selfExnEncoder);
+				dhbMessageProtocol.M2S(expectedSelfExnRes, selfExnEncoder, isr);
 			} catch (Exception e) {
 				String errorMessage = "error::" + e.getMessage();
 				log.log(Level.WARNING, "" + e.getMessage(), e);
 				fail(errorMessage);
 			}
 
-			// log.info("2");
+			// log.info(isr.toString());
 
 			// log.info("3");
 			// FIXME!
 
-			InputStreamResource isr = (InputStreamResource) sb;
-			isr.setPosition(isr.getLimit());
-			isr.setLimit(isr.getCapacity());
 
 			try {
 				dhbMessageProtocol.S2O(isr, receivedMessageForwarder);

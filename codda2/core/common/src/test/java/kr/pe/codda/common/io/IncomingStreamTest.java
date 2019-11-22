@@ -22,7 +22,7 @@ import kr.pe.codda.common.etc.CommonStaticFinalVars;
 import kr.pe.codda.common.etc.StreamCharsetFamily;
 import kr.pe.codda.common.util.CustomLogFormatter;
 
-public class InputStreamResourceTest {
+public class IncomingStreamTest {
 
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
@@ -60,7 +60,7 @@ public class InputStreamResourceTest {
 		StreamCharsetFamily streamCharsetFamily = new StreamCharsetFamily(Charset.forName("UTF-8"));
 		WrapBufferPoolIF wrapBufferPool = new WrapBufferPool(false, ByteOrder.BIG_ENDIAN, 512, 10);
 
-		InputStreamResource isr = new InputStreamResource(streamCharsetFamily, 3, wrapBufferPool);
+		IncomingStream isr = new IncomingStream(streamCharsetFamily, 3, wrapBufferPool);
 
 		int[] wantedSizesToCut = { 0, -1, -2 };
 
@@ -90,7 +90,7 @@ public class InputStreamResourceTest {
 		StreamCharsetFamily streamCharsetFamily = new StreamCharsetFamily(Charset.forName("UTF-8"));
 		WrapBufferPoolIF wrapBufferPool = new WrapBufferPool(false, ByteOrder.BIG_ENDIAN, 512, 10);
 
-		InputStreamResource isr = new InputStreamResource(streamCharsetFamily, 3, wrapBufferPool);
+		IncomingStream isr = new IncomingStream(streamCharsetFamily, 3, wrapBufferPool);
 
 		
 		try {
@@ -144,7 +144,7 @@ public class InputStreamResourceTest {
 			sourceBytes = new byte[numberOfReceviedBytes];
 			random.nextBytes(sourceBytes);
 			
-			InputStreamResource isr = new InputStreamResource(streamCharsetFamily, 3, wrapBufferPool);
+			IncomingStream isr = new IncomingStream(streamCharsetFamily, 3, wrapBufferPool);
 			
 			try {
 				isr.putBytes(sourceBytes);
@@ -162,14 +162,14 @@ public class InputStreamResourceTest {
 
 					assertArrayEquals(sourceBytes, acutalBytes);
 				} finally {
-					sb.close();
+					sb.releaseAllWrapBuffers();
 				}
 			} catch (Exception e) {
 				Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
 				log.log(Level.WARNING, "unknown error", e);
 				fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
 			} finally {
-				isr.close();
+				isr.releaseAllWrapBuffers();
 			}			
 		}		
 	}
@@ -184,7 +184,7 @@ public class InputStreamResourceTest {
 		
 		int cuttingSize = wrapBufferPool.getDataPacketBufferSize();
 		
-		InputStreamResource isr = new InputStreamResource(streamCharsetFamily, 5, wrapBufferPool);		
+		IncomingStream isr = new IncomingStream(streamCharsetFamily, 5, wrapBufferPool);		
 		try {
 			isr.putBytes(sourceBytes);
 			
@@ -229,14 +229,14 @@ public class InputStreamResourceTest {
 				}
 				
 			} finally {
-				sb.close();
+				sb.releaseAllWrapBuffers();
 			}
 		} catch (Exception e) {
 			Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
 			log.log(Level.WARNING, "unknown error", e);
 			fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
 		} finally {
-			isr.close();
+			isr.releaseAllWrapBuffers();
 		}	
 	}
 	
@@ -250,7 +250,7 @@ public class InputStreamResourceTest {
 		
 		int cuttingSize = wrapBufferPool.getDataPacketBufferSize()*2 + 10;
 		
-		InputStreamResource isr = new InputStreamResource(streamCharsetFamily, 5, wrapBufferPool);		
+		IncomingStream isr = new IncomingStream(streamCharsetFamily, 5, wrapBufferPool);		
 		try {
 			isr.putBytes(sourceBytes);
 			
@@ -296,14 +296,14 @@ public class InputStreamResourceTest {
 
 				
 			} finally {
-				sb.close();
+				sb.releaseAllWrapBuffers();
 			}
 		} catch (Exception e) {
 			Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
 			log.log(Level.WARNING, "unknown error", e);
 			fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
 		} finally {
-			isr.close();
+			isr.releaseAllWrapBuffers();
 		}	
 	}
 	
@@ -317,7 +317,7 @@ public class InputStreamResourceTest {
 		
 		int cuttingSize = wrapBufferPool.getDataPacketBufferSize() - wrapBufferPool.getDataPacketBufferSize()/2;
 		
-		InputStreamResource isr = new InputStreamResource(streamCharsetFamily, 5, wrapBufferPool);		
+		IncomingStream isr = new IncomingStream(streamCharsetFamily, 5, wrapBufferPool);		
 		try {
 			isr.putBytes(sourceBytes);
 			
@@ -363,14 +363,14 @@ public class InputStreamResourceTest {
 
 				
 			} finally {
-				sb.close();
+				sb.releaseAllWrapBuffers();
 			}
 		} catch (Exception e) {
 			Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
 			log.log(Level.WARNING, "unknown error", e);
 			fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
 		} finally {
-			isr.close();
+			isr.releaseAllWrapBuffers();
 		}	
 	}
 	
@@ -388,7 +388,7 @@ public class InputStreamResourceTest {
 			random.nextBytes(sourceBytes);		
 			
 			for (int cuttingSize = 1; cuttingSize <= sourceBytesLength; cuttingSize++) {
-				InputStreamResource isr = new InputStreamResource(streamCharsetFamily, 5, wrapBufferPool);		
+				IncomingStream isr = new IncomingStream(streamCharsetFamily, 5, wrapBufferPool);		
 				try {
 					isr.putBytes(sourceBytes);
 					
@@ -396,6 +396,7 @@ public class InputStreamResourceTest {
 					
 					try {
 						isr.checkValid();
+						// sb.checkValid();
 						
 						// Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
 						// log.log(Level.INFO, sb.toString());
@@ -434,14 +435,14 @@ public class InputStreamResourceTest {
 
 						
 					} finally {
-						sb.close();
+						sb.releaseAllWrapBuffers();
 					}
 				} catch (Exception e) {
 					Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
 					log.log(Level.WARNING, "unknown error", e);
 					fail("알수 없는 에러발생, 에러 내용은 로그 참조할것");
 				} finally {
-					isr.close();
+					isr.releaseAllWrapBuffers();
 				}	
 			}
 			

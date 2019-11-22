@@ -19,7 +19,7 @@ package kr.pe.codda.common.protocol;
 import kr.pe.codda.common.exception.BodyFormatException;
 import kr.pe.codda.common.exception.HeaderFormatException;
 import kr.pe.codda.common.exception.NoMoreDataPacketBufferException;
-import kr.pe.codda.common.io.InputStreamResource;
+import kr.pe.codda.common.io.IncomingStream;
 import kr.pe.codda.common.io.StreamBuffer;
 import kr.pe.codda.common.message.AbstractMessage;
 import kr.pe.codda.common.message.codec.AbstractMessageDecoder;
@@ -33,11 +33,16 @@ import kr.pe.codda.common.message.codec.AbstractMessageEncoder;
  */
 public interface MessageProtocolIF {
 	
+	/**
+	 * @return 메시지가 담길 신규 스트림 버퍼를 반환한다 
+	 */
+	public StreamBuffer createNewMessageStreamBuffer();
 	
-	public StreamBuffer M2S(AbstractMessage inputMessage, AbstractMessageEncoder messageEncoder) 
+	
+	public void M2S(AbstractMessage inputMessage, AbstractMessageEncoder messageEncoder, StreamBuffer targetMessageStreamBuffer) 
 			throws NoMoreDataPacketBufferException, BodyFormatException, HeaderFormatException;
 	
-	public void S2O(InputStreamResource inputStreamResource, ReceivedMessageForwarderIF receivedMessageForwarder) 
+	public void S2O(IncomingStream inputStreamResource, ReceivedMessageForwarderIF receivedMessageForwarder) 
 					throws HeaderFormatException, NoMoreDataPacketBufferException, InterruptedException;
 	
 	
@@ -45,6 +50,6 @@ public interface MessageProtocolIF {
 	
 	public void closeReadableMiddleObject(int mailboxID, int mailID, String messageID, Object readableMiddleObject);
 	
-	public int getDataPacketBufferMaxCntPerMessage();
+	// public int getDataPacketBufferMaxCntPerMessage();
 }
 

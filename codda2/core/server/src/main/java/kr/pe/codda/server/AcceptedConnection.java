@@ -29,8 +29,8 @@ import kr.pe.codda.common.etc.CommonStaticFinalVars;
 import kr.pe.codda.common.etc.StreamCharsetFamily;
 import kr.pe.codda.common.exception.DynamicClassCallException;
 import kr.pe.codda.common.exception.ServerTaskException;
-import kr.pe.codda.common.io.InputStreamResource;
-import kr.pe.codda.common.io.OutputStreamResource;
+import kr.pe.codda.common.io.IncomingStream;
+import kr.pe.codda.common.io.OutgoingStream;
 import kr.pe.codda.common.io.StreamBuffer;
 import kr.pe.codda.common.io.WrapBufferPoolIF;
 import kr.pe.codda.common.protocol.MessageProtocolIF;
@@ -52,17 +52,17 @@ public class AcceptedConnection implements ServerIOEventHandlerIF, ReceivedMessa
 	private final SelectionKey personalSelectionKey;
 	private final SocketChannel acceptedSocketChannel;
 	private final String projectName;
-	// private final StreamCharsetFamily streamCharsetFamily;
+	
 	// private final long socketTimeout;
 	// private final int serverInputMessageQueueCapacity;
 	// private final int serverOutputMessageQueueCapacity;
 	private final MessageProtocolIF messageProtocol;
-	// private WrapBufferPoolIF wrapBufferPool = null;
+	
 	private ServerIOEvenetControllerIF serverIOEvenetController = null;
 	private ServerTaskMangerIF serverTaskManager = null;
 
-	private final InputStreamResource isr;
-	private final OutputStreamResource osr;
+	private final IncomingStream incomingStream;
+	private final OutgoingStream outgoingStream;
 
 	private ProjectLoginManagerIF projectLoginManager = null;
 	private String personalLoginID = null;
@@ -76,7 +76,7 @@ public class AcceptedConnection implements ServerIOEventHandlerIF, ReceivedMessa
 
 	public AcceptedConnection(SelectionKey personalSelectionKey, SocketChannel acceptedSocketChannel,
 			String projectName, long socketTimeout, StreamCharsetFamily streamCharsetFamily, 
-			int dataPacketBufferMaxCntPerMessage, 
+			int serverDataPacketBufferMaxCntPerMessage, 
 			int serverOutputMessageQueueCapacity,
 			ProjectLoginManagerIF projectLoginManager,
 			MessageProtocolIF messageProtocol, WrapBufferPoolIF wrapBufferPool,
@@ -118,20 +118,19 @@ public class AcceptedConnection implements ServerIOEventHandlerIF, ReceivedMessa
 		this.personalSelectionKey = personalSelectionKey;
 		this.acceptedSocketChannel = acceptedSocketChannel;
 		this.projectName = projectName;
-		// this.streamCharsetFamily = streamCharsetFamily;
-		// this.socketTimeout = socketTimeOut;
+		// this.socketTimeout = socketTimeout;
 		// this.serverInputMessageQueueCapacity = serverInputMessageQueueCapacity;
 		// this.serverOutputMessageQueueCapacity = serverOutputMessageQueueCapacity;
 		this.projectLoginManager = projectLoginManager;
 		this.messageProtocol = messageProtocol;
-		// this.wrapBufferPool = wrapBufferPool;
+		
 		this.serverIOEvenetController = serverIOEvenetController;
 		this.serverTaskManager = serverTaskManager;
 
 		finalReadTime = new java.util.Date();
 
-		isr = new InputStreamResource(streamCharsetFamily, dataPacketBufferMaxCntPerMessage, wrapBufferPool);
-		osr = new OutputStreamResource(acceptedSocketChannel, serverOutputMessageQueueCapacity, socketTimeout);
+		incomingStream = new IncomingStream(streamCharsetFamily, serverDataPacketBufferMaxCntPerMessage, wrapBufferPool);
+		outgoingStream = new OutgoingStream(serverOutputMessageQueueCapacity);
 	}
 
 	/*
@@ -199,13 +198,13 @@ public class AcceptedConnection implements ServerIOEventHandlerIF, ReceivedMessa
 	@Override
 	public void onRead(SelectionKey personalSelectionKey) throws Exception {
 
-		int numberOfReadBytes = isr.read(acceptedSocketChannel);
+		int numberOfReadBytes = incomingStream.read(acceptedSocketChannel);
 		
 		while (numberOfReadBytes > 0) {
 			setFinalReadTime();
-			messageProtocol.S2O(isr, this);
+			messageProtocol.S2O(incomingStream, this);
 			
-			numberOfReadBytes = isr.read(acceptedSocketChannel);
+			numberOfReadBytes = incomingStream.read(acceptedSocketChannel);
 		}
 
 		if (numberOfReadBytes == -1) {
@@ -228,10 +227,10 @@ public class AcceptedConnection implements ServerIOEventHandlerIF, ReceivedMessa
 	@Override
 	public void onWrite(SelectionKey personalSelectionKey) throws Exception {
 		
-		int numberOfWriteBytes = osr.write();
+		int numberOfWriteBytes = outgoingStream.write(acceptedSocketChannel);
 		
 		while (numberOfWriteBytes > 0) {
-			numberOfWriteBytes = osr.write();
+			numberOfWriteBytes = outgoingStream.write(acceptedSocketChannel);
 		}
 		
 		if (-1 == numberOfWriteBytes) {
@@ -280,6 +279,7 @@ public class AcceptedConnection implements ServerIOEventHandlerIF, ReceivedMessa
 	public int hashCode() {
 		return acceptedSocketChannel.hashCode();
 	}
+	
 
 	/**
 	 * 서버 비지니스 로직에서 출력 메시지가 생겼을때 호출하는 메소드로 출력 메시지를 출력 메시지 큐에 넣고
@@ -289,13 +289,28 @@ public class AcceptedConnection implements ServerIOEventHandlerIF, ReceivedMessa
 	 * @throws InterruptedException
 	 * @throws SocketTimeoutException 
 	 */
-	public void addOutputMessage(StreamBuffer outputStreamBuffer)
+	public void addOutputMessage(StreamBuffer outputMessageStreamBuffer)
 			throws InterruptedException {
 
 		// log.info("outputMessageQueue.size={}, inputMessageCount={}",
 		// outputMessageQueue.size(), inputMessageCount);
 		
-		osr.addOutputStreamBuffer(outputStreamBuffer);
+		
+		boolean isSuccess = outgoingStream.offer(outputMessageStreamBuffer);
+		if (! isSuccess) {
+			String errorMessage = new StringBuilder()
+					.append("소켓 채널[")
+					.append(acceptedSocketChannel)
+					.append("]에 출력 메시지 내용이 담긴 스트림[")
+					.append(outputMessageStreamBuffer.toHexStringForRemaingData())
+					.append("] 추가하는데 실패하여 폐기합니다").toString();
+			
+			log.warning(errorMessage);
+			
+			outputMessageStreamBuffer.releaseAllWrapBuffers();
+			return;
+		}
+		
 		
 		try {
 			turnOnSocketWriteMode();
@@ -405,8 +420,8 @@ public class AcceptedConnection implements ServerIOEventHandlerIF, ReceivedMessa
 	}
 
 	private void releaseResources() {
-		isr.close();
-		osr.close();
+		incomingStream.releaseAllWrapBuffers();
+		outgoingStream.close();
 		
 		releaseLoginUserResource();
 		

@@ -15,9 +15,9 @@ import java.util.logging.Logger;
 import kr.pe.codda.common.etc.CommonStaticFinalVars;
 import kr.pe.codda.common.exception.BodyFormatException;
 import kr.pe.codda.common.exception.DynamicClassCallException;
-import kr.pe.codda.common.io.StreamBuffer;
 import kr.pe.codda.common.message.AbstractMessage;
 import kr.pe.codda.common.message.codec.AbstractMessageDecoder;
+import kr.pe.codda.common.protocol.MessageProtocolIF;
 import kr.pe.codda.common.protocol.SingleItemDecoderIF;
 import kr.pe.codda.common.type.LineSeparatorType;
 import kr.pe.codda.common.type.ReadWriteMode;
@@ -586,7 +586,11 @@ public abstract class CommonStaticUtil {
 		return retObject;
 	}
 	
-	public static AbstractMessage O2M(AbstractMessageDecoder messageDecoder, SingleItemDecoderIF singleItemDecoder,  int mailboxID, int mailID, String messageID, Object readableMiddleObject) throws BodyFormatException {
+	public static AbstractMessage O2M(MessageProtocolIF messageProtocol, AbstractMessageDecoder messageDecoder, SingleItemDecoderIF singleItemDecoder,  int mailboxID, int mailID, String messageID, Object readableMiddleObject) throws BodyFormatException {
+		if (null == messageProtocol) {
+			throw new IllegalArgumentException("the parameter messageProtocol is null");
+		}
+		
 		if (null == messageDecoder) {
 			throw new IllegalArgumentException("the parameter messageDecoder is null");
 		}
@@ -667,22 +671,30 @@ public abstract class CommonStaticUtil {
 			 */
 			throw new BodyFormatException(errorMessage);
 		} finally {
-			if (readableMiddleObject instanceof StreamBuffer) {
-				StreamBuffer sb = (StreamBuffer)readableMiddleObject;
-				try {
-					sb.close();
-				} catch(Exception e) {
-					String errorMessage = new StringBuilder()
-							.append("fail to close the message body stream[messageID=")
-							.append(messageID)
-							.append(", mailboxID=")
-							.append(mailboxID)
-							.append(", mailID=")
-							.append(mailID)
-							.append("] body stream").toString();
-					Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
-					log.log(Level.WARNING, errorMessage, e);
-				}
+			/*
+			 * if (readableMiddleObject instanceof StreamBuffer) { StreamBuffer sb =
+			 * (StreamBuffer)readableMiddleObject; try { sb.releaseAllWrapBuffers(); }
+			 * catch(Exception e) { String errorMessage = new StringBuilder()
+			 * .append("fail to close the message body stream[messageID=")
+			 * .append(messageID) .append(", mailboxID=") .append(mailboxID)
+			 * .append(", mailID=") .append(mailID) .append("] body stream").toString();
+			 * Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
+			 * log.log(Level.WARNING, errorMessage, e); } }
+			 */
+			
+			try {
+				messageProtocol.closeReadableMiddleObject(mailboxID, mailID, messageID, readableMiddleObject);
+			} catch(Exception e1) {
+				String errorMessage = new StringBuilder()
+						.append("fail to close the message body stream[messageID=")
+						.append(messageID)
+						.append(", mailboxID=")
+						.append(mailboxID)
+						.append(", mailID=")
+						.append(mailID)
+						.append("] body stream").toString();
+				Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
+				log.log(Level.WARNING, errorMessage, e1);
 			}
 		}
 		
