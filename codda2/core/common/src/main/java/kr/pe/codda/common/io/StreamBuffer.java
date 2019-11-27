@@ -13,6 +13,7 @@ import java.nio.charset.CharsetEncoder;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -50,6 +51,8 @@ public class StreamBuffer {
 	protected final WrapBuffer wrapBufferArray[];
 	protected final ByteBuffer byteBufferArray[];
 	protected int lastBufferIndex = -1;
+	
+	private final long startTime;
 
 	public StreamBuffer(StreamCharsetFamily streamCharsetFamily, WrapBuffer sourceWrapBufferArray[],
 			ByteBuffer sourceByteBufferArray[], long newLimit, WrapBufferPoolIF wrapBufferPool) {
@@ -72,7 +75,7 @@ public class StreamBuffer {
 		if (sourceByteBufferArray.length != sourceWrapBufferArray.length) {
 			throw new IllegalArgumentException(
 					"the parameter sourceWrapBufferArray's length is different from the parameter sourceByteBufferArray's length");
-		}		
+		}
 
 		if (null == wrapBufferPool) {
 			throw new IllegalArgumentException("the parameter wrapBufferPool is null");
@@ -80,7 +83,7 @@ public class StreamBuffer {
 
 		this.streamCharsetFamily = streamCharsetFamily;
 		this.wrapBufferArray = sourceWrapBufferArray;
-		this.byteBufferArray = sourceByteBufferArray;		
+		this.byteBufferArray = sourceByteBufferArray;
 		this.wrapBufferPool = wrapBufferPool;
 
 		defaultCharset = streamCharsetFamily.getCharset();
@@ -90,17 +93,17 @@ public class StreamBuffer {
 		byteOrder = wrapBufferPool.getByteOrder();
 		dataPacketBufferSize = wrapBufferPool.getDataPacketBufferSize();
 		capacity = dataPacketBufferSize * sourceWrapBufferArray.length;
-		
+
 		if (newLimit < 0) {
 			throw new IllegalArgumentException("the parameter newLimit is less than zero");
 		}
 
 		if (newLimit > capacity) {
 			String errorMessage = new StringBuilder().append("the parameter newLimit[").append(newLimit)
-					.append("] is greater than capacity[").append(capacity).append("]").toString(); 
+					.append("] is greater than capacity[").append(capacity).append("]").toString();
 			throw new IllegalArgumentException(errorMessage);
 		}
-		
+
 		limit = newLimit;
 		lastBufferIndex = sourceWrapBufferArray.length - 1;
 
@@ -133,7 +136,7 @@ public class StreamBuffer {
 						.toString();
 				throw new IllegalArgumentException(errorMessage);
 			}
-			
+
 			if (sourceByteBufferArray[i].capacity() != sourceByteBufferArray[i].limit()) {
 				String errorMessage = new StringBuilder().append("the parameter sourceByteBufferArray[").append(i)
 						.append("]'s position[").append(sourceByteBufferArray[i].position()).append("] is not zero")
@@ -141,6 +144,8 @@ public class StreamBuffer {
 				throw new IllegalArgumentException(errorMessage);
 			}
 		}
+		
+		startTime = System.nanoTime();
 	}
 
 	public StreamBuffer(StreamCharsetFamily streamCharsetFamily, int maxOfWrapBuffer, WrapBufferPoolIF wrapBufferPool) {
@@ -171,6 +176,8 @@ public class StreamBuffer {
 
 		wrapBufferArray = new WrapBuffer[maxOfWrapBuffer];
 		byteBufferArray = new ByteBuffer[maxOfWrapBuffer];
+		
+		startTime = System.nanoTime();
 	}
 
 	public long getPosition() {
@@ -215,22 +222,22 @@ public class StreamBuffer {
 					.append("] is greater than capacity[").append(capacity).append("]").toString();
 			throw new IllegalArgumentException(errorMessage);
 		}
-		
+
 		/*
-		// FIXME!		
-		long oldEndPosition = (limit - 1);
-		int bufferIndexForOldEndpostion = (int) (oldEndPosition / dataPacketBufferSize);
-		
-		long newEndPosition = (newLimit - 1);
-		int bufferIndexForNewEndpostion = (int) (newEndPosition / dataPacketBufferSize);
-		int bufferOffsetForNewEndPosition = (int) (newEndPosition % dataPacketBufferSize);
-		
-		ByteBuffer byteBufferForOldEndPostion = byteBufferArray[bufferIndexForOldEndpostion];
-		ByteBuffer byteBufferForNewEndPostion = byteBufferArray[bufferIndexForNewEndpostion];
-		
-		byteBufferForOldEndPostion.limit(dataPacketBufferSize);
-		byteBufferForNewEndPostion.limit(bufferOffsetForNewEndPosition + 1);
-		*/
+		 * // FIXME! long oldEndPosition = (limit - 1); int bufferIndexForOldEndpostion
+		 * = (int) (oldEndPosition / dataPacketBufferSize);
+		 * 
+		 * long newEndPosition = (newLimit - 1); int bufferIndexForNewEndpostion = (int)
+		 * (newEndPosition / dataPacketBufferSize); int bufferOffsetForNewEndPosition =
+		 * (int) (newEndPosition % dataPacketBufferSize);
+		 * 
+		 * ByteBuffer byteBufferForOldEndPostion =
+		 * byteBufferArray[bufferIndexForOldEndpostion]; ByteBuffer
+		 * byteBufferForNewEndPostion = byteBufferArray[bufferIndexForNewEndpostion];
+		 * 
+		 * byteBufferForOldEndPostion.limit(dataPacketBufferSize);
+		 * byteBufferForNewEndPostion.limit(bufferOffsetForNewEndPosition + 1);
+		 */
 
 		this.limit = newLimit;
 	}
@@ -252,14 +259,14 @@ public class StreamBuffer {
 	}
 
 	public boolean hasRemaining() {
-		return ((limit - position) == 0) ? true : false;
+		return ((limit - position) != 0);
 	}
-	
+
 	public void flip() {
 		limit = position;
 		position = 0;
 	}
-	
+
 	public void clear() {
 		limit = capacity;
 		position = 0;
@@ -1232,7 +1239,7 @@ public class StreamBuffer {
 
 		return doGetBytes(length);
 	}
-	
+
 	private void doGetBytes(byte dst[], int offset, int length)
 			throws BufferUnderflowException, NoMoreDataPacketBufferException {
 		/*
@@ -1286,32 +1293,32 @@ public class StreamBuffer {
 		} while (true);
 
 	}
-	
-	public void getBytes(byte[] dst, int offset, int length) throws BufferUnderflowException, NoMoreDataPacketBufferException {
+
+	public void getBytes(byte[] dst, int offset, int length)
+			throws BufferUnderflowException, NoMoreDataPacketBufferException {
 		if (null == dst) {
 			throw new IllegalArgumentException("the parameter dst is null");
 		}
-		
+
 		if (offset < 0) {
 			String errorMessage = new StringBuilder().append("the parameter offset[").append(offset)
 					.append("] is less than zero").toString();
 			throw new IllegalArgumentException(errorMessage);
 		}
-		
+
 		if (offset >= dst.length) {
 			String errorMessage = new StringBuilder().append("the parameter offset[").append(offset)
-					.append("] is greater than or equal to the parameter dst's length[")
-					.append(dst.length)
-					.append("]").toString();
+					.append("] is greater than or equal to the parameter dst's length[").append(dst.length).append("]")
+					.toString();
 			throw new IllegalArgumentException(errorMessage);
 		}
-		
+
 		if (length < 0) {
 			String errorMessage = new StringBuilder().append("the parameter length[").append(length)
 					.append("] is less than zero").toString();
 			throw new IllegalArgumentException(errorMessage);
 		}
-		
+
 		long sumOfOffsetAndLength = ((long) offset + length);
 		if (sumOfOffsetAndLength > dst.length) {
 			String errorMessage = new StringBuilder().append("the sum[").append(sumOfOffsetAndLength)
@@ -1325,7 +1332,7 @@ public class StreamBuffer {
 		if ((limit - position) < length) {
 			throw new BufferUnderflowException();
 		}
-		
+
 		doGetBytes(dst, offset, length);
 	}
 
@@ -1577,8 +1584,8 @@ public class StreamBuffer {
 		endWorkingByteBuffer.limit(bufferOffsetOfEndPostion + 1);
 
 		/**
-		 * INFO! 변수 endWorkingIndex 까지 버퍼들이 채워 졌기때문에 변수 bufferIndexOfStartPostion 를 갖는 버퍼는 무조건
-		 * 존재한다
+		 * INFO! 변수 endWorkingIndex 까지 버퍼들이 채워 졌기때문에 변수 bufferIndexOfStartPostion 를 갖는
+		 * 버퍼는 무조건 존재한다
 		 */
 		ByteBuffer startWorkingByteBuffer = byteBufferArray[bufferIndexOfStartPostion];
 		startWorkingByteBuffer.position(bufferOffsetOfStartPostion);
@@ -1630,8 +1637,8 @@ public class StreamBuffer {
 				if (byteBufferArray[i].limit() != dataPacketBufferSize) {
 					String errorMessage = new StringBuilder().append("인덱스 [").append(i)
 							.append("] 를 갖는 할당된 버퍼의 'limit 속성 값'[").append(byteBufferArray[i].limit())
-							.append("]이 버퍼의 'capacity 속성 값'[").append(dataPacketBufferSize)
-							.append("] 과 다릅니다").toString();
+							.append("]이 버퍼의 'capacity 속성 값'[").append(dataPacketBufferSize).append("] 과 다릅니다")
+							.toString();
 					throw new IllegalStateException(errorMessage);
 				}
 			}
@@ -1657,30 +1664,30 @@ public class StreamBuffer {
 			workingByteBuffer = byteBufferArray[bufferIndexOfStartPostion];
 		}
 
-		workingByteBuffer.position(bufferOffsetOfStartPostion);		
-		
+		workingByteBuffer.position(bufferOffsetOfStartPostion);
+
 		final int n;
-		
+
 		if (remaining() < workingByteBuffer.remaining()) {
 			int oldLimit = workingByteBuffer.limit();
-			workingByteBuffer.limit(bufferOffsetOfStartPostion + (int)remaining());
-			
+			workingByteBuffer.limit(bufferOffsetOfStartPostion + (int) remaining());
+
 			n = readableSocketChannel.read(workingByteBuffer);
-			
+
 			/** 버퍼에 대한 소켓 읽기 작업 완료 후 버퍼 위치 속성 초기화 */
 			workingByteBuffer.position(0);
 			workingByteBuffer.limit(oldLimit);
-			
+
 			if (n > 0) {
 				position += n;
-			}			
-			
+			}
+
 		} else {
 			n = readableSocketChannel.read(workingByteBuffer);
-			
+
 			/** 버퍼에 대한 소켓 읽기 작업 완료 후 버퍼 위치 속성 초기화 */
 			workingByteBuffer.position(0);
-			
+
 			if (n > 0) {
 				position += n;
 			}
@@ -1694,7 +1701,7 @@ public class StreamBuffer {
 		if (null == writableSocketChannel) {
 			throw new IllegalArgumentException("the parameter writableSocketChannel is null");
 		}
-
+		
 		int bufferIndexOfStartPostion = (int) (position / dataPacketBufferSize);
 		int bufferOffsetOfStartPostion = (int) (position % dataPacketBufferSize);
 
@@ -1705,49 +1712,61 @@ public class StreamBuffer {
 		}
 
 		workingByteBuffer.position(bufferOffsetOfStartPostion);
-		
-			
+
 		final int n;
-		
+
 		if (remaining() < workingByteBuffer.remaining()) {
 			int oldLimit = workingByteBuffer.limit();
-			workingByteBuffer.limit(bufferOffsetOfStartPostion + (int)remaining());
+			workingByteBuffer.limit(bufferOffsetOfStartPostion + (int) remaining());
 			
 			n = writableSocketChannel.write(workingByteBuffer);
-			
+
 			/** 버퍼에 대한 소켓 읽기 작업 완료 후 버퍼 위치 속성 초기화 */
 			workingByteBuffer.position(0);
 			workingByteBuffer.limit(oldLimit);
-			
+
 			position += n;
 		} else {
+					
 			n = writableSocketChannel.write(workingByteBuffer);
-			
+
 			/** 버퍼에 대한 소켓 읽기 작업 완료 후 버퍼 위치 속성 초기화 */
 			workingByteBuffer.position(0);
-			
+
 			position += n;
 		}
-		
 
 		return n;
 	}
-	
+
 	/**
-	 * 마지막 버퍼의 limit 속성 값을 {@link #limit} 속성 값에 맞추어 설정한다. WARNING! 빠른 처리를 위하여 에러 처리 루틴 생략, 
-	 * 소켓을 통해 보낼 메시지 내용을 담고 있는 경우에 호출된다.    
+	 * 마지막 버퍼의 limit 속성 값을 {@link #limit} 속성 값에 맞추어 설정한다. WARNING! 빠른 처리를 위하여 에러 처리
+	 * 루틴 생략, 소켓을 통해 보낼 메시지 내용을 담고 있는 경우에 호출된다.
 	 */
 	public void setLastBufferLimitUsingLimit() {
 		long endPosition = limit - 1;
 		int bufferIndexOfEndPostion = (int) (endPosition / dataPacketBufferSize);
 		int bufferOffsetOfEndPostion = (int) (endPosition % dataPacketBufferSize);
-		
+
 		/**
-		 * WARNING! 빠른 처리를 위하여 byteBufferArray[bufferIndexOfEndPostion] 이 null 일 경우 처리 루틴 생략, 메시지  
+		 * WARNING! 빠른 처리를 위하여 byteBufferArray[bufferIndexOfEndPostion] 이 null 일 경우 처리
+		 * 루틴 생략, 메시지
 		 */
 		byteBufferArray[bufferIndexOfEndPostion].limit(bufferOffsetOfEndPostion + 1);
 	}
-
+	
+	public void printElapsedTime(String title) {
+		long endTime = System.nanoTime();
+		
+		String infoMessage = new StringBuilder()
+				.append(title)
+				.append(" 경과 시간[")
+				.append(TimeUnit.MICROSECONDS.convert((endTime - startTime), TimeUnit.NANOSECONDS))
+				.append("] microseconds").toString();
+		
+		log.info(infoMessage);
+	}
+	
 	public void releaseAllWrapBuffers() {
 		// FIXME!
 		// log.log(Level.INFO, "call", new Throwable());
@@ -1759,6 +1778,17 @@ public class StreamBuffer {
 		}
 
 		lastBufferIndex = -1;
+		
+		/*
+		long endTime = System.nanoTime();
+		
+		String infoMessage = new StringBuilder()
+				.append("버퍼 생성후 자원해제까지 걸린 시간[")
+				.append(TimeUnit.MICROSECONDS.convert((endTime - startTime), TimeUnit.NANOSECONDS))
+				.append("] microseconds").toString();
+		
+		log.info(infoMessage);
+		*/
 	}
 
 	public String toHexStringForRemaingData() {

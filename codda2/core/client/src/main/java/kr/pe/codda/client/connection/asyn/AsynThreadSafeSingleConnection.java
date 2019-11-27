@@ -5,7 +5,6 @@ import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.net.SocketTimeoutException;
 import java.net.StandardSocketOptions;
-import java.nio.channels.CancelledKeyException;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
@@ -30,7 +29,7 @@ import kr.pe.codda.common.exception.NotSupportedException;
 import kr.pe.codda.common.exception.ServerTaskException;
 import kr.pe.codda.common.exception.ServerTaskPermissionException;
 import kr.pe.codda.common.io.IncomingStream;
-import kr.pe.codda.common.io.OutgoingStream;
+import kr.pe.codda.common.io.ClientOutgoingStream;
 import kr.pe.codda.common.io.StreamBuffer;
 import kr.pe.codda.common.io.WrapBufferPoolIF;
 import kr.pe.codda.common.message.AbstractMessage;
@@ -47,6 +46,7 @@ public class AsynThreadSafeSingleConnection
 	private final int serverPort;
 	private final long socketTimeout;
 	private final int clientDataPacketBufferMaxCntPerMessage;
+	private final int clientAsynOutputMessageQueueCapacity;
 	private final StreamCharsetFamily streamCharsetFamily;	
 	private final WrapBufferPoolIF wrapBufferPool;
 	private final MessageProtocolIF messageProtocol;
@@ -63,8 +63,8 @@ public class AsynThreadSafeSingleConnection
 
 	// private ArrayDeque<ArrayDeque<WrapBuffer>> inputMessageQueue = new
 	// ArrayDeque<ArrayDeque<WrapBuffer>>();
-	private final IncomingStream incomingStream;
-	private final OutgoingStream outgoingStream;
+	private IncomingStream incomingStream = null;
+	private ClientOutgoingStream outgoingStream = null;
 
 	public AsynThreadSafeSingleConnection(String projectName, String serverHost, int serverPort, long socketTimeout,
 			StreamCharsetFamily streamCharsetFamily, int clientDataPacketBufferMaxCntPerMessage,
@@ -77,6 +77,7 @@ public class AsynThreadSafeSingleConnection
 		this.serverPort = serverPort;
 		this.socketTimeout = socketTimeout;		
 		this.clientDataPacketBufferMaxCntPerMessage = clientDataPacketBufferMaxCntPerMessage;
+		this.clientAsynOutputMessageQueueCapacity = clientAsynOutputMessageQueueCapacity;
 		this.streamCharsetFamily = streamCharsetFamily;
 		this.wrapBufferPool = wrapBufferPool;
 		
@@ -104,8 +105,7 @@ public class AsynThreadSafeSingleConnection
 		clientSC.setOption(StandardSocketOptions.SO_LINGER, 0);
 		clientSC.setOption(StandardSocketOptions.SO_REUSEADDR, true);
 
-		incomingStream = new IncomingStream(streamCharsetFamily, clientDataPacketBufferMaxCntPerMessage, wrapBufferPool);
-		outgoingStream = new OutgoingStream(clientAsynOutputMessageQueueCapacity);
+		
 	}
 
 	private void setFinalReadTime() {
@@ -171,27 +171,6 @@ public class AsynThreadSafeSingleConnection
 			
 			throw new SocketTimeoutException(errorMessage);
 		}
-
-		try {
-			turnOnSocketWriteMode();				
-		} catch (CancelledKeyException e) {
-			String errorMessage = new StringBuilder().append("fail to turn on  'OP_WRITE'[socket channel=")
-					.append(clientSC.hashCode())
-					.append("] becase CancelledKeyException occured")
-					.toString();
-
-			log.warning(errorMessage);
-			throw new IOException(errorMessage);
-		} catch (Exception e) {
-			String errorMessage = new StringBuilder().append("fail to turn on  'OP_WRITE'[socket channel=")
-					.append(clientSC.hashCode())
-					.append("] becase unknown error occured")
-					.toString();
-
-			log.log(Level.WARNING, errorMessage, e);
-			throw new IOException(errorMessage);
-		}
-
 		// long endTime = System.nanoTime();
 		// log.info("addInputMessage elasped {} microseconds",TimeUnit.MICROSECONDS.convert((endTime - startTime), TimeUnit.NANOSECONDS));
 
@@ -258,8 +237,12 @@ public class AsynThreadSafeSingleConnection
 
 		asynClientIOEventController.cancel(personalSelectionKey);
 
-		incomingStream.releaseAllWrapBuffers();
-		outgoingStream.close();
+		if (null != incomingStream) {
+			incomingStream.releaseAllWrapBuffers();
+		}
+		if (null != outgoingStream) {
+			outgoingStream.close();
+		}
 
 	}
 
@@ -284,40 +267,15 @@ public class AsynThreadSafeSingleConnection
 	public void doFinishConnect(SelectionKey selectedKey) {
 		personalSelectionKey = selectedKey;
 		asynConnectedConnectionAdder.addConnectedConnection(this);
+		
+		incomingStream = new IncomingStream(streamCharsetFamily, clientDataPacketBufferMaxCntPerMessage, wrapBufferPool);
+		outgoingStream = new ClientOutgoingStream(asynClientIOEventController, personalSelectionKey, clientAsynOutputMessageQueueCapacity);
 	}
 
 	public void doSubtractOneFromNumberOfUnregisteredConnections() {
 		asynConnectedConnectionAdder.subtractOneFromNumberOfUnregisteredConnections(this);
 	}
 	
-	private void turnOnSocketWriteMode() throws CancelledKeyException {
-		personalSelectionKey.interestOps(personalSelectionKey.interestOps() | SelectionKey.OP_WRITE);
-
-		// log.info("call turn on OP_WRITE[{}]",
-		// acceptedSocketChannel.hashCode());
-	}
-
-	private void turnOffSocketWriteMode() throws CancelledKeyException {
-		personalSelectionKey.interestOps(personalSelectionKey.interestOps() & ~SelectionKey.OP_WRITE);
-
-		// log.info("call turn off OP_WRITE[{}]",
-		// acceptedSocketChannel.hashCode());
-	}
-
-	public void turnOnSocketReadMode() throws CancelledKeyException {
-		personalSelectionKey.interestOps(personalSelectionKey.interestOps() | SelectionKey.OP_READ);
-
-		// log.info("call turn on OP_READ[{}]",
-		// acceptedSocketChannel.hashCode());
-	}
-
-	public void turnOffSocketReadMode() throws CancelledKeyException {
-		personalSelectionKey.interestOps(personalSelectionKey.interestOps() & ~SelectionKey.OP_READ);
-
-		// log.info("call turn off OP_READ[{}]",
-		// acceptedSocketChannel.hashCode());
-	}
-
 	@Override
 	public void onConnect(SelectionKey selectedKey) throws Exception {
 		boolean isSuccess = clientSC.finishConnect();
@@ -370,14 +328,14 @@ public class AsynThreadSafeSingleConnection
 	@Override
 	public void onRead(SelectionKey selectedKey) throws Exception {
 
-		int numberOfReadBytes = incomingStream.read(clientSC);
-
-		while (numberOfReadBytes > 0) {
-			setFinalReadTime();
-			messageProtocol.S2O(incomingStream, this);
-
+		int numberOfReadBytes;
+		
+		do {
 			numberOfReadBytes = incomingStream.read(clientSC);
-		}
+		}  while (numberOfReadBytes > 0);
+
+		setFinalReadTime();
+		messageProtocol.S2O(incomingStream, this);
 
 		if (-1 == numberOfReadBytes) {
 			String errorMessage = new StringBuilder("this socket channel[").append(clientSC.hashCode())
@@ -392,29 +350,10 @@ public class AsynThreadSafeSingleConnection
 	@Override
 	public void onWrite(SelectionKey selectedKey) throws Exception {
 
-		int numberOfWriteBytes = outgoingStream.write(clientSC);
-
-		while (numberOfWriteBytes > 0) {
+		int numberOfWriteBytes;
+		do {
 			numberOfWriteBytes = outgoingStream.write(clientSC);
-		}
-
-		if (-1 == numberOfWriteBytes) {
-			try {
-				turnOffSocketWriteMode();
-			} catch (CancelledKeyException e) {
-				String errorMessage = new StringBuilder().append("fail to turn off  'OP_WRITE'[socket channel=")
-						.append(clientSC.hashCode()).append("] becase CancelledKeyException occured").toString();
-
-				log.warning(errorMessage);
-				throw new IOException(errorMessage);
-			} catch (Exception e) {
-				String errorMessage = new StringBuilder().append("fail to turn off  'OP_WRITE'[socket channel=")
-						.append(clientSC.hashCode()).append("] becase unknown error occured").toString();
-
-				log.log(Level.WARNING, errorMessage, e);
-				throw new IOException(errorMessage);
-			}
-		}
+		} while (numberOfWriteBytes > 0);
 	}
 
 	public boolean isConnected() {

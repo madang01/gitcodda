@@ -207,7 +207,7 @@ public final class SyncThreadSafeSingleConnection implements SyncConnectionIF {
 			
 			inputMessageStreamBuffer.flip();
 
-			while (! inputMessageStreamBuffer.hasRemaining()) {
+			while ( inputMessageStreamBuffer.hasRemaining()) {
 				int length = (int)Math.min(clientDataPacketBufferSize, inputMessageStreamBuffer.remaining());
 				
 				inputMessageStreamBuffer.getBytes(socketBuffer, 0, length);
@@ -280,7 +280,7 @@ public final class SyncThreadSafeSingleConnection implements SyncConnectionIF {
 				Arrays.fill(socketBuffer, CommonStaticFinalVars.ZERO_BYTE);
 			}
 			
-			if (incomingStream.hasRemaining()) {
+			if (0 != incomingStream.getPosition()) {
 				String errorMessage = "메시지 추출 후 잔존 데이터가 남아 있습니다";
 				close();
 				throw new IOException(errorMessage);

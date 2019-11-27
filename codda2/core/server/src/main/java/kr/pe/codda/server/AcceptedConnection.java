@@ -17,9 +17,7 @@
 
 package kr.pe.codda.server;
 
-import java.io.IOException;
 import java.net.SocketTimeoutException;
-import java.nio.channels.CancelledKeyException;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
 import java.util.logging.Level;
@@ -30,7 +28,7 @@ import kr.pe.codda.common.etc.StreamCharsetFamily;
 import kr.pe.codda.common.exception.DynamicClassCallException;
 import kr.pe.codda.common.exception.ServerTaskException;
 import kr.pe.codda.common.io.IncomingStream;
-import kr.pe.codda.common.io.OutgoingStream;
+import kr.pe.codda.common.io.ServerOutgoingStream;
 import kr.pe.codda.common.io.StreamBuffer;
 import kr.pe.codda.common.io.WrapBufferPoolIF;
 import kr.pe.codda.common.protocol.MessageProtocolIF;
@@ -62,7 +60,7 @@ public class AcceptedConnection implements ServerIOEventHandlerIF, ReceivedMessa
 	private ServerTaskMangerIF serverTaskManager = null;
 
 	private final IncomingStream incomingStream;
-	private final OutgoingStream outgoingStream;
+	private final ServerOutgoingStream outgoingStream;
 
 	private ProjectLoginManagerIF projectLoginManager = null;
 	private String personalLoginID = null;
@@ -130,7 +128,7 @@ public class AcceptedConnection implements ServerIOEventHandlerIF, ReceivedMessa
 		finalReadTime = new java.util.Date();
 
 		incomingStream = new IncomingStream(streamCharsetFamily, serverDataPacketBufferMaxCntPerMessage, wrapBufferPool);
-		outgoingStream = new OutgoingStream(serverOutputMessageQueueCapacity);
+		outgoingStream = new ServerOutgoingStream(personalSelectionKey, serverOutputMessageQueueCapacity);
 	}
 
 	/*
@@ -153,34 +151,6 @@ public class AcceptedConnection implements ServerIOEventHandlerIF, ReceivedMessa
 		finalReadTime = new java.util.Date();
 	}
 
-	private void turnOnSocketWriteMode() throws CancelledKeyException {
-		personalSelectionKey.interestOps(personalSelectionKey.interestOps() | SelectionKey.OP_WRITE);
-
-		// log.info("call turn on OP_WRITE[{}]",
-		// acceptedSocketChannel.hashCode());
-	}
-
-	private void turnOffSocketWriteMode() throws CancelledKeyException {
-		personalSelectionKey.interestOps(personalSelectionKey.interestOps() & ~SelectionKey.OP_WRITE);
-
-		// log.info("call turn off OP_WRITE[{}]",
-		// acceptedSocketChannel.hashCode());
-	}
-
-	public void turnOnSocketReadMode() throws CancelledKeyException {
-		personalSelectionKey.interestOps(personalSelectionKey.interestOps() | SelectionKey.OP_READ);
-
-		// log.info("call turn on OP_READ[{}]",
-		// acceptedSocketChannel.hashCode());
-	}
-
-	public void turnOffSocketReadMode() throws CancelledKeyException {
-		personalSelectionKey.interestOps(personalSelectionKey.interestOps() & ~SelectionKey.OP_READ);
-
-		// log.info("call turn off OP_READ[{}]",
-		// acceptedSocketChannel.hashCode());
-	}
-
 	/**
 	 * 메일 식별자를 반환한다. 메일 식별자는 자동 증가된다.
 	 */
@@ -197,15 +167,15 @@ public class AcceptedConnection implements ServerIOEventHandlerIF, ReceivedMessa
 
 	@Override
 	public void onRead(SelectionKey personalSelectionKey) throws Exception {
-
-		int numberOfReadBytes = incomingStream.read(acceptedSocketChannel);
+		// FIXME!
+		// log.info("call onRead");
+		int numberOfReadBytes;		
+		do {
+			numberOfReadBytes = incomingStream.read(acceptedSocketChannel);			
+		} while (numberOfReadBytes > 0);
 		
-		while (numberOfReadBytes > 0) {
-			setFinalReadTime();
-			messageProtocol.S2O(incomingStream, this);
-			
-			numberOfReadBytes = incomingStream.read(acceptedSocketChannel);
-		}
+		setFinalReadTime();
+		messageProtocol.S2O(incomingStream, this);
 
 		if (numberOfReadBytes == -1) {
 			String errorMessage = new StringBuilder("this socket channel[").append(acceptedSocketChannel.hashCode())
@@ -214,7 +184,7 @@ public class AcceptedConnection implements ServerIOEventHandlerIF, ReceivedMessa
 			log.warning(errorMessage);
 			close();
 			return;
-		}	
+		}
 		
 		/*
 		if (isr.size() > serverOutputMessageQueueCapacity / 2) {
@@ -226,36 +196,15 @@ public class AcceptedConnection implements ServerIOEventHandlerIF, ReceivedMessa
 
 	@Override
 	public void onWrite(SelectionKey personalSelectionKey) throws Exception {
+		// FIXME!
+		// log.info("call onWrite");
 		
-		int numberOfWriteBytes = outgoingStream.write(acceptedSocketChannel);
+		int numberOfWriteBytes;
 		
-		while (numberOfWriteBytes > 0) {
+		do {
 			numberOfWriteBytes = outgoingStream.write(acceptedSocketChannel);
-		}
+		} while (numberOfWriteBytes > 0);
 		
-		if (-1 == numberOfWriteBytes) {
-			try {
-				turnOffSocketWriteMode();				
-			} catch (CancelledKeyException e) {
-				String errorMessage = new StringBuilder().append("fail to turn off  'OP_WRITE'[socket channel=")
-						.append(acceptedSocketChannel.hashCode())
-						.append("] becase CancelledKeyException occured")
-						.toString();
-
-				log.warning(errorMessage);
-				throw new IOException(errorMessage);
-			} catch (Exception e) {
-				String errorMessage = new StringBuilder().append("fail to turn off  'OP_WRITE'[socket channel=")
-						.append(acceptedSocketChannel.hashCode())
-						.append("] becase unknown error occured")
-						.toString();
-
-				log.log(Level.WARNING, errorMessage, e);
-				throw new IOException(errorMessage);
-			}
-		}
-
-		// turnOnSocketReadModeIfValid();
 	}
 
 	/**
@@ -309,27 +258,7 @@ public class AcceptedConnection implements ServerIOEventHandlerIF, ReceivedMessa
 			
 			outputMessageStreamBuffer.releaseAllWrapBuffers();
 			return;
-		}
-		
-		
-		try {
-			turnOnSocketWriteMode();
-			
-		} catch (CancelledKeyException e) {
-			String errorMessage = new StringBuilder().append("fail to set this selector[socket channel=")
-					.append(acceptedSocketChannel.hashCode())
-					.append("] key's interest set to the given value 'OP_WRITE' becase of CancelledKeyException")
-					.toString();
-
-			log.warning(errorMessage);			
-		} catch (Exception e) {
-			String errorMessage = new StringBuilder().append("fail to set this selector[socket channel=")
-					.append(acceptedSocketChannel.hashCode())
-					.append("] key's interest set to the given value 'OP_WRITE' becase of unknown error")
-					.toString();
-
-			log.log(Level.WARNING, errorMessage, e);
-		}
+		}		
 	}
 
 	@Override

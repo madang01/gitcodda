@@ -89,6 +89,7 @@ public class ClientIOEventController extends Thread implements
 				processNewConnection();
 
 				ioEventSelector.select(clientSelectorWakeupInterval);
+				
 
 				Set<SelectionKey> selectedKeySet = ioEventSelector
 						.selectedKeys();

@@ -176,7 +176,7 @@ public final class SyncNoShareConnection implements SyncConnectionIF {
 		inputMessageStreamBuffer.flip();
 		
 
-		while (! inputMessageStreamBuffer.hasRemaining()) {
+		while (inputMessageStreamBuffer.hasRemaining()) {
 			int length = (int)Math.min(clientDataPacketBufferSize, inputMessageStreamBuffer.remaining());
 			
 			inputMessageStreamBuffer.getBytes(socketBuffer, 0, length);
@@ -243,7 +243,9 @@ public final class SyncNoShareConnection implements SyncConnectionIF {
 			String errorMessage = new StringBuilder().append("the io error occurred while reading the socket[")
 					.append(clientSC.hashCode()).append("], errmsg=").append(e.getMessage()).toString();			
 			close();
-			throw new IOException(errorMessage);
+			log.log(Level.WARNING, errorMessage, e);
+			
+			throw e;
 		} catch (Exception e) {
 			String errorMessage = new StringBuilder().append("the unknown error occurred while reading the socket[")
 					.append(clientSC.hashCode()).append("], errmsg=").append(e.getMessage()).toString();
@@ -254,8 +256,8 @@ public final class SyncNoShareConnection implements SyncConnectionIF {
 			Arrays.fill(socketBuffer, CommonStaticFinalVars.ZERO_BYTE);
 		}
 		
-		if (incomingStream.hasRemaining()) {
-			String errorMessage = "메시지 추출 후 잔존 데이터가 남아 있습니다";
+		if (0 != incomingStream.getPosition()) {
+			String errorMessage = "메시지 추출 후 잔존 데이터가 남아 있습니다::"+incomingStream.getPosition();
 			close();
 			throw new IOException(errorMessage);
 		}

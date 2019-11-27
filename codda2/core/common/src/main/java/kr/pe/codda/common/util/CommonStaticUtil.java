@@ -586,55 +586,52 @@ public abstract class CommonStaticUtil {
 		return retObject;
 	}
 	
-	public static AbstractMessage O2M(MessageProtocolIF messageProtocol, AbstractMessageDecoder messageDecoder, SingleItemDecoderIF singleItemDecoder,  int mailboxID, int mailID, String messageID, Object readableMiddleObject) throws BodyFormatException {
-		if (null == messageProtocol) {
-			throw new IllegalArgumentException("the parameter messageProtocol is null");
-		}
-		
-		if (null == messageDecoder) {
-			throw new IllegalArgumentException("the parameter messageDecoder is null");
-		}
-		
-		if (null == singleItemDecoder) {
-			throw new IllegalArgumentException("the parameter singleItemDecoder is null");
-		}
-		
-		if (null == messageID) {
-			throw new IllegalArgumentException("the parameter messageID is null");
-		}
-
-		if (null == readableMiddleObject) {
-			throw new IllegalArgumentException("the parameter readableMiddleObject is null");
-		}
-		
-		AbstractMessage outputMessage = null;
+	/**
+	 * '중간 객체'를 메시지로 변환한다. 참고) 파라미터로 넘어온 '중간 객체'는 에러 여부에 상관없이 무조건 자원 해제된다.
+	 *  
+	 * @param messageProtocol '중간 객체' 를 만든 주체이자 해체시킬 프로토콜 
+	 * @param messageDecoder
+	 * @param singleItemDecoder
+	 * @param mailboxID
+	 * @param mailID
+	 * @param messageID
+	 * @param readableMiddleObject
+	 * @return 중간 객체에서 변환된 메시지
+	 * @throws BodyFormatException
+	 * @throws IllegalArgumentException
+	 */
+	public static AbstractMessage O2M(MessageProtocolIF messageProtocol, AbstractMessageDecoder messageDecoder, SingleItemDecoderIF singleItemDecoder,  int mailboxID, int mailID, String messageID, Object readableMiddleObject) 
+			throws IllegalArgumentException, BodyFormatException {		
 		try {
-			outputMessage = messageDecoder.decode(singleItemDecoder, readableMiddleObject);
+			if (null == messageProtocol) {
+				throw new IllegalArgumentException("the parameter messageProtocol is null");
+			}
+			
+			if (null == messageDecoder) {
+				throw new IllegalArgumentException("the parameter messageDecoder is null");
+			}
+			
+			if (null == singleItemDecoder) {
+				throw new IllegalArgumentException("the parameter singleItemDecoder is null");
+			}
+			
+			if (null == messageID) {
+				throw new IllegalArgumentException("the parameter messageID is null");
+			}
+
+			if (null == readableMiddleObject) {
+				throw new IllegalArgumentException("the parameter readableMiddleObject is null");
+			}
+			
+			AbstractMessage outputMessage = messageDecoder.decode(singleItemDecoder, readableMiddleObject);
 			outputMessage.messageHeaderInfo.mailboxID = mailboxID;
 			outputMessage.messageHeaderInfo.mailID = mailID;
-		} catch (BodyFormatException e) {
-			/*
-			 * String errorMessage = new
-			 * StringBuilder("fail to decode the var 'readableMiddleObject' of the output message"
-			 * ) .append("mailboxID=") .append(mailboxID) .append(", mailID=")
-			 * .append(mailID) .append(", messageID=") .append(messageID)
-			 * .append("], errmsg=") .append("") .append(e.getMessage()) .toString();
-			 * 
-			 * Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
-			 * log.log(Level.WARNING, errorMessage);
-			 * 
-			 * SelfExnRes selfExnRes = new SelfExnRes();
-			 * selfExnRes.messageHeaderInfo.mailboxID = mailboxID;
-			 * selfExnRes.messageHeaderInfo.mailID = mailID;
-			 * selfExnRes.setErrorPlace(SelfExn.ErrorPlace.CLIENT);
-			 * selfExnRes.setErrorType(SelfExn.ErrorType.valueOf(BodyFormatException.class))
-			 * ;
-			 * 
-			 * selfExnRes.setErrorMessageID(messageID);
-			 * selfExnRes.setErrorReason(errorMessage);
-			 * 
-			 * return selfExnRes;
-			 */
+			
+			outputMessage.messageHeaderInfo.mailboxID = mailboxID;
+			outputMessage.messageHeaderInfo.mailID = mailID;
+			
+			return outputMessage;
+		} catch (BodyFormatException e) {			
 			throw e;
 		} catch (Exception | Error e) {
 			String errorMessage = new StringBuilder("unknow error::fail to decode the var 'readableMiddleObject' of the output message")
@@ -652,36 +649,9 @@ public abstract class CommonStaticUtil {
 			Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
 			log.log(Level.WARNING, errorMessage);
 			
-			/*
-			 * Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
-			 * log.log(Level.WARNING, errorMessage);
-			 * 
-			 * SelfExnRes selfExnRes = new SelfExnRes();
-			 * selfExnRes.messageHeaderInfo.mailboxID = mailboxID;
-			 * selfExnRes.messageHeaderInfo.mailID = mailID;
-			 * selfExnRes.setErrorPlace(SelfExn.ErrorPlace.CLIENT);
-			 * selfExnRes.setErrorType(SelfExn.ErrorType.valueOf(BodyFormatException.class))
-			 * ;
-			 * 
-			 * selfExnRes.setErrorMessageID(messageID);
-			 * selfExnRes.setErrorReason(errorMessage);
-			 * 
-			 * return selfExnRes;
-			 * 
-			 */
-			throw new BodyFormatException(errorMessage);
-		} finally {
-			/*
-			 * if (readableMiddleObject instanceof StreamBuffer) { StreamBuffer sb =
-			 * (StreamBuffer)readableMiddleObject; try { sb.releaseAllWrapBuffers(); }
-			 * catch(Exception e) { String errorMessage = new StringBuilder()
-			 * .append("fail to close the message body stream[messageID=")
-			 * .append(messageID) .append(", mailboxID=") .append(mailboxID)
-			 * .append(", mailID=") .append(mailID) .append("] body stream").toString();
-			 * Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
-			 * log.log(Level.WARNING, errorMessage, e); } }
-			 */
 			
+			throw new BodyFormatException(errorMessage);
+		} finally {			
 			try {
 				messageProtocol.closeReadableMiddleObject(mailboxID, mailID, messageID, readableMiddleObject);
 			} catch(Exception e1) {
@@ -697,9 +667,5 @@ public abstract class CommonStaticUtil {
 				log.log(Level.WARNING, errorMessage, e1);
 			}
 		}
-		
-		outputMessage.messageHeaderInfo.mailboxID = mailboxID;
-		outputMessage.messageHeaderInfo.mailID = mailID;
-		return outputMessage;
 	}
 }

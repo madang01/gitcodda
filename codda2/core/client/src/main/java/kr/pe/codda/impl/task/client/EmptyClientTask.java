@@ -14,6 +14,12 @@ public class EmptyClientTask extends AbstractClientTask {
 
 	@Override
 	public void doTask(String projectName, AsynConnectionIF asynConnection, AbstractMessage outputMessage) throws Exception {
-		// log.info("socket={}, output message={}", asynConnection.hashCode(), outputMessage.toString());
+		String infoMessage = new StringBuilder()
+				.append("socket channel[")
+				.append(asynConnection.hashCode())
+				.append("], output message=")
+				.append(outputMessage.toString()).toString();
+		
+		log.info(infoMessage);
 	}
 }

@@ -46,8 +46,27 @@ public interface MessageProtocolIF {
 					throws HeaderFormatException, NoMoreDataPacketBufferException, InterruptedException;
 	
 	
+	/**
+	 * 중간 객체를 메시지로 변환한다. 참고) 파라미터로 넘어온 '중간 객체'는 에러 여부에 상관없이 무조건 자원 해제된다.
+	 * 
+	 * @param messageDecoder
+	 * @param mailboxID
+	 * @param mailID
+	 * @param messageID
+	 * @param readableMiddleObject
+	 * @return
+	 * @throws BodyFormatException
+	 */
 	public AbstractMessage O2M(AbstractMessageDecoder messageDecoder, int mailboxID, int mailID, String messageID, Object readableMiddleObject) throws BodyFormatException;
 	
+	/**
+	 *  '중간 객체' 가 갖고 있는 자원을 해제시킨다. 참고) 프로토콜은 '중간 객체' 를 생성하였기에 '중간 객체'가 갖고 있는 자원 해제에 대해서도 온전히 책임을 갖는다.
+	 * 
+	 * @param mailboxID
+	 * @param mailID
+	 * @param messageID
+	 * @param readableMiddleObject
+	 */
 	public void closeReadableMiddleObject(int mailboxID, int mailID, String messageID, Object readableMiddleObject);
 	
 	// public int getDataPacketBufferMaxCntPerMessage();

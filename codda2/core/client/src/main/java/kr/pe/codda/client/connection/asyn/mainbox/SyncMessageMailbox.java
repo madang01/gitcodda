@@ -41,7 +41,7 @@ public final class SyncMessageMailbox {
 	
 	
 	private String receviedMessageID = null;
-	private Object receviedReadableMiddleObject = null;
+	private transient Object receviedReadableMiddleObject = null;
 
 	private MessageCodecMangerIF messageCodecManger = null;
 
