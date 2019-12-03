@@ -17,7 +17,9 @@
 
 package kr.pe.codda.common.message.builder.info;
 
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
@@ -50,7 +52,7 @@ import kr.pe.codda.common.type.MessageTransferDirectionType;
  */
 public class MessageInfoSAXParser extends DefaultHandler {
 	private final Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
-	
+	private final Object monitor = new Object();
 	
 	public static final String XML_EXTENSION_SUFFIX = ".xml";
 	private final int XML_EXTENSION_SUFFIX_LENGTH = XML_EXTENSION_SUFFIX.length();
@@ -413,6 +415,9 @@ public class MessageInfoSAXParser extends DefaultHandler {
 	
 	/**
 	 * XML로 작성된 메시지 정보 파일을 SAX 파싱하여 얻은 결과물인 메시지 정보를 반환한다. 쓰레드 세이프를 위해 동기화한다.
+	 * WARNING! {@link SAXParser#parse(File, DefaultHandler)} 는 파싱 에러시 파일 스트림을 닫지 않는 버그를 갖고 있어 
+	 * 파일 스트림을 제어할 수 있는 {@link SAXParser#parse(java.io.InputStream, DefaultHandler)} 으로 변경함.
+	 * 
 	 * @param xmlFile
 	 * @param isFileNameCheck
 	 * @return XML로 작성된 메시지 정보 파일을 SAX 파싱하여 얻은 결과물인 메시지 정보
@@ -444,17 +449,35 @@ public class MessageInfoSAXParser extends DefaultHandler {
 		
 		String xmlFilePathString = xmlFile.getAbsolutePath();
 				
-		synchronized (possibleItemTypeNameSetForArraySizeReferenceVariable) {
+		synchronized (monitor) {
 			this.messageInformationXMLFile = xmlFile;
 			this.isFileNameCheck = isFileNameCheck;
 			if (isFileNameCheck) {
 				this.messageIDOfXMLFile = getMessageIDFromXMLFilePathString(xmlFilePathString);
 			}
 			
+			/**
+			 * WARNING! {@link SAXParser#parse(File, DefaultHandler)} 는 파싱 에러시 파일 스트림을 닫지 않는 버그를 갖고 있어 
+			 * 파일 스트림을 제어할 수 있는 {@link SAXParser#parse(java.io.InputStream, DefaultHandler)} 으로 변경하여 파일 스트림을 안전하게 닫는 것을 보장함.
+			 */
+			
+			FileInputStream fis = new FileInputStream(xmlFile);
+			BufferedInputStream bis = new BufferedInputStream(fis);
+			
 			try {
-				saxParser.parse(xmlFile, this);
+				saxParser.parse(bis, this);
+
 				return messageInfo;
 			} finally {
+				try {
+					bis.close();
+				} catch(Exception e) {					
+				}
+				
+				try {
+					fis.close();
+				} catch(Exception e) {					
+				}
 				reset();	
 			}
 		}		

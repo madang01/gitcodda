@@ -27,13 +27,13 @@ public abstract class AbstractDependencyValidator {
 			throws IllegalArgumentException {
 
 		if (null == dependentSourceItemIDInfo) {
-			String errorMessage = new StringBuilder("parameter dependentSourceItemInfo is null").toString();
+			String errorMessage = "the parameter dependentSourceItemInfo is null";
 
 			// log.warn(errorMessage);
 			throw new IllegalArgumentException(errorMessage);
 		}
 		if (null == dependentTargetItemIDInfo) {
-			String errorMessage = new StringBuilder("parameter dependentTargetItemInfo is null").toString();
+			String errorMessage = "the parameter dependentTargetItemInfo is null";
 
 			// log.warn(errorMessage);
 			throw new IllegalArgumentException(errorMessage);
@@ -78,12 +78,12 @@ public abstract class AbstractDependencyValidator {
 	public boolean isValid(Properties sourceProperties, String prefixOfDependentSourceItemID)
 			throws IllegalArgumentException {
 		if (null == sourceProperties) {
-			String errorMessage = new StringBuilder("parameter sourceProperties is null").toString();
+			String errorMessage = "the parameter sourceProperties is null";
 			// log.warn(errorMessage);
 			throw new IllegalArgumentException(errorMessage);
 		}
 		if (null == prefixOfDependentSourceItemID) {
-			String errorMessage = new StringBuilder("parameter prefixOfItem is null").toString();
+			String errorMessage = "the parameter prefixOfDependentSourceItemID is null";
 			// log.warn(errorMessage);
 			throw new IllegalArgumentException(errorMessage);
 		}

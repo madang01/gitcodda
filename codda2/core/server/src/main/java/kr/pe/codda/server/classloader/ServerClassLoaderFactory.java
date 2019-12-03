@@ -2,15 +2,15 @@ package kr.pe.codda.server.classloader;
 
 import java.io.File;
 
-import kr.pe.codda.common.classloader.ExcludedDynamicClassManager;
-import kr.pe.codda.common.classloader.ExcludedDynamicClassManagerIF;
+import kr.pe.codda.common.classloader.SystemClassDeterminer;
+import kr.pe.codda.common.classloader.SystemClassDeterminerIF;
 import kr.pe.codda.common.classloader.SimpleClassLoader;
 import kr.pe.codda.common.exception.CoddaConfigurationException;
 
 public class ServerClassLoaderFactory {
 	private String serverAPPINFClassPathString = null;
 	private String projectResourcesPathString = null;
-	private ExcludedDynamicClassManagerIF excludedDynamicClassManager = new ExcludedDynamicClassManager();
+	private SystemClassDeterminerIF excludedDynamicClassManager = new SystemClassDeterminer();
 	
 	public ServerClassLoaderFactory(String serverAPPINFClassPathString,
 			String projectResourcesPathString) throws CoddaConfigurationException {
@@ -20,12 +20,12 @@ public class ServerClassLoaderFactory {
 		
 		File serverAPPINFClassPath = new File(serverAPPINFClassPathString);
 		
-		if (!serverAPPINFClassPath.exists()) {
+		if (! serverAPPINFClassPath.exists()) {
 			String errorMessage = String.format("the server APP-INF class path[%s] doesn't exist", serverAPPINFClassPathString);
 		 	throw new CoddaConfigurationException(errorMessage);
 		}
 		
-		if (!serverAPPINFClassPath.isDirectory()) {
+		if (! serverAPPINFClassPath.isDirectory()) {
 			String errorMessage = String.format("the server APP-INF class path[%s] isn't a directory", serverAPPINFClassPathString);
 		 	throw new CoddaConfigurationException(errorMessage);
 		}

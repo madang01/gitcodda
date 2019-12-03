@@ -28,7 +28,7 @@ import kr.pe.codda.common.etc.StreamCharsetFamily;
 import kr.pe.codda.common.exception.DynamicClassCallException;
 import kr.pe.codda.common.exception.ServerTaskException;
 import kr.pe.codda.common.io.IncomingStream;
-import kr.pe.codda.common.io.ServerOutgoingStream;
+import kr.pe.codda.common.io.ServerOutgoingStreamIF;
 import kr.pe.codda.common.io.StreamBuffer;
 import kr.pe.codda.common.io.WrapBufferPoolIF;
 import kr.pe.codda.common.protocol.MessageProtocolIF;
@@ -60,7 +60,7 @@ public class AcceptedConnection implements ServerIOEventHandlerIF, ReceivedMessa
 	private ServerTaskMangerIF serverTaskManager = null;
 
 	private final IncomingStream incomingStream;
-	private final ServerOutgoingStream outgoingStream;
+	private final ServerOutgoingStreamIF outgoingStream;
 
 	private ProjectLoginManagerIF projectLoginManager = null;
 	private String personalLoginID = null;

@@ -15,7 +15,6 @@
  * limitations under the License.
  */
 
-
 package kr.pe.codda.common.message.builder.info;
 
 import java.io.BufferedWriter;
@@ -35,7 +34,6 @@ import kr.pe.codda.common.etc.CommonStaticFinalVars;
 import kr.pe.codda.common.exception.UnknownItemTypeException;
 import kr.pe.codda.common.type.SingleItemType;
 
-
 /**
  * <pre>
  * 메시지 정보를 이루는 단일 항목 타입 관리자
@@ -46,13 +44,13 @@ import kr.pe.codda.common.type.SingleItemType;
  */
 public class SingleItemTypeManger {
 	private final Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
-	
+
 	private String messageXSLStr = null;
-	
+
 	private final SingleItemType[] singleItemTypes = SingleItemType.values();
-	
-	private final LinkedHashMap<String, Integer> itemTypeNameToIDHash  = new LinkedHashMap<String, Integer>();
-	private final HashMap<Integer, String> itemIDToItemTypeNameHash  = new HashMap<Integer, String>();
+
+	private final LinkedHashMap<String, Integer> itemTypeNameToIDHash = new LinkedHashMap<String, Integer>();
+	private final HashMap<Integer, String> itemIDToItemTypeNameHash = new HashMap<Integer, String>();
 
 	/**
 	 * 동기화 쓰지 않고 싱글턴 구현을 위한 비공개 클래스
@@ -69,23 +67,23 @@ public class SingleItemTypeManger {
 	public static SingleItemTypeManger getInstance() {
 		return ItemTypeMangerHolder.singleton;
 	}
-	
+
 	/**
 	 * 동기화 쓰지 않고 싱글턴 구현을 위한 생성자
 	 */
 	private SingleItemTypeManger() {
-		
+
 		checkValidAllSingleItemType();
-		
+
 		for (SingleItemType singleItemType : singleItemTypes) {
 			int itemTypeID = singleItemType.getItemTypeID();
 			String itemTypeName = singleItemType.getItemTypeName();
 			itemTypeNameToIDHash.put(itemTypeName, itemTypeID);
 			itemIDToItemTypeNameHash.put(itemTypeID, itemTypeName);
 		}
-		
+
 		/** 신규 타입 추가시 구현 언어인 자바 타입등을 정의한 SingleItemInfo 에도 추가를 해 주어야 한다. */
-		
+
 		StringBuilder mesgXSLStringBuilder = new StringBuilder();
 		mesgXSLStringBuilder.append("<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n");
 		mesgXSLStringBuilder.append("<xs:schema xmlns:xs=\"http://www.w3.org/2001/XMLSchema\">\n");
@@ -102,8 +100,7 @@ public class SingleItemTypeManger {
 		mesgXSLStringBuilder.append("\t\t\t\t\t\t\t</xs:restriction>\n");
 		mesgXSLStringBuilder.append("\t\t\t\t\t\t</xs:simpleType>\n");
 		mesgXSLStringBuilder.append("\t\t\t\t\t</xs:attribute>\n");
-		
-		
+
 		mesgXSLStringBuilder.append("\t\t\t\t\t<xs:attribute name=\"name\" use=\"required\">\n");
 		mesgXSLStringBuilder.append("\t\t\t\t\t\t<xs:simpleType>\n");
 		mesgXSLStringBuilder.append("\t\t\t\t\t\t\t<xs:restriction base=\"xs:string\">\n");
@@ -115,13 +112,13 @@ public class SingleItemTypeManger {
 		mesgXSLStringBuilder.append("\t\t\t\t\t<xs:attribute name=\"type\" use=\"required\">\n");
 		mesgXSLStringBuilder.append("\t\t\t\t\t\t<xs:simpleType>\n");
 		mesgXSLStringBuilder.append("\t\t\t\t\t\t\t<xs:restriction base=\"xs:string\">\n");
-		
+
 		for (String itemTypeName : itemTypeNameToIDHash.keySet()) {
 			mesgXSLStringBuilder.append("\t\t\t\t\t\t\t\t<xs:enumeration value=\"");
 			mesgXSLStringBuilder.append(itemTypeName);
 			mesgXSLStringBuilder.append("\" />\n");
-		}		
-		
+		}
+
 		mesgXSLStringBuilder.append("\t\t\t\t\t\t\t</xs:restriction>\n");
 		mesgXSLStringBuilder.append("\t\t\t\t\t\t</xs:simpleType>\n");
 		mesgXSLStringBuilder.append("\t\t\t\t\t</xs:attribute>\n");
@@ -155,7 +152,8 @@ public class SingleItemTypeManger {
 		mesgXSLStringBuilder.append("\t\t\t<xs:element name=\"array\">\n");
 		mesgXSLStringBuilder.append("\t\t\t\t<xs:complexType>\n");
 		mesgXSLStringBuilder.append("\t\t\t\t\t<xs:sequence>\n");
-		mesgXSLStringBuilder.append("\t\t\t\t\t\t<xs:group minOccurs=\"0\" maxOccurs=\"unbounded\" ref=\"itemgroup\" />\n");
+		mesgXSLStringBuilder
+				.append("\t\t\t\t\t\t<xs:group minOccurs=\"0\" maxOccurs=\"unbounded\" ref=\"itemgroup\" />\n");
 		mesgXSLStringBuilder.append("\t\t\t\t\t</xs:sequence>\n");
 		mesgXSLStringBuilder.append("\n");
 		mesgXSLStringBuilder.append("\t\t\t\t\t<xs:attribute name=\"name\" use=\"required\">\n");
@@ -190,7 +188,7 @@ public class SingleItemTypeManger {
 		mesgXSLStringBuilder.append("\">\n");
 		mesgXSLStringBuilder.append("\t\t<xs:complexType>\n");
 		mesgXSLStringBuilder.append("\t\t\t<xs:sequence>\n");
-		
+
 		mesgXSLStringBuilder.append("\t\t\t\t<xs:element name=\"messageID\" minOccurs=\"1\" maxOccurs=\"1\">\n");
 		mesgXSLStringBuilder.append("\t\t\t\t\t<xs:simpleType>\n");
 		mesgXSLStringBuilder.append("\t\t\t\t\t\t<xs:restriction base=\"xs:string\">\n");
@@ -198,7 +196,7 @@ public class SingleItemTypeManger {
 		mesgXSLStringBuilder.append("\t\t\t\t\t\t</xs:restriction>\n");
 		mesgXSLStringBuilder.append("\t\t\t\t\t</xs:simpleType>\n");
 		mesgXSLStringBuilder.append("\t\t\t\t</xs:element>\n");
-		
+
 		mesgXSLStringBuilder.append("\t\t\t\t<xs:element name=\"direction\" minOccurs=\"1\" maxOccurs=\"1\">\n");
 		mesgXSLStringBuilder.append("\t\t\t\t\t<xs:simpleType>\n");
 		mesgXSLStringBuilder.append("\t\t\t\t\t\t<xs:restriction base=\"xs:string\">\n");
@@ -206,36 +204,32 @@ public class SingleItemTypeManger {
 		mesgXSLStringBuilder.append("\t\t\t\t\t\t</xs:restriction>\n");
 		mesgXSLStringBuilder.append("\t\t\t\t\t</xs:simpleType>\n");
 		mesgXSLStringBuilder.append("\t\t\t\t</xs:element>\n");
-		
-		mesgXSLStringBuilder.append("\t\t\t\t<xs:element name=\"desc\" type=\"xs:string\" minOccurs=\"0\" maxOccurs=\"1\" />\n");
+
+		mesgXSLStringBuilder
+				.append("\t\t\t\t<xs:element name=\"desc\" type=\"xs:string\" minOccurs=\"0\" maxOccurs=\"1\" />\n");
 		mesgXSLStringBuilder.append("\t\t\t\t<xs:group minOccurs=\"0\" maxOccurs=\"unbounded\" ref=\"itemgroup\" />\n");
 		mesgXSLStringBuilder.append("\t\t\t</xs:sequence>\n");
 		mesgXSLStringBuilder.append("\t\t</xs:complexType>\n");
 		mesgXSLStringBuilder.append("\t</xs:element>\n");
 		mesgXSLStringBuilder.append("</xs:schema>\n");
-		
+
 		messageXSLStr = mesgXSLStringBuilder.toString();
-		
+
 		FileWriter fw = null;
-		BufferedWriter bw  = null;
+		BufferedWriter bw = null;
 		try {
 			File f = File.createTempFile("MessageXSL", ".tmp");
-			
+
 			fw = new FileWriter(f);
 			bw = new BufferedWriter(fw);
-			
+
 			bw.write(messageXSLStr);
-			
-			if (log.getLevel().intValue() >= Level.INFO.intValue()) {
-				String errorMessage = new StringBuilder()
-						.append("the message information .xsl temporary file[")
-						.append(f.getAbsolutePath())
-						.append("] was created successfully").toString();
-				
-				log.log(Level.INFO, errorMessage);
-			}
-			
-			
+
+			String errorMessage = new StringBuilder().append("the message information .xsl temporary file[")
+					.append(f.getAbsolutePath()).append("] was created successfully").toString();
+
+			log.log(Level.INFO, errorMessage);
+
 		} catch (IOException e) {
 			e.printStackTrace();
 			System.exit(1);
@@ -256,7 +250,7 @@ public class SingleItemTypeManger {
 			}
 		}
 	}
-	
+
 	/**
 	 * @return 정의된 모든 SingleItemType이 유효하면 true, 아니면 false 를 반환한다.
 	 */
@@ -267,59 +261,54 @@ public class SingleItemTypeManger {
 		for (SingleItemType singleItemType : singleItemTypes) {
 			int singleItemTypeID = singleItemType.getItemTypeID();
 			try {
-				arrayOfSingleItemTypeID[singleItemTypeID]=singleItemTypeID;
-			} catch(IndexOutOfBoundsException e) {
-				String errorMessage = new StringBuilder()
-						.append("the SingleItemType[")
-						.append(singleItemType.toString())
-						.append("] has a wrong id, the id[")
-						.append(singleItemTypeID)
-						.append("] is out of the range[0 ~ ")
-						.append(singleItemTypes.length - 1)
-						.append("]").toString();
-				
+				arrayOfSingleItemTypeID[singleItemTypeID] = singleItemTypeID;
+			} catch (IndexOutOfBoundsException e) {
+				String errorMessage = new StringBuilder().append("the SingleItemType[")
+						.append(singleItemType.toString()).append("] has a wrong id, the id[").append(singleItemTypeID)
+						.append("] is out of the range[0 ~ ").append(singleItemTypes.length - 1).append("]").toString();
+
 				log.log(Level.SEVERE, errorMessage);
 				System.exit(1);
 			}
 		}
-		for (int i=0; i < arrayOfSingleItemTypeID.length; i++) {
+		for (int i = 0; i < arrayOfSingleItemTypeID.length; i++) {
 			int singleItemTypeID = arrayOfSingleItemTypeID[i];
 			if (-1 == singleItemTypeID) {
 				String errorMessage = new StringBuilder()
-						.append("the SingleItemType class don't define the SingleItemType id[")
-						.append(i)
-						.append("]").toString();
-				
+						.append("the SingleItemType class don't define the SingleItemType id[").append(i).append("]")
+						.toString();
+
 				log.log(Level.SEVERE, errorMessage);
 				System.exit(1);
 			}
 		}
 	}
-	
+
 	public String getMessageXSLStr() {
 		return messageXSLStr;
 	}
-	
+
 	public ByteArrayInputStream getMesgXSLInputSream() {
-		ByteArrayInputStream xslByteArrayInputStream = new ByteArrayInputStream(messageXSLStr.getBytes(CommonStaticFinalVars.SOURCE_FILE_CHARSET));
+		ByteArrayInputStream xslByteArrayInputStream = new ByteArrayInputStream(
+				messageXSLStr.getBytes(CommonStaticFinalVars.SOURCE_FILE_CHARSET));
 		return xslByteArrayInputStream;
 	}
-	
+
 	public int getItemTypeID(String itemTypeName) throws UnknownItemTypeException {
 		if (null == itemTypeName) {
 			throw new IllegalArgumentException("the parameter itemTypeName is null");
 		}
 		Integer itemTypeID = itemTypeNameToIDHash.get(itemTypeName);
 		if (null == itemTypeID) {
-			String errorMessage = new StringBuilder("the parameter itemTypeName[")
-			.append(itemTypeName).append("] is not an element of item value type set")
-			.append(getUnmodifiableItemTypeNameSet().toString()).toString();
-			UnknownItemTypeException e = new UnknownItemTypeException(errorMessage);			
+			String errorMessage = new StringBuilder("the parameter itemTypeName[").append(itemTypeName)
+					.append("] is not an element of item value type set")
+					.append(getUnmodifiableItemTypeNameSet().toString()).toString();
+			UnknownItemTypeException e = new UnknownItemTypeException(errorMessage);
 			throw e;
-		}		
+		}
 		return itemTypeID.intValue();
 	}
-	
+
 	public String getItemTypeName(int itemTypeID) throws UnknownItemTypeException {
 		String itemTypeName = itemIDToItemTypeNameHash.get(itemTypeID);
 		if (null == itemTypeName) {
@@ -328,44 +317,45 @@ public class SingleItemTypeManger {
 			// log.warn(errorMessage, e);
 			e.printStackTrace();
 			throw e;
-		}		
+		}
 		return itemTypeName;
 	}
-	
+
 	public int getAllSingleItemTypeCount() {
 		return singleItemTypes.length;
 	}
-	
-	
+
 	public SingleItemType getSingleItemType(int singleItemTypeID) {
 		if (singleItemTypeID < 0) {
-			String errorMessage = String.format("the parameter singleItemTypeID[%d] is less than zero", singleItemTypeID);
+			String errorMessage = String.format("the parameter singleItemTypeID[%d] is less than zero",
+					singleItemTypeID);
 			throw new IllegalArgumentException(errorMessage);
 		}
-		
+
 		if (singleItemTypeID >= singleItemTypes.length) {
-			String errorMessage = String.format("the parameter singleItemTypeID[%d] is out of range(0 ~ [%d])", singleItemTypeID, singleItemTypes.length-1);
+			String errorMessage = String.format("the parameter singleItemTypeID[%d] is out of range(0 ~ [%d])",
+					singleItemTypeID, singleItemTypes.length - 1);
 			throw new IllegalArgumentException(errorMessage);
 		}
 		return singleItemTypes[singleItemTypeID];
 	}
-	
+
 	public SingleItemType getSingleItemType(String itemTypeName) throws UnknownItemTypeException {
 		if (null == itemTypeName) {
 			throw new IllegalArgumentException("the parameter itemTypeName is null");
 		}
-		
+
 		Integer itemTypeID = itemTypeNameToIDHash.get(itemTypeName);
 		if (null == itemTypeID) {
-			String errorMessage = new StringBuilder("the parameter itemTypeName[")
-			.append(itemTypeName).append("] is not an element of item value type set")
-			.append(getUnmodifiableItemTypeNameSet().toString()).toString();
+			String errorMessage = new StringBuilder("the parameter itemTypeName[").append(itemTypeName)
+					.append("] is not an element of item value type set")
+					.append(getUnmodifiableItemTypeNameSet().toString()).toString();
 			throw new UnknownItemTypeException(errorMessage);
 		}
-		
+
 		return singleItemTypes[itemTypeID];
 	}
-	
+
 	public Set<String> getUnmodifiableItemTypeNameSet() {
 		Set<String> itemTypeNameSet = Collections.unmodifiableSet(itemTypeNameToIDHash.keySet());
 		return itemTypeNameSet;

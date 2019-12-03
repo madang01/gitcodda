@@ -76,6 +76,14 @@ public abstract class CommonStaticUtil {
 
 		return realResourceFilePathString;
 	}
+	
+	public static String changeRelativePathStringToOSPathString(String relativePath) {
+		if (File.separator.equals("/")) {
+			return relativePath;
+		} else {
+			return relativePath.replaceAll("/", "\\\\");
+		}
+	}
 
 	/**
 	 * 지정한 칼럼수 단위로 지정한 방식에 맞는 구분 문자열을 추가한 문자열을 반환한다.
@@ -585,6 +593,54 @@ public abstract class CommonStaticUtil {
 
 		return retObject;
 	}
+	
+	public static void deleteDirectory(File path) throws IOException {
+		if (null == path) {
+			throw new IllegalArgumentException("the parameter path is null");
+		}
+		
+		if (! path.exists()) {
+			String errorMessage = new StringBuilder()
+					.append("the paramter path[")
+					.append(path.getAbsolutePath())
+					.append("] doesn't exist").toString();
+			throw new IllegalArgumentException(errorMessage);
+		}
+		
+		
+		if (! path.isDirectory()) {
+			String errorMessage = new StringBuilder()
+					.append("the paramter path[")
+					.append(path.getAbsolutePath())
+					.append("] is not directory").toString();
+			throw new IllegalArgumentException(errorMessage);
+		}
+		 
+		for (File childFile : path.listFiles()) {
+ 
+			if (childFile.isDirectory()) {
+				deleteDirectory(childFile);
+			} else {
+				if (! childFile.delete()) {
+					String errorMessage = new StringBuilder()
+							.append("fail to delete the child path[")
+							.append(childFile.getAbsolutePath())
+							.append("]").toString();
+					throw new IOException(errorMessage);
+				}
+			}
+		}
+ 
+		if (!path.delete()) {
+			String errorMessage = new StringBuilder()
+					.append("fail to delete the parameter path[")
+					.append(path.getAbsolutePath())
+					.append("]").toString();
+			
+			throw new IOException(errorMessage);
+		}
+	}
+	
 	
 	/**
 	 * '중간 객체'를 메시지로 변환한다. 참고) 파라미터로 넘어온 '중간 객체'는 에러 여부에 상관없이 무조건 자원 해제된다.

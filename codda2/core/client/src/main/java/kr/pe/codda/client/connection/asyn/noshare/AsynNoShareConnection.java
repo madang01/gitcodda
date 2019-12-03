@@ -16,6 +16,7 @@ import kr.pe.codda.client.connection.asyn.AsynConnectedConnectionAdderIF;
 import kr.pe.codda.client.connection.asyn.AsynConnectionIF;
 import kr.pe.codda.client.connection.asyn.ClientIOEventControllerIF;
 import kr.pe.codda.client.connection.asyn.ClientIOEventHandlerIF;
+import kr.pe.codda.client.connection.asyn.ClientOutgoingStream;
 import kr.pe.codda.client.connection.asyn.mainbox.AsynMessageMailbox;
 import kr.pe.codda.client.connection.asyn.mainbox.SyncMessageMailbox;
 import kr.pe.codda.client.task.AbstractClientTask;
@@ -29,8 +30,8 @@ import kr.pe.codda.common.exception.NoMoreDataPacketBufferException;
 import kr.pe.codda.common.exception.NotSupportedException;
 import kr.pe.codda.common.exception.ServerTaskException;
 import kr.pe.codda.common.exception.ServerTaskPermissionException;
+import kr.pe.codda.common.io.ClientOutgoingStreamIF;
 import kr.pe.codda.common.io.IncomingStream;
-import kr.pe.codda.common.io.ClientOutgoingStream;
 import kr.pe.codda.common.io.StreamBuffer;
 import kr.pe.codda.common.io.WrapBufferPoolIF;
 import kr.pe.codda.common.message.AbstractMessage;
@@ -65,7 +66,7 @@ public class AsynNoShareConnection implements AsynConnectionIF, ClientIOEventHan
 
 	private final SyncMessageMailbox syncMessageMailbox;
 	private IncomingStream incomingStream = null;
-	private ClientOutgoingStream outgoingStream = null;
+	private ClientOutgoingStreamIF outgoingStream = null;
 
 	
 

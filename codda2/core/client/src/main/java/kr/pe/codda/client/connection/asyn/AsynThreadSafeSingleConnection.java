@@ -28,8 +28,8 @@ import kr.pe.codda.common.exception.NoMoreDataPacketBufferException;
 import kr.pe.codda.common.exception.NotSupportedException;
 import kr.pe.codda.common.exception.ServerTaskException;
 import kr.pe.codda.common.exception.ServerTaskPermissionException;
+import kr.pe.codda.common.io.ClientOutgoingStreamIF;
 import kr.pe.codda.common.io.IncomingStream;
-import kr.pe.codda.common.io.ClientOutgoingStream;
 import kr.pe.codda.common.io.StreamBuffer;
 import kr.pe.codda.common.io.WrapBufferPoolIF;
 import kr.pe.codda.common.message.AbstractMessage;
@@ -64,7 +64,7 @@ public class AsynThreadSafeSingleConnection
 	// private ArrayDeque<ArrayDeque<WrapBuffer>> inputMessageQueue = new
 	// ArrayDeque<ArrayDeque<WrapBuffer>>();
 	private IncomingStream incomingStream = null;
-	private ClientOutgoingStream outgoingStream = null;
+	private ClientOutgoingStreamIF outgoingStream = null;
 
 	public AsynThreadSafeSingleConnection(String projectName, String serverHost, int serverPort, long socketTimeout,
 			StreamCharsetFamily streamCharsetFamily, int clientDataPacketBufferMaxCntPerMessage,

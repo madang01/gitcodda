@@ -32,9 +32,9 @@ public class SimpleClassLoader extends ClassLoader {
 
 	// private final Object monitor = new Object();
 
-	private String classloaderClassPathString = null;
-	private String classloaderReousrcesPathString = null;
-	private ExcludedDynamicClassManagerIF excludedDynamicClassManager = null;
+	private final String classloaderClassPathString;
+	private final String classloaderReousrcesPathString;
+	private final SystemClassDeterminerIF systemClassDeterminer;
 	
 	private final static ClassLoader systemClassLoader = ClassLoader.getSystemClassLoader();
 	
@@ -42,12 +42,12 @@ public class SimpleClassLoader extends ClassLoader {
 	
 	
 	public SimpleClassLoader(String classloaderClassPathString, String classloaderReousrcesPathString,
-			ExcludedDynamicClassManagerIF excludedDynamicClassManager) {
+			SystemClassDeterminerIF systemClassDeterminer) {
 		super(systemClassLoader);
 		
 		this.classloaderClassPathString = classloaderClassPathString;
 		this.classloaderReousrcesPathString = classloaderReousrcesPathString;
-		this.excludedDynamicClassManager = excludedDynamicClassManager;		
+		this.systemClassDeterminer = systemClassDeterminer;		
 
 		log.log(Level.INFO, "SimpleClassLoader hashCode=[" + this.hashCode() + "] create");
 	}
@@ -74,14 +74,8 @@ public class SimpleClassLoader extends ClassLoader {
 		// try {
 		// synchronized (monitor) {
 		retClass = findLoadedClass(classFullName);
-		if (null == retClass) {
-
-			if (-1 == classFullName.indexOf(CommonStaticFinalVars.BASE_DYNAMIC_CLASS_FULL_NAME)) {
-				/** 서버 동적 클래스 비 대상 클래스 */
-				return systemClassLoader.loadClass(classFullName);
-			}
-
-			if (excludedDynamicClassManager.isExcludedDynamicClass(classFullName)) {
+		if (null == retClass) {			
+			if (systemClassDeterminer.isSystemClassName(classFullName)) {
 				return systemClassLoader.loadClass(classFullName);
 			}
 
@@ -186,9 +180,6 @@ public class SimpleClassLoader extends ClassLoader {
 		return retClass;
 	}
 	
-	
-	
-	@SuppressWarnings("resource")
 	public InputStream getResourceAsStream(String name) {
 		InputStream is = null;
 

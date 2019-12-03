@@ -156,6 +156,6 @@ public abstract class CommonStaticFinalVars {
 	/** message information xml file's root tag */
 	public static final String MESSAGE_INFO_XML_FILE_ROOT_TAG = "message";
 	
-	public static final String MYBATIS_CONFIG_XML_FILE_ROOT_TAG = "configuration";
+	// public static final String MYBATIS_CONFIG_XML_FILE_ROOT_TAG = "configuration";
 	
 }

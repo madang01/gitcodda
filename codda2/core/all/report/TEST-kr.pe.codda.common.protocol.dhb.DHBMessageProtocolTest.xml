@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuite errors="0" failures="0" hostname="madang02-pc" name="kr.pe.codda.common.protocol.dhb.DHBMessageProtocolTest" skipped="0" tests="1" time="2.119" timestamp="2019-11-29T05:10:05">
+  <properties>
+    <property name="java.vendor" value="Azul Systems, Inc." />
+    <property name="sun.java.launcher" value="SUN_STANDARD" />
+    <property name="sun.management.compiler" value="HotSpot 64-Bit Tiered Compilers" />
+    <property name="dir.dist" value="D:\gitcodda\codda2\core\all\dist" />
+    <property name="os.name" value="Windows 10" />
+    <property name="sun.boot.class.path" value="C:\Program Files\Zulu\zulu-8\jre\lib\resources.jar;C:\Program Files\Zulu\zulu-8\jre\lib\rt.jar;C:\Program Files\Zulu\zulu-8\jre\lib\sunrsasign.jar;C:\Program Files\Zulu\zulu-8\jre\lib\jsse.jar;C:\Program Files\Zulu\zulu-8\jre\lib\jce.jar;C:\Program Files\Zulu\zulu-8\jre\lib\charsets.jar;C:\Program Files\Zulu\zulu-8\jre\lib\jfr.jar;C:\Program Files\Zulu\zulu-8\jre\classes" />
+    <property name="ant.file.codda_core_all" value="D:\gitcodda\codda2\core\all\build.xml" />
+    <property name="sun.desktop" value="windows" />
+    <property name="java.vm.specification.vendor" value="Oracle Corporation" />
+    <property name="ant.home" value="D:\apache-ant-1.9.11\bin\.." />
+    <property name="java.runtime.version" value="1.8.0_181-b02" />
+    <property name="ant.file.type.codda_core_all" value="file" />
+    <property name="user.name" value="madang03" />
+    <property name="is.windows.yes" value="true" />
+    <property name="dir.report" value="D:\gitcodda\codda2\core\all\report" />
+    <property name="user.language" value="ko" />
+    <property name="core.server.jar.name" value="codda-core-server.jar" />
+    <property name="sun.boot.library.path" value="C:\Program Files\Zulu\zulu-8\jre\bin" />
+    <property name="ant.project.default-target" value="jar.all" />
+    <property name="ant.project.name" value="codda_core_all" />
+    <property name="dir.test.build" value="D:\gitcodda\codda2\core\all\build\test" />
+    <property name="java.version" value="1.8.0_181" />
+    <property name="user.timezone" value="" />
+    <property name="java.complile.option.debug" value="on" />
+    <property name="sun.arch.data.model" value="64" />
+    <property name="java.endorsed.dirs" value="C:\Program Files\Zulu\zulu-8\jre\lib\endorsed" />
+    <property name="sun.cpu.isalist" value="amd64" />
+    <property name="sun.jnu.encoding" value="MS949" />
+    <property name="file.encoding.pkg" value="sun.io" />
+    <property name="file.separator" value="\" />
+    <property name="java.specification.name" value="Java Platform API Specification" />
+    <property name="java.class.version" value="52.0" />
+    <property name="user.country" value="KR" />
+    <property name="java.home" value="C:\Program Files\Zulu\zulu-8\jre" />
+    <property name="java.vm.info" value="mixed mode" />
+    <property name="ant.file" value="D:\gitcodda\codda2\core\all\build.xml" />
+    <property name="os.version" value="10.0" />
+    <property name="dir.core.common.build" value="D:\gitcodda\codda2\core\common" />
+    <property name="path.separator" value=";" />
+    <property name="java.vm.version" value="25.181-b02" />
+    <property name="user.variant" value="" />
+    <property name="ant.library.dir" value="D:\apache-ant-1.9.11\lib" />
+    <property name="core.server.jar.name.only" value="codda-core-onlyserver.jar" />
+    <property name="java.awt.printerjob" value="sun.awt.windows.WPrinterJob" />
+    <property name="sun.io.unicode.encoding" value="UnicodeLittle" />
+    <property name="awt.toolkit" value="sun.awt.windows.WToolkit" />
+    <property name="sun.stdout.encoding" value="ms949" />
+    <property name="user.script" value="" />
+    <property name="user.home" value="C:\Users\user" />
+    <property name="java.specification.vendor" value="Oracle Corporation" />
+    <property name="core.client.jar.name" value="codda-core-client.jar" />
+    <property name="java.library.path" value="C:\Program Files\Zulu\zulu-8\jre\bin;C:\WINDOWS\Sun\Java\bin;C:\WINDOWS\system32;C:\WINDOWS;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;C:\Program Files\Zulu\zulu-8\bin;C:\Program Files\Git\cmd;D:\apache-ant-1.9.11\bin;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\WINDOWS\System32\WindowsPowerShell\v1.0\;D:\gradle-4.5\bin;;C:\WINDOWS\System32\OpenSSH\;C:\Program Files\PuTTY\;C:\Program Files\Zulu\zulu-8\bin\;C:\Program Files\nodejs\;C:\Program Files\NVIDIA Corporation\NVIDIA NvDLISR;%SystemRoot%\system32;%SystemRoot%;%SystemRoot%\System32\Wbem;%SYSTEMROOT%\System32\WindowsPowerShell\v1.0\;%SYSTEMROOT%\System32\OpenSSH\;C:\Users\user\AppData\Local\Microsoft\WindowsApps;C:\Users\user\AppData\Roaming\npm;;." />
+    <property name="java.vendor.url" value="http://www.azulsystems.com/" />
+    <property name="java.vm.vendor" value="Azul Systems, Inc." />
+    <property name="java.runtime.name" value="OpenJDK Runtime Environment" />
+    <property name="sun.java.command" value="org.apache.tools.ant.taskdefs.optional.junit.JUnitTestRunner kr.pe.codda.common.protocol.dhb.DHBMessageProtocolTest skipNonTests=false filtertrace=true haltOnError=true haltOnFailure=true formatter=org.apache.tools.ant.taskdefs.optional.junit.SummaryJUnitResultFormatter showoutput=true outputtoformatters=true logfailedtests=true threadid=0 logtestlistenerevents=false formatter=org.apache.tools.ant.taskdefs.optional.junit.XMLJUnitResultFormatter,D:\gitcodda\codda2\core\all\report\TEST-kr.pe.codda.common.protocol.dhb.DHBMessageProtocolTest.xml crashfile=D:\gitcodda\codda2\core\all\junitvmwatcher1190061680404359295.properties propsfile=D:\gitcodda\codda2\core\all\junit46513581949365562.properties" />
+    <property name="java.class.path" value="D:\gitcodda\codda2\core\server\lib\main\ex\commons-dbcp2-2.0.1.jar;D:\gitcodda\codda2\core\server\lib\main\ex\commons-pool2-2.5.0.jar;D:\gitcodda\codda2\core\all\dist\codda-core-all.jar;D:\gitcodda\codda2\core\common\lib\test\hamcrest-core-1.3.jar;D:\gitcodda\codda2\core\common\lib\test\junit-4.12.jar;D:\gitcodda\codda2\core\common\lib\test\byte-buddy-1.7.9.jar;D:\gitcodda\codda2\core\common\lib\test\byte-buddy-agent-1.7.9.jar;D:\gitcodda\codda2\core\common\lib\test\mockito-core-2.13.4.jar;D:\gitcodda\codda2\core\common\lib\test\objenesis-2.6.jar;D:\gitcodda\codda2\core\common\lib\test\commons-exec-1.3.jar;D:\gitcodda\codda2\core\all\build\test;D:\apache-ant-1.9.11\lib\ant-launcher.jar;D:\apache-ant-1.9.11\lib\ant.jar;D:\apache-ant-1.9.11\lib\ant-junit.jar;D:\apache-ant-1.9.11\lib\ant-junit4.jar" />
+    <property name="ant.version" value="Apache Ant(TM) version 1.9.11 compiled on March 23 2018" />
+    <property name="core.client.jar.name.only" value="codda-core-onlyclient.jar" />
+    <property name="java.vm.specification.name" value="Java Virtual Machine Specification" />
+    <property name="ant.file.type" value="file" />
+    <property name="java.vm.specification.version" value="1.8" />
+    <property name="sun.cpu.endian" value="little" />
+    <property name="sun.os.patch.level" value="" />
+    <property name="java.io.tmpdir" value="C:\Users\user\AppData\Local\Temp\" />
+    <property name="java.vendor.url.bug" value="http://www.azulsystems.com/support/" />
+    <property name="dir.core.server.build" value="D:\gitcodda\codda2\core\server" />
+    <property name="os.arch" value="amd64" />
+    <property name="java.awt.graphicsenv" value="sun.awt.Win32GraphicsEnvironment" />
+    <property name="java.ext.dirs" value="C:\Program Files\Zulu\zulu-8\jre\lib\ext;C:\WINDOWS\Sun\Java\lib\ext" />
+    <property name="user.dir" value="D:\gitcodda\codda2\core\all" />
+    <property name="core.all.jar.name" value="codda-core-all.jar" />
+    <property name="core.junitlib.jar.name" value="codda-core-junitlib.jar" />
+    <property name="line.separator" value="&#xd;&#xa;" />
+    <property name="java.vm.name" value="OpenJDK 64-Bit Server VM" />
+    <property name="core.common.jar.name" value="codda-core-common.jar" />
+    <property name="dir.core.client.build" value="D:\gitcodda\codda2\core\client" />
+    <property name="basedir" value="D:\gitcodda\codda2\core\all" />
+    <property name="ant.java.version" value="1.8" />
+    <property name="ant.core.lib" value="D:\apache-ant-1.9.11\lib\ant.jar" />
+    <property name="sun.stderr.encoding" value="ms949" />
+    <property name="file.encoding" value="MS949" />
+    <property name="java.specification.version" value="1.8" />
+    <property name="dir.test.src" value="D:\gitcodda\codda2\core\all\src\test\java" />
+    <property name="ant.project.invoked-targets" value="test" />
+  </properties>
+  <testcase classname="kr.pe.codda.common.protocol.dhb.DHBMessageProtocolTest" name="testM2S_basic" time="2.042" />
+  <system-out><![CDATA[10000 번 시간차=2003645 micro second, 평균=200 micro second, firstIndex=5, differentCount=1890
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

@@ -2,15 +2,15 @@ package kr.pe.codda.client.classloader;
 
 import java.io.File;
 
-import kr.pe.codda.common.classloader.ExcludedDynamicClassManager;
-import kr.pe.codda.common.classloader.ExcludedDynamicClassManagerIF;
+import kr.pe.codda.common.classloader.SystemClassDeterminer;
+import kr.pe.codda.common.classloader.SystemClassDeterminerIF;
 import kr.pe.codda.common.classloader.SimpleClassLoader;
 import kr.pe.codda.common.exception.CoddaConfigurationException;
 
 public class ClientClassLoaderFactory {
 	private String clientClassloaderClassPathString = null;
 	private String clientClassloaderReousrcesPathString = null;
-	private ExcludedDynamicClassManagerIF excludedDynamicClassManager = new ExcludedDynamicClassManager();
+	private SystemClassDeterminerIF excludedDynamicClassManager = new SystemClassDeterminer();
 	
 	public ClientClassLoaderFactory(String clientClassloaderClassPathString,
 			String clientClassloaderReousrcesPathString) throws CoddaConfigurationException {

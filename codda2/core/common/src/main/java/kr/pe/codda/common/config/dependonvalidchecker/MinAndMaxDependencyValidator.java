@@ -27,8 +27,7 @@ public class MinAndMaxDependencyValidator<T extends Number> extends
 		// this.minMaxComparator = minMaxComparator;
 		
 		if (null == genericTypeClass) {
-			String errorMessage = new StringBuilder(
-					"parameter genericTypeClass is null").toString();
+			String errorMessage = "the parameter genericTypeClass is null";
 			throw new IllegalArgumentException(errorMessage);
 		}
 		
@@ -78,7 +77,7 @@ public class MinAndMaxDependencyValidator<T extends Number> extends
 		String maxConverterTypeTName = dependentTargetItemValueConverter.getGenericType().getName();
 
 		
-		if (!genericTypeName.equals(minConverterTypeTName)) {
+		if (! genericTypeName.equals(minConverterTypeTName)) {
 			String errorMessage = new StringBuilder("this class's generic type T[")
 			.append(genericTypeName)
 			.append("] is different from the parameter dependentSourceConfigItem[")

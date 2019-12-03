@@ -20,6 +20,6 @@ public class EmptyClientTask extends AbstractClientTask {
 				.append("], output message=")
 				.append(outputMessage.toString()).toString();
 		
-		log.info(infoMessage);
+		log.finest(infoMessage);
 	}
 }

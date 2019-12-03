@@ -1,0 +1,264 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuite errors="0" failures="0" hostname="madang02-pc" name="kr.pe.codda.common.io.StreamBufferTest" skipped="0" tests="112" time="1.123" timestamp="2019-11-29T05:10:03">
+  <properties>
+    <property name="java.vendor" value="Azul Systems, Inc." />
+    <property name="sun.java.launcher" value="SUN_STANDARD" />
+    <property name="sun.management.compiler" value="HotSpot 64-Bit Tiered Compilers" />
+    <property name="dir.dist" value="D:\gitcodda\codda2\core\all\dist" />
+    <property name="os.name" value="Windows 10" />
+    <property name="sun.boot.class.path" value="C:\Program Files\Zulu\zulu-8\jre\lib\resources.jar;C:\Program Files\Zulu\zulu-8\jre\lib\rt.jar;C:\Program Files\Zulu\zulu-8\jre\lib\sunrsasign.jar;C:\Program Files\Zulu\zulu-8\jre\lib\jsse.jar;C:\Program Files\Zulu\zulu-8\jre\lib\jce.jar;C:\Program Files\Zulu\zulu-8\jre\lib\charsets.jar;C:\Program Files\Zulu\zulu-8\jre\lib\jfr.jar;C:\Program Files\Zulu\zulu-8\jre\classes" />
+    <property name="ant.file.codda_core_all" value="D:\gitcodda\codda2\core\all\build.xml" />
+    <property name="sun.desktop" value="windows" />
+    <property name="java.vm.specification.vendor" value="Oracle Corporation" />
+    <property name="ant.home" value="D:\apache-ant-1.9.11\bin\.." />
+    <property name="java.runtime.version" value="1.8.0_181-b02" />
+    <property name="ant.file.type.codda_core_all" value="file" />
+    <property name="user.name" value="madang03" />
+    <property name="is.windows.yes" value="true" />
+    <property name="dir.report" value="D:\gitcodda\codda2\core\all\report" />
+    <property name="user.language" value="ko" />
+    <property name="core.server.jar.name" value="codda-core-server.jar" />
+    <property name="sun.boot.library.path" value="C:\Program Files\Zulu\zulu-8\jre\bin" />
+    <property name="ant.project.default-target" value="jar.all" />
+    <property name="ant.project.name" value="codda_core_all" />
+    <property name="dir.test.build" value="D:\gitcodda\codda2\core\all\build\test" />
+    <property name="java.version" value="1.8.0_181" />
+    <property name="user.timezone" value="" />
+    <property name="java.complile.option.debug" value="on" />
+    <property name="sun.arch.data.model" value="64" />
+    <property name="java.endorsed.dirs" value="C:\Program Files\Zulu\zulu-8\jre\lib\endorsed" />
+    <property name="sun.cpu.isalist" value="amd64" />
+    <property name="sun.jnu.encoding" value="MS949" />
+    <property name="file.encoding.pkg" value="sun.io" />
+    <property name="file.separator" value="\" />
+    <property name="java.specification.name" value="Java Platform API Specification" />
+    <property name="java.class.version" value="52.0" />
+    <property name="user.country" value="KR" />
+    <property name="java.home" value="C:\Program Files\Zulu\zulu-8\jre" />
+    <property name="java.vm.info" value="mixed mode" />
+    <property name="ant.file" value="D:\gitcodda\codda2\core\all\build.xml" />
+    <property name="os.version" value="10.0" />
+    <property name="dir.core.common.build" value="D:\gitcodda\codda2\core\common" />
+    <property name="path.separator" value=";" />
+    <property name="java.vm.version" value="25.181-b02" />
+    <property name="user.variant" value="" />
+    <property name="ant.library.dir" value="D:\apache-ant-1.9.11\lib" />
+    <property name="core.server.jar.name.only" value="codda-core-onlyserver.jar" />
+    <property name="java.awt.printerjob" value="sun.awt.windows.WPrinterJob" />
+    <property name="sun.io.unicode.encoding" value="UnicodeLittle" />
+    <property name="awt.toolkit" value="sun.awt.windows.WToolkit" />
+    <property name="sun.stdout.encoding" value="ms949" />
+    <property name="user.script" value="" />
+    <property name="user.home" value="C:\Users\user" />
+    <property name="java.specification.vendor" value="Oracle Corporation" />
+    <property name="core.client.jar.name" value="codda-core-client.jar" />
+    <property name="java.library.path" value="C:\Program Files\Zulu\zulu-8\jre\bin;C:\WINDOWS\Sun\Java\bin;C:\WINDOWS\system32;C:\WINDOWS;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;C:\Program Files\Zulu\zulu-8\bin;C:\Program Files\Git\cmd;D:\apache-ant-1.9.11\bin;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\WINDOWS\System32\WindowsPowerShell\v1.0\;D:\gradle-4.5\bin;;C:\WINDOWS\System32\OpenSSH\;C:\Program Files\PuTTY\;C:\Program Files\Zulu\zulu-8\bin\;C:\Program Files\nodejs\;C:\Program Files\NVIDIA Corporation\NVIDIA NvDLISR;%SystemRoot%\system32;%SystemRoot%;%SystemRoot%\System32\Wbem;%SYSTEMROOT%\System32\WindowsPowerShell\v1.0\;%SYSTEMROOT%\System32\OpenSSH\;C:\Users\user\AppData\Local\Microsoft\WindowsApps;C:\Users\user\AppData\Roaming\npm;;." />
+    <property name="java.vendor.url" value="http://www.azulsystems.com/" />
+    <property name="java.vm.vendor" value="Azul Systems, Inc." />
+    <property name="java.runtime.name" value="OpenJDK Runtime Environment" />
+    <property name="sun.java.command" value="org.apache.tools.ant.taskdefs.optional.junit.JUnitTestRunner kr.pe.codda.common.io.StreamBufferTest skipNonTests=false filtertrace=true haltOnError=true haltOnFailure=true formatter=org.apache.tools.ant.taskdefs.optional.junit.SummaryJUnitResultFormatter showoutput=true outputtoformatters=true logfailedtests=true threadid=0 logtestlistenerevents=false formatter=org.apache.tools.ant.taskdefs.optional.junit.XMLJUnitResultFormatter,D:\gitcodda\codda2\core\all\report\TEST-kr.pe.codda.common.io.StreamBufferTest.xml crashfile=D:\gitcodda\codda2\core\all\junitvmwatcher5453350475666649414.properties propsfile=D:\gitcodda\codda2\core\all\junit6184688533271065978.properties" />
+    <property name="java.class.path" value="D:\gitcodda\codda2\core\server\lib\main\ex\commons-dbcp2-2.0.1.jar;D:\gitcodda\codda2\core\server\lib\main\ex\commons-pool2-2.5.0.jar;D:\gitcodda\codda2\core\all\dist\codda-core-all.jar;D:\gitcodda\codda2\core\common\lib\test\hamcrest-core-1.3.jar;D:\gitcodda\codda2\core\common\lib\test\junit-4.12.jar;D:\gitcodda\codda2\core\common\lib\test\byte-buddy-1.7.9.jar;D:\gitcodda\codda2\core\common\lib\test\byte-buddy-agent-1.7.9.jar;D:\gitcodda\codda2\core\common\lib\test\mockito-core-2.13.4.jar;D:\gitcodda\codda2\core\common\lib\test\objenesis-2.6.jar;D:\gitcodda\codda2\core\common\lib\test\commons-exec-1.3.jar;D:\gitcodda\codda2\core\all\build\test;D:\apache-ant-1.9.11\lib\ant-launcher.jar;D:\apache-ant-1.9.11\lib\ant.jar;D:\apache-ant-1.9.11\lib\ant-junit.jar;D:\apache-ant-1.9.11\lib\ant-junit4.jar" />
+    <property name="ant.version" value="Apache Ant(TM) version 1.9.11 compiled on March 23 2018" />
+    <property name="core.client.jar.name.only" value="codda-core-onlyclient.jar" />
+    <property name="java.vm.specification.name" value="Java Virtual Machine Specification" />
+    <property name="ant.file.type" value="file" />
+    <property name="java.vm.specification.version" value="1.8" />
+    <property name="sun.cpu.endian" value="little" />
+    <property name="sun.os.patch.level" value="" />
+    <property name="java.io.tmpdir" value="C:\Users\user\AppData\Local\Temp\" />
+    <property name="java.vendor.url.bug" value="http://www.azulsystems.com/support/" />
+    <property name="dir.core.server.build" value="D:\gitcodda\codda2\core\server" />
+    <property name="os.arch" value="amd64" />
+    <property name="java.awt.graphicsenv" value="sun.awt.Win32GraphicsEnvironment" />
+    <property name="java.ext.dirs" value="C:\Program Files\Zulu\zulu-8\jre\lib\ext;C:\WINDOWS\Sun\Java\lib\ext" />
+    <property name="user.dir" value="D:\gitcodda\codda2\core\all" />
+    <property name="core.all.jar.name" value="codda-core-all.jar" />
+    <property name="core.junitlib.jar.name" value="codda-core-junitlib.jar" />
+    <property name="line.separator" value="&#xd;&#xa;" />
+    <property name="java.vm.name" value="OpenJDK 64-Bit Server VM" />
+    <property name="core.common.jar.name" value="codda-core-common.jar" />
+    <property name="dir.core.client.build" value="D:\gitcodda\codda2\core\client" />
+    <property name="basedir" value="D:\gitcodda\codda2\core\all" />
+    <property name="ant.java.version" value="1.8" />
+    <property name="ant.core.lib" value="D:\apache-ant-1.9.11\lib\ant.jar" />
+    <property name="sun.stderr.encoding" value="ms949" />
+    <property name="file.encoding" value="MS949" />
+    <property name="java.specification.version" value="1.8" />
+    <property name="dir.test.src" value="D:\gitcodda\codda2\core\all\src\test\java" />
+    <property name="ant.project.invoked-targets" value="test" />
+  </properties>
+  <testcase classname="kr.pe.codda.common.io.StreamBufferTest" name="testPutBytes_부분지정바이트배열_theSumOfThePameterOffsetAndthePameterLengthIsGreaterThanSourceByteArrayLength" time="0.005" />
+  <testcase classname="kr.pe.codda.common.io.StreamBufferTest" name="testPutFixedLengthString_theParameterWantedCharsetEncoderIsNull" time="0.001" />
+  <testcase classname="kr.pe.codda.common.io.StreamBufferTest" name="testGetSIPascalString_theParameterWantedCharsetIsNull" time="0.001" />
+  <testcase classname="kr.pe.codda.common.io.StreamBufferTest" name="testPutUnsignedByte_중간버퍼첫번째위치에서쓰고읽기" time="0.001" />
+  <testcase classname="kr.pe.codda.common.io.StreamBufferTest" name="testGetUBPascalString_버퍼에남은용량이부족한경우" time="0.001" />
+  <testcase classname="kr.pe.codda.common.io.StreamBufferTest" name="testPutUnsignedByte_최대값초가" time="0.001" />
+  <testcase classname="kr.pe.codda.common.io.StreamBufferTest" name="testPutByte_첫번째버퍼마지막위치에서쓰고읽기" time="0.0" />
+  <testcase classname="kr.pe.codda.common.io.StreamBufferTest" name="testPutSIPascalString_theParameterSrcIsNull" time="0.001" />
+  <testcase classname="kr.pe.codda.common.io.StreamBufferTest" name="testPutBytes_바이트버퍼_부분쓰기읽기" time="0.004" />
+  <testcase classname="kr.pe.codda.common.io.StreamBufferTest" name="testSetLimit_ok" time="0.0" />
+  <testcase classname="kr.pe.codda.common.io.StreamBufferTest" name="testPutBytes_바이트버퍼_TheParameterSrcIsNull" time="0.001" />
+  <testcase classname="kr.pe.codda.common.io.StreamBufferTest" name="testGetBytes_목적지지정_버퍼에남은용량이부족한경우" time="0.003" />
+  <testcase classname="kr.pe.codda.common.io.StreamBufferTest" name="testPutUSPascalString_theParameterWantedCharsetIsNull" time="0.0" />
+  <testcase classname="kr.pe.codda.common.io.StreamBufferTest" name="testPutUnsignedByte_첫번째버퍼마지막위치에서쓰고읽기" time="0.0" />
+  <testcase classname="kr.pe.codda.common.io.StreamBufferTest" name="testPutUnsignedByte_꽉찬상태에서쓰고읽기" time="0.001" />
+  <testcase classname="kr.pe.codda.common.io.StreamBufferTest" name="testGetBytes_목적지지정_theParameterLengthIsLessThanZero" time="0.002" />
+  <testcase classname="kr.pe.codda.common.io.StreamBufferTest" name="testPutFixedLengthString_theParameterFixedLengthIsLessThanZero" time="0.001" />
+  <testcase classname="kr.pe.codda.common.io.StreamBufferTest" name="testPutUSPascalString_OK" time="0.002" />
+  <testcase classname="kr.pe.codda.common.io.StreamBufferTest" name="testSkip_버퍼에남은용량이부족한경우" time="0.0" />
+  <testcase classname="kr.pe.codda.common.io.StreamBufferTest" name="testPutUBPascalString_theParameterSrcIsNull" time="0.001" />
+  <testcase classname="kr.pe.codda.common.io.StreamBufferTest" name="testPutFixedLengthString_theParameterSrcIsNull" time="0.001" />
+  <testcase classname="kr.pe.codda.common.io.StreamBufferTest" name="testPutUBPascalString_OK" time="0.004" />
+  <testcase classname="kr.pe.codda.common.io.StreamBufferTest" name="testPutByte_최소최대중간값쓰고읽기" time="0.001" />
+  <testcase classname="kr.pe.codda.common.io.StreamBufferTest" name="testPutUnsignedShort_최대값초과" time="0.001" />
+  <testcase classname="kr.pe.codda.common.io.StreamBufferTest" name="testPutBytes_부분지정바이트배열_전체쓰기읽기" time="0.012" />
+  <testcase classname="kr.pe.codda.common.io.StreamBufferTest" name="testConstructor_theParameterDataPacketBufferMaxCountIsLessThanOrEqualToZero" time="0.0" />
+  <testcase classname="kr.pe.codda.common.io.StreamBufferTest" name="testPutUnsignedInt_음수" time="0.0" />
+  <testcase classname="kr.pe.codda.common.io.StreamBufferTest" name="testGetUBPascalString_theParameterWantedCharsetIsNull" time="0.001" />
+  <testcase classname="kr.pe.codda.common.io.StreamBufferTest" name="testPutByte_중간버퍼첫번째위치에서쓰고읽기" time="0.0" />
+  <testcase classname="kr.pe.codda.common.io.StreamBufferTest" name="testPutByte_마지막버퍼마지막위치에서쓰고읽기" time="0.0" />
+  <testcase classname="kr.pe.codda.common.io.StreamBufferTest" name="testPutBytes_바이트버퍼_버퍼에남은용량이부족한경우" time="0.037" />
+  <testcase classname="kr.pe.codda.common.io.StreamBufferTest" name="testPutUnsignedShort_버퍼에남은용량이부족한경우" time="0.0" />
+  <testcase classname="kr.pe.codda.common.io.StreamBufferTest" name="testGetBytes_목적지지정_theParameterOffsetIsLessThanZero" time="0.001" />
+  <testcase classname="kr.pe.codda.common.io.StreamBufferTest" name="testPutBytes_부분지정바이트배열_TheParameterSrcIsNull" time="0.0" />
+  <testcase classname="kr.pe.codda.common.io.StreamBufferTest" name="testSetPosition_greaterThanLimit" time="0.0" />
+  <testcase classname="kr.pe.codda.common.io.StreamBufferTest" name="testPutUnsignedByte_마지막버퍼마지막위치에서쓰고읽기" time="0.001" />
+  <testcase classname="kr.pe.codda.common.io.StreamBufferTest" name="testPutAllString_OK" time="0.001" />
+  <testcase classname="kr.pe.codda.common.io.StreamBufferTest" name="testPutBytes_전체바이트배열_쓰기읽기" time="0.005" />
+  <testcase classname="kr.pe.codda.common.io.StreamBufferTest" name="testGetMD5WithoutChange_버퍼3개중앞뒤로중간에걸친" time="0.006" />
+  <testcase classname="kr.pe.codda.common.io.StreamBufferTest" name="testGetFixedLengthString_버퍼에남은용량이부족한경우" time="0.002" />
+  <testcase classname="kr.pe.codda.common.io.StreamBufferTest" name="testPutShort_최소최대포함한값들로버퍼끝에서다름버퍼까지쓰고읽기" time="0.0" />
+  <testcase classname="kr.pe.codda.common.io.StreamBufferTest" name="testPutFixedLengthString_버퍼에남은용량이부족한경우" time="0.004" />
+  <testcase classname="kr.pe.codda.common.io.StreamBufferTest" name="testGetUnsignedByte_버퍼에남은용량이부족한경우" time="0.001" />
+  <testcase classname="kr.pe.codda.common.io.StreamBufferTest" name="testPutInt_버퍼에남은용량이부족한경우" time="0.0" />
+  <testcase classname="kr.pe.codda.common.io.StreamBufferTest" name="testGetInt_버퍼에남은용량이부족한경우" time="0.001" />
+  <testcase classname="kr.pe.codda.common.io.StreamBufferTest" name="testGetFixedLengthString_theParameterWantedCharsetDecoderIsNull" time="0.001" />
+  <testcase classname="kr.pe.codda.common.io.StreamBufferTest" name="testGetBytes_목적지지정_정상_부분" time="0.001" />
+  <testcase classname="kr.pe.codda.common.io.StreamBufferTest" name="testGetBytes_목적지지정_정상_전체" time="0.001" />
+  <testcase classname="kr.pe.codda.common.io.StreamBufferTest" name="testPutFixedLengthString_OK" time="0.001" />
+  <testcase classname="kr.pe.codda.common.io.StreamBufferTest" name="testPutBytes_부분지정바이트배열_부분쓰기읽기" time="0.001" />
+  <testcase classname="kr.pe.codda.common.io.StreamBufferTest" name="testgetByte_버퍼에남은용량이부족한경우" time="0.001" />
+  <testcase classname="kr.pe.codda.common.io.StreamBufferTest" name="testPutPascalString_theParameterWantedCharsetIsNull" time="0.0" />
+  <testcase classname="kr.pe.codda.common.io.StreamBufferTest" name="testGetPascalString_버퍼에남은용량이부족한경우" time="0.0" />
+  <testcase classname="kr.pe.codda.common.io.StreamBufferTest" name="testGetShort_버퍼에남은용량이부족한경우" time="0.0" />
+  <testcase classname="kr.pe.codda.common.io.StreamBufferTest" name="testPutBytes_전체바이트배열_TheParameterSrcIsNull" time="0.001" />
+  <testcase classname="kr.pe.codda.common.io.StreamBufferTest" name="testSetPosition_lessThanZero" time="0.001" />
+  <testcase classname="kr.pe.codda.common.io.StreamBufferTest" name="testPutUnsignedShort_최소최대포함한값들로버퍼끝에서다름버퍼까지쓰고읽기" time="0.001" />
+  <testcase classname="kr.pe.codda.common.io.StreamBufferTest" name="testConstructor_theParameterWrapBufferPoolIsNull" time="0.0" />
+  <testcase classname="kr.pe.codda.common.io.StreamBufferTest" name="testConstructor_theParameterStreamCharsetFamilyIsNull" time="0.0" />
+  <testcase classname="kr.pe.codda.common.io.StreamBufferTest" name="testPutByte_첫번째버퍼첫번째위치에서쓰고읽기" time="0.0" />
+  <testcase classname="kr.pe.codda.common.io.StreamBufferTest" name="testSetLimit_lessThanPosition" time="0.0" />
+  <testcase classname="kr.pe.codda.common.io.StreamBufferTest" name="test" time="0.001" />
+  <testcase classname="kr.pe.codda.common.io.StreamBufferTest" name="testGetBytes_목적지지정_theParameterOffsetIsEqualToLengthOfTheParameterDst" time="0.002" />
+  <testcase classname="kr.pe.codda.common.io.StreamBufferTest" name="testGetUSPascalString_theParameterWantedCharsetIsNull" time="0.001" />
+  <testcase classname="kr.pe.codda.common.io.StreamBufferTest" name="testPutLong_최소최대포함한값들로버퍼끝에서다름버퍼까지쓰고읽기" time="0.001" />
+  <testcase classname="kr.pe.codda.common.io.StreamBufferTest" name="testSetLimit_lessThanZero" time="0.0" />
+  <testcase classname="kr.pe.codda.common.io.StreamBufferTest" name="testPutUnsignedByte_첫번째버퍼첫번째위치에서쓰고읽기" time="0.001" />
+  <testcase classname="kr.pe.codda.common.io.StreamBufferTest" name="testPutInt_최소최대포함한값들로버퍼끝에서다름버퍼까지쓰고읽기" time="0.0" />
+  <testcase classname="kr.pe.codda.common.io.StreamBufferTest" name="testPutBytes_전체바이트배열_버퍼에남은용량이부족한경우" time="0.071" />
+  <testcase classname="kr.pe.codda.common.io.StreamBufferTest" name="test속도비교_putBytesVsPutBytes2" time="0.121" />
+  <testcase classname="kr.pe.codda.common.io.StreamBufferTest" name="testPutUnsignedShort_음수" time="0.0" />
+  <testcase classname="kr.pe.codda.common.io.StreamBufferTest" name="testPutUnsignedByte_중간버퍼마지막위치에서쓰고읽기" time="0.0" />
+  <testcase classname="kr.pe.codda.common.io.StreamBufferTest" name="testPutBytes_부분지정바이트배열__thePameterOffsetIsGreaterThanOrEqualToSourceByteArrayLength" time="0.0" />
+  <testcase classname="kr.pe.codda.common.io.StreamBufferTest" name="testGetBytes_목적지지정_theSumOfParameterOffsetAndParameterLengthIsGreaterThanLengthOfTheParameterDst" time="0.001" />
+  <testcase classname="kr.pe.codda.common.io.StreamBufferTest" name="testGetBytes_버퍼에남은용량이부족한경우" time="0.001" />
+  <testcase classname="kr.pe.codda.common.io.StreamBufferTest" name="testPutByte_꽉찬상태에서쓰고읽기" time="0.0" />
+  <testcase classname="kr.pe.codda.common.io.StreamBufferTest" name="testPutBytes_부분지정바이트배열_버퍼에남은용량이부족한경우" time="0.034" />
+  <testcase classname="kr.pe.codda.common.io.StreamBufferTest" name="testPutSIPascalString_theParameterWantedCharsetIsNull" time="0.015" />
+  <testcase classname="kr.pe.codda.common.io.StreamBufferTest" name="testConstructor_ok" time="0.001" />
+  <testcase classname="kr.pe.codda.common.io.StreamBufferTest" name="testSetPosition_ok" time="0.0" />
+  <testcase classname="kr.pe.codda.common.io.StreamBufferTest" name="testGetBytes_theParameterLengthIsLessThanZero" time="0.001" />
+  <testcase classname="kr.pe.codda.common.io.StreamBufferTest" name="testGetUnsignedShort_버퍼에남은용량이부족한경우" time="0.0" />
+  <testcase classname="kr.pe.codda.common.io.StreamBufferTest" name="testGetMD5WithoutChange_버퍼3개중2개에꽉찬" time="0.0" />
+  <testcase classname="kr.pe.codda.common.io.StreamBufferTest" name="testPutAllString_theParameterSrcIsNull" time="0.001" />
+  <testcase classname="kr.pe.codda.common.io.StreamBufferTest" name="testGetAllString_theParameterWantedCharsetIsNull" time="0.001" />
+  <testcase classname="kr.pe.codda.common.io.StreamBufferTest" name="testPutSIPascalString_OK" time="0.001" />
+  <testcase classname="kr.pe.codda.common.io.StreamBufferTest" name="testGetSIPascalString_버퍼에남은용량이부족한경우" time="0.0" />
+  <testcase classname="kr.pe.codda.common.io.StreamBufferTest" name="testGetPascalString_theParameterWantedCharsetIsNull" time="0.001" />
+  <testcase classname="kr.pe.codda.common.io.StreamBufferTest" name="testPutLong_버퍼에남은용량이부족한경우" time="0.001" />
+  <testcase classname="kr.pe.codda.common.io.StreamBufferTest" name="testGetBytes_목적지지정_theParameterDstIsNull" time="0.0" />
+  <testcase classname="kr.pe.codda.common.io.StreamBufferTest" name="testPutUnsignedByte_마지막버퍼첫번째위치에서쓰고읽기" time="0.0" />
+  <testcase classname="kr.pe.codda.common.io.StreamBufferTest" name="testPutPascalString_theParameterSrcIsNull" time="0.0" />
+  <testcase classname="kr.pe.codda.common.io.StreamBufferTest" name="testSkip_theParameterNIsLessThanOrEqualToZero" time="0.0" />
+  <testcase classname="kr.pe.codda.common.io.StreamBufferTest" name="testGetUnsignedInt_버퍼에남은용량이부족한경우" time="0.0" />
+  <testcase classname="kr.pe.codda.common.io.StreamBufferTest" name="testPutUnsignedByte_음수" time="0.0" />
+  <testcase classname="kr.pe.codda.common.io.StreamBufferTest" name="testGetLong_버퍼에남은용량이부족한경우" time="0.001" />
+  <testcase classname="kr.pe.codda.common.io.StreamBufferTest" name="testPutByte_중간버퍼마지막위치에서쓰고읽기" time="0.0" />
+  <testcase classname="kr.pe.codda.common.io.StreamBufferTest" name="testPutBytes_부분지정바이트배열__thePameterLengthIsLessThanZero" time="0.0" />
+  <testcase classname="kr.pe.codda.common.io.StreamBufferTest" name="testPutUnsignedInt_최소최대포함한값들로버퍼끝에서다름버퍼까지쓰고읽기" time="0.0" />
+  <testcase classname="kr.pe.codda.common.io.StreamBufferTest" name="testPutUnsignedInt_버퍼에남은용량이부족한경우" time="0.0" />
+  <testcase classname="kr.pe.codda.common.io.StreamBufferTest" name="testGetUSPascalString_버퍼에남은용량이부족한경우" time="0.002" />
+  <testcase classname="kr.pe.codda.common.io.StreamBufferTest" name="testPutUBPascalString_theParameterWantedCharsetIsNull" time="0.001" />
+  <testcase classname="kr.pe.codda.common.io.StreamBufferTest" name="testGetFixedLengthString_theParameterFixedLengthIsLessThanZero" time="0.002" />
+  <testcase classname="kr.pe.codda.common.io.StreamBufferTest" name="testPutUnsignedByte_최소최대중간값" time="0.001" />
+  <testcase classname="kr.pe.codda.common.io.StreamBufferTest" name="testPutUnsignedInt_최대값초과" time="0.0" />
+  <testcase classname="kr.pe.codda.common.io.StreamBufferTest" name="testPutPascalString_OK" time="0.0" />
+  <testcase classname="kr.pe.codda.common.io.StreamBufferTest" name="testPutBytes_바이트버퍼_전체쓰기읽기" time="0.003" />
+  <testcase classname="kr.pe.codda.common.io.StreamBufferTest" name="testPutAllString_theParameterWantedCharsetIsNull" time="0.0" />
+  <testcase classname="kr.pe.codda.common.io.StreamBufferTest" name="testSetLimit_greaterThanCapacity" time="0.0" />
+  <testcase classname="kr.pe.codda.common.io.StreamBufferTest" name="testPutShort_버퍼에남은용량이부족한경우" time="0.0" />
+  <testcase classname="kr.pe.codda.common.io.StreamBufferTest" name="testPutBytes_부분지정바이트배열__thePameterOffsetIsLessThanZero" time="0.0" />
+  <testcase classname="kr.pe.codda.common.io.StreamBufferTest" name="testPutUSPascalString_theParameterSrcIsNull" time="0.001" />
+  <system-out><![CDATA[the sum[1201] of the parameter offset[0] and the parameter length[1201] is greater than the parameter src's length[1200]
+the parameter wantedCharsetEncoder is null
+the parameter wantedCharset is null
+the parameter src is null
+BufferUnderflowException::sb.remaining()=9, length=10
+BufferUnderflowException::sb.remaining()=8, length=10
+BufferUnderflowException::sb.remaining()=7, length=10
+BufferUnderflowException::sb.remaining()=6, length=10
+BufferUnderflowException::sb.remaining()=5, length=10
+BufferUnderflowException::sb.remaining()=4, length=10
+BufferUnderflowException::sb.remaining()=3, length=10
+BufferUnderflowException::sb.remaining()=2, length=10
+BufferUnderflowException::sb.remaining()=1, length=10
+BufferUnderflowException::sb.remaining()=0, length=10
+the parameter wantedCharset is null
+the parameter length[-1] is less than zero
+the parameter fixedLength[-1] is less than zero
+문자열 bytes=282
+the parameter n[1025] is greater than remaing bytes[1024]
+the parameter src is null
+the parameter src is null
+the parameter wantedCharset is null
+the parameter offset[-1] is less than zero
+the parameter wantedCharsetDecoder is null
+the parameter wantedCharset is null
+1.d41d8cd98f00b204e9800998ecf8427e
+2.d41d8cd98f00b204e9800998ecf8427e
+the parameter offset[1024] is greater than or equal to the parameter dst's length[1024]
+the parameter wantedCharset is null
+putBytes::1000000 번, 총 소요 시간=[46] ms
+putByte::1000000 번, 총 소요 시간=[73] ms
+the parameter offset[1200] is greater than and equal to the parameter src's length[1200]
+the sum[1025] of the parameter offset[1023] and the parameter length[2] is greater than the parameter dst's length[1024]
+the parameter wantedCharset is null
+the parameter length[-1] is less than zero
+the parameter src is null
+the parameter wantedCharset is null
+문자열 bytes=284
+the parameter wantedCharset is null
+the parameter dst is null
+the parameter src is null
+the parameter length[-1] is less than zero
+the parameter wantedCharset is null
+the parameter fixedLength[-1] is less than zero
+the parameter wantedCharset is null
+the parameter src is null
+]]></system-out>
+  <system-err><![CDATA[Codda Log Start
+2019-11-29 14:10:04.385 [WARNING]  [Finalizer] this wrap buffer[hashcode=1733710504] was destroyed outside the queue(kr.pe.codda.common.io.WrapBuffer#finalize) 
+2019-11-29 14:10:04.390 [WARNING]  [Finalizer] this wrap buffer[hashcode=1771155506] was destroyed outside the queue(kr.pe.codda.common.io.WrapBuffer#finalize) 
+2019-11-29 14:10:04.390 [WARNING]  [Finalizer] this wrap buffer[hashcode=1840134616] was destroyed outside the queue(kr.pe.codda.common.io.WrapBuffer#finalize) 
+2019-11-29 14:10:04.395 [WARNING]  [Finalizer] this wrap buffer[hashcode=682408457] was destroyed outside the queue(kr.pe.codda.common.io.WrapBuffer#finalize) 
+2019-11-29 14:10:04.395 [WARNING]  [Finalizer] this wrap buffer[hashcode=2100981414] was destroyed outside the queue(kr.pe.codda.common.io.WrapBuffer#finalize) 
+2019-11-29 14:10:04.395 [WARNING]  [Finalizer] this wrap buffer[hashcode=432951571] was destroyed outside the queue(kr.pe.codda.common.io.WrapBuffer#finalize) 
+2019-11-29 14:10:04.395 [WARNING]  [Finalizer] this wrap buffer[hashcode=95607563] was destroyed outside the queue(kr.pe.codda.common.io.WrapBuffer#finalize) 
+2019-11-29 14:10:04.396 [WARNING]  [Finalizer] this wrap buffer[hashcode=1216562502] was destroyed outside the queue(kr.pe.codda.common.io.WrapBuffer#finalize) 
+2019-11-29 14:10:04.396 [WARNING]  [Finalizer] this wrap buffer[hashcode=1717718446] was destroyed outside the queue(kr.pe.codda.common.io.WrapBuffer#finalize) 
+2019-11-29 14:10:04.396 [WARNING]  [Finalizer] this wrap buffer[hashcode=231722680] was destroyed outside the queue(kr.pe.codda.common.io.WrapBuffer#finalize) 
+2019-11-29 14:10:04.396 [WARNING]  [Finalizer] this wrap buffer[hashcode=515257993] was destroyed outside the queue(kr.pe.codda.common.io.WrapBuffer#finalize) 
+2019-11-29 14:10:04.398 [WARNING]  [Finalizer] this wrap buffer[hashcode=1288567148] was destroyed outside the queue(kr.pe.codda.common.io.WrapBuffer#finalize) 
+2019-11-29 14:10:04.398 [WARNING]  [Finalizer] this wrap buffer[hashcode=951501414] was destroyed outside the queue(kr.pe.codda.common.io.WrapBuffer#finalize) 
+]]></system-err>
+</testsuite>
