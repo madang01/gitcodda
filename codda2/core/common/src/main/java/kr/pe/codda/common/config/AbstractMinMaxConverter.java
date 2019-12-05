@@ -12,22 +12,22 @@ public abstract class AbstractMinMaxConverter<T extends Number> extends Abstract
 		super(genericType);
 
 		if (null == min) {
-			String errorMessage = new StringBuilder("parameter min is null").toString();
+			String errorMessage = new StringBuilder("the parameter min is null").toString();
 			throw new IllegalArgumentException(errorMessage);
 		}
 
 		if (null == max) {
-			String errorMessage = new StringBuilder("parameter max is null").toString();
+			String errorMessage = new StringBuilder("the parameter max is null").toString();
 			throw new IllegalArgumentException(errorMessage);
 		}
 
 		if (null == typeComparator) {
-			String errorMessage = new StringBuilder("parameter typeComparator is null").toString();
+			String errorMessage = new StringBuilder("the parameter typeComparator is null").toString();
 			throw new IllegalArgumentException(errorMessage);
 		}
 
 		if (typeComparator.compare(min, max) > 0) {
-			String errorMessage = new StringBuilder("parameter min[").append(min)
+			String errorMessage = new StringBuilder("the parameter min[").append(min)
 					.append("] is greater than parameter max[").append(max).append("]").toString();
 			throw new IllegalArgumentException(errorMessage);
 		}
@@ -66,13 +66,13 @@ public abstract class AbstractMinMaxConverter<T extends Number> extends Abstract
 		T returnedValue = innerValueOf(itemValue);
 
 		if (typeComparator.compare(returnedValue, min) < 0) {
-			String errorMessage = new StringBuilder("parameter itemValue[").append(itemValue)
+			String errorMessage = new StringBuilder("the parameter itemValue[").append(itemValue)
 					.append("] is less than min[").append(min).append("]").toString();
 			throw new IllegalArgumentException(errorMessage);
 		}
 
 		if (typeComparator.compare(returnedValue, max) > 0) {
-			String errorMessage = new StringBuilder("parameter itemValue[").append(itemValue)
+			String errorMessage = new StringBuilder("the parameter itemValue[").append(itemValue)
 					.append("] is greater than max[").append(max).append("]").toString();
 			throw new IllegalArgumentException(errorMessage);
 		}

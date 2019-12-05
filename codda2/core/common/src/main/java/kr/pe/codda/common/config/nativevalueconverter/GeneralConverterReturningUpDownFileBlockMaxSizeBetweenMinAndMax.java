@@ -27,7 +27,7 @@ public class GeneralConverterReturningUpDownFileBlockMaxSizeBetweenMinAndMax ext
 			throws IllegalArgumentException {
 		super(Integer.class);
 		if (min < 0) {
-			String errorMessage = new StringBuilder("parameter min[")
+			String errorMessage = new StringBuilder("the parameter min[")
 					.append(min).append("] is less than zero").toString();
 			throw new IllegalArgumentException(errorMessage);
 		}
@@ -39,13 +39,13 @@ public class GeneralConverterReturningUpDownFileBlockMaxSizeBetweenMinAndMax ext
 		}*/
 		
 		if (max < 1024) {
-			String errorMessage = new StringBuilder("parameter max[")
+			String errorMessage = new StringBuilder("the parameter max[")
 					.append(max).append("] is less than 1024").toString();
 			throw new IllegalArgumentException(errorMessage);
 		}
 		
 		if (min > max) {
-			String errorMessage = new StringBuilder("parameter min[")
+			String errorMessage = new StringBuilder("the parameter min[")
 					.append(min).append("] is greater than parameter max[")
 					.append(max).append("]").toString();
 			throw new IllegalArgumentException(errorMessage);
@@ -78,12 +78,12 @@ public class GeneralConverterReturningUpDownFileBlockMaxSizeBetweenMinAndMax ext
 	public Integer valueOf(String itemValue)
 			throws IllegalArgumentException {
 		if (null == itemValue) {
-			String errorMessage = "parameter itemValue is null";
+			String errorMessage = "the parameter itemValue is null";
 			throw new IllegalArgumentException(errorMessage);
 		}
 
 		if (itemValue.equals("")) {
-			String errorMessage = "parameter itemValue is empty";
+			String errorMessage = "the parameter itemValue is empty";
 			throw new IllegalArgumentException(errorMessage);
 		}
 
@@ -91,28 +91,28 @@ public class GeneralConverterReturningUpDownFileBlockMaxSizeBetweenMinAndMax ext
 		try {
 			returnedValue = Integer.parseInt(itemValue);
 		} catch (NumberFormatException e) {
-			String errorMessage = new StringBuilder("parameter itemValue[")
+			String errorMessage = new StringBuilder("the parameter itemValue[")
 					.append(itemValue).append("] is not integer type")
 					.toString();
 			throw new IllegalArgumentException(errorMessage);
 		}
 
 		if (returnedValue < min) {
-			String errorMessage = new StringBuilder("parameter itemValue[")
+			String errorMessage = new StringBuilder("the parameter itemValue[")
 					.append(itemValue).append("] is less than min[")
 					.append(min).append("]").toString();
 			throw new IllegalArgumentException(errorMessage);
 		}
 
 		if (returnedValue > max) {
-			String errorMessage = new StringBuilder("parameter itemValue[")
+			String errorMessage = new StringBuilder("the parameter itemValue[")
 					.append(itemValue).append("] is greater than max[")
 					.append(max).append("]").toString();
 			throw new IllegalArgumentException(errorMessage);
 		}
 
 		if (returnedValue % 1024 != 0) {
-			String errorMessage = new StringBuilder("parameter itemValue[")
+			String errorMessage = new StringBuilder("the parameter itemValue[")
 					.append(itemValue).append("] is not a multiple of 1024")
 					.toString();
 			throw new IllegalArgumentException(errorMessage);

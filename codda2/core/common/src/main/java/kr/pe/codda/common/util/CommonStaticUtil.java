@@ -39,11 +39,21 @@ public abstract class CommonStaticUtil {
 		if (null == value) {
 			throw new IllegalArgumentException("the paramater value is null");
 		}
+		
+		char[] t = value.toCharArray();
+		
+		if (0 == t.length) {
+			return false;
+		}
+		
+		boolean hasLeadingOrTailingWhiteSpace = Character.isWhitespace(t[0]) || Character.isWhitespace(t[t.length - 1]);
 
+		/*
 		String trimValue = value.trim();
 		boolean returnValue = !trimValue.equals(value);
+		*/
 
-		return returnValue;
+		return hasLeadingOrTailingWhiteSpace;
 	}
 
 	public static String getFilePathStringFromResourcePathAndRelativePathOfFile(String resourcesPathString,

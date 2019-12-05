@@ -12,13 +12,13 @@ public class GeneralConverterReturningEmptyOrNoTrimString extends AbstractNative
 	@Override
 	public String valueOf(String itemValue) throws IllegalArgumentException {
 		if (null == itemValue) {
-			String errorMessage = "parameter itemValue is null";
+			String errorMessage = "the parameter itemValue is null";
 			throw new IllegalArgumentException(errorMessage);
 		}				
 		
 		if (CommonStaticUtil.hasLeadingOrTailingWhiteSpace(itemValue)) {
 			String errorMessage = new StringBuilder()
-			.append("parameter itemValue[")
+			.append("the parameter itemValue[")
 			.append(itemValue)
 			.append("] has leading or tailing white space").toString();
 			throw new IllegalArgumentException(errorMessage);

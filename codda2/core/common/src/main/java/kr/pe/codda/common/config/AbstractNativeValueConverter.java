@@ -9,7 +9,7 @@ public abstract class AbstractNativeValueConverter<T> {
 	
 	public AbstractNativeValueConverter(Class<T> genericType) {
 		if (null == genericType) {
-			String errorMessage = new StringBuilder("parameter genericType is null")
+			String errorMessage = new StringBuilder("the parameter genericType is null")
 					.toString();
 			throw new IllegalArgumentException(errorMessage);
 		}

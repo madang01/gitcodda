@@ -28,12 +28,12 @@ extends AbstractSetTypeNativeValueConverter<SessionKey.RSAKeypairSourceType> {
 	public SessionKey.RSAKeypairSourceType valueOf(
 			String itemValue) throws IllegalArgumentException {
 		if (null == itemValue) {
-			String errorMessage = "parameter itemValue is null";
+			String errorMessage = "the parameter itemValue is null";
 			throw new IllegalArgumentException(errorMessage);
 		}
 		
 		if (itemValue.equals("")) {
-			String errorMessage = "parameter itemValue is empty";
+			String errorMessage = "the parameter itemValue is empty";
 			throw new IllegalArgumentException(errorMessage);
 		}		
 		
@@ -42,7 +42,7 @@ extends AbstractSetTypeNativeValueConverter<SessionKey.RSAKeypairSourceType> {
 		try {
 			returnValue = SessionKey.RSAKeypairSourceType.valueOf(itemValue);
 		} catch(IllegalArgumentException e) {
-			String errorMessage = new StringBuilder("parameter itemValue[")
+			String errorMessage = new StringBuilder("the parameter itemValue[")
 			.append(itemValue)
 			.append("] is not an element of the set ")
 			.append(getSetName())

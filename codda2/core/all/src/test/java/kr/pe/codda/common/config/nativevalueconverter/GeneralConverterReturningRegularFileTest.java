@@ -5,16 +5,24 @@ import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.logging.ConsoleHandler;
+import java.util.logging.Handler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
+import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import junitlib.AbstractJunitTest;
-import kr.pe.codda.common.config.NativeValueConverterTestIF;
+import kr.pe.codda.common.etc.CommonStaticFinalVars;
+import kr.pe.codda.common.util.CustomLogFormatter;
 
-public class GeneralConverterReturningRegularFileTest extends AbstractJunitTest implements
-		NativeValueConverterTestIF {
+public class GeneralConverterReturningRegularFileTest {
+	
+	private Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
 
 	private GeneralConverterReturningRegularFile nativeValueConverter = null;
 	private File returnedValue = null;
@@ -22,7 +30,30 @@ public class GeneralConverterReturningRegularFileTest extends AbstractJunitTest 
 	// private String canonicalPathStringOfExpectedValue = null;
 	private File expectedValue = null;
 
-	@Override
+	
+	@BeforeClass
+	public static void setUpBeforeClass() throws Exception {
+		Logger rootLogger = Logger.getLogger("");
+
+		Handler[] handlers = rootLogger.getHandlers();
+
+		for (Handler handler : handlers) {
+			rootLogger.removeHandler(handler);
+		}
+
+		Handler handler = new ConsoleHandler();
+
+		CustomLogFormatter formatter = new CustomLogFormatter();
+		handler.setFormatter(formatter);
+
+		rootLogger.setLevel(Level.INFO);
+		rootLogger.addHandler(handler);
+	}
+
+	@AfterClass
+	public static void tearDownAfterClass() throws Exception {
+	}
+	
 	@Before
 	public void setup() {
 		boolean isWritePermissionChecking = true;
@@ -34,7 +65,7 @@ public class GeneralConverterReturningRegularFileTest extends AbstractJunitTest 
 			fail("fail to create a temp file, errormessage=" + e1.getMessage());
 		}
 
-		log.info("temp file=[{}]", expectedValue.getAbsolutePath());
+		log.info("temp file=[" + expectedValue.getAbsolutePath()+"]");
 
 		boolean isSuccess = expectedValue
 				.setWritable(isWritePermissionChecking);
@@ -53,107 +84,79 @@ public class GeneralConverterReturningRegularFileTest extends AbstractJunitTest 
 				isWritePermissionChecking);
 	}
 	
-	@Override
-	public void testConstructor() throws Exception {
-		/** ignore */
+	@After
+	public void tearDown() throws Exception {
 	}
+	
 
-	@Override
+	
 	@Test
-	public void testToNativeValue_ExpectedValueComparison() {
+	public void testValueOf_OK() {
 		try {
 			returnedValue = nativeValueConverter.valueOf(expectedValue
 					.getAbsolutePath());
-		} catch (IllegalArgumentException e) {
-			e.printStackTrace();
-			fail(e.getMessage());
+			
+			assertEquals("the expected value comparison", returnedValue.getCanonicalPath(), expectedValue.getCanonicalPath());
+		} catch (Exception e) {
+			String errorMessage = e.getMessage();
+			log.log(Level.WARNING, errorMessage, e);
+			
+			fail("unknown error");
 		}
-
-		/*
-		 * String canonicalPathStringOfReturnedValue = null; try {
-		 * canonicalPathStringOfReturnedValue =
-		 * returnedValue.getCanonicalPath(); } catch (IOException e) {
-		 * fail("fail to get a canonical path of a temp file, errormessage="
-		 * +e.getMessage()); }
-		 */
-
-		// org.junit.Assert.assertEquals("the expected value comparison",
-		// canonicalPathStringOfReturnedValue,
-		// canonicalPathStringOfReturnedValue);
-		/**
-		 * Warning! File.equals() method return false although the file to be
-		 * compared has same path.
-		 */
-		try {
-			assertEquals("the expected value comparison", returnedValue.getCanonicalPath(), expectedValue.getCanonicalPath());			
-		} catch (IOException e) {
-			fail(e.getMessage());
-		}
-
-		// assert("", canonicalPathStringOfReturnedValue,
-		// canonicalPathStringOfReturnedValue);
-
-		/*
-		 * if (!canonicalPathStringOfReturnedValue.equals(
-		 * canonicalPathStringOfExpectedValue)) { fail(String.format(
-		 * "the temp file[%s] is different from the file[%s] getting from a getNativeValueWithValidation method"
-		 * , canonicalPathStringOfExpectedValue,
-		 * canonicalPathStringOfReturnedValue)); }
-		 */
 
 	}
 
-	@Override
-	@Test(expected = IllegalArgumentException.class)
-	public void testToNativeValue_NullParameter() throws Exception {
+	
+	@Test
+	public void testValueOf_theParameterItemValueIsNull() {
 		try {
 			returnedValue = nativeValueConverter.valueOf(null);
-		} catch (IllegalArgumentException e) {
-			log.info(
-					"'the parameter itemvalue is null' test ok, errormessage={}",
-					e.getMessage());
-			throw e;
+			
+			fail("no IllegalArgumentException");
+		} catch (IllegalArgumentException e) {			
+			String errorMessage = e.getMessage();
+			
+			log.info(errorMessage);
+			
+			String expectedErrorMessage = "the parameter itemValue is null";
+			
+			assertEquals(expectedErrorMessage, errorMessage);
+			
+		} catch (Exception e) {
+			String errorMessage = e.getMessage();
+			log.log(Level.WARNING, errorMessage, e);
+			
+			fail("unknown error");
 		}
 	}
 
-	@Override
-	@Test(expected = IllegalArgumentException.class)
-	public void testToNativeValue_EmptyStringParameter() throws Exception {
+	
+	@Test
+	public void testValueOf_theParameterItemValueIsEmpty() {
 		try {
 			returnedValue = nativeValueConverter.valueOf("");
-		} catch (IllegalArgumentException e) {
-			log.info(
-					"'the parameter itemvalue is a empty string' test ok, errormessage={}",
-					e.getMessage());
-			throw e;
+			
+			fail("no IllegalArgumentException");
+		} catch (IllegalArgumentException e) {			
+			String errorMessage = e.getMessage();
+			
+			log.info(errorMessage);
+			
+			String expectedErrorMessage = "the parameter itemValue is empty";
+			
+			assertEquals(expectedErrorMessage, errorMessage);
+			
+		} catch (Exception e) {
+			String errorMessage = e.getMessage();
+			log.log(Level.WARNING, errorMessage, e);
+			
+			fail("unknown error");
 		}
 
-	}
-
-	@Override
-	public void testToNativeValue_ValidButBadParameter() throws Exception {
-		try {
-			testToNativeValue_ValidButBadParameter_NotRegularFile();
-		} catch (IllegalArgumentException e) {
-		}
-		try {
-			testToNativeValue_ValidButBadParameter_CannotRead();
-		} catch (IllegalArgumentException e) {
-		}
-		try {
-			testToNativeValue_ValidButBadParameter_CannotWrite();
-		} catch (IllegalArgumentException e) {
-		}
-		try {
-			testToNativeValue_ValidButBadParameter_BadFileName();
-		} catch (IllegalArgumentException e) {
-		}
 	}
 
 	@Ignore
-	@Test(expected = IllegalArgumentException.class)
-	public void testToNativeValue_ValidButBadParameter_CannotRead()
-			throws Exception {
+	public void testValueOf_theParameterItemValueIsUnreadableFile() {
 		/**
 		 * Warning! 파일 읽기 권한 검사 테스트는 파일 읽기 권한 비활성이 필요한데 이 기능은 운영체제 종속된 기능이므로 생략함.
 		 * "Window7 32bit Home Premium K" 에서는 읽기 권한이 강제적으로 활성화 되어 있어 이를 비활성화
@@ -166,69 +169,92 @@ public class GeneralConverterReturningRegularFileTest extends AbstractJunitTest 
 		 */
 	}
 
-	@Test(expected = IllegalArgumentException.class)
-	public void testToNativeValue_ValidButBadParameter_NotRegularFile()
-			throws Exception {
+	@Test
+	public void testValueOf_theParameterItemValueIsBadFileThatIsDirectory() {
+		String itemValue = ".";
 		try {
-			returnedValue = nativeValueConverter.valueOf(".");
-		} catch (IllegalArgumentException e) {
-			log.info(
-					"'the parameter itemvalue is a bad string' test ok, errormessage={}",
-					e.getMessage());
-			throw e;
+			returnedValue = nativeValueConverter.valueOf(itemValue);
+			
+			fail("no IllegalArgumentException");
+		} catch (IllegalArgumentException e) {			
+			String errorMessage = e.getMessage();
+			
+			log.info(errorMessage);
+			
+			String expectedErrorMessage = new StringBuilder("the file that is the parameter itemValue[")
+					.append(itemValue)
+					.append("] is not a regular file").toString();
+			
+			assertEquals(expectedErrorMessage, errorMessage);
+			
+		} catch (Exception e) {
+			String errorMessage = e.getMessage();
+			log.log(Level.WARNING, errorMessage, e);
+			
+			fail("unknown error");
 		}
 	}
 
-	@Test(expected = IllegalArgumentException.class)
-	public void testToNativeValue_ValidButBadParameter_BadFileName()
-			throws Exception {
+	@Test
+	public void testValueOf_theParameterItemValueIsBadFileThatDoestNotExist() {
+		String itemValue = "aabb$sd$s";
+		
 		try {
-			returnedValue = nativeValueConverter.valueOf("aabb$sd$s");
-		} catch (IllegalArgumentException e) {
-			log.info(
-					"'the parameter itemvalue is a bad string' test ok, errormessage={}",
-					e.getMessage());
-			throw e;
+			returnedValue = nativeValueConverter.valueOf(itemValue);
+			
+			fail("no IllegalArgumentException");
+		} catch (IllegalArgumentException e) {			
+			String errorMessage = e.getMessage();
+			
+			log.info(errorMessage);
+			
+			String expectedErrorMessage = new StringBuilder("the file that is the parameter itemValue[")
+					.append(itemValue)
+					.append("] does not exist").toString();
+			
+			assertEquals(expectedErrorMessage, errorMessage);
+			
+		} catch (Exception e) {
+			String errorMessage = e.getMessage();
+			log.log(Level.WARNING, errorMessage, e);
+			
+			fail("unknown error");
 		}
 	}
 
-	/**
-	 * testToNativeValue_ValidButBadParameter_CannotRead() 메소드는 윈도7에서 파일의 읽기 가능
-	 * 권한 수정이 불가능하여 기능 제거로 인한 주석 처리함.
-	 */
-	/*
-	 * @Test(expected = IllegalArgumentException.class) public void
-	 * testToNativeValue_ValidButBadParameter_CannotRead() { boolean isSuccess =
-	 * expectedValue.setReadable(false); if (!isSuccess) { String errorMessage =
-	 * String.format( "fail to set readable[false], file=%s",
-	 * expectedValue.getAbsolutePath()); log.warn(errorMessage);
-	 * fail(errorMessage); }
-	 * 
-	 * try { returnedValue = nativeValueConverter.toNativeValue(expectedValue
-	 * .getAbsolutePath()); } catch (IllegalArgumentException e) { log.info(
-	 * "'the parameter itemvalue is a bad string' test ok, errormessage={}",
-	 * e.getMessage()); throw e; } }
-	 */
+	
 
-	@Test(expected = IllegalArgumentException.class)
-	public void testToNativeValue_ValidButBadParameter_CannotWrite()
-			throws Exception {
+	@Test
+	public void testValueOf_theParameterItemValueIsUnwritableFile() {
 
 		boolean isSuccess = expectedValue.setWritable(false);
 		if (!isSuccess) {
 			String errorMessage = "fail to set writable[false]";
-			log.warn(errorMessage);
+			log.warning(errorMessage);
 			fail(errorMessage);
 		}
 
 		try {
 			returnedValue = nativeValueConverter.valueOf(expectedValue
 					.getAbsolutePath());
-		} catch (IllegalArgumentException e) {
-			log.info(
-					"'the parameter itemvalue is a bad string' test ok, errormessage={}",
-					e.getMessage());
-			throw e;
+			
+			fail("no IllegalArgumentException");
+		} catch (IllegalArgumentException e) {			
+			String errorMessage = e.getMessage();
+			
+			log.info(errorMessage);
+			
+			String expectedErrorMessage = new StringBuilder("the file(=the parameter itemValue[")
+					.append(expectedValue.getAbsolutePath())
+					.append("]) doesn't hava permission to write").toString();
+			
+			assertEquals(expectedErrorMessage, errorMessage);
+			
+		} catch (Exception e) {
+			String errorMessage = e.getMessage();
+			log.log(Level.WARNING, errorMessage, e);
+			
+			fail("unknown error");
 		}
 	}
 }

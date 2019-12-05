@@ -4,40 +4,64 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
 import java.nio.charset.Charset;
+import java.util.logging.ConsoleHandler;
+import java.util.logging.Handler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
+import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
-import junitlib.AbstractJunitTest;
-import kr.pe.codda.common.config.NativeValueConverterTestIF;
+import kr.pe.codda.common.etc.CommonStaticFinalVars;
+import kr.pe.codda.common.util.CustomLogFormatter;
 
-public class GeneralConverterReturningCharsetTest extends AbstractJunitTest implements
-		NativeValueConverterTestIF {
+public class GeneralConverterReturningCharsetTest {
+	
+	private Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
 
 	private GeneralConverterReturningCharset nativeValueConverter = null;
 	private Charset returnedValue = null;
 	private Charset defaultCharset = Charset.defaultCharset();
 	private Charset utf8Charset = Charset.forName("UTF8");
 	
+	@BeforeClass
+	public static void setUpBeforeClass() throws Exception {
+		Logger rootLogger = Logger.getLogger("");
+
+		Handler[] handlers = rootLogger.getHandlers();
+
+		for (Handler handler : handlers) {
+			rootLogger.removeHandler(handler);
+		}
+
+		Handler handler = new ConsoleHandler();
+
+		CustomLogFormatter formatter = new CustomLogFormatter();
+		handler.setFormatter(formatter);
+
+		rootLogger.setLevel(Level.INFO);
+		rootLogger.addHandler(handler);
+	}
+
+	@AfterClass
+	public static void tearDownAfterClass() throws Exception {
+	}
+
 	@Before
 	public void setup() {
 		nativeValueConverter = new GeneralConverterReturningCharset();
 	}
-	
-	@Override
-	public void testConstructor() throws Exception {
-		/** ignore */
+
+	@After
+	public void tearDown() throws Exception {
 	}
 
-	@Override
-	public void testToNativeValue_ExpectedValueComparison() {
-		testToNativeValue_ExpectedValueComparison_defalutCharset();
-		testToNativeValue_ExpectedValueComparison_UTF8CharsetAliasName();
-		testToNativeValue_ExpectedValueComparison_NotCaseSensitive();
-	}
 
 	@Test
-	public void testToNativeValue_ExpectedValueComparison_defalutCharset() {
+	public void testValueOf_OK_defalutCharset() {
 		Charset expectedValue = null;
 		
 		expectedValue = defaultCharset;
@@ -45,9 +69,15 @@ public class GeneralConverterReturningCharsetTest extends AbstractJunitTest impl
 		try {
 			returnedValue = nativeValueConverter.valueOf(defaultCharset.name());
 
-			log.info("default::charset name=[{}], display name=[{}], alias={}",
-					returnedValue.name(), returnedValue.displayName(),
-					returnedValue.aliases().toString());
+			String infoMessage = new StringBuilder()
+					.append("default::charset name=[")
+					.append(returnedValue.name())
+					.append("], display name=[")
+					.append(returnedValue.displayName())
+					.append("], alias=")
+					.append(returnedValue.aliases().toString()).toString();
+			
+			log.info(infoMessage);
 		} catch (IllegalArgumentException e) {
 			fail(e.getMessage());
 		}
@@ -56,17 +86,23 @@ public class GeneralConverterReturningCharsetTest extends AbstractJunitTest impl
 	}
 
 	@Test
-	public void testToNativeValue_ExpectedValueComparison_UTF8CharsetAliasName() {
+	public void testValueOf_OK_UTF8CharsetAliasName() {
 		Charset expectedValue = null;
 		
 		expectedValue = utf8Charset;
 		/** alias test start */
 		try {
 			returnedValue = nativeValueConverter.valueOf("UTF8");
+			
+			String infoMessage = new StringBuilder()
+					.append("utf8::charset name=[")
+					.append(returnedValue.name())
+					.append("], display name=[")
+					.append(returnedValue.displayName())
+					.append("], alias=")
+					.append(returnedValue.aliases().toString()).toString();
 
-			log.info("utf8::charset name=[{}], display name=[{}], alias={}",
-					returnedValue.name(), returnedValue.displayName(),
-					returnedValue.aliases().toString());
+			log.info(infoMessage);
 		} catch (IllegalArgumentException e) {
 			fail(e.getMessage());
 		}
@@ -76,10 +112,16 @@ public class GeneralConverterReturningCharsetTest extends AbstractJunitTest impl
 
 		try {
 			returnedValue = nativeValueConverter.valueOf("unicode-1-1-utf-8");
+			
+			String infoMessage = new StringBuilder()
+					.append("utf8::charset name=[")
+					.append(returnedValue.name())
+					.append("], display name=[")
+					.append(returnedValue.displayName())
+					.append("], alias=")
+					.append(returnedValue.aliases().toString()).toString();
 
-			log.info("utf8::charset name=[{}], display name=[{}], alias={}",
-					returnedValue.name(), returnedValue.displayName(),
-					returnedValue.aliases().toString());
+			log.info(infoMessage);
 		} catch (IllegalArgumentException e) {
 			fail(e.getMessage());
 		}
@@ -91,7 +133,7 @@ public class GeneralConverterReturningCharsetTest extends AbstractJunitTest impl
 	}
 
 	@Test
-	public void testToNativeValue_ExpectedValueComparison_NotCaseSensitive() {
+	public void testValueOf_OK_NotCaseSensitive() {
 		Charset expectedValue = null;
 		
 		expectedValue = utf8Charset;
@@ -100,9 +142,15 @@ public class GeneralConverterReturningCharsetTest extends AbstractJunitTest impl
 		try {
 			returnedValue = nativeValueConverter.valueOf("Unicode-1-1-utf-8");
 
-			log.info("utf8::charset name=[{}], display name=[{}], alias={}",
-					returnedValue.name(), returnedValue.displayName(),
-					returnedValue.aliases().toString());
+			String infoMessage = new StringBuilder()
+					.append("utf8::charset name=[")
+					.append(returnedValue.name())
+					.append("], display name=[")
+					.append(returnedValue.displayName())
+					.append("], alias=")
+					.append(returnedValue.aliases().toString()).toString();
+
+			log.info(infoMessage);
 		} catch (IllegalArgumentException e) {
 			fail(e.getMessage());
 		}
@@ -112,9 +160,15 @@ public class GeneralConverterReturningCharsetTest extends AbstractJunitTest impl
 		try {
 			returnedValue = nativeValueConverter.valueOf("uTF-8");
 
-			log.info("utf8::charset name=[{}], display name=[{}], alias={}",
-					returnedValue.name(), returnedValue.displayName(),
-					returnedValue.aliases().toString());
+			String infoMessage = new StringBuilder()
+					.append("utf8::charset name=[")
+					.append(returnedValue.name())
+					.append("], display name=[")
+					.append(returnedValue.displayName())
+					.append("], alias=")
+					.append(returnedValue.aliases().toString()).toString();
+
+			log.info(infoMessage);
 		} catch (IllegalArgumentException e) {
 			fail(e.getMessage());
 		}
@@ -125,66 +179,74 @@ public class GeneralConverterReturningCharsetTest extends AbstractJunitTest impl
 	}
 
 	
-	@Override
-	@Test(expected = IllegalArgumentException.class)
-	public void testToNativeValue_NullParameter() {
+	@Test
+	public void testValueOf_theParameterItemValueIsNull() {
 		try {
 			returnedValue = nativeValueConverter.valueOf(null);
 
-			log.warn("error::charset name=[{}], display name=[{}], alias={}",
-					returnedValue.name(), returnedValue.displayName(),
-					returnedValue.aliases().toString());
-
-			// fail("paramerter itemValue is null but no error");
+			fail("no IllegalArgumentException");
 		} catch (IllegalArgumentException e) {
-			log.info(
-					"'the parameter itemvalue is null' test ok, errormessage={}",
-					e.getMessage());
-			throw e;
+			String errorMessage = e.getMessage();
+			
+			log.info(errorMessage);
+			
+			String expectedErrorMessage = "the parameter itemValue is null";
+			
+			assertEquals(expectedErrorMessage, errorMessage);
+		} catch (Exception e) {
+			String errorMessage = e.getMessage();
+			log.log(Level.WARNING, errorMessage, e);
+			
+			fail("unknown error");
 		}
 
 	}
 
 	
-	@Override
-	@Test(expected = IllegalArgumentException.class)
-	public void testToNativeValue_EmptyStringParameter() {
+	
+	@Test
+	public void testValueOf_theParameterItemValueIsEmpty() {
 		try {
 			returnedValue = nativeValueConverter.valueOf("");
 
-			log.warn("error::charset name=[{}], display name=[{}], alias={}",
-					returnedValue.name(), returnedValue.displayName(),
-					returnedValue.aliases().toString());
-
-			// fail("paramerter itemValue is a empty string but no error");
-		} catch (IllegalArgumentException e) {
-			log.info(
-					"'the parameter itemvalue is a empty string' test ok, errormessage={}",
-					e.getMessage());
-			throw e;
+			fail("no IllegalArgumentException");
+		} catch (IllegalArgumentException e) {			
+			String errorMessage = e.getMessage();
+			
+			log.info(errorMessage);
+			
+			String expectedErrorMessage = "the parameter itemValue is empty";
+			
+			assertEquals(expectedErrorMessage, errorMessage);
+		} catch (Exception e) {
+			String errorMessage = e.getMessage();
+			log.log(Level.WARNING, errorMessage, e);
+			
+			fail("unknown error");
 		}
 	}
 
 	
-	@Override
-	@Test(expected = IllegalArgumentException.class)
-	public void testToNativeValue_ValidButBadParameter() {
+	
+	@Test
+	public void testValueOf_theParameterItemValueIsNotCharsetName() {
 		try {
 			returnedValue = nativeValueConverter.valueOf("king");
 
-			log.warn("error::charset name=[{}], display name=[{}], alias={}",
-					returnedValue.name(), returnedValue.displayName(),
-					returnedValue.aliases().toString());
-
-			/*
-			 * fail("paramerter itemValue[king] is bad but no error, nativeValue="
-			 * + returnedValue.toString());
-			 */
-		} catch (IllegalArgumentException e) {
-			log.info(
-					"'the parameter itemvalue is valid but bad' test ok, errormessage={}",
-					e.getMessage());
-			throw e;
+			fail("no IllegalArgumentException");
+		} catch (IllegalArgumentException e) {			
+			String errorMessage = e.getMessage();
+			
+			log.info(errorMessage);
+			
+			String expectedErrorMessage = "the parameter itemValue[king] is a bad charset name";
+			
+			assertEquals(expectedErrorMessage, errorMessage);
+		} catch (Exception e) {
+			String errorMessage = e.getMessage();
+			log.log(Level.WARNING, errorMessage, e);
+			
+			fail("unknown error");
 		}
 	}
 }

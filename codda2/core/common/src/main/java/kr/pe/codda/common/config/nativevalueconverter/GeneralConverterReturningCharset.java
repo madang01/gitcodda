@@ -28,8 +28,11 @@ public class GeneralConverterReturningCharset extends AbstractNativeValueConvert
 		} catch(Exception e) {
 			String errorMessage = new StringBuilder("the parameter itemValue[")
 			.append(itemValue)
-			.append("] is a bad charset name, errormessage=")
-			.append(e.getMessage()).toString();
+			.append("] is a bad charset name").toString();
+			
+			// Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
+			// log.log(Level.WARNING, errorMessage, e);
+			
 			throw new IllegalArgumentException(errorMessage);
 		}
 		

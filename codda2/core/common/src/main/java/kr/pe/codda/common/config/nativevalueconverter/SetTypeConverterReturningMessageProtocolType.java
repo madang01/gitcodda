@@ -34,12 +34,12 @@ public class SetTypeConverterReturningMessageProtocolType extends
 	public MessageProtocolType valueOf(String itemValue)
 			throws IllegalArgumentException {
 		if (null == itemValue) {
-			String errorMessage = "parameter itemValue is null";
+			String errorMessage = "the parameter itemValue is null";
 			throw new IllegalArgumentException(errorMessage);
 		}
 
 		if (itemValue.equals("")) {
-			String errorMessage = "parameter itemValue is empty";
+			String errorMessage = "the parameter itemValue is empty";
 			throw new IllegalArgumentException(errorMessage);
 		}
 
@@ -47,8 +47,8 @@ public class SetTypeConverterReturningMessageProtocolType extends
 		try {
 			returnValue = MessageProtocolType.valueOf(itemValue);
 		} catch (IllegalArgumentException e) {
-			String errorMessage = new StringBuilder("parameter itemValue[")
-					.append(itemValue).append("] is not an element of ")
+			String errorMessage = new StringBuilder("the parameter itemValue[")
+					.append(itemValue).append("] is not a element of ")
 					.append(getSetName()).append(getStringFromSet()).toString();
 			throw new IllegalArgumentException(errorMessage);
 		}

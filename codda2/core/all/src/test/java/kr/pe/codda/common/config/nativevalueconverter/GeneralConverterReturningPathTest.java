@@ -4,17 +4,24 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
 import java.io.File;
-import java.io.IOException;
+import java.util.logging.ConsoleHandler;
+import java.util.logging.Handler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
+import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import junitlib.AbstractJunitTest;
-import kr.pe.codda.common.config.NativeValueConverterTestIF;
+import kr.pe.codda.common.etc.CommonStaticFinalVars;
+import kr.pe.codda.common.util.CustomLogFormatter;
 
-public class GeneralConverterReturningPathTest extends AbstractJunitTest implements NativeValueConverterTestIF {
+public class GeneralConverterReturningPathTest {
 	
+	private Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
 	
 	private GeneralConverterReturningPath nativeValueConverter = null;
 	private File returnedValue = null;
@@ -22,7 +29,31 @@ public class GeneralConverterReturningPathTest extends AbstractJunitTest impleme
 	// private String canonicalPathStringOfExpectedValue = null;
 	private File expectedValue = null;
 
-	@Override
+
+	@BeforeClass
+	public static void setUpBeforeClass() throws Exception {
+		Logger rootLogger = Logger.getLogger("");
+
+		Handler[] handlers = rootLogger.getHandlers();
+
+		for (Handler handler : handlers) {
+			rootLogger.removeHandler(handler);
+		}
+
+		Handler handler = new ConsoleHandler();
+
+		CustomLogFormatter formatter = new CustomLogFormatter();
+		handler.setFormatter(formatter);
+
+		rootLogger.setLevel(Level.INFO);
+		rootLogger.addHandler(handler);
+	}
+
+	@AfterClass
+	public static void tearDownAfterClass() throws Exception {
+	}
+	
+		
 	@Before
 	public void setup() {
 		expectedValue = new File("./tempDir");
@@ -32,85 +63,83 @@ public class GeneralConverterReturningPathTest extends AbstractJunitTest impleme
 		expectedValue.deleteOnExit();
 		
 
-		log.info("temp file=[{}]", expectedValue.getAbsolutePath());
+		log.info("temp file=[" + expectedValue.getAbsolutePath() + "]");
 		
 		nativeValueConverter = new GeneralConverterReturningPath();
 	}
 	
-	@Override
-	public void testConstructor() throws Exception {
-		/** ignore */
+	@After
+	public void tearDown() throws Exception {
 	}
-
-	@Override
+	
+	
 	@Test
-	public void testToNativeValue_ExpectedValueComparison() {
+	public void testValueOf_OK() {
 		try {
 			returnedValue = nativeValueConverter.valueOf(expectedValue
 					.getAbsolutePath());
-		} catch (IllegalArgumentException e) {
-			e.printStackTrace();
-			fail(e.getMessage());
-		}
-
-		log.info("the result[{}] that returnedValue equals expectedValue", returnedValue.equals(expectedValue));
-		
-		/**
-		 * Warning!
-		 * File.equals() method return false although the file to be compared has same path.
-		 */
-		try {
+			
 			assertEquals("the expected value comparison", returnedValue.getCanonicalPath(), expectedValue.getCanonicalPath());
-		} catch (IOException e) {
-			fail(e.getMessage());
+		} catch (Exception e) {
+			String errorMessage = e.getMessage();
+			log.log(Level.WARNING, errorMessage, e);
+			
+			fail("unknown error");
 		}
 	}
 
-	@Override
-	@Test(expected = IllegalArgumentException.class)
-	public void testToNativeValue_NullParameter() throws Exception {
+	
+	@Test
+	public void testValueOf_theParameterItemValueIsNull() {
 		try {
 			returnedValue = nativeValueConverter.valueOf(null);
-		} catch (IllegalArgumentException e) {
-			log.info(
-					"'the parameter itemvalue is null' test ok, errormessage={}",
-					e.getMessage());
-			throw e;
-		}	
+			
+			fail("no IllegalArgumentException");
+		} catch (IllegalArgumentException e) {			
+			String errorMessage = e.getMessage();
+			
+			log.info(errorMessage);
+			
+			String expectedErrorMessage = "the parameter itemValue is null";
+			
+			assertEquals(expectedErrorMessage, errorMessage);
+			
+		} catch (Exception e) {
+			String errorMessage = e.getMessage();
+			log.log(Level.WARNING, errorMessage, e);
+			
+			fail("unknown error");
+		}
 	}
 
-	@Override
-	@Test(expected = IllegalArgumentException.class)
-	public void testToNativeValue_EmptyStringParameter() throws Exception {
+	
+	@Test
+	public void testValueOf_theParameterItemValueIsEmpty() {
 		try {
 			returnedValue = nativeValueConverter.valueOf("");
-		} catch (IllegalArgumentException e) {
-			log.info(
-					"'the parameter itemvalue is a empty string' test ok, errormessage={}",
-					e.getMessage());
-			throw e;
+			
+			fail("no IllegalArgumentException");
+		} catch (IllegalArgumentException e) {			
+			String errorMessage = e.getMessage();
+			
+			log.info(errorMessage);
+			
+			String expectedErrorMessage = "the parameter itemValue is empty";
+			
+			assertEquals(expectedErrorMessage, errorMessage);
+			
+		} catch (Exception e) {
+			String errorMessage = e.getMessage();
+			log.log(Level.WARNING, errorMessage, e);
+			
+			fail("unknown error");
 		}
 	}
 
-	@Override
-	public void testToNativeValue_ValidButBadParameter() throws Exception {
-		try {
-			testToNativeValue_ValidButBadParameter_RegularFile();
-		} catch (IllegalArgumentException e) {
-		}		
-		try {
-			testToNativeValue_ValidButBadParameter_CannotRead();
-		} catch (IllegalArgumentException e) {
-		}
-		try {
-			testToNativeValue_ValidButBadParameter_BadFileName();
-		} catch (IllegalArgumentException e) {
-		}
-	}
 	
-	@Ignore
-	@Test(expected = IllegalArgumentException.class)
-	public void testToNativeValue_ValidButBadParameter_CannotRead() throws Exception {
+	
+	@Ignore	
+	public void testValueOf_theParameterItemValueIsUnreadablePath() {
 		/**
 		 * Warning! 파일 읽기 권한 검사 테스트는 파일 읽기 권한 비활성이 필요한데 이 기능은 운영체제 종속된 기능이므로 생략함.
 		 * "Window7 32bit Home Premium K" 에서는 읽기 권한이 강제적으로 활성화 되어 있어 이를 비활성화
@@ -123,35 +152,59 @@ public class GeneralConverterReturningPathTest extends AbstractJunitTest impleme
 		 */
 	}
 
-	@Test(expected = IllegalArgumentException.class)
-	public void testToNativeValue_ValidButBadParameter_RegularFile() {
+	@Test
+	public void testValueOf_theParameterItemValueIsNotDirectory() {
 		File tempRegularFile = null;
 		try {
 			tempRegularFile = File.createTempFile("test", "");
 			tempRegularFile.deleteOnExit();
-		} catch (IOException e1) {
-			fail("fail to create a temp regular file, errormessage=" + e1.getMessage());
-		}
 		
-		try {
 			returnedValue = nativeValueConverter.valueOf(tempRegularFile.getAbsolutePath());
-		} catch (IllegalArgumentException e) {
-			log.info(
-					"'the parameter itemvalue is a bad string' test ok, errormessage={}",
-					e.getMessage());
-			throw e;
+			
+			fail("no IllegalArgumentException");
+		} catch (IllegalArgumentException e) {			
+			String errorMessage = e.getMessage();
+			
+			log.info(errorMessage);
+			
+			String expectedErrorMessage = new StringBuilder("the path(=the parameter itemValue[")
+					.append(tempRegularFile.getAbsolutePath())
+					.append("]) is not a directory").toString();
+			
+			assertEquals(expectedErrorMessage, errorMessage);
+			
+		} catch (Exception e) {
+			String errorMessage = e.getMessage();
+			log.log(Level.WARNING, errorMessage, e);
+			
+			fail("unknown error");
 		}
 	}
 	
-	@Test(expected = IllegalArgumentException.class)
-	public void testToNativeValue_ValidButBadParameter_BadFileName() {
+	@Test
+	public void testValueOf_theParameterItemValueIsBadPathThatDoesNotExist() {
+		String itemValue = "aabb$sd$s";
+		
 		try {
-			returnedValue = nativeValueConverter.valueOf("aabb$sd$s");
-		} catch (IllegalArgumentException e) {
-			log.info(
-					"'the parameter itemvalue is a bad string' test ok, errormessage={}",
-					e.getMessage());
-			throw e;
+			returnedValue = nativeValueConverter.valueOf(itemValue);
+			
+			fail("no IllegalArgumentException");
+		} catch (IllegalArgumentException e) {			
+			String errorMessage = e.getMessage();
+			
+			log.info(errorMessage);
+			
+			String expectedErrorMessage =  new StringBuilder("the path(=the parameter itemValue[")
+					.append(itemValue)
+					.append("]) does not exist").toString();
+			
+			assertEquals(expectedErrorMessage, errorMessage);
+			
+		} catch (Exception e) {
+			String errorMessage = e.getMessage();
+			log.log(Level.WARNING, errorMessage, e);
+			
+			fail("unknown error");
 		}
 	}
 }

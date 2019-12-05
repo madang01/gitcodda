@@ -1,75 +1,165 @@
 package kr.pe.codda.common.config.nativevalueconverter;
 
-import static org.junit.Assert.*;
-import junitlib.AbstractJunitTest;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
+import java.util.logging.ConsoleHandler;
+import java.util.logging.Handler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
-public class GeneralConverterReturningLongBetweenMinAndMaxTest extends AbstractJunitTest {
+import kr.pe.codda.common.etc.CommonStaticFinalVars;
+import kr.pe.codda.common.util.CustomLogFormatter;
 
-	@Test(expected=IllegalArgumentException.class)
-	public void testValueOf_NullParamter_itemValue() throws Exception {
-		GeneralConverterReturningLongBetweenMinAndMax minMaxConverter = 
-				new GeneralConverterReturningLongBetweenMinAndMax((long)10, (long)20);
+public class GeneralConverterReturningLongBetweenMinAndMaxTest {
+	private Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
+
+	@BeforeClass
+	public static void setUpBeforeClass() throws Exception {
+		Logger rootLogger = Logger.getLogger("");
+
+		Handler[] handlers = rootLogger.getHandlers();
+
+		for (Handler handler : handlers) {
+			rootLogger.removeHandler(handler);
+		}
+
+		Handler handler = new ConsoleHandler();
+
+		CustomLogFormatter formatter = new CustomLogFormatter();
+		handler.setFormatter(formatter);
+
+		rootLogger.setLevel(Level.INFO);
+		rootLogger.addHandler(handler);
+	}
+
+	@AfterClass
+	public static void tearDownAfterClass() throws Exception {
+	}
+
+	@Before
+	public void setup() {
+	}
+
+	@After
+	public void tearDown() throws Exception {
+	}
+
+	@Test
+	public void testValueOf_theParameterItemValueIsNull() {
+		GeneralConverterReturningLongBetweenMinAndMax minMaxConverter = new GeneralConverterReturningLongBetweenMinAndMax(
+				(long) 10, (long) 20);
 		try {
 			minMaxConverter.valueOf(null);
-		} catch(IllegalArgumentException e) {
-			log.info("null paramter", e);
-			throw e;
+			
+			fail("no IllegalArgumentException");
+		} catch (IllegalArgumentException e) {			
+			String errorMessage = e.getMessage();
+			
+			log.info(errorMessage);
+			
+			String expectedErrorMessage = "the parameter itemValue is null";
+			
+			assertEquals(expectedErrorMessage, errorMessage);
+		} catch (Exception e) {
+			String errorMessage = e.getMessage();
+			log.log(Level.WARNING, errorMessage, e);
+			
+			fail("unknown error");
 		}
 	}
-	
-	@Test(expected=IllegalArgumentException.class)
-	public void testValueOf_EmptyString() throws Exception {
-		GeneralConverterReturningLongBetweenMinAndMax minMaxConverter = 
-				new GeneralConverterReturningLongBetweenMinAndMax((long)10, (long)20);
+
+	@Test
+	public void testValueOf_theParameterItemValueIsEmpty() {
+		GeneralConverterReturningLongBetweenMinAndMax minMaxConverter = new GeneralConverterReturningLongBetweenMinAndMax(
+				(long) 10, (long) 20);
 		try {
 			minMaxConverter.valueOf("");
-		} catch(IllegalArgumentException e) {
-			log.info("empty string paramter", e);
-			throw e;
+			
+			fail("no IllegalArgumentException");
+		} catch (IllegalArgumentException e) {			
+			String errorMessage = e.getMessage();
+			
+			log.info(errorMessage);
+			
+			String expectedErrorMessage = "the parameter itemValue is empty";
+			
+			assertEquals(expectedErrorMessage, errorMessage);
+		} catch (Exception e) {
+			String errorMessage = e.getMessage();
+			log.log(Level.WARNING, errorMessage, e);
+			
+			fail("unknown error");
 		}
 	}
-	
-	@Test(expected=IllegalArgumentException.class)
-	public void testValueOf_ValidButBadParameter_NotNumber() throws Exception {
-		GeneralConverterReturningLongBetweenMinAndMax minMaxConverter = 
-				new GeneralConverterReturningLongBetweenMinAndMax((long)10, (long)20);
+
+	@Test
+	public void testValueOf_theParameterItemValueIsNotNumber() {
+		GeneralConverterReturningLongBetweenMinAndMax minMaxConverter = new GeneralConverterReturningLongBetweenMinAndMax(
+				(long) 10, (long) 20);
 		try {
 			minMaxConverter.valueOf("a");
-		} catch(IllegalArgumentException e) {
-			log.info("not number", e);
-			throw e;
+			
+			fail("no IllegalArgumentException");
+		} catch (IllegalArgumentException e) {			
+			String errorMessage = e.getMessage();
+			
+			log.info(errorMessage);
+			
+			String expectedErrorMessage = "the parameter itemValue[a] is not a number of java.lang.Long";
+			
+			assertEquals(expectedErrorMessage, errorMessage);
+		} catch (Exception e) {
+			String errorMessage = e.getMessage();
+			log.log(Level.WARNING, errorMessage, e);
+			
+			fail("unknown error");
 		}
 	}
-	
-	@Test(expected=IllegalArgumentException.class)
-	public void testValueOf_ValidButBadParameter_TooBig() throws Exception {
-		GeneralConverterReturningLongBetweenMinAndMax minMaxConverter = 
-				new GeneralConverterReturningLongBetweenMinAndMax((long)10, (long)20);
-		
-		
+
+	@Test
+	public void testValueOf_theParameterItemValueIsTooBig() {
+		GeneralConverterReturningLongBetweenMinAndMax minMaxConverter = new GeneralConverterReturningLongBetweenMinAndMax(
+				(long) 10, (long) 20);
+
 		try {
 			minMaxConverter.valueOf("12345");
-		} catch(IllegalArgumentException e) {
-			log.info("bigger than max of byte", e);
-			throw e;
+			
+			fail("no IllegalArgumentException");
+		} catch (IllegalArgumentException e) {			
+			String errorMessage = e.getMessage();
+			
+			log.info(errorMessage);
+			
+			String expectedErrorMessage = "the parameter itemValue[12345] is greater than max[20]";
+			
+			assertEquals(expectedErrorMessage, errorMessage);
+		} catch (Exception e) {
+			String errorMessage = e.getMessage();
+			log.log(Level.WARNING, errorMessage, e);
+			
+			fail("unknown error");
 		}
 	}
-	
-	
+
 	@Test
-	public void testValueOf_ExpectedValueComparison() {
-		GeneralConverterReturningLongBetweenMinAndMax minMaxConverter = 
-				new GeneralConverterReturningLongBetweenMinAndMax((long)10, Long.MAX_VALUE);
-		
+	public void testValueOf_OK() {
+		GeneralConverterReturningLongBetweenMinAndMax minMaxConverter = new GeneralConverterReturningLongBetweenMinAndMax(
+				(long) 10, Long.MAX_VALUE);
+
 		long expectedValue;
-		long returnedValue;		
-		
+		long returnedValue;
+
 		expectedValue = 1234343434343333333L;
 		returnedValue = minMaxConverter.valueOf(String.valueOf(expectedValue));
-		
-		assertEquals("the expected value comparison", returnedValue, expectedValue);		
+
+		assertEquals("the expected value comparison", returnedValue, expectedValue);
 	}
 
 }

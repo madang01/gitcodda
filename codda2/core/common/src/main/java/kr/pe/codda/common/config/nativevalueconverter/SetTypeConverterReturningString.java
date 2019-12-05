@@ -14,7 +14,7 @@ public class SetTypeConverterReturningString extends AbstractSetTypeNativeValueC
 		super(String.class);
 		
 		if (parmValueSet.length == 0) {
-			String errorMessage = "parameter parmValueSet is empty";
+			String errorMessage = "the parameter parmValueSet is empty";
 			throw new IllegalArgumentException(errorMessage);
 		}
 		
@@ -22,8 +22,10 @@ public class SetTypeConverterReturningString extends AbstractSetTypeNativeValueC
 			String itemValue = parmValueSet[i];
 			if (CommonStaticUtil.hasLeadingOrTailingWhiteSpace(itemValue)) {
 				String errorMessage = new StringBuilder()
-				.append("variable parameter parmValueSet[")
+				.append("the parameter parmValueSet[")
 				.append(i)
+				.append("]'s value[")
+				.append(itemValue)
 				.append("] has leading or tailing white space").toString();
 				throw new IllegalArgumentException(errorMessage);
 			}
@@ -45,22 +47,22 @@ public class SetTypeConverterReturningString extends AbstractSetTypeNativeValueC
 	@Override
 	public String valueOf(String itemValue) throws IllegalArgumentException {
 		if (null == itemValue) {
-			String errorMessage = "parameter itemValue is null";
+			String errorMessage = "the parameter itemValue is null";
 			throw new IllegalArgumentException(errorMessage);
 		}
 		
 		if (itemValue.equals("")) {
-			String errorMessage = "parameter itemValue is empty";
+			String errorMessage = "the parameter itemValue is empty";
 			throw new IllegalArgumentException(errorMessage);
 		}
 		
 		if (! itemValueSet.contains(itemValue)) {
-			String errorMessage = new StringBuilder("parameter itemValue[")
+			String errorMessage = new StringBuilder("the parameter itemValue[")
 			.append(itemValue)
 			.append("] is not a element of ")
 			.append(getSetName())
 			.append(getStringFromSet())
-			.append("]").toString();
+			.toString();
 			throw new IllegalArgumentException(errorMessage);
 		}	
 		

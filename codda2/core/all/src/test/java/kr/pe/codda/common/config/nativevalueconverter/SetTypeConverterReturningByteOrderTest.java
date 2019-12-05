@@ -4,20 +4,51 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
 import java.nio.ByteOrder;
+import java.util.logging.ConsoleHandler;
+import java.util.logging.Handler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
+import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
-import junitlib.AbstractJunitTest;
-import kr.pe.codda.common.config.NativeValueConverterTestIF;
+import kr.pe.codda.common.etc.CommonStaticFinalVars;
+import kr.pe.codda.common.util.CustomLogFormatter;
 
-public class SetTypeConverterReturningByteOrderTest extends AbstractJunitTest implements NativeValueConverterTestIF {
+public class SetTypeConverterReturningByteOrderTest {
+	
+	private Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
 	
 	private SetTypeConverterReturningByteOrder nativeValueConverter = null;
 	private ByteOrder returnedValue = null;	
 	
 	
-	@Override
+	@BeforeClass
+	public static void setUpBeforeClass() throws Exception {
+		Logger rootLogger = Logger.getLogger("");
+
+		Handler[] handlers = rootLogger.getHandlers();
+
+		for (Handler handler : handlers) {
+			rootLogger.removeHandler(handler);
+		}
+
+		Handler handler = new ConsoleHandler();
+
+		CustomLogFormatter formatter = new CustomLogFormatter();
+		handler.setFormatter(formatter);
+
+		rootLogger.setLevel(Level.INFO);
+		rootLogger.addHandler(handler);
+	}
+
+	@AfterClass
+	public static void tearDownAfterClass() throws Exception {
+	}
+	
 	@Before
 	public void setup() {
 		try {
@@ -27,14 +58,14 @@ public class SetTypeConverterReturningByteOrderTest extends AbstractJunitTest im
 		}
 	}
 	
-	@Override
-	public void testConstructor() throws Exception {
-		/** ignore */
+	@After
+	public void tearDown() throws Exception {
 	}
 	
-	@Override
+	
+	
 	@Test
-	public void testToNativeValue_ExpectedValueComparison() {	
+	public void testValueOf_OK() {	
 		ByteOrder expectedValue = null;
 				
 		/**
@@ -46,76 +77,116 @@ public class SetTypeConverterReturningByteOrderTest extends AbstractJunitTest im
 			expectedValue = byteOrders[i];
 			try {
 				returnedValue = nativeValueConverter.valueOf(expectedValue.toString());
-			} catch (IllegalArgumentException e) {
-				e.printStackTrace();
-				fail(e.getMessage());
+				assertEquals("the expected value comparison", returnedValue, expectedValue);
+			} catch (Exception e) {
+				String errorMessage = e.getMessage();
+				log.log(Level.WARNING, errorMessage, e);
+				
+				fail("unknown error");
 			}
-			
-			assertEquals("the expected value comparison", returnedValue, expectedValue);
 		}
 	}
 	
 	
-	@Override
-	@Test(expected = IllegalArgumentException.class)
-	public void testToNativeValue_NullParameter() throws Exception {
+	@Test
+	public void testValueOf_theParameterItemValueIsNull() {
 		try {
 			returnedValue = nativeValueConverter.valueOf(null);
 			
-			fail("paramerter itemValue is null but no error");
-		} catch (IllegalArgumentException e) {
-			log.info("'the parameter itemvalue is null' test ok, errormessage={}", e.getMessage());
-			throw e;
+			fail("no IllegalArgumentException");
+		} catch (IllegalArgumentException e) {			
+			String errorMessage = e.getMessage();
+			
+			log.info(errorMessage);
+			
+			String expectedErrorMessage = "the parameter itemValue is null";
+			
+			assertEquals(expectedErrorMessage, errorMessage);
+			
+		} catch (Exception e) {
+			String errorMessage = e.getMessage();
+			log.log(Level.WARNING, errorMessage, e);
+			
+			fail("unknown error");
 		}
 	}
-	
-	@Override
-	@Test(expected = IllegalArgumentException.class)
-	public void testToNativeValue_EmptyStringParameter() throws Exception {		
+		
+	@Test
+	public void testValueOf_theParameterItemValueIsEmpty() {		
 		try {
 			returnedValue = nativeValueConverter.valueOf("");
 			
-			fail("paramerter itemValue is a empty string but no error");
-		} catch (IllegalArgumentException e) {
-			log.info("'the parameter itemvalue is a empty string' test ok, errormessage={}", e.getMessage());
-			throw e;
-		}		
+			fail("no IllegalArgumentException");
+		} catch (IllegalArgumentException e) {			
+			String errorMessage = e.getMessage();
+			
+			log.info(errorMessage);
+			
+			String expectedErrorMessage = "the parameter itemValue is empty";
+			
+			assertEquals(expectedErrorMessage, errorMessage);
+			
+		} catch (Exception e) {
+			String errorMessage = e.getMessage();
+			log.log(Level.WARNING, errorMessage, e);
+			
+			fail("unknown error");
+		}	
 	}
 	
-	@Override
-	public void testToNativeValue_ValidButBadParameter() throws Exception {
-		try {
-			testToNativeValue_ValidButBadParameter_NotCaseSensitive();
-		} catch(IllegalArgumentException e) {
-		}
-		try {
-			testToNativeValue_ValidButBadParameter_NotElementOfSet();
-		} catch(IllegalArgumentException e) {
-		}
-	}
 	
-	@Test(expected = IllegalArgumentException.class)
-	public void testToNativeValue_ValidButBadParameter_NotCaseSensitive() throws Exception {
+	
+	@Test
+	public void testValueOf_theParameterItemValueIsBad_대소문자틀린경우() {
+		final String itemValue = "BIG_eNDIAN"; 
 		try {
-			returnedValue = nativeValueConverter.valueOf("BIG_eNDIAN");
+			returnedValue = nativeValueConverter.valueOf(itemValue);
 			
-			fail("paramerter itemValue[king] is bad but no error, returnedValue="
-					+ returnedValue.toString());
-		} catch (IllegalArgumentException e) {
-			log.info("'the parameter itemvalue is valid but bad' test ok, errormessage={}", e.getMessage());
-			throw e;
+			fail("no IllegalArgumentException");
+		} catch (IllegalArgumentException e) {			
+			String errorMessage = e.getMessage();
+			
+			log.info(errorMessage);
+			
+			String expectedErrorMessage = new StringBuilder("the parameter itemValue[")
+					.append(itemValue).append("] is not an element of ")
+					.append(nativeValueConverter.getSetName()).append(nativeValueConverter.getStringFromSet())
+					.toString();
+			
+			assertEquals(expectedErrorMessage, errorMessage);
+			
+		} catch (Exception e) {
+			String errorMessage = e.getMessage();
+			log.log(Level.WARNING, errorMessage, e);
+			
+			fail("unknown error");
 		}
 	}
-	@Test(expected = IllegalArgumentException.class)
-	public void testToNativeValue_ValidButBadParameter_NotElementOfSet() throws Exception {
+	@Test
+	public void testValueOf_theParameterItemValueIsBad_엉뚱한문자열() {
+		final String itemValue = "aabbc1c";
+		
 		try {
-			returnedValue = nativeValueConverter.valueOf("aabbcc");
+			returnedValue = nativeValueConverter.valueOf(itemValue);
 			
-			fail("paramerter itemValue[king] is bad but no error, returnedValue="
-					+ returnedValue.toString());
-		} catch (IllegalArgumentException e) {
-			log.info("'the parameter itemvalue is valid but bad' test ok, errormessage={}", e.getMessage());
-			throw e;
+			fail("no IllegalArgumentException");
+		} catch (IllegalArgumentException e) {			
+			String errorMessage = e.getMessage();
+			
+			log.info(errorMessage);
+			
+			String expectedErrorMessage = new StringBuilder("the parameter itemValue[")
+					.append(itemValue).append("] is not an element of ")
+					.append(nativeValueConverter.getSetName()).append(nativeValueConverter.getStringFromSet())
+					.toString();
+			
+			assertEquals(expectedErrorMessage, errorMessage);
+			
+		} catch (Exception e) {
+			String errorMessage = e.getMessage();
+			log.log(Level.WARNING, errorMessage, e);
+			
+			fail("unknown error");
 		}
 	}
 }

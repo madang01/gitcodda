@@ -3,20 +3,22 @@ package kr.pe.codda.common.config;
 import static org.junit.Assert.fail;
 
 import java.util.List;
+import java.util.logging.Logger;
 
-import org.junit.Test;
+import org.junit.Ignore;
 
-import junitlib.AbstractJunitTest;
 import kr.pe.codda.common.config.subset.AllDBCPPartConfiguration;
 import kr.pe.codda.common.config.subset.AllSubProjectPartConfiguration;
 import kr.pe.codda.common.config.subset.CommonPartConfiguration;
 import kr.pe.codda.common.config.subset.DBCPParConfiguration;
 import kr.pe.codda.common.config.subset.ProjectPartConfiguration;
+import kr.pe.codda.common.etc.CommonStaticFinalVars;
 import kr.pe.codda.common.type.SessionKey;
 
-public class CoddaConfigurationManagerTest extends AbstractJunitTest {
+public class CoddaConfigurationManagerTest {
+	private Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
 
-	@Test
+	@Ignore
 	public void testGetInstance() {
 		CoddaConfiguration runningProjectConfiguration = 
 				CoddaConfigurationManager.getInstance()
@@ -33,7 +35,12 @@ public class CoddaConfigurationManagerTest extends AbstractJunitTest {
 			DBCPParConfiguration dbcpPart = allDBCPPart.getDBCPPartConfiguration(dbcpName);
 			
 			if (null == dbcpPart) {
-				log.info("dbcpPart[{}] is null", dbcpName);
+				String infoMessage = new StringBuilder()
+						.append("dbcpPart[")
+						.append(dbcpName)
+						.append("] is null").toString();
+				
+				log.info(infoMessage);
 				fail("dbcpPart is null");
 			}
 			
@@ -70,7 +77,12 @@ public class CoddaConfigurationManagerTest extends AbstractJunitTest {
 			ProjectPartConfiguration projectPart = allSubProjectPart.getSubProjectPartConfiguration(subProjectName);
 			
 			if (null == projectPart) {
-				log.info("sub projectPart[{}] is null", subProjectName);
+				String infoMessage = new StringBuilder()
+						.append("sub projectPart[")
+						.append(subProjectName)
+						.append("] is null").toString();
+				
+				log.info(infoMessage);
 				fail("projectPart is null");
 			}
 			

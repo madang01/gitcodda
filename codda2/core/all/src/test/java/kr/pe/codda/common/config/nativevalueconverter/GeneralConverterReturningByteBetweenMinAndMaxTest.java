@@ -1,6 +1,7 @@
 package kr.pe.codda.common.config.nativevalueconverter;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Handler;
@@ -50,59 +51,142 @@ public class GeneralConverterReturningByteBetweenMinAndMaxTest {
 	public void tearDown() throws Exception {
 	}
 
-	@Test(expected=IllegalArgumentException.class)
-	public void testValueOf_NullParamter_itemValue() throws Exception {
+	@Test
+	public void testValueOf_theParameterItemValueIsNull() {
 		GeneralConverterReturningByteBetweenMinAndMax minMaxConverter = 
 				new GeneralConverterReturningByteBetweenMinAndMax((byte)10, (byte)20);
 		try {
 			minMaxConverter.valueOf(null);
-		} catch(IllegalArgumentException e) {
-			log.log(Level.WARNING, "null paramter", e);
-			throw e;
+			
+			fail("no IllegalArgumentException");
+		} catch (IllegalArgumentException e) {			
+			String errorMessage = e.getMessage();
+			
+			log.info(errorMessage);
+			
+			String expectedErrorMessage = "the parameter itemValue is null";
+			
+			assertEquals(expectedErrorMessage, errorMessage);
+		} catch (Exception e) {
+			String errorMessage = e.getMessage();
+			log.log(Level.WARNING, errorMessage, e);
+			
+			fail("unknown error");
 		}
 	}
 	
-	@Test(expected=IllegalArgumentException.class)
-	public void testValueOf_EmptyString() throws Exception {
+	@Test
+	public void testValueOf_theParameterItemValueIsEmpty() {
 		GeneralConverterReturningByteBetweenMinAndMax minMaxConverter = 
 				new GeneralConverterReturningByteBetweenMinAndMax((byte)10, (byte)20);
 		try {
 			minMaxConverter.valueOf("");
-		} catch(IllegalArgumentException e) {
-			log.log(Level.WARNING, "empty string paramter", e);
-			throw e;
+			
+			fail("no IllegalArgumentException");
+		} catch (IllegalArgumentException e) {			
+			String errorMessage = e.getMessage();
+			
+			log.info(errorMessage);
+			
+			String expectedErrorMessage = "the parameter itemValue is empty";
+			
+			assertEquals(expectedErrorMessage, errorMessage);
+		} catch (Exception e) {
+			String errorMessage = e.getMessage();
+			log.log(Level.WARNING, errorMessage, e);
+			
+			fail("unknown error");
 		}
 	}
 	
-	@Test(expected=IllegalArgumentException.class)
-	public void testValueOf_ValidButBadParameter_NotNumber() throws Exception {
+	@Test
+	public void testValueOf_theParameterItemValueIsNotNumber() {
 		GeneralConverterReturningByteBetweenMinAndMax minMaxConverter = 
 				new GeneralConverterReturningByteBetweenMinAndMax((byte)10, (byte)20);
+		
+		final String itemValue = "a";
 		try {
-			minMaxConverter.valueOf("a");
-		} catch(IllegalArgumentException e) {
-			log.log(Level.WARNING, "not number", e);
-			throw e;
+			minMaxConverter.valueOf(itemValue);
+			
+			fail("no IllegalArgumentException");
+		} catch (IllegalArgumentException e) {			
+			String errorMessage = e.getMessage();
+			
+			log.info(errorMessage);
+			
+			String expectedErrorMessage = new StringBuilder("the parameter itemValue[")
+					.append(itemValue).append("] is not a number of ")
+					.append(minMaxConverter.getGenericType().getName())
+					.toString();
+			
+			assertEquals(expectedErrorMessage, errorMessage);
+		} catch (Exception e) {
+			String errorMessage = e.getMessage();
+			log.log(Level.WARNING, errorMessage, e);
+			
+			fail("unknown error");
 		}
 	}
 	
-	@Test(expected=IllegalArgumentException.class)
-	public void testValueOf_ValidButBadParameter_TooBig() throws Exception {
+	@Test
+	public void testValueOf_theParameterItemValueIsGreaterThanMax() {
 		GeneralConverterReturningByteBetweenMinAndMax minMaxConverter = 
 				new GeneralConverterReturningByteBetweenMinAndMax((byte)10, (byte)20);
-		
+		final String itemValue = "124";
 		
 		try {
-			minMaxConverter.valueOf("12345");
-		} catch(IllegalArgumentException e) {
-			log.log(Level.WARNING, "bigger than max of byte", e);
-			throw e;
+			minMaxConverter.valueOf(itemValue);
+			
+			fail("no IllegalArgumentException");
+		} catch (IllegalArgumentException e) {			
+			String errorMessage = e.getMessage();
+			
+			log.info(errorMessage);
+			
+			String expectedErrorMessage = new StringBuilder("the parameter itemValue[").append(itemValue)
+					.append("] is greater than max[").append(minMaxConverter.getMax()).append("]").toString();
+			
+			assertEquals(expectedErrorMessage, errorMessage);
+		} catch (Exception e) {
+			String errorMessage = e.getMessage();
+			log.log(Level.WARNING, errorMessage, e);
+			
+			fail("unknown error");
+		}
+	}
+	
+	@Test
+	public void testValueOf_theParameterItemValueIsNotNumberOfByte() {
+		GeneralConverterReturningByteBetweenMinAndMax minMaxConverter = 
+				new GeneralConverterReturningByteBetweenMinAndMax((byte)10, (byte)20);
+		final String itemValue = "255";
+		
+		try {
+			minMaxConverter.valueOf(itemValue);
+			
+			fail("no IllegalArgumentException");
+		} catch (IllegalArgumentException e) {			
+			String errorMessage = e.getMessage();
+			
+			log.info(errorMessage);
+			
+			String expectedErrorMessage = new StringBuilder("the parameter itemValue[")
+					.append(itemValue).append("] is not a number of ")
+					.append(minMaxConverter.getGenericType().getName())
+					.toString();
+			
+			assertEquals(expectedErrorMessage, errorMessage);
+		} catch (Exception e) {
+			String errorMessage = e.getMessage();
+			log.log(Level.WARNING, errorMessage, e);
+			
+			fail("unknown error");
 		}
 	}
 	
 	
 	@Test
-	public void testValueOf_ExpectedValueComparison() {
+	public void testValueOf_OK() {
 		GeneralConverterReturningByteBetweenMinAndMax minMaxConverter = 
 				new GeneralConverterReturningByteBetweenMinAndMax((byte)10, (byte)20);
 		
