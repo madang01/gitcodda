@@ -58,7 +58,10 @@ public abstract class AbstractMessage {
 	public AbstractMessage() {
 		messageID = this.getClass().getSimpleName();
 		if (!AbstractMessage.IsValidMessageID(messageID)) {
-			String errorMessage = String.format("messageID[%s] is not valid", messageID);
+			String errorMessage = new StringBuilder()
+					.append("this class's name[")
+					.append(messageID)
+					.append("] is not a valid message id").toString();
 			log.log(Level.SEVERE, errorMessage);
 			System.exit(1);
 		}

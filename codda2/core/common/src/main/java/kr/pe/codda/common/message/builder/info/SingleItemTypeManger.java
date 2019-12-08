@@ -312,7 +312,10 @@ public class SingleItemTypeManger {
 	public String getItemTypeName(int itemTypeID) throws UnknownItemTypeException {
 		String itemTypeName = itemIDToItemTypeNameHash.get(itemTypeID);
 		if (null == itemTypeName) {
-			String errorMessage = String.format("unknown message item type id[%d]", itemTypeID);
+			String errorMessage = new StringBuilder()
+					.append("unknown message item type id[")
+					.append(itemTypeID)
+					.append("]").toString();
 			UnknownItemTypeException e = new UnknownItemTypeException(errorMessage);
 			// log.warn(errorMessage, e);
 			e.printStackTrace();
@@ -327,14 +330,20 @@ public class SingleItemTypeManger {
 
 	public SingleItemType getSingleItemType(int singleItemTypeID) {
 		if (singleItemTypeID < 0) {
-			String errorMessage = String.format("the parameter singleItemTypeID[%d] is less than zero",
-					singleItemTypeID);
+			String errorMessage = new StringBuilder()
+					.append("the parameter singleItemTypeID[")
+					.append(singleItemTypeID)
+					.append("] is less than zero").toString();
 			throw new IllegalArgumentException(errorMessage);
 		}
 
 		if (singleItemTypeID >= singleItemTypes.length) {
-			String errorMessage = String.format("the parameter singleItemTypeID[%d] is out of range(0 ~ [%d])",
-					singleItemTypeID, singleItemTypes.length - 1);
+			String errorMessage = new StringBuilder()
+					.append("the parameter singleItemTypeID[")
+					.append(singleItemTypeID)
+					.append("] is out of range(0 ~ ")
+					.append(singleItemTypes.length - 1)
+					.append(")").toString();
 			throw new IllegalArgumentException(errorMessage);
 		}
 		return singleItemTypes[singleItemTypeID];

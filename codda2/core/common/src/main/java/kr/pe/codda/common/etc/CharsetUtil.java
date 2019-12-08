@@ -41,7 +41,7 @@ public class CharsetUtil {
 	 */
 	public static Charset getCharset(String charsetName) throws IllegalArgumentException {
 		if (charsetName == null || charsetName.equals("")) {
-			String errorMessage = String.format("파라미터 값[%s]이 지정되지 않았습니다.", charsetName);
+			String errorMessage = "the parameter charsetName is null or empty";
 			throw new IllegalArgumentException(errorMessage);
 		}
 
@@ -49,7 +49,10 @@ public class CharsetUtil {
 		try {
 			charset = Charset.forName(charsetName);
 		} catch (Exception e) {
-			String errorMessage = String.format("잘못된 문자셋[%s]을 지정하였습니다.", charsetName);
+			String errorMessage = new StringBuilder()
+					.append("the parameter charsetName[")
+					.append(charsetName)
+					.append("] is bad").toString();
 			throw new IllegalArgumentException(errorMessage);
 		}
 		return charset;

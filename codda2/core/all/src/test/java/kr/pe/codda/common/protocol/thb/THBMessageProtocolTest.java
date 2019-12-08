@@ -33,7 +33,7 @@ import kr.pe.codda.common.protocol.MessageProtocolIF;
 import kr.pe.codda.common.protocol.ReceivedMessageForwarderIF;
 import kr.pe.codda.common.type.SelfExn;
 import kr.pe.codda.common.util.CommonStaticUtil;
-import kr.pe.codda.common.util.CustomLogFormatter;
+import kr.pe.codda.common.util.JDKLoggerCustomFormatter;
 import kr.pe.codda.impl.message.SelfExnRes.SelfExnRes;
 import kr.pe.codda.impl.message.SelfExnRes.SelfExnResEncoder;
 
@@ -51,7 +51,7 @@ public class THBMessageProtocolTest {
 
 		Handler handler = new ConsoleHandler();
 
-		CustomLogFormatter formatter = new CustomLogFormatter();
+		JDKLoggerCustomFormatter formatter = new JDKLoggerCustomFormatter();
 		handler.setFormatter(formatter);
 
 		rootLogger.setLevel(Level.INFO);

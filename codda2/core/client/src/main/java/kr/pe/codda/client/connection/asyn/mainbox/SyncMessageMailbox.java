@@ -47,24 +47,36 @@ public final class SyncMessageMailbox {
 
 	public SyncMessageMailbox(ConnectionIF conn, int mailboxID, long socketTimeOut, MessageProtocolIF messageProtocol) {
 		if (0 == mailboxID) {
-			String errorMessage = String
-					.format("the parameter mailboxID[%d] is equal to zero that is a public mail box's id", mailboxID);
+			String errorMessage = new StringBuilder()
+					.append("the parameter mailboxID[")
+					.append(mailboxID)
+					.append("] is not private mailbox id, it is a public mail box's id").toString();
 			throw new IllegalArgumentException(errorMessage);
 		}
 
 		if (mailboxID < 0) {
-			String errorMessage = String.format("the parameter mailboxID[%d] is less than zero", mailboxID);
+			String errorMessage = new StringBuilder()
+					.append("the parameter mailboxID[")
+					.append(mailboxID)
+					.append("] is less than zero").toString();
 			throw new IllegalArgumentException(errorMessage);
 		}
 
 		if (mailboxID > CommonStaticFinalVars.UNSIGNED_SHORT_MAX) {
-			String errorMessage = String.format("the parameter mailboxID[%d] is greater than unsinged short max[%d]",
-					mailboxID, CommonStaticFinalVars.UNSIGNED_SHORT_MAX);
+			String errorMessage = new StringBuilder()
+					.append("the parameter mailboxID[")
+					.append(mailboxID)
+					.append("] is greater than unsinged short max[")
+					.append(CommonStaticFinalVars.UNSIGNED_SHORT_MAX)
+					.append("]").toString();
 			throw new IllegalArgumentException(errorMessage);
 		}
 
 		if (socketTimeOut < 0) {
-			String errorMessage = String.format("the parameter socketTimeOut[%d] is less than zero", socketTimeOut);
+			String errorMessage = new StringBuilder()
+					.append("the parameter socketTimeOut[")
+					.append(socketTimeOut)
+					.append("] is less than zero").toString();
 			throw new IllegalArgumentException(errorMessage);
 		}
 

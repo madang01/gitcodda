@@ -1,0 +1,324 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Licensed to the Apache Software Foundation (ASF) under one or more contributor 
+	license agreements. See the NOTICE file distributed with this work for additional 
+	information regarding copyright ownership. The ASF licenses this file to 
+	You under the Apache License, Version 2.0 (the "License"); you may not use 
+	this file except in compliance with the License. You may obtain a copy of 
+	the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required 
+	by applicable law or agreed to in writing, software distributed under the 
+	License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS 
+	OF ANY KIND, either express or implied. See the License for the specific 
+	language governing permissions and limitations under the License. -->
+
+<web-app xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
+	version="3.0" metadata-complete="true">
+
+  <display-name>Welcome to Codda Admin</display-name>
+  	<description>
+  	  Welcome to Codda Admin
+    </description>
+  
+  	<!-- 관리자 로그인 입력 화면 -->
+	<servlet>
+		<servlet-name>AdminLoginInput</servlet-name>
+		<servlet-class>kr.pe.codda.servlet.admin.AdminLoginInputSvl</servlet-class>
+		<init-param>
+			<param-name>menuGroupURL</param-name>
+			<param-value>/</param-value>
+		</init-param>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>AdminLoginInput</servlet-name>
+		<url-pattern>/servlet/AdminLoginInput</url-pattern>
+	</servlet-mapping>
+	
+	<!-- 관리자 로그인 처리 -->
+	<servlet>
+		<servlet-name>AdminLoginProcess</servlet-name>
+		<servlet-class>kr.pe.codda.servlet.admin.AdminLoginProcessSvl</servlet-class>
+		<init-param>
+			<param-name>menuGroupURL</param-name>
+			<param-value>/</param-value>
+		</init-param>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>AdminLoginProcess</servlet-name>
+		<url-pattern>/servlet/AdminLoginProcess</url-pattern>
+	</servlet-mapping>
+	
+	<!-- 회원 등록 화면, siteType : {admin, user} -->
+	<servlet>
+		<servlet-name>MemberRegisterInput</servlet-name>
+		<servlet-class>kr.pe.codda.servlet.admin.MemberRegisterInputSvl</servlet-class>
+		<init-param>
+			<param-name>menuGroupURL</param-name>
+			<param-value>/servlet/MemberRegisterInput</param-value>
+		</init-param>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>MemberRegisterInput</servlet-name>
+		<url-pattern>/servlet/MemberRegisterInput</url-pattern>
+	</servlet-mapping>	
+	
+	<!-- 회원 등록 처리 -->
+	<servlet>
+		<servlet-name>MemberRegisterProcess</servlet-name>
+		<servlet-class>kr.pe.codda.servlet.admin.MemberRegisterProcessSvl</servlet-class>
+		<init-param>
+			<param-name>menuGroupURL</param-name>
+			<param-value>/servlet/AdminSiteMembershipInput</param-value>
+		</init-param>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>MemberRegisterProcess</servlet-name>
+		<url-pattern>/servlet/MemberRegisterProcess</url-pattern>
+	</servlet-mapping>
+	
+	<!-- 일반 사용자 사이트 메뉴 관리자 화면 -->
+	<servlet>
+		<servlet-name>MenuManagement</servlet-name>
+		<servlet-class>kr.pe.codda.servlet.admin.MenuManagementSvl</servlet-class>
+		<init-param>
+			<param-name>menuGroupURL</param-name>
+			<param-value>/servlet/MenuManagement</param-value>
+		</init-param>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>MenuManagement</servlet-name>
+		<url-pattern>/servlet/MenuManagement</url-pattern>
+	</servlet-mapping>
+	
+	<!-- 사이트 메뉴 수정 처리 -->
+	<servlet>
+		<servlet-name>MenuModificationProcess</servlet-name>
+		<servlet-class>kr.pe.codda.servlet.admin.MenuModificationProcessSvl</servlet-class>
+		<init-param>
+			<param-name>menuGroupURL</param-name>
+			<param-value>/servlet/MenuManagement</param-value>
+		</init-param>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>MenuModificationProcess</servlet-name>
+		<url-pattern>/servlet/MenuModificationProcess</url-pattern>
+	</servlet-mapping>
+	
+	<!-- 사이트 메뉴 삭제 처리 -->
+	<servlet>
+		<servlet-name>MenuDeletionProcess</servlet-name>
+		<servlet-class>kr.pe.codda.servlet.admin.MenuDeletionProcessSvl</servlet-class>
+		<init-param>
+			<param-name>menuGroupURL</param-name>
+			<param-value>/servlet/MenuManagement</param-value>
+		</init-param>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>MenuDeletionProcess</servlet-name>
+		<url-pattern>/servlet/MenuDeletionProcess</url-pattern>
+	</servlet-mapping>
+	
+	<!-- 사이트 메뉴 상단 이동 처리 -->
+	<servlet>
+		<servlet-name>MenuMoveUpProcess</servlet-name>
+		<servlet-class>kr.pe.codda.servlet.admin.MenuMoveUpProcessSvl</servlet-class>
+		<init-param>
+			<param-name>menuGroupURL</param-name>
+			<param-value>/servlet/MenuManagement</param-value>
+		</init-param>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>MenuMoveUpProcess</servlet-name>
+		<url-pattern>/servlet/MenuMoveUpProcess</url-pattern>
+	</servlet-mapping>
+	
+	<!-- 사이트 메뉴 하단 이동 처리 -->
+	<servlet>
+		<servlet-name>MenuMoveDownProcess</servlet-name>
+		<servlet-class>kr.pe.codda.servlet.admin.MenuMoveDownProcessSvl</servlet-class>
+		<init-param>
+			<param-name>menuGroupURL</param-name>
+			<param-value>/servlet/MenuManagement</param-value>
+		</init-param>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>MenuMoveDownProcess</servlet-name>
+		<url-pattern>/servlet/MenuMoveDownProcess</url-pattern>
+	</servlet-mapping>
+	
+	<!-- 자식 사이트 메뉴 추가 처리 -->
+	<servlet>
+		<servlet-name>ChildMenuAdditionProcess</servlet-name>
+		<servlet-class>kr.pe.codda.servlet.admin.ChildMenuAdditionProcessSvl</servlet-class>
+		<init-param>
+			<param-name>menuGroupURL</param-name>
+			<param-value>/servlet/MenuManagement</param-value>
+		</init-param>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>ChildMenuAdditionProcess</servlet-name>
+		<url-pattern>/servlet/ChildMenuAdditionProcess</url-pattern>
+	</servlet-mapping>
+	
+	<!-- 루트 사이트 메뉴 추가 처리 -->
+	<servlet>
+		<servlet-name>RootMenuAdditionProcess</servlet-name>
+		<servlet-class>kr.pe.codda.servlet.admin.RootMenuAdditionProcessSvl</servlet-class>
+		<init-param>
+			<param-name>menuGroupURL</param-name>
+			<param-value>/servlet/MenuManagement</param-value>
+		</init-param>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>RootMenuAdditionProcess</servlet-name>
+		<url-pattern>/servlet/RootMenuAdditionProcess</url-pattern>
+	</servlet-mapping>
+	
+	<!-- 현재 사이트 메뉴 정보를 일반 사용자 사이트 메뉴 정보 파일에 저장 처리  -->
+	<servlet>
+		<servlet-name>UserWebsiteMenuInfoFileUpdater</servlet-name>
+		<servlet-class>kr.pe.codda.servlet.admin.UserWebsiteMenuInfoFileUpdaterSvl</servlet-class>
+		<init-param>
+			<param-name>menuGroupURL</param-name>
+			<param-value>/servlet/MenuManagement</param-value>
+		</init-param>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>UserWebsiteMenuInfoFileUpdater</servlet-name>
+		<url-pattern>/servlet/UserWebsiteMenuInfoFileUpdater</url-pattern>
+	</servlet-mapping>
+	
+	<!-- 게시판 정보 관리자 -->
+	<servlet>
+		<servlet-name>BoardInformationManager</servlet-name>
+		<servlet-class>kr.pe.codda.servlet.admin.BoardInformationManagerSvl</servlet-class>
+		<init-param>
+			<param-name>menuGroupURL</param-name>
+			<param-value>/servlet/BoardInformationManager</param-value>
+		</init-param>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>BoardInformationManager</servlet-name>
+		<url-pattern>/servlet/BoardInformationManager</url-pattern>
+	</servlet-mapping>
+	
+	<!-- 게시판 정보 등록 -->
+	<servlet>
+		<servlet-name>BoardInformationAdd</servlet-name>
+		<servlet-class>kr.pe.codda.servlet.admin.BoardInformationAddSvl</servlet-class>
+		<init-param>
+			<param-name>menuGroupURL</param-name>
+			<param-value>/servlet/BoardInformationManager</param-value>
+		</init-param>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>BoardInformationAdd</servlet-name>
+		<url-pattern>/servlet/BoardInformationAdd</url-pattern>
+	</servlet-mapping>
+	
+	
+	<!-- 게시판 정보 삭제 -->
+	<servlet>
+		<servlet-name>BoardInformationDelete</servlet-name>
+		<servlet-class>kr.pe.codda.servlet.admin.BoardInformationDeleteSvl</servlet-class>
+		<init-param>
+			<param-name>menuGroupURL</param-name>
+			<param-value>/servlet/BoardInformationManager</param-value>
+		</init-param>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>BoardInformationDelete</servlet-name>
+		<url-pattern>/servlet/BoardInformationDelete</url-pattern>
+	</servlet-mapping>
+	
+	<!-- 게시판 정보 수정 -->
+	<servlet>
+		<servlet-name>BoardInformationModify</servlet-name>
+		<servlet-class>kr.pe.codda.servlet.admin.BoardInformationModifySvl</servlet-class>
+		<init-param>
+			<param-name>menuGroupURL</param-name>
+			<param-value>/servlet/BoardInformationModify</param-value>
+		</init-param>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>BoardInformationModify</servlet-name>
+		<url-pattern>/servlet/BoardInformationModify</url-pattern>
+	</servlet-mapping>
+	
+	<!-- 게시판 관리자 -->
+	<servlet>
+		<servlet-name>BoardManager</servlet-name>
+		<servlet-class>kr.pe.codda.servlet.admin.BoardManagerSvl</servlet-class>
+		<init-param>
+			<param-name>menuGroupURL</param-name>
+			<param-value>/servlet/BoardManager</param-value>
+		</init-param>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>BoardManager</servlet-name>
+		<url-pattern>/servlet/BoardManager</url-pattern>
+	</servlet-mapping>
+	
+	<!-- 회원 관리자 -->
+	<servlet>
+		<servlet-name>MemberManager</servlet-name>
+		<servlet-class>kr.pe.codda.servlet.admin.MemberManagerSvl</servlet-class>
+		<init-param>
+			<param-name>menuGroupURL</param-name>
+			<param-value>/servlet/MemberManager</param-value>
+		</init-param>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>MemberManager</servlet-name>
+		<url-pattern>/servlet/MemberManager</url-pattern>
+	</servlet-mapping>
+	
+	<!-- 회원 차단 -->
+	<servlet>
+		<servlet-name>MemberBlockProcess</servlet-name>
+		<servlet-class>kr.pe.codda.servlet.admin.MemberBlockProcessSvl</servlet-class>
+		<init-param>
+			<param-name>menuGroupURL</param-name>
+			<param-value>/servlet/MemberManager</param-value>
+		</init-param>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>MemberBlockProcess</servlet-name>
+		<url-pattern>/servlet/MemberBlockProcess</url-pattern>
+	</servlet-mapping>
+	
+	<!-- 회원 차단 해제 -->
+	<servlet>
+		<servlet-name>MemberUnBlockProcess</servlet-name>
+		<servlet-class>kr.pe.codda.servlet.admin.MemberUnBlockProcessSvl</servlet-class>
+		<init-param>
+			<param-name>menuGroupURL</param-name>
+			<param-value>/servlet/MemberManager</param-value>
+		</init-param>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>MemberUnBlockProcess</servlet-name>
+		<url-pattern>/servlet/MemberUnBlockProcess</url-pattern>
+	</servlet-mapping>
+
+	<!-- Simple Captcha start -->
+	<servlet>
+        <servlet-name>StickyCaptcha</servlet-name>
+        <servlet-class>nl.captcha.servlet.SimpleCaptchaServlet</servlet-class>
+        <!-- The width and height params are optional; 
+        if unspecified they default to 200 and 50 respectively. -->
+        <init-param>
+            <param-name>width</param-name>
+            <param-value>250</param-value>
+        </init-param>
+        <init-param>
+            <param-name>height</param-name>
+            <param-value>75</param-value>
+        </init-param>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>StickyCaptcha</servlet-name>
+        <url-pattern>/servlet/stickyImg</url-pattern>
+    </servlet-mapping>
+	<!-- Simple Captcha end -->
+</web-app>

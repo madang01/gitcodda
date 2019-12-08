@@ -134,26 +134,47 @@ public class HexUtil {
 		}
 		
 		if (offset < 0) {
-			String errorMessage = String.format("the parameter offset[%d] less than zero", offset);
+			String errorMessage = new StringBuilder()
+					.append("the parameter offset[")
+					.append(offset)
+					.append("] is less than zero").toString();
 			throw new IllegalArgumentException(errorMessage);
 		}
 		
 		int capacity = buffer.capacity();
 
 		if (offset > capacity) {
-			String errorMessage = String.format("the parameter offset[%d] over than the parameter buffer'capacity[%d]", offset, capacity);
+			String errorMessage = 
+					new StringBuilder()
+					.append("the parameter offset[")
+					.append(offset)
+					.append("] is greater than the parameter buffer's capacity[")
+					.append(capacity)
+					.append("]").toString();
 			throw new IllegalArgumentException(errorMessage);
 		}
 
 		if (length < 0) {
-			String errorMessage = String.format("the parameter length[%d] less than zero", length);
+			String errorMessage = new StringBuilder()
+					.append("the parameter length[")
+					.append(length)
+					.append("] is less than zero").toString();
 			throw new IllegalArgumentException(errorMessage);
 		}
 
+		long size = (long)offset + (long)length;
 		
-		if (offset > capacity - length) {
-			String errorMessage = String.format("the sum[] of the parameter offset[%d] and the parameter length[%d] is greater than the parameter buffer'capacity[%d]", 
-					length + offset, offset, length, capacity);
+		if (size > capacity) {
+			String errorMessage = new StringBuilder()
+					.append("the sum[")
+					.append(size)
+					.append("] of the parameter offset[")
+					.append(offset)
+					.append("] and the parameter length[")
+					.append(length)
+					.append("] is greater than the parameter buffer'capacity[")
+					.append(capacity)
+					.append("]").toString();
 			throw new IllegalArgumentException(errorMessage);
 		}
 
@@ -185,26 +206,46 @@ public class HexUtil {
 		}
 		
 		if (offset < 0) {
-			String errorMessage = String.format("the parameter offset[%d] less than zero", offset);
+			String errorMessage = new StringBuilder()
+					.append("the parameter offset[")
+					.append(offset)
+					.append("] is less than zero").toString();
 			throw new IllegalArgumentException(errorMessage);
 		}
 
 		if (length < 0) {
-			String errorMessage = String.format("the parameter length[%d] less than zero", length);
+			String errorMessage = new StringBuilder()
+					.append("the parameter length[")
+					.append(length)
+					.append("] is less than zero").toString();
 			throw new IllegalArgumentException(errorMessage);
 		}
 
 		int capacity = buffer.length;
 
 		if (offset > capacity) {
-			String errorMessage = String.format("the parameter offset[%d] over than the parameter buffer'capacity[%d]", offset, capacity);
+			String errorMessage = new StringBuilder()
+					.append("the parameter offset[")
+					.append(offset)
+					.append("] is greater than the parameter buffer'capacity[")
+					.append(capacity)
+					.append("]").toString();
 			throw new IllegalArgumentException(errorMessage);
 		}
 
-		int size = offset + length;
+		long size = (long)offset + (long)length;
 
 		if (size > capacity) {
-			String errorMessage = String.format("the sum of the parameter offset[%d] and the parameter length[%d] is over than the parameter buffer'capacity[%d]", offset, length, capacity);
+			String errorMessage = new StringBuilder()
+					.append("the sum[")
+					.append(size)
+					.append("] of the parameter offset[")
+					.append(offset)
+					.append("] and the parameter length[")
+					.append(length)
+					.append("] is greater than the parameter buffer'capacity[")
+					.append(capacity)
+					.append("]").toString();
 			throw new IllegalArgumentException(errorMessage);
 		}
 

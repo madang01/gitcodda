@@ -21,12 +21,18 @@ public class ClientClassLoaderFactory {
 		File clientAPPINFClassPath = new File(clientClassloaderClassPathString);
 		
 		if (!clientAPPINFClassPath.exists()) {
-			String errorMessage = String.format("the client APP-INF class path[%s] doesn't exist", clientClassloaderClassPathString);
+			String errorMessage = new StringBuilder()
+					.append("the client APP-INF class path[")
+					.append(clientClassloaderClassPathString)
+					.append("] doesn't exist").toString();
 		 	throw new CoddaConfigurationException(errorMessage);
 		}
 		
 		if (!clientAPPINFClassPath.isDirectory()) {
-			String errorMessage = String.format("the client APP-INF class path[%s] isn't a directory", clientClassloaderClassPathString);
+			String errorMessage = new StringBuilder()
+					.append("the client APP-INF class path[")
+					.append(clientClassloaderClassPathString)
+					.append("] isn't a directory").toString();
 		 	throw new CoddaConfigurationException(errorMessage);
 		}
 		
@@ -37,12 +43,18 @@ public class ClientClassLoaderFactory {
 		File projectResourcesPath = new File(clientClassloaderReousrcesPathString);
 		
 		if (! projectResourcesPath.exists()) {
-			String errorMessage = String.format("the project resources path[%s] doesn't exist", clientClassloaderReousrcesPathString);
+			String errorMessage = new StringBuilder()
+					.append("the project resources path[")
+					.append(clientClassloaderReousrcesPathString)
+					.append("] doesn't exist").toString();
 		 	throw new CoddaConfigurationException(errorMessage);
 		}
 		
 		if (! projectResourcesPath.isDirectory()) {
-			String errorMessage = String.format("the project resources path[%s] isn't a directory", clientClassloaderReousrcesPathString);
+			String errorMessage = new StringBuilder()
+					.append("the project resources path[")
+					.append(clientClassloaderReousrcesPathString)
+					.append("] isn't a directory").toString();
 		 	throw new CoddaConfigurationException(errorMessage);
 		}
 		

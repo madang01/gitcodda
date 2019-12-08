@@ -30,12 +30,18 @@ public abstract class AbstractTHBSingleItemDecoder {
 			} catch (UnknownItemTypeException e) {
 			}
 			
-			String errorMesssage = String.format("this single item type[id:%d, name:%s][%s] is different from the received item type[id:%d, name:%s]", 
-					itemTypeID,
-					itemTypeName,
-					itemName, 
-					receivedItemTypeID,
-					receivedItemTypeName);
+			String errorMesssage = new StringBuilder()
+					.append("this single item type[id:")
+					.append(itemTypeID)
+					.append(", name=")
+					.append(itemTypeName)
+					.append("][")
+					.append(itemName)
+					.append("] is different from the received item type[id:")
+					.append(receivedItemTypeID)
+					.append(", name:")
+					.append(receivedItemTypeName)
+					.append("]").toString();
 			throw new BodyFormatException(errorMesssage);
 		}
 	}	

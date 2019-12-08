@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuite errors="2" failures="0" hostname="madang02-pc" name="kr.pe.codda.servlet.user.BoardIntegrationSvlTest" skipped="0" tests="2" time="2.269" timestamp="2019-02-14T12:55:22">
+  <properties>
+    <property name="java.vendor" value="Oracle Corporation" />
+    <property name="sun.java.launcher" value="SUN_STANDARD" />
+    <property name="sun.management.compiler" value="HotSpot 64-Bit Tiered Compilers" />
+    <property name="dir.dist" value="D:\gitmadang\codda\project\sample_base\client_build\web_build\dist" />
+    <property name="weblib.jar.name" value="CoddaWebLib.jar" />
+    <property name="dir.main.src" value="D:\gitmadang\codda\project\sample_base\client_build\web_build\src\main\java" />
+    <property name="os.name" value="Windows 10" />
+    <property name="sun.boot.class.path" value="C:\Program Files\Java\jdk1.8.0_172\jre\lib\resources.jar;C:\Program Files\Java\jdk1.8.0_172\jre\lib\rt.jar;C:\Program Files\Java\jdk1.8.0_172\jre\lib\sunrsasign.jar;C:\Program Files\Java\jdk1.8.0_172\jre\lib\jsse.jar;C:\Program Files\Java\jdk1.8.0_172\jre\lib\jce.jar;C:\Program Files\Java\jdk1.8.0_172\jre\lib\charsets.jar;C:\Program Files\Java\jdk1.8.0_172\jre\lib\jfr.jar;C:\Program Files\Java\jdk1.8.0_172\jre\classes" />
+    <property name="sun.desktop" value="windows" />
+    <property name="java.vm.specification.vendor" value="Oracle Corporation" />
+    <property name="ant.home" value="D:\apache-ant-1.9.11\bin\.." />
+    <property name="java.runtime.version" value="1.8.0_172-b11" />
+    <property name="user.name" value="madang03" />
+    <property name="is.windows.yes" value="true" />
+    <property name="dir.admin.webinf.lib" value="D:\gitmadang\codda\project\sample_base\admin_web_app_base\ROOT\WEB-INF\lib" />
+    <property name="dir.report" value="D:\gitmadang\codda\project\sample_base\client_build\web_build\report" />
+    <property name="user.language" value="ko" />
+    <property name="sun.boot.library.path" value="C:\Program Files\Java\jdk1.8.0_172\jre\bin" />
+    <property name="dir.user.webinf.classes" value="D:\gitmadang\codda\project\sample_base\user_web_app_base\ROOT\WEB-INF\classes" />
+    <property name="ant.project.default-target" value="compile.webclasses.only" />
+    <property name="dir.admin.webinf.classes" value="D:\gitmadang\codda\project\sample_base\admin_web_app_base\ROOT\WEB-INF\classes" />
+    <property name="ant.file.type.sample_base_member_webclient" value="file" />
+    <property name="ant.project.name" value="sample_base_member_webclient" />
+    <property name="dir.test.build" value="D:\gitmadang\codda\project\sample_base\client_build\web_build\build\test" />
+    <property name="java.version" value="1.8.0_172" />
+    <property name="user.timezone" value="" />
+    <property name="java.complile.option.debug" value="on" />
+    <property name="sun.arch.data.model" value="64" />
+    <property name="java.endorsed.dirs" value="C:\Program Files\Java\jdk1.8.0_172\jre\lib\endorsed" />
+    <property name="sun.cpu.isalist" value="amd64" />
+    <property name="sun.jnu.encoding" value="MS949" />
+    <property name="file.encoding.pkg" value="sun.io" />
+    <property name="dir.core.all.build" value="D:\gitmadang\codda\core\all" />
+    <property name="file.separator" value="\" />
+    <property name="java.specification.name" value="Java Platform API Specification" />
+    <property name="java.class.version" value="52.0" />
+    <property name="user.country" value="KR" />
+    <property name="java.home" value="C:\Program Files\Java\jdk1.8.0_172\jre" />
+    <property name="java.vm.info" value="mixed mode" />
+    <property name="ant.file" value="D:\gitmadang\codda\project\sample_base\client_build\web_build\build.xml" />
+    <property name="os.version" value="10.0" />
+    <property name="dir.core.common.build" value="D:\gitmadang\codda\core\common" />
+    <property name="dir.logger.build" value="D:\gitmadang\codda\core\logger" />
+    <property name="path.separator" value=";" />
+    <property name="java.vm.version" value="25.172-b11" />
+    <property name="user.variant" value="" />
+    <property name="ant.library.dir" value="D:\apache-ant-1.9.11\lib" />
+    <property name="java.awt.printerjob" value="sun.awt.windows.WPrinterJob" />
+    <property name="sun.io.unicode.encoding" value="UnicodeLittle" />
+    <property name="awt.toolkit" value="sun.awt.windows.WToolkit" />
+    <property name="sun.stdout.encoding" value="ms949" />
+    <property name="user.script" value="" />
+    <property name="user.home" value="C:\Users\user" />
+    <property name="java.specification.vendor" value="Oracle Corporation" />
+    <property name="java.library.path" value="C:\Program Files\Java\jdk1.8.0_172\jre\bin;C:\WINDOWS\Sun\Java\bin;C:\WINDOWS\system32;C:\WINDOWS;C:\Program Files (x86)\Common Files\Oracle\Java\javapath;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;C:\Program Files\Java\jdk1.8.0_172\bin;C:\Program Files\Git\cmd;D:\apache-ant-1.9.11\bin;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\WINDOWS\System32\WindowsPowerShell\v1.0\;D:\gradle-4.5\bin;;C:\WINDOWS\System32\OpenSSH\;C:\Program Files\PuTTY\;C:\Users\user\AppData\Local\Microsoft\WindowsApps;;." />
+    <property name="java.vendor.url" value="http://java.oracle.com/" />
+    <property name="dir.weblib.build" value="D:\gitmadang\codda\project\sample_base\client_build\web_build\build\weblib" />
+    <property name="java.vm.vendor" value="Oracle Corporation" />
+    <property name="servlet.systemlib.path" value="D:\apache-tomcat-8.5.32\lib" />
+    <property name="java.runtime.name" value="Java(TM) SE Runtime Environment" />
+    <property name="sun.java.command" value="org.apache.tools.ant.taskdefs.optional.junit.JUnitTestRunner kr.pe.codda.servlet.user.BoardIntegrationSvlTest skipNonTests=false filtertrace=true haltOnError=true haltOnFailure=true formatter=org.apache.tools.ant.taskdefs.optional.junit.SummaryJUnitResultFormatter showoutput=true outputtoformatters=true logfailedtests=true threadid=0 logtestlistenerevents=false formatter=org.apache.tools.ant.taskdefs.optional.junit.XMLJUnitResultFormatter,D:\gitmadang\codda\project\sample_base\client_build\web_build\report\TEST-kr.pe.codda.servlet.user.BoardIntegrationSvlTest.xml crashfile=D:\gitmadang\codda\project\sample_base\client_build\web_build\junitvmwatcher8532368898179203425.properties propsfile=D:\gitmadang\codda\project\sample_base\client_build\web_build\junit1702154108554466939.properties" />
+    <property name="java.class.path" value="D:\gitmadang\codda\project\sample_base\client_build\web_build\corelib\ex\codda-core-all.jar;D:\gitmadang\codda\project\sample_base\client_build\web_build\corelib\ex\commons-dbcp2-2.0.1.jar;D:\gitmadang\codda\project\sample_base\client_build\web_build\corelib\ex\commons-pool2-2.5.0.jar;D:\apache-tomcat-8.5.32\lib\annotations-api.jar;D:\apache-tomcat-8.5.32\lib\el-api.jar;D:\apache-tomcat-8.5.32\lib\jaspic-api.jar;D:\apache-tomcat-8.5.32\lib\jsp-api.jar;D:\apache-tomcat-8.5.32\lib\servlet-api.jar;D:\apache-tomcat-8.5.32\lib\tomcat-api.jar;D:\apache-tomcat-8.5.32\lib\websocket-api.jar;D:\gitmadang\codda\project\sample_base\client_build\web_build\lib\main\ex\commons-fileupload-1.3.2.jar;D:\gitmadang\codda\project\sample_base\client_build\web_build\lib\main\ex\commons-io-2.6.jar;D:\gitmadang\codda\project\sample_base\client_build\web_build\lib\main\ex\commons-lang3-3.7.jar;D:\gitmadang\codda\project\sample_base\client_build\web_build\lib\main\ex\commons-text-1.3.jar;D:\gitmadang\codda\project\sample_base\client_build\web_build\lib\main\ex\gson-2.8.5.jar;D:\gitmadang\codda\project\sample_base\client_build\web_build\dist\CoddaWebLib.jar;D:\gitmadang\codda\project\sample_base\user_web_app_base\ROOT\WEB-INF\classes;D:\gitmadang\codda\core\common\lib\test\hamcrest-core-1.3.jar;D:\gitmadang\codda\core\common\lib\test\junit-4.12.jar;D:\gitmadang\codda\core\common\lib\test\byte-buddy-1.7.9.jar;D:\gitmadang\codda\core\common\lib\test\byte-buddy-agent-1.7.9.jar;D:\gitmadang\codda\core\common\lib\test\mockito-core-2.13.4.jar;D:\gitmadang\codda\core\common\lib\test\objenesis-2.6.jar;D:\gitmadang\codda\core\common\lib\test\commons-exec-1.3.jar;D:\gitmadang\codda\core\common\dist\codda-core-junitlib.jar;D:\gitmadang\codda\project\sample_base\client_build\web_build\lib\test\httpcore-4.4.10.jar;D:\gitmadang\codda\project\sample_base\client_build\web_build\lib\test\httpmime-4.5.6.jar;D:\gitmadang\codda\project\sample_base\client_build\web_build\build\test;D:\apache-ant-1.9.11\lib\ant-launcher.jar;D:\apache-ant-1.9.11\lib\ant.jar;D:\apache-ant-1.9.11\lib\ant-junit.jar;D:\apache-ant-1.9.11\lib\ant-junit4.jar" />
+    <property name="ant.version" value="Apache Ant(TM) version 1.9.11 compiled on March 23 2018" />
+    <property name="dir.test.lib" value="D:\gitmadang\codda\project\sample_base\client_build\web_build\lib\test" />
+    <property name="java.vm.specification.name" value="Java Virtual Machine Specification" />
+    <property name="ant.file.type" value="file" />
+    <property name="java.vm.specification.version" value="1.8" />
+    <property name="sun.cpu.endian" value="little" />
+    <property name="sun.os.patch.level" value="" />
+    <property name="ant.file.sample_base_member_webclient" value="D:\gitmadang\codda\project\sample_base\client_build\web_build\build.xml" />
+    <property name="dir.main.lib" value="D:\gitmadang\codda\project\sample_base\client_build\web_build\lib\main" />
+    <property name="java.io.tmpdir" value="C:\Users\user\AppData\Local\Temp\" />
+    <property name="java.vendor.url.bug" value="http://bugreport.sun.com/bugreport/" />
+    <property name="dir.core.server.build" value="D:\gitmadang\codda\core\server" />
+    <property name="dir.corelib" value="D:\gitmadang\codda\project\sample_base\client_build\web_build\corelib" />
+    <property name="os.arch" value="amd64" />
+    <property name="java.awt.graphicsenv" value="sun.awt.Win32GraphicsEnvironment" />
+    <property name="java.ext.dirs" value="C:\Program Files\Java\jdk1.8.0_172\jre\lib\ext;C:\WINDOWS\Sun\Java\lib\ext" />
+    <property name="user.dir" value="D:\gitmadang\codda\project\sample_base\client_build\web_build" />
+    <property name="core.all.jar.name" value="codda-core-all.jar" />
+    <property name="core.junitlib.jar.name" value="codda-core-junitlib.jar" />
+    <property name="line.separator" value="&#xd;&#xa;" />
+    <property name="java.vm.name" value="Java HotSpot(TM) 64-Bit Server VM" />
+    <property name="dir.user.webinf.lib" value="D:\gitmadang\codda\project\sample_base\user_web_app_base\ROOT\WEB-INF\lib" />
+    <property name="basedir" value="D:\gitmadang\codda\project\sample_base\client_build\web_build" />
+    <property name="ant.java.version" value="1.8" />
+    <property name="ant.core.lib" value="D:\apache-ant-1.9.11\lib\ant.jar" />
+    <property name="sun.stderr.encoding" value="ms949" />
+    <property name="file.encoding" value="MS949" />
+    <property name="java.specification.version" value="1.8" />
+    <property name="dir.test.src" value="D:\gitmadang\codda\project\sample_base\client_build\web_build\src\test\java" />
+    <property name="ant.project.invoked-targets" value="test" />
+  </properties>
+  <testcase classname="kr.pe.codda.servlet.user.BoardIntegrationSvlTest" name="게시글댓글_정상" time="2.139">
+    <error type="java.lang.NullPointerException">java.lang.NullPointerException
+	at kr.pe.codda.servlet.user.BoardIntegrationSvlTest.게시글댓글_정상(BoardIntegrationSvlTest.java:382)
+</error>
+  </testcase>
+  <testcase classname="kr.pe.codda.servlet.user.BoardIntegrationSvlTest" name="게시글본문쓰기_정상" time="0.026">
+    <error type="java.lang.NullPointerException">java.lang.NullPointerException
+	at kr.pe.codda.servlet.user.BoardIntegrationSvlTest.게시글본문쓰기_정상(BoardIntegrationSvlTest.java:76)
+</error>
+  </testcase>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[2월 14, 2019 9:55:22 오후 kr.pe.codda.common.config.CoddaConfiguration convertConfigSequencedPropertiesToAllPartItemsWithValidation
+정보: item key[sessionkey.rsa.publickey.file.value]'s value is null because its status is inactive
+2월 14, 2019 9:55:22 오후 kr.pe.codda.common.config.CoddaConfiguration convertConfigSequencedPropertiesToAllPartItemsWithValidation
+정보: item key[sessionkey.rsa.privatekey.file.value]'s value is null because its status is inactive
+2월 14, 2019 9:55:23 오후 kr.pe.codda.weblib.jdf.JDFBaseServlet performBasePreTask
+정보: /servlet/BoardWriteProcess:(172.0.1.32)::calling
+2월 14, 2019 9:55:23 오후 kr.pe.codda.client.connection.asyn.ClientIOEventController addUnregisteredAsynConnection
+정보: the unregisteredAsynConnection[1475192960] was registered to queue
+2월 14, 2019 9:55:23 오후 kr.pe.codda.client.connection.asyn.ClientIOEventController addUnregisteredAsynConnection
+정보: the unregisteredAsynConnection[727197178] was registered to queue
+2월 14, 2019 9:55:23 오후 kr.pe.codda.client.connection.asyn.ClientIOEventController addUnregisteredAsynConnection
+정보: the unregisteredAsynConnection[1406253491] was registered to queue
+2월 14, 2019 9:55:23 오후 kr.pe.codda.client.connection.asyn.ClientIOEventController addUnregisteredAsynConnection
+정보: the unregisteredAsynConnection[749604930] was registered to queue
+2월 14, 2019 9:55:23 오후 kr.pe.codda.client.connection.asyn.ClientIOEventController addUnregisteredAsynConnection
+정보: the unregisteredAsynConnection[373097727] was registered to queue
+2월 14, 2019 9:55:23 오후 kr.pe.codda.client.connection.asyn.ClientIOEventController addUnregisteredAsynConnection
+정보: the unregisteredAsynConnection[2082509879] was registered to queue
+2월 14, 2019 9:55:23 오후 kr.pe.codda.client.connection.asyn.ClientIOEventController addUnregisteredAsynConnection
+정보: the unregisteredAsynConnection[576894497] was registered to queue
+2월 14, 2019 9:55:23 오후 kr.pe.codda.client.connection.asyn.ClientIOEventController addUnregisteredAsynConnection
+정보: the unregisteredAsynConnection[2123533871] was registered to queue
+2월 14, 2019 9:55:23 오후 kr.pe.codda.client.connection.asyn.ClientIOEventController addUnregisteredAsynConnection
+정보: the unregisteredAsynConnection[16148478] was registered to queue
+2월 14, 2019 9:55:23 오후 kr.pe.codda.client.connection.asyn.ClientIOEventController addUnregisteredAsynConnection
+정보: the unregisteredAsynConnection[2022689531] was registered to queue
+2월 14, 2019 9:55:23 오후 kr.pe.codda.client.connection.asyn.ClientIOEventController run
+정보: ClientIOEventController Thread start
+2월 14, 2019 9:55:24 오후 kr.pe.codda.client.connection.ConnectionPoolSupporter run
+정보: 연결 폴 후원자 시작
+2월 14, 2019 9:55:24 오후 kr.pe.codda.client.ConnectionPoolManager$AnyProjectConnectionPoolMonitor run
+정보: AnyProjectConnectionPoolMonitor start
+2월 14, 2019 9:55:24 오후 kr.pe.codda.client.ConnectionPoolManager$AnyProjectConnectionPoolMonitor run
+정보: main projectName[sample_base]'s AnyProjectConnectionPool state
+numberOfConnection=10, connectionQueue.size=10
+2월 14, 2019 9:55:24 오후 kr.pe.codda.servlet.user.BoardWriteProcessSvl performTask
+경고: 요청한 사용자[test00가 회원 테이블에 존재하지 않습니다, userID=test00, ip=172.0.1.32
+2월 14, 2019 9:55:24 오후 kr.pe.codda.weblib.jdf.JDFBaseServlet performBasePreTask
+정보: /servlet/BoardWriteProcess:(172.0.1.32)::end(elapsed=1135)
+
+2월 14, 2019 9:55:24 오후 kr.pe.codda.weblib.jdf.JDFBaseServlet performBasePreTask
+정보: /servlet/BoardWriteProcess:(172.0.1.32)::calling
+2월 14, 2019 9:55:24 오후 kr.pe.codda.servlet.user.BoardWriteProcessSvl performTask
+경고: 요청한 사용자[test00가 회원 테이블에 존재하지 않습니다, userID=test00, ip=172.0.1.32
+2월 14, 2019 9:55:24 오후 kr.pe.codda.weblib.jdf.JDFBaseServlet performBasePreTask
+정보: /servlet/BoardWriteProcess:(172.0.1.32)::end(elapsed=21)
+
+]]></system-err>
+</testsuite>

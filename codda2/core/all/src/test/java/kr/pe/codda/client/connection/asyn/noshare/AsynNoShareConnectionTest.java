@@ -33,7 +33,7 @@ import kr.pe.codda.common.type.ConnectionType;
 import kr.pe.codda.common.type.MessageProtocolType;
 import kr.pe.codda.common.type.ProjectType;
 import kr.pe.codda.common.util.CommonStaticUtil;
-import kr.pe.codda.common.util.CustomLogFormatter;
+import kr.pe.codda.common.util.JDKLoggerCustomFormatter;
 import kr.pe.codda.impl.classloader.ClientMessageCodecManger;
 import kr.pe.codda.impl.message.Empty.Empty;
 import kr.pe.codda.server.AnyProjectServer;
@@ -60,7 +60,7 @@ public class AsynNoShareConnectionTest {
 
 		Handler handler = new ConsoleHandler();
 
-		CustomLogFormatter formatter = new CustomLogFormatter();
+		JDKLoggerCustomFormatter formatter = new JDKLoggerCustomFormatter();
 		handler.setFormatter(formatter);
 
 		rootLogger.setLevel(Level.INFO);
@@ -222,9 +222,9 @@ public class AsynNoShareConnectionTest {
 		} catch (Exception e) {
 			log.log(Level.WARNING, "error", e);
 
-			String errorMessage = String.format(
-					"fail to mapping configuration's item value to ProjectPartConfiguration's item value::%s",
-					e.getMessage());
+			String errorMessage = new StringBuilder()
+					.append("fail to mapping configuration's item value to ProjectPartConfiguration's item value::errmsg=")
+					.append(e.getMessage()).toString();
 
 			fail(errorMessage);
 		}
@@ -297,7 +297,9 @@ public class AsynNoShareConnectionTest {
 		} catch (Exception e) {
 			log.log(Level.WARNING, "error", e);
 
-			String errorMessage = String.format("fail to get a output message::%s", e.getMessage());
+			String errorMessage = new StringBuilder()
+					.append("fail to get a output message::errmsg=")
+					.append(e.getMessage()).toString();
 
 			fail(errorMessage);
 		}
@@ -352,11 +354,6 @@ public class AsynNoShareConnectionTest {
 			} catch (Exception e) {
 				log.log(Level.WARNING, "error", e);
 
-				/*
-				 * String errorMessage = String.format( "fail to get a output message::%s",
-				 * e.getMessage());
-				 */
-
 				// fail(errorMessage);
 			}
 
@@ -390,9 +387,9 @@ public class AsynNoShareConnectionTest {
 		} catch (Exception e) {
 			log.log(Level.WARNING, "error", e);
 
-			String errorMessage = String.format(
-					"fail to mapping configuration's item value to ProjectPartConfiguration's item value::%s",
-					e.getMessage());
+			String errorMessage = new StringBuilder()
+					.append("fail to mapping configuration's item value to ProjectPartConfiguration's item value::errmsg=")
+					.append(e.getMessage()).toString();
 
 			fail(errorMessage);
 		}
@@ -422,47 +419,6 @@ public class AsynNoShareConnectionTest {
 			log.log(Level.WARNING, "fail to create a asyn no-share connection pool", e);
 			fail("fail to create a asyn no-share connection pool");
 		}
-
-		/*
-		 * class ThreadSafeTester implements Runnable { private
-		 * AnyProjectConnectionPoolIF anyProjectConnectionPool = null; private int
-		 * retryCount; private ArrayBlockingQueue<String> noticeBlockingQueue = null;
-		 * 
-		 * public ThreadSafeTester(AnyProjectConnectionPoolIF anyProjectConnectionPool,
-		 * int retryCount, ArrayBlockingQueue<String> noticeBlockingQueue) {
-		 * this.anyProjectConnectionPool = anyProjectConnectionPool; this.retryCount =
-		 * retryCount; this.noticeBlockingQueue = noticeBlockingQueue; }
-		 * 
-		 * @Override public void run() { log.info("start {}",
-		 * Thread.currentThread().getName()); try { long startTime = System.nanoTime();
-		 * 
-		 * for (int i=0; i < retryCount; i++) { try { Empty emptyReq = new Empty();
-		 * AbstractMessage emptyRes =
-		 * anyProjectConnectionPool.sendSyncInputMessage(ClientMessageCodecManger.
-		 * getInstance(), emptyReq);
-		 * 
-		 * if (!(emptyRes instanceof Empty)) { fail("empty 메시지 수신 실패"); }
-		 * 
-		 * if (! emptyReq.messageHeaderInfo.equals(emptyRes.messageHeaderInfo)) {
-		 * fail("수신한 empty 메시지의 메시지 헤더가 송신한 empty 메시지의 메시지 헤더와 다릅니다"); } }
-		 * catch(SocketTimeoutException e) { continue; } }
-		 * 
-		 * long endTime = System.nanoTime(); log.info("{} {} 회 평균시간[{}] microseconds",
-		 * Thread.currentThread().getName(), retryCount,
-		 * TimeUnit.MICROSECONDS.convert((endTime - startTime),
-		 * TimeUnit.NANOSECONDS)/retryCount);
-		 * 
-		 * 
-		 * 
-		 * } catch (Exception e) { log.warn("error", e);
-		 * 
-		 * String errorMessage = String.format( "fail to get a output message::%s",
-		 * e.getMessage());
-		 * 
-		 * fail(errorMessage); }
-		 * 
-		 * noticeBlockingQueue.offer(Thread.currentThread().getName()); } }
-		 */
 
 		Thread[] threadSafeTester = new Thread[numberOfThread];
 
@@ -507,9 +463,9 @@ public class AsynNoShareConnectionTest {
 		} catch (Exception e) {
 			log.log(Level.WARNING, "error", e);
 
-			String errorMessage = String.format(
-					"fail to mapping configuration's item value to ProjectPartConfiguration's item value::%s",
-					e.getMessage());
+			String errorMessage = new StringBuilder()
+					.append("fail to mapping configuration's item value to ProjectPartConfiguration's item value::errmsg=")
+					.append(e.getMessage()).toString();
 
 			fail(errorMessage);
 		}
@@ -564,7 +520,11 @@ public class AsynNoShareConnectionTest {
 		} catch (Exception e) {
 			log.log(Level.WARNING, "error", e);
 
-			String errorMessage = String.format("fail to get a %d 번째 output message::%s", i, e.getMessage());
+			String errorMessage = new StringBuilder()
+					.append("fail to get a ")
+					.append(i)
+					.append(" 번째 output message::errmsg=")
+					.append(e.getMessage()).toString();
 
 			fail(errorMessage);
 		}
@@ -620,11 +580,6 @@ public class AsynNoShareConnectionTest {
 			} catch (Exception e) {
 				log.log(Level.WARNING, "error", e);
 
-				/*
-				 * String errorMessage = String.format( "fail to get a output message::%s",
-				 * e.getMessage());
-				 */
-
 				// fail(errorMessage);
 			}
 
@@ -657,9 +612,9 @@ public class AsynNoShareConnectionTest {
 		} catch (Exception e) {
 			log.log(Level.WARNING, "error", e);
 
-			String errorMessage = String.format(
-					"fail to mapping configuration's item value to ProjectPartConfiguration's item value::%s",
-					e.getMessage());
+			String errorMessage = new StringBuilder()
+					.append("fail to mapping configuration's item value to ProjectPartConfiguration's item value::errmsg=")
+					.append(e.getMessage()).toString();
 
 			fail(errorMessage);
 		}

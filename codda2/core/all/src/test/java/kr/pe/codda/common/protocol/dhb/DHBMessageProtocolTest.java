@@ -34,11 +34,13 @@ import kr.pe.codda.common.protocol.MessageProtocolIF;
 import kr.pe.codda.common.protocol.ReceivedMessageForwarderIF;
 import kr.pe.codda.common.type.SelfExn;
 import kr.pe.codda.common.util.CommonStaticUtil;
-import kr.pe.codda.common.util.CustomLogFormatter;
+import kr.pe.codda.common.util.JDKLoggerCustomFormatter;
 import kr.pe.codda.impl.message.SelfExnRes.SelfExnRes;
 import kr.pe.codda.impl.message.SelfExnRes.SelfExnResEncoder;
 
 public class DHBMessageProtocolTest {
+	
+	private Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
 
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
@@ -52,7 +54,7 @@ public class DHBMessageProtocolTest {
 
 		Handler handler = new ConsoleHandler();
 
-		CustomLogFormatter formatter = new CustomLogFormatter();
+		JDKLoggerCustomFormatter formatter = new JDKLoggerCustomFormatter();
 		handler.setFormatter(formatter);
 
 		rootLogger.setLevel(Level.INFO);
@@ -71,6 +73,92 @@ public class DHBMessageProtocolTest {
 	public void tearDown() throws Exception {
 	}
 
+	@Test
+	public void testConstruct_theParameterDataPacketBufferMaxCntPerMessageIsLessThanOrEqulToZero() {
+		try {
+			new DHBMessageProtocol(0, null, null);
+			
+			fail("no IllegalArgumentException");
+		} catch(IllegalArgumentException e) {
+			String errorMessage = e.getMessage();
+			
+			log.info(errorMessage);
+			
+			String expectedErrorMessage = "the parameter dataPacketBufferMaxCntPerMessage[0] is less than or equal to zero";
+			
+			assertEquals(expectedErrorMessage, errorMessage);
+			
+		} catch(Exception e) {
+			log.log(Level.WARNING, e.getMessage(), e);
+			fail(e.getMessage());
+		}
+		
+		try {
+			new DHBMessageProtocol(-1, null, null);
+			
+			fail("no IllegalArgumentException");
+		} catch(IllegalArgumentException e) {
+			String errorMessage = e.getMessage();
+			
+			log.info(errorMessage);
+			
+			String expectedErrorMessage = "the parameter dataPacketBufferMaxCntPerMessage[-1] is less than or equal to zero";
+			
+			assertEquals(expectedErrorMessage, errorMessage);
+			
+		} catch(Exception e) {
+			log.log(Level.WARNING, e.getMessage(), e);
+			fail(e.getMessage());
+		}
+	}
+	
+	@Test
+	public void testConstruct_theParameterStreamCharsetFamilyIsNull() {
+		try {
+			new DHBMessageProtocol(1, null, null);
+			
+			fail("no IllegalArgumentException");
+		} catch(IllegalArgumentException e) {
+			String errorMessage = e.getMessage();
+			
+			log.info(errorMessage);
+			
+			String expectedErrorMessage = "the parameter streamCharsetFamily is null";
+			
+			assertEquals(expectedErrorMessage, errorMessage);
+			
+		} catch(Exception e) {
+			log.log(Level.WARNING, e.getMessage(), e);
+			fail(e.getMessage());
+		}
+	}
+	
+	
+	@Test
+	public void testConstruct_theParameterWrapBufferPoolIsNull() {
+		
+		StreamCharsetFamily streamCharsetFamily = new StreamCharsetFamily(Charset.forName("utf-8"));
+		
+		try {
+			new DHBMessageProtocol(1, streamCharsetFamily, null);
+			
+			fail("no IllegalArgumentException");
+		} catch(IllegalArgumentException e) {
+			String errorMessage = e.getMessage();
+			
+			log.info(errorMessage);
+			
+			String expectedErrorMessage = "the parameter wrapBufferPool is null";
+			
+			assertEquals(expectedErrorMessage, errorMessage);
+			
+		} catch(Exception e) {
+			log.log(Level.WARNING, e.getMessage(), e);
+			fail(e.getMessage());
+		}
+	}
+	
+	
 	@Test
 	public void testM2S_basic() {
 		Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);

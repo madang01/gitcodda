@@ -883,9 +883,14 @@ public class StreamBuffer {
 		}
 
 		if (strBytes.length > CommonStaticFinalVars.UNSIGNED_BYTE_MAX) {
-			String errorMessage = String.format(
-					"the length[%d] of bytes encoding the parameter src as a charset[%s] is greater than the unsigned byte max[%d]",
-					strBytes.length, wantedCharset.name(), CommonStaticFinalVars.UNSIGNED_BYTE_MAX);
+			String errorMessage = new StringBuilder()
+					.append("the length[")
+					.append(strBytes.length)
+					.append("] of bytes encoding the parameter src as a charset[")
+					.append(wantedCharset.name())
+					.append("] is greater than the unsigned byte max[")
+					.append(CommonStaticFinalVars.UNSIGNED_BYTE_MAX)
+					.append("]").toString();
 
 			throw new IllegalArgumentException(errorMessage);
 		}
@@ -929,9 +934,14 @@ public class StreamBuffer {
 		}
 
 		if (strBytes.length > CommonStaticFinalVars.UNSIGNED_SHORT_MAX) {
-			String errorMessage = String.format(
-					"the length[%d] of bytes encoding the parameter src as a charset[%s] is greater than the unsigned short max[%d]",
-					strBytes.length, wantedCharset.name(), CommonStaticFinalVars.UNSIGNED_SHORT_MAX);
+			String errorMessage = new StringBuilder()
+					.append("the length[")
+					.append(strBytes.length)
+					.append("] of bytes encoding the parameter src as a charset[")
+					.append(wantedCharset.name())
+					.append("] is greater than the unsigned short max[")
+					.append(CommonStaticFinalVars.UNSIGNED_SHORT_MAX)
+					.append("]").toString();
 
 			throw new IllegalArgumentException(errorMessage);
 		}

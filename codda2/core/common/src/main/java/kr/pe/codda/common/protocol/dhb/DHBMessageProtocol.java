@@ -84,7 +84,7 @@ public class DHBMessageProtocol implements MessageProtocolIF {
 
 		if (null == wrapBufferPool) {
 
-			throw new IllegalArgumentException("the parameter wrapBufferPoolManager is null");
+			throw new IllegalArgumentException("the parameter wrapBufferPool is null");
 		}
 
 		this.dataPacketBufferMaxCntPerMessage = dataPacketBufferMaxCntPerMessage;
@@ -135,6 +135,10 @@ public class DHBMessageProtocol implements MessageProtocolIF {
 
 		if (null == messageEncoder) {
 			throw new IllegalArgumentException("the parameter messageEncoder is null");
+		}
+		
+		if (null == targetStreamBuffer) {
+			throw new IllegalArgumentException("the parameter targetStreamBuffer is null");
 		}
 
 		
@@ -335,8 +339,12 @@ public class DHBMessageProtocol implements MessageProtocolIF {
 								acutalBodyMD5Bytes);
 
 						if (!isValidBodyMD5) {
-							String errorMessage = String.format("different body MD5, header[%s], body md5[%s]",
-									messageHeader.toString(), HexUtil.getHexStringFromByteArray(acutalBodyMD5Bytes));
+							String errorMessage = new StringBuilder()
+									.append("different body MD5, header[")
+									.append(messageHeader.toString())
+									.append("], body md5[")
+									.append(HexUtil.getHexStringFromByteArray(acutalBodyMD5Bytes))
+									.append("]").toString();
 
 							throw new HeaderFormatException(errorMessage);
 						}

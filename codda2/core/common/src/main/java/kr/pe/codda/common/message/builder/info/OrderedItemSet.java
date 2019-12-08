@@ -16,7 +16,10 @@ public class OrderedItemSet {
 		}
 		
 		if (isRegisted(itemInfo.getItemName())) {
-			String errorMessage = String.format("the parameter itemInfo[%s] was registed", itemInfo.toString());
+			String errorMessage = new StringBuilder()
+					.append("the parameter itemInfo[")
+					.append(itemInfo.toString())
+					.append(" was registed").toString();
 			throw new IllegalArgumentException(errorMessage);
 		}
 

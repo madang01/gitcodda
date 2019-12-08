@@ -20,13 +20,25 @@ public class SingleItemTypeTest {
 			try {
 				arrayOfSingleItemTypeID[singleItemTypeID]=singleItemTypeID;
 			} catch(IndexOutOfBoundsException e) {
-				fail(String.format("singleItemType[%s] is bad, singleItemTypeID[%d] is out of the range[0 ~ %d]", singleItemType.toString(), singleItemTypeID, singleItemTypes.length-1));
+				String errorMessage = new StringBuilder()
+						.append("singleItemType[")
+						.append(singleItemType.toString())
+						.append("] is bad, singleItemTypeID[")
+						.append(singleItemTypeID)
+						.append("] is out of the range[0 ~ ")
+						.append(singleItemTypes.length - 1)
+						.append("]").toString();				
+				fail(errorMessage);
 			}
 		}
 		for (int i=0; i < arrayOfSingleItemTypeID.length; i++) {
 			int singleItemTypeID = arrayOfSingleItemTypeID[i];
 			if (-1 == singleItemTypeID) {
-				fail(String.format("the singleItemTypeID[%d] is not found", i));
+				String errorMessage = new StringBuilder()
+						.append("the singleItemTypeID[")
+						.append(i)
+						.append("] is not found").toString();
+				fail(errorMessage);
 			}
 		}
 	}

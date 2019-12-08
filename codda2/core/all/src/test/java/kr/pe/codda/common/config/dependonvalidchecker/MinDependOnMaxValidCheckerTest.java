@@ -24,7 +24,7 @@ import kr.pe.codda.common.config.nativevalueconverter.GeneralConverterReturningI
 import kr.pe.codda.common.config.nativevalueconverter.GeneralConverterReturningLongBetweenMinAndMax;
 import kr.pe.codda.common.etc.CommonStaticFinalVars;
 import kr.pe.codda.common.exception.CoddaConfigurationException;
-import kr.pe.codda.common.util.CustomLogFormatter;
+import kr.pe.codda.common.util.JDKLoggerCustomFormatter;
 
 public class MinDependOnMaxValidCheckerTest {
 	private static Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
@@ -48,7 +48,7 @@ public class MinDependOnMaxValidCheckerTest {
 
 		Handler handler = new ConsoleHandler();
 
-		CustomLogFormatter formatter = new CustomLogFormatter();
+		JDKLoggerCustomFormatter formatter = new JDKLoggerCustomFormatter();
 		handler.setFormatter(formatter);
 
 		rootLogger.setLevel(Level.INFO);

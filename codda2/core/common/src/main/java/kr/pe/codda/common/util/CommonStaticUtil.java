@@ -204,25 +204,41 @@ public abstract class CommonStaticUtil {
 
 		File sourcePath = new File(sourcePathString);
 		if (!sourcePath.exists()) {
-			String errorMessage = String.format("The path[%s] doesn't exist", sourcePathString);
+			String errorMessage = new StringBuilder()
+					.append("the parameter sourcePathString[")
+					.append(sourcePathString)
+					.append("] is path that does not exist")
+					.toString();
 			throw new RuntimeException(errorMessage);
 		}
 
 		if (!sourcePath.isDirectory()) {
-			String errorMessage = String.format("The path[%s] is not a directory", sourcePathString);
+			String errorMessage = new StringBuilder()
+					.append("the parameter sourcePathString[")
+					.append(sourcePathString)
+					.append("] is path that is not a directory")
+					.toString();
 			throw new RuntimeException(errorMessage);
 		}
 
 		if (readWriteMode.equals(ReadWriteMode.ONLY_READ) || readWriteMode.equals(ReadWriteMode.READ_WRITE)) {
 			if (!sourcePath.canRead()) {
-				String errorMessage = String.format("The path[%s] has a permission to read", sourcePathString);
+				String errorMessage = new StringBuilder()
+						.append("the parameter sourcePathString[")
+						.append(sourcePathString)
+						.append("] is a unreadable path")
+						.toString();
 				throw new RuntimeException(errorMessage);
 			}
 		}
 
 		if (readWriteMode.equals(ReadWriteMode.ONLY_WRITE) || readWriteMode.equals(ReadWriteMode.READ_WRITE)) {
 			if (!sourcePath.canWrite()) {
-				String errorMessage = String.format("The path[%s] has a permission to write", sourcePathString);
+				String errorMessage = new StringBuilder()
+						.append("the parameter sourcePathString[")
+						.append(sourcePathString)
+						.append("] is a unwritable path")
+						.toString();
 				throw new RuntimeException(errorMessage);
 			}
 		}
@@ -242,18 +258,28 @@ public abstract class CommonStaticUtil {
 		}
 
 		boolean isSuccess = targetFile.createNewFile();
-		if (!isSuccess) {
-			String errorMessage = String.format("the file[%s] exist", targetFile.getAbsolutePath());
+		if (! isSuccess) {
+			String errorMessage = new StringBuilder()
+					.append("the parameter targetFile[")
+					.append(targetFile.getAbsolutePath())
+					.append("] is file that already exist")
+					.toString();
 			throw new FileNotFoundException(errorMessage);
 		}
 
 		if (!targetFile.isFile()) {
-			String errorMessage = String.format("the file[%s] is not a regular file", targetFile.getAbsolutePath());
+			String errorMessage = new StringBuilder()
+					.append("the parameter targetFile[")
+					.append(targetFile.getAbsolutePath())
+					.append("] is not regular file")
+					.toString();
 			throw new IOException(errorMessage);
 		}
 
 		if (!targetFile.canWrite()) {
-			String errorMessage = String.format("the file[%s] can not be written", targetFile.getAbsolutePath());
+			String errorMessage = new StringBuilder().append("the parameter targetFile[")
+					.append(targetFile.getAbsolutePath())
+					.append("] is a unwritable file").toString();
 			throw new IOException(errorMessage);
 		}
 		FileOutputStream fos = null;
@@ -288,17 +314,29 @@ public abstract class CommonStaticUtil {
 		}
 
 		if (!targetFile.exists()) {
-			String errorMessage = String.format("the file[%s] doesn't exist", targetFile.getAbsolutePath());
+			String errorMessage = new StringBuilder()
+					.append("the parameter targetFile[")
+					.append(targetFile.getAbsolutePath())
+					.append("] does not exist")
+					.toString();
 			throw new IOException(errorMessage);
 		}
 
 		if (!targetFile.isFile()) {
-			String errorMessage = String.format("the file[%s] is not a regular file", targetFile.getAbsolutePath());
+			String errorMessage = new StringBuilder()
+					.append("the parameter targetFile[")
+					.append(targetFile.getAbsolutePath())
+					.append("] is not a regular file")
+					.toString();
 			throw new IOException(errorMessage);
 		}
 
 		if (!targetFile.canWrite()) {
-			String errorMessage = String.format("the file[%s] can not be written", targetFile.getAbsolutePath());
+			String errorMessage = new StringBuilder()
+					.append("the parameter targetFile[")
+					.append(targetFile.getAbsolutePath())
+					.append("] is a unwritable file")
+					.toString();
 			throw new IOException(errorMessage);
 		}
 		FileOutputStream fos = null;
@@ -341,12 +379,17 @@ public abstract class CommonStaticUtil {
 
 	public static String getPrefixWithTabCharacters(int depth, int numberOfAdditionalTabs) {
 		if (depth < 0) {
-			String errorMessage = String.format("the parameter depth[%d] is less than zero", depth);
+			String errorMessage = new StringBuilder()
+					.append("the parameter depth[")
+					.append(depth)
+					.append("] is less than zero").toString();
 			throw new IllegalArgumentException(errorMessage);
 		}
 		if (numberOfAdditionalTabs < 0) {
-			String errorMessage = String.format("the parameter numberOfAdditionalTabs[%d] is less than zero",
-					numberOfAdditionalTabs);
+			String errorMessage = new StringBuilder()
+					.append("the numberOfAdditionalTabs depth[")
+					.append(numberOfAdditionalTabs)
+					.append("] is less than zero").toString();
 			throw new IllegalArgumentException(errorMessage);
 		}
 		StringBuilder stringBuilder = new StringBuilder();
@@ -358,13 +401,22 @@ public abstract class CommonStaticUtil {
 
 	public static void addPrefixWithTabCharacters(StringBuilder contentsStringBuilder, int depth,
 			int numberOfAdditionalTabs) {
+		if (null == contentsStringBuilder) {
+			throw new IllegalArgumentException("the parameter contentsStringBuilder is null");
+		}
+		
 		if (depth < 0) {
-			String errorMessage = String.format("the parameter depth[%d] is less than zero", depth);
+			String errorMessage = new StringBuilder()
+					.append("the parameter depth[")
+					.append(depth)
+					.append("] is less than zero").toString();
 			throw new IllegalArgumentException(errorMessage);
 		}
 		if (numberOfAdditionalTabs < 0) {
-			String errorMessage = String.format("the parameter numberOfAdditionalTabs[%d] is less than zero",
-					numberOfAdditionalTabs);
+			String errorMessage = new StringBuilder()
+					.append("the numberOfAdditionalTabs depth[")
+					.append(numberOfAdditionalTabs)
+					.append("] is less than zero").toString();
 			throw new IllegalArgumentException(errorMessage);
 		}
 

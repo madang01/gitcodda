@@ -19,7 +19,10 @@ protected Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
 
 	public ConnectionPoolSupporter(long wakeupInterval) {
 		if (wakeupInterval <= 0) {
-			String errorMessage = String.format("the parameter wakeupInterval[%d] is less than or equal to zero", wakeupInterval);
+			String errorMessage = new StringBuilder()
+					.append("the parameter wakeupInterval[")
+					.append(wakeupInterval)
+					.append("] is less than or equal to zero").toString();
 			throw new IllegalArgumentException(errorMessage);
 		}
 		this.wakeupInterval = wakeupInterval;

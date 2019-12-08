@@ -69,7 +69,10 @@ public class ArrayInfo extends AbstractItemInfo {
 		}
 		
 		if (arrayName.length() < 2) {
-			String errorMessage = String.format("the number[%d] of character of the parameter arrayName is less than two", arrayName.length());
+			String errorMessage = new StringBuilder()
+					.append("the number[")
+					.append(arrayName.length())
+					.append("] of character of the parameter arrayName is less than two").toString();
 			throw new IllegalArgumentException(errorMessage);
 		}
 		

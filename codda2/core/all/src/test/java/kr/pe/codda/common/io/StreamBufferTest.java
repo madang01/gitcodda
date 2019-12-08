@@ -28,7 +28,7 @@ import org.junit.Test;
 
 import kr.pe.codda.common.etc.CommonStaticFinalVars;
 import kr.pe.codda.common.etc.StreamCharsetFamily;
-import kr.pe.codda.common.util.CustomLogFormatter;
+import kr.pe.codda.common.util.JDKLoggerCustomFormatter;
 import kr.pe.codda.common.util.HexUtil;
 
 public class StreamBufferTest {
@@ -47,7 +47,7 @@ public class StreamBufferTest {
 
 		Handler handler = new ConsoleHandler();
 
-		CustomLogFormatter formatter = new CustomLogFormatter();
+		JDKLoggerCustomFormatter formatter = new JDKLoggerCustomFormatter();
 		handler.setFormatter(formatter);
 
 		rootLogger.setLevel(Level.INFO);

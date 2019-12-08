@@ -21,12 +21,18 @@ public class ServerClassLoaderFactory {
 		File serverAPPINFClassPath = new File(serverAPPINFClassPathString);
 		
 		if (! serverAPPINFClassPath.exists()) {
-			String errorMessage = String.format("the server APP-INF class path[%s] doesn't exist", serverAPPINFClassPathString);
+			String errorMessage = new StringBuilder()
+					.append("the path whose path is the parameter serverAPPINFClassPathString[")
+					.append(serverAPPINFClassPathString)
+					.append("] do not exist").toString();
 		 	throw new CoddaConfigurationException(errorMessage);
 		}
 		
 		if (! serverAPPINFClassPath.isDirectory()) {
-			String errorMessage = String.format("the server APP-INF class path[%s] isn't a directory", serverAPPINFClassPathString);
+			String errorMessage = new StringBuilder()
+					.append("the path whose path is the parameter serverAPPINFClassPathString[")
+					.append(serverAPPINFClassPathString)
+					.append("] isn't a directory").toString();
 		 	throw new CoddaConfigurationException(errorMessage);
 		}
 		
@@ -37,12 +43,18 @@ public class ServerClassLoaderFactory {
 		File projectResourcesPath = new File(projectResourcesPathString);
 		
 		if (! projectResourcesPath.exists()) {
-			String errorMessage = String.format("the project resources path[%s] doesn't exist", projectResourcesPathString);
+			String errorMessage = new StringBuilder()
+					.append("the path whose path is the parameter projectResourcesPathString[")
+					.append(projectResourcesPathString)
+					.append("] doesn't exist").toString();
 		 	throw new CoddaConfigurationException(errorMessage);
 		}
 		
 		if (! projectResourcesPath.isDirectory()) {
-			String errorMessage = String.format("the project resources path[%s] isn't a directory", projectResourcesPathString);
+			String errorMessage = new StringBuilder()
+					.append("the path whose path is the parameter projectResourcesPathString[")
+					.append(projectResourcesPathString)
+					.append("] isn't a directory").toString();
 		 	throw new CoddaConfigurationException(errorMessage);
 		}
 		

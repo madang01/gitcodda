@@ -13,7 +13,10 @@ public class GroupInfo extends AbstractItemInfo {
 		}
 		
 		if (groupName.length() < 2) {
-			String errorMessage = String.format("the number[%d] of character of the parameter groupName is less than two", groupName.length());
+			String errorMessage = new StringBuilder()
+					.append("the number[")
+					.append(groupName.length())
+					.append("] of character of the parameter groupName is less than two").toString();
 			throw new IllegalArgumentException(errorMessage);
 		}
 		

@@ -16,7 +16,7 @@ import org.junit.Test;
 
 import kr.pe.codda.common.config.itemidinfo.ItemIDDefiner;
 import kr.pe.codda.common.config.itemidinfo.ItemIDInfoManger;
-import kr.pe.codda.common.util.CustomLogFormatter;
+import kr.pe.codda.common.util.JDKLoggerCustomFormatter;
 
 public class ItemIDInfoMangerTest {
 	// private Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
@@ -33,7 +33,7 @@ public class ItemIDInfoMangerTest {
 
 		Handler handler = new ConsoleHandler();
 
-		CustomLogFormatter formatter = new CustomLogFormatter();
+		JDKLoggerCustomFormatter formatter = new JDKLoggerCustomFormatter();
 		handler.setFormatter(formatter);
 
 		rootLogger.setLevel(Level.INFO);

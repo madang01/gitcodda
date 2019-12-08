@@ -466,16 +466,19 @@ public class THBSingleItemDecoderMatcher implements THBSingleItemDecoderMatcherI
 				String nativeItemCharset, StreamBuffer binaryInputStream) throws Exception {
 			throwExceptionIfItemTypeIsDifferent(itemTypeID, itemName, binaryInputStream);
 			
-			byte booleanByte = binaryInputStream.getByte();
+			byte itemValue = binaryInputStream.getByte();
 			
-			if (booleanByte != 0 && booleanByte != 1) {
-				String errorMesssage = String.format("boolean 타입의 항목 값은 참을 뜻하는 1과 거짓을 뜻하는 0 을 갖습니다." +
-						"%sboolean 타입의 항목[%s] 값[%d]이 잘못되었습니다. ", 
-						CommonStaticFinalVars.NEWLINE, itemName, booleanByte);
+			if (itemValue != 0 && itemValue != 1) {
+				String errorMesssage = new StringBuilder()
+						.append("this boolean type single item[")
+						.append(itemName)
+						.append("]'s value[")
+						.append(itemValue)
+						.append("] is bad, boolean type's value must be zero or one").toString();
 				throw new BodyFormatException(errorMesssage);
 			}
 				
-			return (0 != booleanByte);
+			return (0 != itemValue);
 		}
 		
 		public SingleItemType getSingleItemType() {

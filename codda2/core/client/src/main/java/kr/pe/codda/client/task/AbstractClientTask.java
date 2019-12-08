@@ -1,5 +1,6 @@
 package kr.pe.codda.client.task;
 
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -18,7 +19,6 @@ public abstract class AbstractClientTask {
 	protected Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
 	
 	private ClassLoader taskClassLoader = this.getClass().getClassLoader();
-	// private MessageCodecIF clientOutputMessageCodec = null;
 	private final AbstractMessageDecoder outputMessageDecoder;
 	
 	public AbstractClientTask() throws DynamicClassCallException {
@@ -61,6 +61,8 @@ public abstract class AbstractClientTask {
 			log.log(Level.WARNING, errorMessage, e);
 			return;
 		}
+		
+		long startTime = System.nanoTime();
 
 		try {
 			doTask(projectName, asynConnection, outputMessage);
@@ -81,10 +83,16 @@ public abstract class AbstractClientTask {
 
 			log.log(Level.WARNING, errorReason, e);
 			return;
+		} finally {
+			long endTime = System.nanoTime();
+			String infoMessage = new StringBuilder().append("this client task[")
+					.append(messageID)
+					.append("] elapsed time[")
+					.append(TimeUnit.MICROSECONDS.convert((endTime - startTime), TimeUnit.NANOSECONDS))
+					.append(" ms]").toString();
+			log.info(infoMessage);
 		}
-
-		// long lastErraseTime = new java.util.Date().getTime() - firstErraseTime;
-		// log.info(String.format("수행 시간=[%f] ms", (float) lastErraseTime));
+		
 	}
 
 	abstract public void doTask(String projectName, AsynConnectionIF asynConnection, AbstractMessage outputMessage)

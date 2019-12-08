@@ -1,0 +1,60 @@
+package kr.pe.codda.impl.task.server;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+
+import java.util.concurrent.TimeUnit;
+
+import org.junit.Test;
+
+import junitlib.AbstractBoardTest;
+import kr.pe.codda.common.exception.DynamicClassCallException;
+import kr.pe.codda.impl.message.ArraySiteMenuReq.ArraySiteMenuReq;
+import kr.pe.codda.impl.message.ArraySiteMenuRes.ArraySiteMenuRes;
+
+public class ArraySiteMenuReqServerTaskTest extends AbstractBoardTest {
+	// final static String TEST_DBCP_NAME = ServerCommonStaticFinalVars.DEFAULT_DBCP_NAME;
+	
+
+	@Test
+	public void testDoService_메뉴레코드유효성검증() {
+		String requestedUserID = "admin";
+		
+		ArraySiteMenuReq arraySiteMenuReq = new ArraySiteMenuReq();
+		arraySiteMenuReq.setRequestedUserID(requestedUserID);
+		
+		ArraySiteMenuReqServerTask arraySiteMenuReqServerTask = null;
+		try {
+			arraySiteMenuReqServerTask = new ArraySiteMenuReqServerTask();
+		} catch (DynamicClassCallException e1) {
+			fail("dead code");
+		}
+		
+		
+		try {
+			long startTime = 0;
+			long endTime = 0;
+			startTime = System.nanoTime();
+			
+			ArraySiteMenuRes arraySiteMenuRes = arraySiteMenuReqServerTask.doWork(TEST_DBCP_NAME, arraySiteMenuReq);
+			
+			endTime = System.nanoTime();
+			
+			log.info("elapsed={}", TimeUnit.MILLISECONDS.convert((endTime - startTime), TimeUnit.NANOSECONDS)); 
+			
+			int expectedOrderSequence = 0;
+			for (ArraySiteMenuRes.Menu menu : arraySiteMenuRes.getMenuList()) {
+				assertEquals("메뉴 순서가 잘못되었습니다", expectedOrderSequence, menu.getOrderSeq());
+				expectedOrderSequence++;
+			}
+						
+			
+		} catch (Exception e) {
+			log.warn(e.getMessage(), e);
+			fail("unknown error");
+		}
+		
+		
+	}
+
+}

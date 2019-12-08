@@ -24,7 +24,8 @@ public class JarUtil {
 		File[] jarExtensionFileList = getJarExtensionFileList(jarLibrayPathString);
 		
 		if (null == jarExtensionFileList) {
-			String errorMessage = String.format("fail to get a jar file short name list in jarLibrayPathName[%s]", jarLibrayPathString);
+			String errorMessage = new StringBuilder()
+					.append("fail to get a jar file short name list in path that is the parameter jarLibrayPathString").toString();
 			Logger.getLogger("JarUtil").log(Level.WARNING, errorMessage);
 			throw new RuntimeException(errorMessage);
 		}
@@ -36,9 +37,10 @@ public class JarUtil {
 			try {
 				jarFile = new JarFile(jarExtensionFile);
 			} catch (IOException e1) {
-				String errorMessage = String.format("fail to create JarFile.class instance using the jar extension file[%s]",						
-						 jarExtensionFile.getAbsolutePath());
-				
+				String errorMessage = new StringBuilder()
+						.append("fail to create JarFile.class instance using the jar extension file[")
+						.append(jarExtensionFile.getAbsolutePath())
+						.append("]").toString();				
 				Logger.getLogger("JarTestMain").log(Level.WARNING, errorMessage);
 				continue;
 			}
@@ -53,23 +55,27 @@ public class JarUtil {
 					long jarEntrySize = jarEntry.getSize();
 					String jarEntryName = jarEntry.getName();
 					if (jarEntrySize > CommonStaticFinalVars.MAX_FILE_SIZE_IN_JAR_FILE) {
-						String errorMessage = String.format("the size[%d] of class file[%s] in jar file[%s] is larger than max size=[%d]", 
-								 jarEntrySize, jarEntryName, 
-								 jarExtensionFile.getAbsolutePath(), CommonStaticFinalVars.MAX_FILE_SIZE_IN_JAR_FILE);
+						String errorMessage = new StringBuilder()
+								.append("the size[")
+								.append(jarEntrySize)
+								.append("] of class file[")
+								.append(jarEntryName)
+								.append("] in jar file[")
+								.append(jarExtensionFile.getAbsolutePath())
+								.append("] is larger than max size=[")
+								.append(CommonStaticFinalVars.MAX_FILE_SIZE_IN_JAR_FILE)
+								.append("]").toString();
 						
 						Logger.getLogger("JarTestMain").log(Level.WARNING, errorMessage);
 						continue;
 					}
 					
 					if (jarEntryName.endsWith(".class")) {
-						/** class �뙆�씪留� */					
+											
 						int inx = jarEntryName.lastIndexOf(".class");
 						
 						String classFullName = jarEntryName.substring(0, inx).replace('/', '.');
 						
-						/*Logger.getLogger("JarUtil").log(Level.INFO, 
-								String.format("in JarFIle[%s], fileName=[%s], fileSize=[%d], className=[%s]", 
-										jarFileShortName, fileName, fileSize, className));*/
 						
 						int classFileBufferSize = (int)jarEntrySize;
 						byte[] classFileBuffer = new byte[classFileBufferSize];
@@ -80,11 +86,20 @@ public class JarUtil {
 						try {							
 							is = jarFile.getInputStream(jarEntry);	
 							
-							int firstAvailable = is.available();
-							if (firstAvailable != classFileBufferSize) {
-								Logger.getLogger("JarUtil").log(Level.WARNING, 
-	String.format("In JarFile[%s], the size[%d] of the fileName=[%s] is not same to the total number[%d] of bytes read into the buffer", 
-			jarExtensionFile.getAbsolutePath(), jarEntrySize, jarEntryName, firstAvailable));
+							int inputStreamSize = is.available();
+							if (inputStreamSize != classFileBufferSize) {
+								String errorMessage = new StringBuilder()
+										.append("the jar[")
+										.append(jarExtensionFile.getAbsolutePath())
+										.append("] entry[")
+										.append(jarEntryName)
+										.append("]'s input stream size[")
+										.append(inputStreamSize)
+										.append("] is different from jar entry size[")										
+										.append(jarEntrySize)
+										.append("]").toString();
+								
+								Logger.getLogger("JarUtil").warning(errorMessage);
 								continue;
 							}
 							
@@ -92,10 +107,19 @@ public class JarUtil {
 								int readBytes = is.read(classFileBuffer, offset, len);
 								offset += readBytes;
 								len -= readBytes;
-								if (0 > len) {
-									Logger.getLogger("JarUtil").log(Level.WARNING, 
-										String.format("In JarFile[%s], the size[%d] of the fileName=[%s] is not same to the total number[%d] of bytes read into the buffer", 
-												jarExtensionFile.getAbsolutePath(), jarEntrySize, jarEntryName, readBytes));
+								if (len < 0) {
+									String errorMessage = new StringBuilder()
+											.append("the jar[")
+											.append(jarExtensionFile.getAbsolutePath())
+											.append("] entry[")
+											.append(jarEntryName)
+											.append("]'s read bytes[")
+											.append(offset)
+											.append("] is greater than jar entry size[")										
+											.append(jarEntrySize)
+											.append("]").toString();
+									
+									Logger.getLogger("JarUtil").warning(errorMessage);
 								}
 							} while (is.available() > 0);
 							
@@ -113,11 +137,17 @@ public class JarUtil {
 					}
 				}
 			} catch (IOException e) {
-				String errorMessage = String.format("fail to make a hash map in jarFilePathName[%s]", jarExtensionFile.getAbsolutePath());
+				String errorMessage = new StringBuilder()
+						.append("fail to create a jar[")
+						.append(jarExtensionFile.getAbsolutePath())
+						.append("] entry contents hash map bease of IOException").toString();
 				Logger.getLogger("JarUtil").log(Level.WARNING, errorMessage, e);
 				continue;
 			} catch (Exception e) {
-				String errorMessage = String.format("unknown error in jarFilePathName[%s]", jarExtensionFile.getAbsolutePath());
+				String errorMessage = new StringBuilder()
+						.append("fail to create a jar[")
+						.append(jarExtensionFile.getAbsolutePath())
+						.append("] entry contents hash map bease of unknown error").toString();
 				Logger.getLogger("JarUtil").log(Level.WARNING, errorMessage, e);
 				continue;
 			} finally {
@@ -137,17 +167,27 @@ public class JarUtil {
 	private static File[] getJarExtensionFileList(String jarLibrayPathString) throws FileNotFoundException {		
 		File jarLibrayPath = new File(jarLibrayPathString);
 		if (!jarLibrayPath.exists()) {
-			String errorMessage = String.format("jarLibrayPathName[%s] not exist", jarLibrayPathString);
+			String errorMessage = new StringBuilder()
+					.append("the file whose path is the parameter jarLibrayPathString[")
+					.append(jarLibrayPathString)
+					.append("] do not exist").toString();
+			
 			throw new FileNotFoundException(errorMessage);
 		}
 		
 		if (!jarLibrayPath.isDirectory()) {
-			String errorMessage = String.format("jarLibrayPathName[%s] is not a directory", jarLibrayPathString);
+			String errorMessage = new StringBuilder()
+					.append("the file whose path is the parameter jarLibrayPathString[")
+					.append(jarLibrayPathString)
+					.append("] is not a directory").toString();
 			throw new FileNotFoundException(errorMessage);
 		}
 		
 		if (!jarLibrayPath.canRead()) {
-			String errorMessage = String.format("jarLibrayPathName[%s] can't read", jarLibrayPathString);
+			String errorMessage = new StringBuilder()
+					.append("the file whose path is the parameter jarLibrayPathString[")
+					.append(jarLibrayPathString)
+					.append("] is a unreadable file").toString();
 			throw new FileNotFoundException(errorMessage);
 		}
 		

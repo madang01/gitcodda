@@ -15,7 +15,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import kr.pe.codda.common.etc.CommonStaticFinalVars;
-import kr.pe.codda.common.util.CustomLogFormatter;
+import kr.pe.codda.common.util.JDKLoggerCustomFormatter;
 
 public class GeneralConverterReturningEmptyOrNoTrimStringTest {
 	private Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
@@ -36,7 +36,7 @@ public class GeneralConverterReturningEmptyOrNoTrimStringTest {
 
 		Handler handler = new ConsoleHandler();
 
-		CustomLogFormatter formatter = new CustomLogFormatter();
+		JDKLoggerCustomFormatter formatter = new JDKLoggerCustomFormatter();
 		handler.setFormatter(formatter);
 
 		rootLogger.setLevel(Level.INFO);

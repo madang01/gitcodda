@@ -29,7 +29,7 @@ import kr.pe.codda.common.type.ConnectionType;
 import kr.pe.codda.common.type.MessageProtocolType;
 import kr.pe.codda.common.type.ProjectType;
 import kr.pe.codda.common.util.CommonStaticUtil;
-import kr.pe.codda.common.util.CustomLogFormatter;
+import kr.pe.codda.common.util.JDKLoggerCustomFormatter;
 import kr.pe.codda.impl.classloader.ClientMessageCodecManger;
 import kr.pe.codda.impl.message.Empty.Empty;
 import kr.pe.codda.server.AnyProjectServer;
@@ -56,7 +56,7 @@ public class SyncNoShareConnectionTest {
 
 		Handler handler = new ConsoleHandler();
 
-		CustomLogFormatter formatter = new CustomLogFormatter();
+		JDKLoggerCustomFormatter formatter = new JDKLoggerCustomFormatter();
 		handler.setFormatter(formatter);
 
 		rootLogger.setLevel(Level.INFO);
@@ -217,9 +217,9 @@ public class SyncNoShareConnectionTest {
 		} catch (Exception e) {
 			log.log(Level.WARNING, "error", e);
 
-			String errorMessage = String.format(
-					"fail to mapping configuration's item value to ProjectPartConfiguration's item value::%s",
-					e.getMessage());
+			String errorMessage = new StringBuilder()
+					.append("fail to mapping configuration's item value to ProjectPartConfiguration's item value::errmsg=")
+					.append(e.getMessage()).toString();
 
 			fail(errorMessage);
 		}
@@ -278,7 +278,9 @@ public class SyncNoShareConnectionTest {
 		} catch (Exception e) {
 			log.log(Level.WARNING, "error", e);
 
-			String errorMessage = String.format("fail to get a output message::%s", e.getMessage());
+			String errorMessage = new StringBuilder()
+					.append("fail to get a output message::errmsg=")
+					.append(e.getMessage()).toString();
 
 			fail(errorMessage);
 		}

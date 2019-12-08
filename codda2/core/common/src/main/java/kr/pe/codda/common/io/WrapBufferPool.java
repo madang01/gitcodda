@@ -26,15 +26,18 @@ public class WrapBufferPool implements WrapBufferPoolIF {
 		}
 
 		if (dataPacketBufferSize <= 0) {
-			String errorMessage = String.format("the parameter dataPacketBufferSize[%d] is less than or equal to zero",
-					dataPacketBufferSize);
+			String errorMessage = new StringBuilder()
+					.append("the parameter dataPacketBufferSize[")
+					.append(dataPacketBufferSize)
+					.append("] is less than or equal to zero").toString();
 			throw new IllegalArgumentException(errorMessage);
 		}
 
 		if (capacity <= 0) {
-			String errorMessage = String.format(
-					"the parameter capacity[%d] is less than or equal to zero",
-					capacity);
+			String errorMessage = new StringBuilder()
+					.append("the parameter capacity[")
+					.append(capacity)
+					.append("] is less than or equal to zero").toString();
 			throw new IllegalArgumentException(errorMessage);
 		}
 
@@ -98,8 +101,10 @@ public class WrapBufferPool implements WrapBufferPoolIF {
 		}
 		
 		if (! dataPacketBuffer.isPoolBuffer()) {
-			String errorMessage = String.format("the parameter dataPacketBuffer[%d] is not a pool wrap buffer",
-					dataPacketBuffer.hashCode());
+			String errorMessage = new StringBuilder()
+					.append("the parameter dataPacketBuffer[")
+					.append(dataPacketBuffer.hashCode())
+					.append("] is not a wrap buffer of this wrapbuffer pool").toString();
 			// log.warn(errorMessage, new Throwable(errorMessage));
 			Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
 			log.log(Level.WARNING, errorMessage, new Throwable(errorMessage));
@@ -113,9 +118,10 @@ public class WrapBufferPool implements WrapBufferPoolIF {
 		 */
 		synchronized (monitor) {
 			if (dataPacketBuffer.isInQueue()) {
-				String errorMessage = String.format(
-						"the parameter dataPacketBuffer[%d] was added to the wrap buffer polling queue",
-						dataPacketBuffer.hashCode());
+				String errorMessage = new StringBuilder()
+						.append("the parameter dataPacketBuffer[")
+						.append(dataPacketBuffer.hashCode())
+						.append("] already was returned in this wrapbuffer pool").toString();
 				// log.warn(errorMessage, new Throwable(errorMessage));
 				Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
 				log.log(Level.WARNING, errorMessage, new Throwable(errorMessage));

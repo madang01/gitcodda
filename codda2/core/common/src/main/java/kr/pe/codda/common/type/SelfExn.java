@@ -81,8 +81,10 @@ public abstract class SelfExn {
 			} else if (errorTypeClass.equals(IOException.class)) {
 				return ClientIOException;
 			} else {
-				String errorMessage = String.format("the parameter errorTypeClass[%s] is not 1: 1 class corresponding to error type", 
-						errorTypeClass.getCanonicalName());
+				String errorMessage = new StringBuilder()
+						.append("the parameter errorTypeClass[")
+						.append(errorTypeClass.getCanonicalName())
+						.append("] is not 1: 1 class corresponding to error type").toString();
 				throw new IllegalArgumentException(errorMessage);
 			}
 		}

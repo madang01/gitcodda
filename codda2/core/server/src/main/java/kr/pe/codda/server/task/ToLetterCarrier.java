@@ -257,14 +257,20 @@ public class ToLetterCarrier {
 		SelectionKey loginIDSelectionKey = projectLoginManager.getSelectionKey(toLoginID);
 		
 		if (null == loginIDSelectionKey) {
-			String errorMessage = String.format("the user who has the parameter loginUserID[%s] is not a member or doens't login", toLoginID);
+			String errorMessage = new StringBuilder()
+					.append("the user who has the parameter loginUserID[")
+					.append(toLoginID)
+					.append("] is not a member or doens't login").toString();
 			throw new LoginUserNotFoundException(errorMessage);
 		}
 		
 		Object attachedObject = loginIDSelectionKey.attachment();	
 		
 		if (null == attachedObject) {
-			String errorMessage = String.format("the user who has the parameter loginUserID[%s] was disconnected", toLoginID);
+			String errorMessage = new StringBuilder()
+					.append("the user who has the parameter loginUserID[")
+					.append(toLoginID)
+					.append("] was disconnected").toString();			
 			throw new LoginUserNotFoundException(errorMessage);
 		}
 		

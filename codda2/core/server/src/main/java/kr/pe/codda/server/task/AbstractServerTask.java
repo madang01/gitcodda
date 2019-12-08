@@ -18,6 +18,7 @@
 package kr.pe.codda.server.task;
 
 import java.util.HashMap;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -52,7 +53,7 @@ import kr.pe.codda.server.ProjectLoginManagerIF;
  * 
  */
 public abstract class AbstractServerTask implements MessageEncoderManagerIF {
-	protected Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
+	// protected Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
 	
 	private ClassLoader taskClassLoader = this.getClass().getClassLoader();
 	// private MessageCodecIF serverInputMessageCodec = null;
@@ -144,6 +145,7 @@ public abstract class AbstractServerTask implements MessageEncoderManagerIF {
 		/*log.info("classLoader[{}], serverTask[{}], create new messageDecoder", 
 				classLoaderOfSererTask.hashCode(),
 				inputMessageID);*/
+		long startTime = System.nanoTime();
 			
 		AbstractMessage inputMessage = null;
 		try {
@@ -163,6 +165,7 @@ public abstract class AbstractServerTask implements MessageEncoderManagerIF {
 			String errorReason = new StringBuilder(errorMessage)
 					.append(", errmsg=").append(e.getMessage()).toString();
 			
+			Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
 			log.log(Level.WARNING, errorReason);
 			
 			ToLetterCarrier.putInputErrorMessageToOutputMessageQueue( 
@@ -184,6 +187,7 @@ public abstract class AbstractServerTask implements MessageEncoderManagerIF {
 			SelfExn.ErrorType errorType = SelfExn.ErrorType.valueOf(BodyFormatException.class);
 			String errorReason = errorMessage;
 			
+			Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
 			log.log(Level.WARNING, errorReason, e);
 			
 			ToLetterCarrier.putInputErrorMessageToOutputMessageQueue( 
@@ -200,7 +204,7 @@ public abstract class AbstractServerTask implements MessageEncoderManagerIF {
 				projectLoginManager,
 				messageProtocol,
 				this);				
-
+		
 		try {
 			doTask(projectName, fromPersonalLoginManager, toLetterCarrier, inputMessage);
 		} catch (InterruptedException e) {
@@ -220,6 +224,7 @@ public abstract class AbstractServerTask implements MessageEncoderManagerIF {
 					.append("], errmsg=")
 					.append(e.getMessage()).toString();
 			
+			Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
 			log.log(Level.WARNING, errorReason, e);
 			
 			ToLetterCarrier.putInputErrorMessageToOutputMessageQueue( 
@@ -227,11 +232,17 @@ public abstract class AbstractServerTask implements MessageEncoderManagerIF {
 					errorReason,
 					mailboxID, mailID, messageID, fromAcceptedConnection, messageProtocol);
 			return;
+		} finally {
+			long endTime = System.nanoTime();
+			String infoMessage = new StringBuilder().append("this server task[")
+					.append(messageID)
+					.append("] elapsed time[")
+					.append(TimeUnit.MICROSECONDS.convert((endTime - startTime), TimeUnit.NANOSECONDS))
+					.append(" ms]").toString();
+			
+			Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
+			log.info(infoMessage);
 		}
-
-
-		// long lastErraseTime = new java.util.Date().getTime() - firstErraseTime;
-		// log.info(String.format("수행 시간=[%f] ms", (float) lastErraseTime));
 	}
 	
 	
@@ -241,6 +252,7 @@ public abstract class AbstractServerTask implements MessageEncoderManagerIF {
 	
 	@Override
 	public void finalize() {
+		Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
 		log.log(Level.INFO, this.getClass().getSimpleName() + " call finalize");
 	}
 }

@@ -253,7 +253,6 @@ public class THBMessageProtocol implements MessageProtocolIF {
 				}
 				
 				if (null != messageHeader) {
-					/*log.info(String.format("3. inputStramSizeBeforeMessageWork[%d]", inputStramSizeBeforeMessageWork));*/
 					
 					long messageInputMessageSize = messageHeader.bodySize + messageHeaderSize;
 					

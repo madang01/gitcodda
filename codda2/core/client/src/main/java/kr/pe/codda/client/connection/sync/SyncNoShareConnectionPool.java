@@ -209,8 +209,11 @@ public class SyncNoShareConnectionPool implements ConnectionPoolIF {
 			 * 연속 2회 큐 입력 방지
 			 */
 			if (syncNoShareConnection.isInQueue()) {
-				String errorMessage = String.format("the paramter conn[%d] allready was in connection queue",
-						conn.hashCode());
+				String errorMessage = new StringBuilder()
+						.append("the parameter conn[")
+						.append(conn.hashCode())
+						.append("] allready was released").toString();
+
 				log.log(Level.WARNING, errorMessage, new Throwable());
 				throw new ConnectionPoolException(errorMessage);
 			}

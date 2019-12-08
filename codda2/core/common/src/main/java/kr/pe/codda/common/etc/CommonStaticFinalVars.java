@@ -37,7 +37,7 @@ public abstract class CommonStaticFinalVars {
 	public static final int ZERO_INTEGER = 0;
 	public static final long ZERO_LONG = 0L;	
 	
-	public static final String ROOT_PROJECT_NAME = "codda";
+	public static final String ROOT_PROJECT_NAME = "codda2";
 	public static final String CORE_LOG_NAME = "kr.pe.codda";
 	
 	public static final SelfExnResEncoder SELFEXN_ENCODER = new SelfExnResEncoder();

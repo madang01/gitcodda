@@ -22,7 +22,7 @@ import org.xml.sax.SAXException;
 
 import kr.pe.codda.common.etc.CommonStaticFinalVars;
 import kr.pe.codda.common.util.CommonStaticUtil;
-import kr.pe.codda.common.util.CustomLogFormatter;
+import kr.pe.codda.common.util.JDKLoggerCustomFormatter;
 
 public class MessageInfoSAXParserTest {
 	private Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
@@ -41,7 +41,7 @@ public class MessageInfoSAXParserTest {
 
 		Handler handler = new ConsoleHandler();
 
-		CustomLogFormatter formatter = new CustomLogFormatter();
+		JDKLoggerCustomFormatter formatter = new JDKLoggerCustomFormatter();
 		handler.setFormatter(formatter);
 
 		rootLogger.setLevel(Level.INFO);
@@ -129,9 +129,13 @@ public class MessageInfoSAXParserTest {
 	public void testGetMessageIDFromXMLFilePathString_ValidButBadParameter_xmlFilePathString_길이가작은경우() {
 		String testTitle = "메시지 정보 파일명(메시지식별자+.xml) 길이가 작은 경우";
 		String xmlFilePathString = ".xml";
-		String expectedMessage = String.format(
-				"the parameter messageInformationXMLFilePathString[%s]'s length[%d] is too small, its length must be greater than %d",
-				xmlFilePathString, xmlFilePathString.length(), MessageInfoSAXParser.XML_EXTENSION_SUFFIX.length());
+		String expectedMessage = new StringBuilder()
+				.append("the parameter messageInformationXMLFilePathString[")
+				.append(xmlFilePathString)
+				.append("]'s length[")
+				.append(xmlFilePathString.length())
+				.append("] is too small, its length must be greater than ")
+				.append(MessageInfoSAXParser.XML_EXTENSION_SUFFIX.length()).toString();
 		try {
 			messageInfoSAXParser.getMessageIDFromXMLFilePathString(xmlFilePathString);
 		} catch (IllegalArgumentException e) {
@@ -147,8 +151,10 @@ public class MessageInfoSAXParserTest {
 	public void testGetMessageIDFromXMLFilePathString_ValidButBadParameter_messageInformationXMLFilePathString_확장자가xml이아닌경우() {
 		String testTitle = "메시지 정보 파일명 길이가 4보다 커야 한다는 조건은 만족하지만 확장자가 xml 이 아닌 경우";
 		String xmlFilePathString = "abcde";
-		String expectedMessage = String.format(
-				"the parameter messageInformationXMLFilePathString[%s]'s suffix is not '.xml'", xmlFilePathString);
+		String expectedMessage = new StringBuilder()
+				.append("the parameter messageInformationXMLFilePathString[")
+				.append(xmlFilePathString)
+				.append("]'s suffix is not '.xml'").toString();
 		try {
 			messageInfoSAXParser.getMessageIDFromXMLFilePathString(xmlFilePathString);
 		} catch (IllegalArgumentException e) {
@@ -165,9 +171,12 @@ public class MessageInfoSAXParserTest {
 		String testTitle = "잘못된 메시지 식별자를 파일명으로 가지는 xml 확장자 파일명";
 		String messageID = "a";
 		String xmlFilePathString = messageID + ".xml";
-		String expectedMessage = String.format(
-				"the parameter messageInformationXMLFilePathString[%s] has a invalid message id[%s], (note) the message information XML file name format is '<messageID>.xml'",
-				xmlFilePathString, messageID);
+		String expectedMessage = new StringBuilder()
+				.append("the parameter messageInformationXMLFilePathString[")
+				.append(xmlFilePathString)
+				.append("] has a invalid message id[")
+				.append(messageID)
+				.append("], (note) the message information XML file name format is '<messageID>.xml'").toString();
 		try {
 			messageInfoSAXParser.getMessageIDFromXMLFilePathString(xmlFilePathString);
 		} catch (IllegalArgumentException e) {
@@ -183,9 +192,10 @@ public class MessageInfoSAXParserTest {
 	public void testGetMessageIDFromXMLFilePathString_ValidButBadParameter_messageInformationXMLFilePathString_부모경로를갖지만메시지식별자가없고xml확장자를갖는파일명() {
 		String testTitle = "부모 경로를 갖지만 메시지 식별자가 없고 xml 확장자를 갖는 파일명";
 		String xmlFilePathString = File.separator + ".xml";
-		String expectedMessage = String.format(
-				"fail to get message id from the parameter messageInformationXMLFilePathString[%s] that is '<messageID>.xml' format file name",
-				xmlFilePathString);
+		String expectedMessage = new StringBuilder()
+				.append("fail to get message id from the parameter messageInformationXMLFilePathString[")
+				.append(xmlFilePathString)
+				.append("] that is '<messageID>.xml' format file name").toString();
 		try {
 			messageInfoSAXParser.getMessageIDFromXMLFilePathString(xmlFilePathString);
 		} catch (IllegalArgumentException e) {
@@ -201,8 +211,10 @@ public class MessageInfoSAXParserTest {
 	public void testGetMessageIDFromXMLFilePathString_ValidButBadParameter_messageInformationXMLFilePathString_xml확장자를갖지않는파일명() {
 		String testTitle = "xml 확장자를 갖지 않는 파일명";
 		String xmlFilePathString = "a.xml2";
-		String expectedMessage = String.format(
-				"the parameter messageInformationXMLFilePathString[%s]'s suffix is not '.xml'", xmlFilePathString);
+		String expectedMessage = new StringBuilder()
+				.append("the parameter messageInformationXMLFilePathString[")
+				.append(xmlFilePathString)
+				.append("]'s suffix is not '.xml'").toString();
 		try {
 			messageInfoSAXParser.getMessageIDFromXMLFilePathString(xmlFilePathString);
 		} catch (IllegalArgumentException e) {
@@ -1600,9 +1612,14 @@ public class MessageInfoSAXParserTest {
 			
 			log.info(errorMessage);
 			
-			String expectedMessage = String.format(
-					"The tag \"messageid\"'s value[%s] is different from message id[%s] of '<message id>.xml' format file[%s]",
-					messageIDTagValue, messageIDOfFileName, tempXMLFile.getAbsolutePath());
+			String expectedMessage = new StringBuilder()
+					.append("The tag \"messageid\"'s value[")
+					.append(messageIDTagValue)
+					.append("] is different from message id[")
+					.append(messageIDOfFileName)
+					.append("] of '<message id>.xml' format file[")
+					.append(tempXMLFile.getAbsolutePath())
+					.append("]").toString();
 			
 			if (-1 == errorMessage.lastIndexOf(expectedMessage)) {
 				log.log(Level.WARNING, errorMessage, e);
@@ -2373,10 +2390,15 @@ public class MessageInfoSAXParserTest {
 				
 				log.info(errorMessage);
 				
-				String expectedMessage = String.format(
-						"The tag \"messageid\"'s value[%s] is different from message id[%s] of '<message id>.xml' format file[%s]",
-						messageIDTagValue, messageIDOfFileName, tempXMLFile.getAbsolutePath());
-				
+				String expectedMessage = new StringBuilder()
+						.append("The tag \"messageid\"'s value[")
+						.append(messageIDTagValue)
+						.append("] is different from message id[")
+						.append(messageIDOfFileName)
+						.append("] of '<message id>.xml' format file[")
+						.append(tempXMLFile.getAbsolutePath())
+						.append("]").toString();
+
 				if (-1 == errorMessage.lastIndexOf(expectedMessage)) {
 					log.log(Level.WARNING, errorMessage, e);
 					fail(new StringBuilder("'").append(testTitle).append("' test failed").toString());
