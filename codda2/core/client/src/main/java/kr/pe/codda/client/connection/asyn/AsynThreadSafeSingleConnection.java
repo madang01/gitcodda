@@ -88,7 +88,7 @@ public class AsynThreadSafeSingleConnection
 
 		this.syncMessageMailboxQueue = new ArrayBlockingQueue<SyncMessageMailbox>(
 				clientSyncMessageMailboxCountPerAsynShareConnection);
-		this.syncMessageMailboxArray = new SyncMessageMailbox[clientSyncMessageMailboxCountPerAsynShareConnection + 2];
+		this.syncMessageMailboxArray = new SyncMessageMailbox[clientSyncMessageMailboxCountPerAsynShareConnection + CommonStaticFinalVars.SYNC_MAILBOX_START_ID];
 		for (int i = CommonStaticFinalVars.SYNC_MAILBOX_START_ID; i < syncMessageMailboxArray.length; i++) {
 			SyncMessageMailbox syncMessageMailbox = new SyncMessageMailbox(this, i, socketTimeout, messageProtocol);
 			syncMessageMailboxArray[i] = syncMessageMailbox;
@@ -328,7 +328,7 @@ public class AsynThreadSafeSingleConnection
 				messageProtocol.closeReadableMiddleObject(mailboxID, mailID, messageID, readableMiddleObject);
 			}
 		} else {
-			if (mailboxID <= 0 || mailboxID > syncMessageMailboxArray.length) {
+			if (mailboxID < CommonStaticFinalVars.SYNC_MAILBOX_START_ID || mailboxID >= syncMessageMailboxArray.length) {
 				String errorMessage = new StringBuilder("The synchronous output message[").append("mailboxID=")
 						.append(mailboxID).append(", mailID=").append(mailID).append(", messageID=").append(messageID)
 						.append("] was discarded because the paramter mailboxID is not valid").toString();
