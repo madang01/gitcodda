@@ -195,8 +195,8 @@ public class AsynThreadSafeSingleConnection
 
 		try {
 			syncMessageMailbox.setMessageCodecManger(messageCodecManger);
-			inputMessage.messageHeaderInfo.mailboxID = syncMessageMailbox.getMailboxID();
-			inputMessage.messageHeaderInfo.mailID = syncMessageMailbox.getMailID();
+			inputMessage.setMailboxID(syncMessageMailbox.getMailboxID());
+			inputMessage.setMailID(syncMessageMailbox.getMailID());			
 
 			addInputMessage(messageCodecManger, inputMessage);
 
@@ -215,8 +215,8 @@ public class AsynThreadSafeSingleConnection
 	public void sendAsynInputMessage(MessageCodecMangerIF messageCodecManger, AbstractMessage inputMessage)
 			throws InterruptedException, NotSupportedException, IOException, NoMoreDataPacketBufferException,
 			DynamicClassCallException, BodyFormatException {
-		inputMessage.messageHeaderInfo.mailboxID = AsynMessageMailbox.getMailboxID();
-		inputMessage.messageHeaderInfo.mailID = AsynMessageMailbox.getNextMailID();
+		inputMessage.setMailboxID(AsynMessageMailbox.getMailboxID());
+		inputMessage.setMailID(AsynMessageMailbox.getNextMailID());		
 
 		addInputMessage(messageCodecManger, inputMessage);
 	}

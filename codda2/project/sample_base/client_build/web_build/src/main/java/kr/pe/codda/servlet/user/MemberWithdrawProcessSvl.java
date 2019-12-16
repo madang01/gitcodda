@@ -1,6 +1,7 @@
 package kr.pe.codda.servlet.user;
 
 import java.util.Arrays;
+import java.util.logging.Level;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -54,7 +55,7 @@ public class MemberWithdrawProcessSvl extends AbstractUserLoginServlet {
 			.append(e.getMessage())
 			.toString();
 			
-			log.warn(logMessage);
+			log.warning(logMessage);
 
 			printErrorMessagePage(req, res, errorMessage, debugMessage);
 			return;
@@ -72,7 +73,7 @@ public class MemberWithdrawProcessSvl extends AbstractUserLoginServlet {
 					.append(e.getMessage())
 					.toString();
 			
-			log.warn(debugMessage, e);
+			log.log(Level.WARNING, debugMessage, e);
 
 			printErrorMessagePage(req, res, errorMessage, debugMessage);
 			return;
@@ -160,7 +161,7 @@ public class MemberWithdrawProcessSvl extends AbstractUserLoginServlet {
 		BinaryPublicKey binaryPublicKeyOutObj = (BinaryPublicKey) binaryPublicKeyOutputMessage;
 		byte[] binaryPublicKeyBytes = binaryPublicKeyOutObj.getPublicKeyBytes();
 		ClientSessionKeyIF clientSessionKey = ClientSessionKeyManager.getInstance()
-				.getNewClientSessionKey(binaryPublicKeyBytes, false);
+				.createNewClientSessionKey(binaryPublicKeyBytes, false);
 		
 		byte sessionKeyBytesOfServer[] = clientSessionKey.getDupSessionKeyBytes();								
 		byte ivBytesOfServer[] = clientSessionKey.getDupIVBytes();

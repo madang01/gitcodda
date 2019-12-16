@@ -9,6 +9,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Level;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -68,9 +69,15 @@ public class BoardReplyProcessSvl extends AbstractMultipartServlet {
 			
 			AccessedUserInformation accessedUserformation = getAccessedUserInformationFromSession(req);
 
-			log.warn("{}, userID={}, ip={}",
-					(null == debugMessage) ? errorMessage : debugMessage,
-							accessedUserformation.getUserID(), req.getRemoteAddr());
+			String logMessage = new StringBuilder()
+					.append((null == debugMessage) ? errorMessage : debugMessage)
+					.append(", userID=[")
+					.append(accessedUserformation.getUserID())
+					.append("], ip=[")
+					.append(req.getRemoteAddr())
+					.append("]").toString();
+
+			log.warning(logMessage);
 
 			printErrorMessagePage(req, res, errorMessage, debugMessage);
 			return;
@@ -135,7 +142,11 @@ public class BoardReplyProcessSvl extends AbstractMultipartServlet {
 				} else if (formFieldName.equals("contents")) {
 					paramContents = formFieldValue;
 				} else {
-					log.warn("필요 없은 웹 파라미터 '{}' 전달 받음", formFieldName);
+					String errorMessage = new StringBuilder()
+							.append("필요 없은 웹 파라미터 '")
+							.append(formFieldName)
+							.append("' 전달 받음").toString();
+					log.warning(errorMessage);
 				}
 				/**************** 파라미터 종료 *******************/
 
@@ -305,7 +316,7 @@ public class BoardReplyProcessSvl extends AbstractMultipartServlet {
 			webServerSessionkey = serverSessionkeyManager
 					.getMainProjectServerSessionkey();
 		} catch (SymmetricException e) {
-			log.warn("SymmetricException", e);
+			log.log(Level.WARNING, "SymmetricException", e);
 
 			String errorMessage = "fail to initialize ServerSessionkeyManger instance";
 			String debugMessage = new StringBuilder()
@@ -397,7 +408,7 @@ public class BoardReplyProcessSvl extends AbstractMultipartServlet {
 								ivBytes);
 			} catch (IllegalArgumentException e) {
 				String errorMessage = "웹 세션키 인스턴스 생성 실패";
-				log.warn(errorMessage, e);
+				log.log(Level.WARNING, errorMessage, e);
 
 				String debugMessage = new StringBuilder("sessionkeyBytes=[")
 						.append(HexUtil.getHexStringFromByteArray(sessionkeyBytes))
@@ -408,7 +419,7 @@ public class BoardReplyProcessSvl extends AbstractMultipartServlet {
 				throw new WebClientException(errorMessage, debugMessage);
 			} catch (SymmetricException e) {
 				String errorMessage = "웹 세션키 인스턴스 생성 실패";
-				log.warn(errorMessage, e);
+				log.log(Level.WARNING, errorMessage, e);
 
 				String debugMessage = new StringBuilder("sessionkeyBytes=[")
 						.append(HexUtil.getHexStringFromByteArray(sessionkeyBytes))
@@ -437,7 +448,7 @@ public class BoardReplyProcessSvl extends AbstractMultipartServlet {
 				md = MessageDigest.getInstance(WebCommonStaticFinalVars.BOARD_HASH_ALGORITHM);
 			} catch (NoSuchAlgorithmException e) {
 				String errorMessage = "fail to get a MessageDigest class instance";
-				log.warn(errorMessage, e);			
+				log.log(Level.WARNING, errorMessage, e);			
 				
 				String debugMessage = new StringBuilder("the 'algorithm'[")
 						.append(WebCommonStaticFinalVars.BOARD_HASH_ALGORITHM)
@@ -514,7 +525,7 @@ public class BoardReplyProcessSvl extends AbstractMultipartServlet {
 								.append(newAttachedFilePathString)
 								.append("] 하는데 실패하였습니다").toString();
 
-						log.warn(errorMessage, e);
+						log.log(Level.WARNING, errorMessage, e);
 					}
 					newAttachedFileSeq++;
 					indexOfNewAttachedFileList++;

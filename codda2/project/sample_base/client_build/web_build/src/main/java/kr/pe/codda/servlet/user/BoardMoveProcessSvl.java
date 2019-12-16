@@ -1,6 +1,7 @@
 package kr.pe.codda.servlet.user;
 
 import java.io.File;
+import java.util.logging.Level;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -94,7 +95,7 @@ public class BoardMoveProcessSvl extends AbstractUserLoginServlet {
 					.append(outputMessage.toString())
 					.append("] 도착").toString();
 			
-			log.error(debugMessage);
+			log.severe(debugMessage);
 
 			printErrorMessagePage(req, res, errorMessage, debugMessage);
 			return;
@@ -132,7 +133,7 @@ public class BoardMoveProcessSvl extends AbstractUserLoginServlet {
 							.append("] '")
 							.append(fromAttachedFilePathString)
 							.append("' 가 존재하지 않습니다").toString();
-					log.warn(errorMessage);
+					log.warning(errorMessage);
 					
 					continue;
 				}
@@ -148,7 +149,7 @@ public class BoardMoveProcessSvl extends AbstractUserLoginServlet {
 							.append("] '")
 							.append(fromAttachedFilePathString)
 							.append("' 는 정규 파일이 아닙니다").toString();
-					log.warn(errorMessage);
+					log.warning(errorMessage);
 					
 					continue;
 				}
@@ -165,7 +166,7 @@ public class BoardMoveProcessSvl extends AbstractUserLoginServlet {
 							.append("] '")
 							.append(fromAttachedFilePathString)
 							.append("' 가 존재합니다").toString();
-					log.warn(errorMessage);
+					log.warning(errorMessage);
 					
 					continue;
 				}
@@ -179,7 +180,7 @@ public class BoardMoveProcessSvl extends AbstractUserLoginServlet {
 							.append(toAttachedFilePathString)
 							.append("]").toString();
 							
-					log.warn(errorMessage, e);
+					log.log(Level.WARNING, errorMessage, e);
 				}
 			}
 		}

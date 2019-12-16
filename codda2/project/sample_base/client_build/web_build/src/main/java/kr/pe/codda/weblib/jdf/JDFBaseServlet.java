@@ -19,6 +19,7 @@ package kr.pe.codda.weblib.jdf;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.logging.Level;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -228,8 +229,14 @@ public abstract class JDFBaseServlet extends AbstractBaseServlet {
 		String menuGroupURL = this
 				.getInitParameter(WebCommonStaticFinalVars.SERVLET_INIT_PARM_KEY_NAME_OF_MENU_GROUP_URL);
 		if (null == menuGroupURL) {
-			log.warn("the servlet init parameter '{}' is null in requestURI[{}]",
-					WebCommonStaticFinalVars.SERVLET_INIT_PARM_KEY_NAME_OF_MENU_GROUP_URL, req.getRequestURI());
+			String errorMessage = new StringBuilder()
+					.append("the servlet init parameter '")
+					.append(WebCommonStaticFinalVars.SERVLET_INIT_PARM_KEY_NAME_OF_MENU_GROUP_URL)
+					.append("' is null in requestURI[")
+					.append(req.getRequestURI())
+					.append("]").toString();
+			
+			log.warning(errorMessage);
 			menuGroupURL = "/";
 		}
 
@@ -273,7 +280,7 @@ public abstract class JDFBaseServlet extends AbstractBaseServlet {
 					req.setAttribute("fileItemList", fileItemList);
 
 				} catch (FileUploadException e) {
-					log.warn("fail to parse a multipart request", e);
+					log.log(Level.WARNING, "fail to parse a multipart request", e);
 
 					menuGroupURL = new StringBuilder(menuGroupURL).append("?boardID=0").toString();
 
@@ -355,13 +362,18 @@ public abstract class JDFBaseServlet extends AbstractBaseServlet {
 			traceLogBaseMsg = traceLogBaseMsgBuilder.toString();
 
 			start = System.currentTimeMillis();
-			log.info("{}:calling", traceLogBaseMsg);
+			
+			String infoMessage = new StringBuilder()
+					.append(traceLogBaseMsg)
+					.append(":calling").toString();			
+			
+			log.info(infoMessage);
 		}
 
 		try {
 			performPreTask(req, res);
 		} catch (ConnectionPoolException e) {
-			log.warn("server connection fail", e);
+			log.log(Level.WARNING, "server connection fail", e);
 
 			String errorMessage = e.getMessage();
 
@@ -371,7 +383,7 @@ public abstract class JDFBaseServlet extends AbstractBaseServlet {
 			String userMessage = "서버 접속이 실패하였습니다";
 			printErrorMessagePage(req, res, userMessage, debugMessage);
 		} catch (Exception | java.lang.Error e) {
-			log.warn("unknown error", e);
+			log.log(Level.WARNING, "unknown error", e);
 
 			java.io.ByteArrayOutputStream bos = new java.io.ByteArrayOutputStream();
 			java.io.PrintWriter writer = new java.io.PrintWriter(bos);
@@ -428,7 +440,7 @@ public abstract class JDFBaseServlet extends AbstractBaseServlet {
 		try {
 			res.sendRedirect(location);
 		} catch (IOException e) {
-			log.warn("fail to call method sendRedirect", e);
+			log.log(Level.WARNING, "fail to call method sendRedirect", e);
 
 			StringBuilder debugMessageBuilder = new StringBuilder("IOException::File Not Found, location=")
 					.append(location);
@@ -473,7 +485,7 @@ public abstract class JDFBaseServlet extends AbstractBaseServlet {
 
 			debugMessageStringBuilder.append(bos.toString());
 		} catch (Exception e1) {
-			log.warn("error", e1);
+			log.log(Level.WARNING, "error", e1);
 		} finally {
 			if (null != writer) {
 				try {
@@ -509,7 +521,7 @@ public abstract class JDFBaseServlet extends AbstractBaseServlet {
 
 			dispatcher.forward(req, res);
 		} catch (Exception | Error e) {
-			log.warn("fail to call method forward", e);
+			log.log(Level.WARNING, "fail to call method forward", e);
 			
 			try {
 
@@ -519,7 +531,7 @@ public abstract class JDFBaseServlet extends AbstractBaseServlet {
 				printErrorMessagePage(req, res, userMessage, debugMessage);
 			} catch (Exception ex) {
 				/** 더 이상 에러 처리 없이 종료한다 */
-				log.warn("fail to write a user defined error message page", ex);				
+				log.log(Level.WARNING, "fail to write a user defined error message page", ex);				
 			}
 		}
 	}

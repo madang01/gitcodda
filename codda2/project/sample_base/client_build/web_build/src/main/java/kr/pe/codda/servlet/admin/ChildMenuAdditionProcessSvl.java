@@ -29,7 +29,7 @@ public class ChildMenuAdditionProcessSvl extends AbstractAdminLoginServlet {
 		
 		if (null == paramParentNo) {
 			String errorMessage = "파라미터 '부모메뉴번호'(=parentNo) 값을 넣어주세요";			
-			log.warn(errorMessage);
+			log.warning(errorMessage);
 			
 			String debugMessage = null;
 			printErrorMessagePage(req, res, errorMessage, debugMessage);
@@ -46,7 +46,7 @@ public class ChildMenuAdditionProcessSvl extends AbstractAdminLoginServlet {
 					.append(paramParentNo)
 					.append("])의 값이 long 타입 정수가 아닙니다").toString();
 			
-			log.warn(errorMessage);
+			log.warning(errorMessage);
 
 			String debugMessage = null;
 			printErrorMessagePage(req, res, errorMessage, debugMessage);
@@ -59,7 +59,7 @@ public class ChildMenuAdditionProcessSvl extends AbstractAdminLoginServlet {
 					.append(paramParentNo)
 					.append("])의 값이 음수입니다").toString();
 			
-			log.warn(errorMessage);
+			log.warning(errorMessage);
 			
 			String debugMessage = null;
 			printErrorMessagePage(req, res, errorMessage, debugMessage);
@@ -74,7 +74,7 @@ public class ChildMenuAdditionProcessSvl extends AbstractAdminLoginServlet {
 					.append(CommonStaticFinalVars.UNSIGNED_INTEGER_MAX)
 					.append("] 보다 큽니다").toString();
 			
-			log.warn(errorMessage);
+			log.warning(errorMessage);
 			
 			String debugMessage = null;
 			printErrorMessagePage(req, res, errorMessage, debugMessage);
@@ -86,7 +86,7 @@ public class ChildMenuAdditionProcessSvl extends AbstractAdminLoginServlet {
 			String errorMessage = "파라미터 '메뉴이름'(=menuName) 값을 넣어주세요";
 			
 			
-			log.warn(errorMessage);
+			log.warning(errorMessage);
 
 			String debugMessage = null;
 			printErrorMessagePage(req, res, errorMessage, debugMessage);
@@ -98,7 +98,7 @@ public class ChildMenuAdditionProcessSvl extends AbstractAdminLoginServlet {
 		if (null == paramLinkURL) {
 			String errorMessage = "파라미터 '링크 URL'(=linkURL) 값을 넣어주세요";
 			
-			log.warn(errorMessage);
+			log.warning(errorMessage);
 
 			String debugMessage = null;
 			printErrorMessagePage(req, res, errorMessage, debugMessage);
@@ -131,7 +131,7 @@ public class ChildMenuAdditionProcessSvl extends AbstractAdminLoginServlet {
 						.append(outputMessage.toString())
 						.append("] 도착").toString();
 				
-				log.warn(debugMessage);
+				log.warning(debugMessage);
 
 				printErrorMessagePage(req, res, errorMessage, debugMessage);
 				return;

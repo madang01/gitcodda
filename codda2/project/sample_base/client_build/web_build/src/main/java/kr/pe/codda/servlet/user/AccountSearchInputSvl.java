@@ -1,5 +1,7 @@
 package kr.pe.codda.servlet.user;
 
+import java.util.logging.Level;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -89,22 +91,23 @@ public class AccountSearchInputSvl extends AbstractServlet {
 			return;
 		}
 		
-		log.info("param sessionkeyBase64=[{}]", paramSessionKeyBase64);
-		log.info("param ivBase64=[{}]", paramIVBase64);
-		log.info("param email=[{}]", paramEmailCipherBase64);
+		log.info("param sessionkeyBase64=[" + paramSessionKeyBase64 + "]");
+		log.info("param ivBase64=[" + paramIVBase64 + "]");
+		log.info("param email=[" + paramEmailCipherBase64 + "]");
 		
 		byte[] sessionkeyBytes = null;
 		try {
 			sessionkeyBytes = CommonStaticUtil.Base64Decoder.decode(paramSessionKeyBase64);
 		} catch (Exception e) {
-			log.warn("base64 encoding error for the parameter paramSessionKeyBase64[{}], errormessage=[{}]",
-					paramSessionKeyBase64, e.getMessage());
+			
 
 			String errorMessage = "세션키 파라미터가 잘못되었습니다";
 			String debugMessage = new StringBuilder().append("the parameter '")
 					.append(WebCommonStaticFinalVars.PARAMETER_KEY_NAME_OF_SESSION_KEY).append("'[")
 					.append(paramSessionKeyBase64).append("] is not a base64 encoding string, errmsg=")
 					.append(e.getMessage()).toString();
+			
+			log.warning(debugMessage);
 
 			printErrorMessagePage(req, res, errorMessage, debugMessage);
 			return;
@@ -113,14 +116,14 @@ public class AccountSearchInputSvl extends AbstractServlet {
 		try {
 			ivBytes = CommonStaticUtil.Base64Decoder.decode(paramIVBase64);
 		} catch (Exception e) {
-			log.warn("base64 encoding error for the parameter paramIVBase64[{}], errormessage=[{}]", paramIVBase64,
-					e.getMessage());
 
 			String errorMessage = "세션키 소금 파라미터가 잘못되었습니다";
 			String debugMessage = new StringBuilder().append("the parameter '")
 					.append(WebCommonStaticFinalVars.PARAMETER_KEY_NAME_OF_SESSION_KEY_IV).append("'[")
 					.append(paramIVBase64).append("] is not a base64 encoding string, errmsg=").append(e.getMessage())
 					.toString();
+			
+			log.warning(debugMessage);
 
 			printErrorMessagePage(req, res, errorMessage, debugMessage);
 			return;
@@ -132,7 +135,7 @@ public class AccountSearchInputSvl extends AbstractServlet {
 			webServerSessionkey = serverSessionkeyManager.getMainProjectServerSessionkey();
 		} catch (SymmetricException e) {
 			String errorMessage = "fail to get a ServerSessionkeyManger class instance";
-			log.warn(errorMessage, e);
+			log.log(Level.WARNING, errorMessage, e);
 
 			String debugMessage = e.getMessage();
 			printErrorMessagePage(req, res, errorMessage, debugMessage);
@@ -145,7 +148,7 @@ public class AccountSearchInputSvl extends AbstractServlet {
 					ivBytes);
 		} catch (IllegalArgumentException e) {
 			String errorMessage = "웹 세션키 인스턴스 생성 실패";
-			log.warn(errorMessage, e);
+			log.log(Level.WARNING, errorMessage, e);
 
 			String debugMessage = new StringBuilder("sessionkeyBytes=[")
 					.append(HexUtil.getHexStringFromByteArray(sessionkeyBytes)).append("], ivBytes=[")
@@ -155,7 +158,7 @@ public class AccountSearchInputSvl extends AbstractServlet {
 			return;
 		} catch (SymmetricException e) {
 			String errorMessage = "웹 세션키 인스턴스 생성 실패";
-			log.warn(errorMessage, e);
+			log.log(Level.WARNING, errorMessage, e);
 
 			String debugMessage = new StringBuilder("sessionkeyBytes=[")
 					.append(HexUtil.getHexStringFromByteArray(sessionkeyBytes)).append("], ivBytes=[")
@@ -198,7 +201,7 @@ public class AccountSearchInputSvl extends AbstractServlet {
 					.append(outputMessage.toString())
 					.append("] 도착").toString();
 			
-			log.error(debugMessage);
+			log.severe(debugMessage);
 
 			printErrorMessagePage(req, res, errorMessage, debugMessage);
 			return;

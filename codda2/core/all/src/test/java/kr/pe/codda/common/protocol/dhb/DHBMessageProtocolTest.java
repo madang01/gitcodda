@@ -258,8 +258,8 @@ public class DHBMessageProtocolTest {
 					log.log(Level.WARNING, errorMessage);
 
 					SelfExnRes selfExnRes = new SelfExnRes();
-					selfExnRes.messageHeaderInfo.mailboxID = mailboxID;
-					selfExnRes.messageHeaderInfo.mailID = mailID;
+					selfExnRes.setMailboxID(mailboxID);
+					selfExnRes.setMailID(mailID);
 					selfExnRes.setErrorPlace(SelfExn.ErrorPlace.CLIENT);
 					selfExnRes.setErrorType(SelfExn.ErrorType.valueOf(DynamicClassCallException.class));
 
@@ -279,8 +279,8 @@ public class DHBMessageProtocolTest {
 					log.log(Level.WARNING, errorMessage);
 
 					SelfExnRes selfExnRes = new SelfExnRes();
-					selfExnRes.messageHeaderInfo.mailboxID = mailboxID;
-					selfExnRes.messageHeaderInfo.mailID = mailID;
+					selfExnRes.setMailboxID(mailboxID);
+					selfExnRes.setMailID(mailID);
 					selfExnRes.setErrorPlace(SelfExn.ErrorPlace.CLIENT);
 					selfExnRes.setErrorType(SelfExn.ErrorType.valueOf(BodyFormatException.class));
 
@@ -299,8 +299,8 @@ public class DHBMessageProtocolTest {
 					log.log(Level.WARNING, errorMessage);
 
 					SelfExnRes selfExnRes = new SelfExnRes();
-					selfExnRes.messageHeaderInfo.mailboxID = mailboxID;
-					selfExnRes.messageHeaderInfo.mailID = mailID;
+					selfExnRes.setMailboxID(mailboxID);
+					selfExnRes.setMailID(mailID);
 					selfExnRes.setErrorPlace(SelfExn.ErrorPlace.CLIENT);
 					selfExnRes.setErrorType(SelfExn.ErrorType.valueOf(DynamicClassCallException.class));
 
@@ -344,8 +344,8 @@ public class DHBMessageProtocolTest {
 		expectedSelfExnRes.setErrorMessageID("Echo");
 		expectedSelfExnRes.setErrorReason(testStringBuilder.toString());
 
-		expectedSelfExnRes.messageHeaderInfo.mailboxID = 1;
-		expectedSelfExnRes.messageHeaderInfo.mailID = 3;
+		expectedSelfExnRes.setMailboxID(1);
+		expectedSelfExnRes.setMailID(3);
 
 		beforeTime = System.nanoTime();
 

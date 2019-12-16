@@ -742,11 +742,8 @@ public abstract class CommonStaticUtil {
 			}
 			
 			AbstractMessage outputMessage = messageDecoder.decode(singleItemDecoder, readableMiddleObject);
-			outputMessage.messageHeaderInfo.mailboxID = mailboxID;
-			outputMessage.messageHeaderInfo.mailID = mailID;
-			
-			outputMessage.messageHeaderInfo.mailboxID = mailboxID;
-			outputMessage.messageHeaderInfo.mailID = mailID;
+			outputMessage.setMailboxID(mailboxID);
+			outputMessage.setMailID(mailID);
 			
 			return outputMessage;
 		} catch (BodyFormatException e) {			

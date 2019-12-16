@@ -237,7 +237,7 @@ public abstract class AbstractServerTask implements MessageEncoderManagerIF {
 			String infoMessage = new StringBuilder().append("this server task[")
 					.append(messageID)
 					.append("] elapsed time[")
-					.append(TimeUnit.MICROSECONDS.convert((endTime - startTime), TimeUnit.NANOSECONDS))
+					.append(TimeUnit.MILLISECONDS.convert((endTime - startTime), TimeUnit.NANOSECONDS))
 					.append(" ms]").toString();
 			
 			Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);

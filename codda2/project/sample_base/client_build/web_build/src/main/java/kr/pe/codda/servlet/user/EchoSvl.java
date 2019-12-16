@@ -63,7 +63,7 @@ public class EchoSvl extends AbstractServlet {
 					.append("]에 대한 비 정상 출력 메시지[")
 					.append(outputMessage.toString()).append("] 도착").toString();
 
-			log.error(debugMessage);
+			log.severe(debugMessage);
 
 			printErrorMessagePage(req, res, errorMessage, debugMessage);
 			return;

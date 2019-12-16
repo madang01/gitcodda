@@ -263,9 +263,9 @@ public class SyncNoShareConnectionTest {
 					fail("empty 메시지 수신 실패");
 				}
 
-				if (!emptyReq.messageHeaderInfo.equals(emptyRes.messageHeaderInfo)) {
-					fail("수신한 empty 메시지의 메시지 헤더가 송신한 empty 메시지의 메시지 헤더와 다릅니다");
-				}
+				assertEquals(emptyReq.getMailboxID(), emptyRes.getMailboxID());
+				assertEquals(emptyReq.getMailID(), emptyRes.getMailID());
+				
 			}
 
 			long endTime = System.nanoTime();

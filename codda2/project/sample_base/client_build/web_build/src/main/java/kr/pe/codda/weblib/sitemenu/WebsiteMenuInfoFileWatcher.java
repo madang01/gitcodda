@@ -8,14 +8,14 @@ import java.nio.file.WatchEvent;
 import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
-import io.netty.util.internal.logging.InternalLogger;
-import io.netty.util.internal.logging.InternalLoggerFactory;
 import kr.pe.codda.common.buildsystem.pathsupporter.WebRootBuildSystemPathSupporter;
 import kr.pe.codda.common.config.CoddaConfiguration;
 import kr.pe.codda.common.config.CoddaConfigurationManager;
@@ -35,7 +35,7 @@ import kr.pe.codda.weblib.common.WebCommonStaticFinalVars;
  *
  */
 public class WebsiteMenuInfoFileWatcher extends Thread {
-	private InternalLogger log = InternalLoggerFactory.getInstance(WebsiteMenuInfoFileWatcher.class);
+	private Logger log = Logger.getLogger(WebsiteMenuInfoFileWatcher.class.getName());
 
 	private JsonArray rootMenuListJsonArray = null;
 	private File watcherFile;
@@ -57,12 +57,22 @@ public class WebsiteMenuInfoFileWatcher extends Thread {
     	watcherFile  = new File(watcherFilePathString);
     	
     	if (! watcherFile.exists()) {
-    		log.error("the user website menu infomation file[{}] doesn't exist", watcherFile.getAbsoluteFile());
+    		String errorMessage = new StringBuilder()
+    				.append("the user website menu infomation file[")
+    				.append(watcherFile.getAbsoluteFile())
+    				.append("] doesn't exist").toString();
+    		
+    		log.severe(errorMessage);
     		System.exit(1);
     	}
     	
     	if (! watcherFile.isFile()) {
-    		log.error("the user website menu infomation file[{}] is not a regular file", watcherFile.getAbsoluteFile());
+    		String errorMessage = new StringBuilder()
+    				.append("the user website menu infomation file[")
+    				.append(watcherFile.getAbsoluteFile())
+    				.append("] is not a regular file").toString();
+    		
+    		log.severe(errorMessage);
     		System.exit(1);
     	}
     	
@@ -75,9 +85,17 @@ public class WebsiteMenuInfoFileWatcher extends Thread {
     private void doOnChange() {   	
     	File workingFile = new File(watcherFile.getAbsolutePath());
     	
-    	if (workingFile.length() > WebCommonStaticFinalVars.USER_WEBSITE_MENU_INFO_FILE_MAX_SIZE) {    		
-    		log.warn("the user website menu infomation file[{}]'s size[{}] is is greater than max size[{}]", 
-    				workingFile.getAbsoluteFile(), workingFile.length(), WebCommonStaticFinalVars.USER_WEBSITE_MENU_INFO_FILE_MAX_SIZE);
+    	if (workingFile.length() > WebCommonStaticFinalVars.USER_WEBSITE_MENU_INFO_FILE_MAX_SIZE) {
+    		String errorMessage = new StringBuilder()
+    				.append("the user website menu infomation file[")
+    				.append(workingFile.getAbsoluteFile())
+    				.append("]'s size[")
+    				.append(workingFile.length())
+    				.append("] is is greater than max size[")
+    				.append(WebCommonStaticFinalVars.USER_WEBSITE_MENU_INFO_FILE_MAX_SIZE)
+    				.append("]").toString();
+    		
+    		log.warning(errorMessage);
     		return;
     	}
     	
@@ -88,7 +106,7 @@ public class WebsiteMenuInfoFileWatcher extends Thread {
     		
     		log.info("'일반 사용자 웹사이트 메뉴 정보 파일' 읽기 완료");
     	} catch(Exception e) {
-    		log.warn("'일반 사용자 웹사이트 메뉴 정보 파일' 읽기 실패", e);
+    		log.log(Level.WARNING, "'일반 사용자 웹사이트 메뉴 정보 파일' 읽기 실패", e);
     		return;
     	}
     	
@@ -99,22 +117,22 @@ public class WebsiteMenuInfoFileWatcher extends Thread {
     	try {
     		treeSiteMenuResJsonElement = jsonParser.parse(treeSiteMenuResJsonString);
     	} catch(Exception e) {
-    		log.warn("'일반 사용자 웹사이트 메뉴 정보 파일'의 내용 json 파싱 실패", e);
+    		log.log(Level.WARNING, "'일반 사용자 웹사이트 메뉴 정보 파일'의 내용 json 파싱 실패", e);
     		return;
     	}
     	if (! treeSiteMenuResJsonElement.isJsonObject()) {
-    		log.warn("the var treeSiteMenuResJsonElement is not a JsonObject");
+    		log.log(Level.WARNING, "the var treeSiteMenuResJsonElement is not a JsonObject");
     		return;
     	}
     	JsonObject jsonObject = treeSiteMenuResJsonElement.getAsJsonObject();
 		JsonElement rootMenuListJsonElement = jsonObject.get("rootMenuList");
 		if (null == rootMenuListJsonElement) {
-			log.warn("the rootMenuList JsonElement dosn't exist in the website menu info file");
+			log.warning("the rootMenuList JsonElement dosn't exist in the website menu info file");
     		return;
 		}
 		
 		if (! rootMenuListJsonElement.isJsonArray()) {
-			log.warn("the rootMenuList JsonElement is not a JsonArray");
+			log.warning("the rootMenuList JsonElement is not a JsonArray");
 			return;
 		}
 		
@@ -164,7 +182,7 @@ public class WebsiteMenuInfoFileWatcher extends Thread {
             log.info("the WebsiteMenuInfoFileWatcher thread loop exist");
         } catch (Throwable e) {
             // Log or rethrow the error
-        	log.warn("the WebsiteMenuInfoFileWatcher thread unknow error exist", e);
+        	log.log(Level.WARNING, "the WebsiteMenuInfoFileWatcher thread unknow error exist", e);
         }
     }
 

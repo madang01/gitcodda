@@ -1,21 +1,130 @@
 package main;
 
-import io.netty.util.internal.logging.InternalLogger;
-import io.netty.util.internal.logging.InternalLoggerFactory;
+import java.io.File;
 
-import java.util.concurrent.TimeUnit;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.bridge.SLF4JBridgeHandler;
 
 import kr.pe.codda.client.AnyProjectConnectionPoolIF;
 import kr.pe.codda.client.ConnectionPoolManager;
+import kr.pe.codda.common.buildsystem.pathsupporter.CommonBuildSytemPathSupporter;
+import kr.pe.codda.common.buildsystem.pathsupporter.ProjectBuildSytemPathSupporter;
+import kr.pe.codda.common.config.CoddaConfiguration;
+import kr.pe.codda.common.config.CoddaConfigurationManager;
 import kr.pe.codda.common.etc.CommonStaticFinalVars;
-import kr.pe.codda.common.message.AbstractMessage;
-import kr.pe.codda.impl.classloader.ClientMessageCodecManger;
-import kr.pe.codda.impl.message.Echo.Echo;
 
 public class AppClientMain {
+	
+	private void setupLogbackForJDKLogger() throws IllegalStateException {
+		java.util.logging.LogManager.getLogManager().reset();
+		SLF4JBridgeHandler.removeHandlersForRootLogger();
+		SLF4JBridgeHandler.install();
+	}
+	
+	private void setupLogbackEnvromenetVariable(String installedPathString, String mainProejct) throws IllegalStateException {
+		if (null == installedPathString) {
+			throw new IllegalArgumentException("the parameter installedPathString is null");
+		}
+		
+		String logbackConfigFilePathString = ProjectBuildSytemPathSupporter.getProjectLogbackConfigFilePathString(installedPathString, mainProejct);
+		String rootLogPathString = CommonBuildSytemPathSupporter.getCommonLogPathString(installedPathString);
+		
+		
+		{
+			File logbackConfigFile = new File(logbackConfigFilePathString);		
+			
+			
+			if (! logbackConfigFile.exists()) {
+				String errorMessage = new StringBuilder("the logback config file[")
+						.append(logbackConfigFilePathString)
+						.append("] doesn't exist").toString();
+				System.out.println(errorMessage);
+				throw new IllegalStateException(errorMessage);
+			}
+			
+			
+			if (! logbackConfigFile.isFile()) {
+				String errorMessage = new StringBuilder("the logback config file[")
+						.append(logbackConfigFilePathString)
+						.append("] is not a normal file").toString();
+				System.out.println(errorMessage);
+				throw new IllegalStateException(errorMessage);
+			}
+
+
+			if (! logbackConfigFile.canRead()) {
+				String errorMessage = new StringBuilder("the logback config file[")
+						.append(logbackConfigFilePathString)
+						.append("] does not have read permissions").toString();
+				System.out.println(errorMessage);
+				throw new IllegalStateException(errorMessage);
+			}
+		}
+		
+		
+		{
+			File logPath = new File(rootLogPathString);
+			
+			if (! logPath.exists()) {
+				String errorMessage = new StringBuilder("the log path[")
+						.append(rootLogPathString)
+						.append("] doesn't exist").toString();
+				System.out.println(errorMessage);
+				throw new IllegalStateException(errorMessage);
+			}
+			
+			
+			if (! logPath.isDirectory()) {
+				String errorMessage = new StringBuilder("the log path[")
+						.append(rootLogPathString)
+						.append("] is not a directory").toString();
+				System.out.println(errorMessage);
+				throw new IllegalStateException(errorMessage);
+			}
+
+
+			if (! logPath.canWrite()) {
+				String errorMessage = new StringBuilder("the log path[")
+						.append(rootLogPathString)
+						.append("] is marked read-only").toString();
+				System.out.println(errorMessage);
+				throw new IllegalStateException(errorMessage);
+			}
+		}
+		
+		System.setProperty(CommonStaticFinalVars.JAVA_SYSTEM_PROPERTIES_KEY_LOG_PATH,
+				rootLogPathString);
+		System.setProperty(CommonStaticFinalVars.JAVA_SYSTEM_PROPERTIES_KEY_LOGBACK_CONFIG_FILE,
+				logbackConfigFilePathString);
+		
+		
+	}
+	
+	public void setup() {
+		CoddaConfiguration runningCoddaConfiguration = CoddaConfigurationManager.getInstance().getRunningProjectConfiguration();
+
+		String installedPathString = runningCoddaConfiguration.getInstalledPathString();
+		String mainProejct = runningCoddaConfiguration.getMainProjectName();
+		
+		setupLogbackEnvromenetVariable(installedPathString, mainProejct);
+		setupLogbackForJDKLogger();
+	}
+	
+	public void start(int numberOfThread) {		
+		ConnectionPoolManager connectionPoolManager = ConnectionPoolManager.getInstance();
+		AnyProjectConnectionPoolIF mainProjectConnectionPool = connectionPoolManager.getMainProjectConnectionPool();		
+		Thread[] threadSafeTester = new Thread[numberOfThread];
+
+		for (int i=0; i < numberOfThread; i++) {
+			threadSafeTester[i] = new Thread(new ConnectionPoolThreadSafeTester(mainProjectConnectionPool));
+			// threadSafeTester[i] = new Thread(new SigleConnectionThreadSafeTester(mainProjectConnectionPool));
+			threadSafeTester[i].start();
+		}	
+	}
 
 	public static void main(String[] args) {
-		InternalLogger log = InternalLoggerFactory.getInstance(CommonStaticFinalVars.BASE_PACKAGE_NAME);
+		Logger log = LoggerFactory.getLogger("kr.pe.codda");
 		
 		int numberOfThread = 3;
 		if (args.length > 0) {
@@ -33,57 +142,15 @@ public class AppClientMain {
 		log.info("numberOfThread={}", numberOfThread);
 		
 		if (args.length == 0) {
-			log.warn("파라미터 입력 없음");
+			log.warn("파라미터를 입력해 주세요");
 			System.exit(1);
 		}
 		
-		class ConnectionPoolThreadSafeTester implements Runnable {
-			private InternalLogger log = InternalLoggerFactory.getInstance(CommonStaticFinalVars.BASE_PACKAGE_NAME);
-			
-			private AnyProjectConnectionPoolIF mainProjectConnectionPool = null;
 		
-			
-			public ConnectionPoolThreadSafeTester(AnyProjectConnectionPoolIF mainProjectConnectionPool) {
-				this.mainProjectConnectionPool = mainProjectConnectionPool;
-			}			
-
-			@Override
-			public void run() {
-				log.info("start {}", Thread.currentThread().getName());				
-				
-				java.util.Random random = new java.util.Random();
-				
-				while (! Thread.currentThread().isInterrupted()) {
-					Echo echoReq = new Echo();
-					echoReq.setRandomInt(random.nextInt());
-					echoReq.setStartTime(System.nanoTime());
-					
-					AbstractMessage messageFromServer = null;
-					try {
-						messageFromServer = mainProjectConnectionPool.sendSyncInputMessage(ClientMessageCodecManger.getInstance(), echoReq);
-
-						if (! (messageFromServer instanceof Echo)) {
-							log.error("응답 메시지가 Echo 가 아님, 응답메시지={}", messageFromServer.toString());
-							System.exit(1);
-						}
-						
-						Echo echoRes = (Echo) messageFromServer;
-						if ((echoReq.getRandomInt() == echoRes.getRandomInt())
-								&& (echoReq.getStartTime() == echoRes.getStartTime())) {
-							log.info("성공::경과 시간={} microseconds",
-									TimeUnit.MICROSECONDS.convert((System.nanoTime() - echoRes.getStartTime()), TimeUnit.NANOSECONDS));
-						} else {
-							log.info("실패::echo 메시지 입력/출력 다름");
-						}
-						
-						// Thread.sleep(200L);
-					} catch (Exception e) {
-						log.warn("소켓 통신중 에러 발생", e);
-					}
-				}
-				
-			}
-		}
+		
+		AppClientMain appClientMain =  new AppClientMain();
+		appClientMain.setup();
+		appClientMain.start(numberOfThread);
 		
 		/*class SigleConnectionThreadSafeTester implements Runnable {
 			private InternalLogger log = InternalLoggerFactory.getInstance(CommonStaticFinalVars.BASE_PACKAGE_NAME);
@@ -148,7 +215,7 @@ public class AppClientMain {
 								
 								continue;
 							}
-						}						
+						}				
 						
 						
 						Echo echoReq = new Echo();
@@ -188,15 +255,7 @@ public class AppClientMain {
 			}
 		}*/
 		
-		ConnectionPoolManager connectionPoolManager = ConnectionPoolManager.getInstance();
-		AnyProjectConnectionPoolIF mainProjectConnectionPool = connectionPoolManager.getMainProjectConnectionPool();		
-		Thread[] threadSafeTester = new Thread[numberOfThread];
-
-		for (int i=0; i < numberOfThread; i++) {
-			threadSafeTester[i] = new Thread(new ConnectionPoolThreadSafeTester(mainProjectConnectionPool));
-			// threadSafeTester[i] = new Thread(new SigleConnectionThreadSafeTester(mainProjectConnectionPool));
-			threadSafeTester[i].start();
-		}	
+		
 				
 		/*
 		java.util.Random random = new java.util.Random();

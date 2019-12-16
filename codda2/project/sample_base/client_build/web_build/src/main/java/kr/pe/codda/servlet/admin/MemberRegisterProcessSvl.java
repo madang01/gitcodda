@@ -1,5 +1,7 @@
 package kr.pe.codda.servlet.admin;
 
+import java.util.logging.Level;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -60,7 +62,7 @@ public class MemberRegisterProcessSvl extends AbstractServlet {
 					.append(e.getMessage())
 					.toString();
 					
-			log.warn(logMessage);
+			log.warning(logMessage);
 
 			printErrorMessagePage(req, res, errorMessage, debugMessage);
 			return;
@@ -78,7 +80,7 @@ public class MemberRegisterProcessSvl extends AbstractServlet {
 					.append(e.getMessage())
 					.toString();
 			
-			log.warn(debugMessage, e);
+			log.log(Level.WARNING, debugMessage, e);
 
 			printErrorMessagePage(req, res, errorMessage, debugMessage);
 			return;
@@ -107,12 +109,7 @@ public class MemberRegisterProcessSvl extends AbstractServlet {
 		String paramCaptchaAnswerBase64 = req.getParameter("captchaAnswer");
 		/**************** 파라미터 종료 *******************/
 		
-		log.info("param sessionkeyBase64=[{}], param ivBase64=[{}], " +
-				"param userID=[{}], param pwd=[{}], param nickname=[{}], " +
-				"param email=[{}], param captchaAnswer=[{}]", 
-				paramSessionKeyBase64, paramIVBase64, 
-				paramUserIDBase64, paramPwdBase64, paramNicknameBase64, 
-				paramEmailBae64, paramCaptchaAnswerBase64);
+		// log.info(req.getParameterMap().toString());
 		
 		if (null == paramSessionKeyBase64) {
 			String errorMessage = "세션키를 입력해 주세요";
@@ -200,7 +197,7 @@ public class MemberRegisterProcessSvl extends AbstractServlet {
 			String errorMessage = "fail to get a ServerSessionkeyManger class instance";
 			String debugMessage = e.getMessage();
 			
-			log.warn(errorMessage, e);
+			log.log(Level.WARNING, errorMessage, e);
 			throw new WebClientException(errorMessage, debugMessage);
 		}
 		
@@ -216,7 +213,7 @@ public class MemberRegisterProcessSvl extends AbstractServlet {
 					.append(HexUtil.getHexStringFromByteArray(ivBytes))
 					.append("]").toString();
 			
-			log.warn(errorMessage, e);			
+			log.log(Level.WARNING, errorMessage, e);			
 			
 			throw new WebClientException(errorMessage, debugMessage);
 		} catch(SymmetricException e) {
@@ -227,7 +224,7 @@ public class MemberRegisterProcessSvl extends AbstractServlet {
 					.append(HexUtil.getHexStringFromByteArray(ivBytes))
 					.append("]").toString();
 			
-			log.warn(errorMessage, e);		
+			log.log(Level.WARNING, errorMessage, e);		
 			
 			throw new WebClientException(errorMessage, debugMessage);
 		}
@@ -301,7 +298,7 @@ public class MemberRegisterProcessSvl extends AbstractServlet {
 		BinaryPublicKey binaryPublicKeyOutObj = (BinaryPublicKey) binaryPublicKeyOutputMessage;
 		byte[] binaryPublicKeyBytes = binaryPublicKeyOutObj.getPublicKeyBytes();
 		ClientSessionKeyIF clientSessionKey = ClientSessionKeyManager.getInstance()
-				.getNewClientSessionKey(binaryPublicKeyBytes, false);
+				.createNewClientSessionKey(binaryPublicKeyBytes, false);
 		
 		
 		

@@ -34,7 +34,7 @@ public class JavaGCCallerSvl extends AbstractServlet {
 					.append(outputMessage.toString())
 					.append("] 도착").toString();
 			
-			log.error(debugMessage);
+			log.severe(debugMessage);
 
 			printErrorMessagePage(req, res, errorMessage, debugMessage);
 			return;

@@ -3,6 +3,7 @@ package kr.pe.codda.servlet.user;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
+import java.util.logging.Level;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -23,9 +24,9 @@ public class JSMessageDigestProcessSvl extends AbstractServlet {
 		String paramPlainText = req.getParameter("plainText");
 		/**************** 파라미터 종료 *******************/
 		
-		log.info("paramAlgorithm[{}]", paramAlgorithm);
-		log.info("paramJavascriptMDHex[{}]", paramJavascriptMDHex);
-		log.info("paramPlainText[{}]", paramPlainText);
+			
+		// log.info(req.getParameterMap().toString());
+		
 		
 		if (null == paramAlgorithm) {
 			String errorMessage = "알고리즘을 입력해 주세요";
@@ -59,7 +60,7 @@ public class JSMessageDigestProcessSvl extends AbstractServlet {
 			md = MessageDigest.getInstance(paramAlgorithm);
 		} catch (NoSuchAlgorithmException e) {
 			String errorMessage = "fail to get a MessageDigest class instance";
-			log.warn(errorMessage, e);			
+			log.log(Level.WARNING, errorMessage, e);			
 			
 			String debugMessage = new StringBuilder("the web parameter 'algorithm'[")
 					.append(paramAlgorithm)

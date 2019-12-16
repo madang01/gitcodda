@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="output" path="bin"/>
+	<classpathentry kind="src" path="main_src"/>
+	<classpathentry kind="src" path="test_src"/>
+	<classpathentry kind="lib" path="D:/gitcodda/codda2/project/sample_base/client_build/app_build/corelib/in/codda-core-all.jar"/>
+	<classpathentry kind="lib" path="D:/gitcodda/codda2/project/sample_base/client_build/app_build/corelib/ex/gson-2.8.5.jar"/>
+	<classpathentry kind="lib" path="D:/gitcodda/codda2/project/sample_base/client_build/app_build/corelib/ex/commons-dbcp2-2.0.1.jar"/>
+	<classpathentry kind="lib" path="D:/gitcodda/codda2/project/sample_base/client_build/app_build/corelib/ex/commons-pool2-2.5.0.jar"/>
+	<classpathentry kind="lib" path="D:/gitcodda/codda2/project/sample_base/client_build/app_build/corelib/ex/logback-classic-1.2.3.jar"/>
+	<classpathentry kind="lib" path="D:/gitcodda/codda2/project/sample_base/client_build/app_build/corelib/ex/logback-core-1.2.3.jar"/>
+	<classpathentry kind="lib" path="D:/gitcodda/codda2/project/sample_base/client_build/app_build/corelib/ex/slf4j-api-1.7.25.jar"/>
+	<classpathentry kind="lib" path="D:/gitcodda/codda2/project/sample_base/client_build/app_build/corelib/ex/jcl-over-slf4j-1.7.25.jar"/>
+	<classpathentry kind="lib" path="D:/gitcodda/codda2/project/sample_base/client_build/app_build/corelib/ex/jul-to-slf4j-1.7.26.jar"/>
+</classpath>

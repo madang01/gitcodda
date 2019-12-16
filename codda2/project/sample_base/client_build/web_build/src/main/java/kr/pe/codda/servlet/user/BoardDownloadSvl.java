@@ -90,7 +90,15 @@ public class BoardDownloadSvl extends AbstractUserLoginServlet {
 		if (null == paramAttachedFileSeq) {
 			String errorMessage = "첨부 파일 순번를 넣어주세요.";
 			
-			log.warn("{}, userId={}, ip={}", errorMessage, accessedUserformation.getUserID(), req.getRemoteAddr());
+			String debugMessage = new StringBuilder()
+					.append(errorMessage)
+					.append(", userID=[")
+					.append(accessedUserformation.getUserID())
+					.append("], ip=[")
+					.append(req.getRemoteAddr())
+					.append("]").toString();
+			
+			log.warning(debugMessage);
 			
 			printBoardProcessFailureCallBackPage(req, res, errorMessage);
 			return;
@@ -103,7 +111,15 @@ public class BoardDownloadSvl extends AbstractUserLoginServlet {
 			String errorMessage = new StringBuilder("자바 short 타입 변수인 첨부 파일 순번 값[")
 			.append(paramAttachedFileSeq).append("]이 잘못되었습니다.").toString();
 			
-			log.warn("{}, userId={}, ip={}", errorMessage, accessedUserformation.getUserID(), req.getRemoteAddr());
+			String debugMessage = new StringBuilder()
+					.append(errorMessage)
+					.append(", userID=[")
+					.append(accessedUserformation.getUserID())
+					.append("], ip=[")
+					.append(req.getRemoteAddr())
+					.append("]").toString();
+			
+			log.warning(debugMessage);
 			
 			printBoardProcessFailureCallBackPage(req, res, errorMessage);
 			return;
@@ -113,7 +129,15 @@ public class BoardDownloadSvl extends AbstractUserLoginServlet {
 			String errorMessage = new StringBuilder("첨부 파일 순번 값[")
 			.append(paramAttachedFileSeq).append("]은 0 보다 작거나 커야합니다.").toString();
 			
-			log.warn("{}, userId={}, ip={}", errorMessage, accessedUserformation.getUserID(), req.getRemoteAddr());
+			String debugMessage = new StringBuilder()
+					.append(errorMessage)
+					.append(", userID=[")
+					.append(accessedUserformation.getUserID())
+					.append("], ip=[")
+					.append(req.getRemoteAddr())
+					.append("]").toString();
+			
+			log.warning(debugMessage);
 			
 			printBoardProcessFailureCallBackPage(req, res, errorMessage);
 			return;
@@ -125,7 +149,15 @@ public class BoardDownloadSvl extends AbstractUserLoginServlet {
 			.append(CommonStaticFinalVars.UNSIGNED_BYTE_MAX)
 			.append(" 값 보다 작거나 같아야 합니다.").toString();
 			
-			log.warn("{}, userId={}, ip={}", errorMessage, accessedUserformation.getUserID(), req.getRemoteAddr());
+			String debugMessage = new StringBuilder()
+					.append(errorMessage)
+					.append(", userID=[")
+					.append(accessedUserformation.getUserID())
+					.append("], ip=[")
+					.append(req.getRemoteAddr())
+					.append("]").toString();
+			
+			log.warning(debugMessage);
 			
 			printBoardProcessFailureCallBackPage(req, res, errorMessage);
 			return;
@@ -138,7 +170,18 @@ public class BoardDownloadSvl extends AbstractUserLoginServlet {
 		boardDownloadFileReq.setAttachedFileSeq(attachedFileSeq);
 		
 		// FIXME!
-		log.debug("inObj={},  userId={}, ip={}", boardDownloadFileReq.toString(), accessedUserformation.getUserID(), req.getRemoteAddr());
+		{
+			String debugMessage = new StringBuilder()
+					.append("inObj=")
+					.append(boardDownloadFileReq.toString())
+					.append(", userID=[")
+					.append(accessedUserformation.getUserID())
+					.append("], ip=[")
+					.append(req.getRemoteAddr())
+					.append("]").toString();
+			
+			log.warning(debugMessage);
+		}
 		
 	
 		AnyProjectConnectionPoolIF mainProjectConnectionPool = ConnectionPoolManager.getInstance().getMainProjectConnectionPool();
@@ -161,7 +204,7 @@ public class BoardDownloadSvl extends AbstractUserLoginServlet {
 						.append(outputMessage.toString())
 						.append("] 도착").toString();
 				
-				log.error(debugMessage);
+				log.severe(debugMessage);
 		
 			printErrorMessagePage(req, res, errorMessage, debugMessage);
 			return;
@@ -243,7 +286,12 @@ public class BoardDownloadSvl extends AbstractUserLoginServlet {
 					i = bis.read(bytes);
 				}
 			} catch(IOException e) {
-				log.warn("다운로드 파일[{}] 처리중 입출력 에러 발생", boardDownloadFileReq.toString());
+				String errorMessage = new StringBuilder()
+						.append("다운로드 파일[")
+						.append(downloadFile.getAbsolutePath())
+						.append("] 처리중 입출력 에러 발생, errmsg=")
+						.append(e.getMessage()).toString();
+				log.warning(errorMessage);
 			} finally {
 				try {
 					bis.close();

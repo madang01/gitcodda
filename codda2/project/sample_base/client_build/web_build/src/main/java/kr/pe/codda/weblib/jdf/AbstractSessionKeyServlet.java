@@ -16,6 +16,8 @@
 
 package kr.pe.codda.weblib.jdf;
 
+import java.util.logging.Level;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -37,117 +39,120 @@ import kr.pe.codda.weblib.common.WebCommonStaticFinalVars;
  *
  */
 @SuppressWarnings("serial")
-public abstract class AbstractSessionKeyServlet extends AbstractServlet {	
-	
-	protected void performPreTask(HttpServletRequest req, HttpServletResponse res) throws Exception  {		
+public abstract class AbstractSessionKeyServlet extends AbstractServlet {
+
+	protected void performPreTask(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		String paramSessionKeyBase64 = req.getParameter(WebCommonStaticFinalVars.PARAMETER_KEY_NAME_OF_SESSION_KEY);
 		String paramIVBase64 = req.getParameter(WebCommonStaticFinalVars.PARAMETER_KEY_NAME_OF_SESSION_KEY_IV);
-		
+
 		if (null == paramSessionKeyBase64 || null == paramIVBase64) {
-			ServerSessionkeyIF webServerSessionkey  = null;
+			ServerSessionkeyIF webServerSessionkey = null;
 			try {
 				ServerSessionkeyManager serverSessionkeyManager = ServerSessionkeyManager.getInstance();
 				webServerSessionkey = serverSessionkeyManager.getMainProjectServerSessionkey();
-				
-				req.setAttribute(WebCommonStaticFinalVars.REQUEST_KEY_NAME_OF_MODULUS_HEX_STRING, webServerSessionkey.getModulusHexStrForWeb());
+
+				req.setAttribute(WebCommonStaticFinalVars.REQUEST_KEY_NAME_OF_MODULUS_HEX_STRING,
+						webServerSessionkey.getModulusHexStrForWeb());
 			} catch (SymmetricException e) {
-				log.warn("ServerSessionkeyManger instance init error, errormessage=[{}]", e.getMessage());
-				
+
 				String errorMessage = "ServerSessionkeyManger instance init error";
-				String debugMessage = String.format("ServerSessionkeyManger instance init error, errormessage=[%s]", e.getMessage());
+				String debugMessage = new StringBuilder(errorMessage).append(", errmsg=").append(e.getMessage())
+						.toString();
+
+				log.warning(debugMessage);
+
 				printErrorMessagePage(req, res, errorMessage, debugMessage);
 				return;
 			}
-			
-			log.info("req.getRequestURI=[{}]", req.getRequestURI());			
+
+			// log.info("req.getRequestURI=[{}]", req.getRequestURI());
+
 			req.setAttribute("requestURI", req.getRequestURI());
 			printJspPage(req, res, JDF_SESSION_KEY_REDIRECT_PAGE);
 			return;
 		}
-		
-		//log.info("paramSessionKeyBase64=[{}]", paramSessionKeyBase64);
-		//log.info("paramIVBase64=[{}]", paramIVBase64);
-		//System.out.println("paramSessionKeyBase64="+paramSessionKeyBase64);
+
+		// log.info("paramSessionKeyBase64=[{}]", paramSessionKeyBase64);
+		// log.info("paramIVBase64=[{}]", paramIVBase64);
+		// System.out.println("paramSessionKeyBase64="+paramSessionKeyBase64);
 		// System.out.println("paramIVBase64="+paramIVBase64);
-		
+
 		// log.info("req.getRequestURI=[{}]", req.getRequestURI());
-		
-		
-		ServerSessionkeyIF webServerSessionkey  = null;
+
+		ServerSessionkeyIF webServerSessionkey = null;
 		try {
 			ServerSessionkeyManager serverSessionkeyManager = ServerSessionkeyManager.getInstance();
 			webServerSessionkey = serverSessionkeyManager.getMainProjectServerSessionkey();
-			
-			req.setAttribute(WebCommonStaticFinalVars.REQUEST_KEY_NAME_OF_MODULUS_HEX_STRING, webServerSessionkey.getModulusHexStrForWeb());
+
+			req.setAttribute(WebCommonStaticFinalVars.REQUEST_KEY_NAME_OF_MODULUS_HEX_STRING,
+					webServerSessionkey.getModulusHexStrForWeb());
 		} catch (SymmetricException e) {
-			log.warn("ServerSessionkeyManger instance init error, errormessage=[{}]", e.getMessage());
-			
+
 			String errorMessage = "ServerSessionkeyManger instance init error";
-			String debugMessage = String.format("ServerSessionkeyManger instance init error, errormessage=[%s]", e.getMessage());
+			String debugMessage = new StringBuilder(errorMessage).append(", errmsg=").append(e.getMessage()).toString();
+
+			log.warning(debugMessage);
+
 			printErrorMessagePage(req, res, errorMessage, debugMessage);
 			return;
 		}
-		
+
 		byte[] sessionkeyBytes = null;
 		try {
 			sessionkeyBytes = CommonStaticUtil.Base64Decoder.decode(paramSessionKeyBase64);
-		} catch(Exception e) {
-			log.warn("paramSessionKeyBase64[{}] base64 decode error, errormessage=[{}]", paramSessionKeyBase64, e.getMessage());
-			
-			String errorMessage = "the parameter paramSessionKeyBase64 is not a base64 string";
-			String debugMessage = new StringBuilder()
-			.append("the parameter '")
-			.append(WebCommonStaticFinalVars.PARAMETER_KEY_NAME_OF_SESSION_KEY)
-			.append("'[")
-			.append(paramSessionKeyBase64)
-			.append("] is not a base64 encoding string, errmsg=")
-			.append(e.getMessage()).toString();
+		} catch (Exception e) {
+			String errorMessage = new StringBuilder().append("the parameter '")
+					.append(WebCommonStaticFinalVars.PARAMETER_KEY_NAME_OF_SESSION_KEY).append("'[")
+					.append(paramSessionKeyBase64).append("] is not a base64 encoding string").toString();
+
+			String debugMessage = new StringBuilder(errorMessage).append(", errmsg=").append(e.getMessage()).toString();
+
+			log.warning(debugMessage);
+
 			printErrorMessagePage(req, res, errorMessage, debugMessage);
 			return;
 		}
 		byte[] ivBytes = null;
 		try {
 			ivBytes = CommonStaticUtil.Base64Decoder.decode(paramIVBase64);
-		} catch(Exception e) {
-			log.warn("paramIVBase64[{}] base64 decode error, errormessage=[{}]", paramIVBase64, e.getMessage());
-			
-			String errorMessage = "the parameter paramIVBase64 is not a base64 string";
-			String debugMessage = new StringBuilder()
-			.append("the parameter '")
-			.append(WebCommonStaticFinalVars.PARAMETER_KEY_NAME_OF_SESSION_KEY_IV)
-			.append("'[")
-			.append(paramIVBase64)
-			.append("] is not a base64 encoding string, errmsg=")
-			.append(e.getMessage()).toString();
-			
-			printErrorMessagePage(req, res, errorMessage, debugMessage);
-			return;
-		}		
-		
-		//log.info("sessionkeyBytes=[{}]", HexUtil.getHexStringFromByteArray(sessionkeyBytes));
-		//log.info("ivBytes=[{}]", HexUtil.getHexStringFromByteArray(ivBytes));
-		
-		ServerSymmetricKeyIF  symmetricKeyFromSessionkey  = null;
-		
-		try {
-			symmetricKeyFromSessionkey = webServerSessionkey.getNewInstanceOfServerSymmetricKey(true, sessionkeyBytes, ivBytes);
-		} catch(Exception e) {
-			log.warn("fail to create a new instance of ServerSymmetricKeyIF class", e);
-			
-			String errorMessage = "fail to create a new instance of ServerSymmetricKeyIF class";
-			String debugMessage = new StringBuilder()
-					.append("paramSessionKeyBase64=[")
-					.append(paramSessionKeyBase64)
-					.append("], paramIVBase64=[")
-					.append(paramIVBase64)
-					.append("], errmsg=")
-					.append(e.getMessage()).toString();
-			
+		} catch (Exception e) {
+
+			String errorMessage = new StringBuilder().append("the parameter '")
+					.append(WebCommonStaticFinalVars.PARAMETER_KEY_NAME_OF_SESSION_KEY_IV).append("'[")
+					.append(paramIVBase64).append("] is not a base64 encoding string").toString();
+
+			String debugMessage = new StringBuilder(errorMessage).append(", errmsg=").append(e.getMessage()).toString();
+
+			log.warning(debugMessage);
+
 			printErrorMessagePage(req, res, errorMessage, debugMessage);
 			return;
 		}
-		
-		req.setAttribute(WebCommonStaticFinalVars.REQUEST_KEY_NAME_OF_SYMMETRIC_KEY_FROM_SESSIONKEY, symmetricKeyFromSessionkey);
-		performTask(req,res);
+
+		// log.info("sessionkeyBytes=[{}]",
+		// HexUtil.getHexStringFromByteArray(sessionkeyBytes));
+		// log.info("ivBytes=[{}]", HexUtil.getHexStringFromByteArray(ivBytes));
+
+		ServerSymmetricKeyIF symmetricKeyFromSessionkey = null;
+
+		try {
+			symmetricKeyFromSessionkey = webServerSessionkey.getNewInstanceOfServerSymmetricKey(true, sessionkeyBytes,
+					ivBytes);
+		} catch (Exception e) {
+			String errorMessage = "fail to create a new instance of ServerSymmetricKeyIF class";
+			
+			String debugMessage = new StringBuilder(errorMessage).append(", paramSessionKeyBase64=[").append(paramSessionKeyBase64)
+					.append("], paramIVBase64=[").append(paramIVBase64).append("], errmsg=").append(e.getMessage())
+					.toString();
+			
+			log.log(Level.WARNING, debugMessage, e);
+
+			printErrorMessagePage(req, res, errorMessage, debugMessage);
+			return;
+		}
+
+		req.setAttribute(WebCommonStaticFinalVars.REQUEST_KEY_NAME_OF_SYMMETRIC_KEY_FROM_SESSIONKEY,
+				symmetricKeyFromSessionkey);
+		performTask(req, res);
 	}
 }

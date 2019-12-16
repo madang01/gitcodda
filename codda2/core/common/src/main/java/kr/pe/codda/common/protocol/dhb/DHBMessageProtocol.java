@@ -144,8 +144,8 @@ public class DHBMessageProtocol implements MessageProtocolIF {
 		
 		DHBMessageHeader dhbMessageHeader = new DHBMessageHeader();
 		String messageID = inputMessage.getMessageID();
-		int mailboxID = inputMessage.messageHeaderInfo.mailboxID;
-		int mailID = inputMessage.messageHeaderInfo.mailID;
+		int mailboxID = inputMessage.getMailboxID();
+		int mailID = inputMessage.getMailID();
 		
 		long messageStartPostion = targetStreamBuffer.getPosition();
 

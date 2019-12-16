@@ -23,7 +23,7 @@ public class MenuModificationProcessSvl extends AbstractAdminLoginServlet {
 		String paramMenuNo = req.getParameter("menuNo");
 		if (null == paramMenuNo) {
 			String errorMessage = "파라미터 '메뉴번호'(=menuNo) 값을 넣어주세요";			
-			log.warn(errorMessage);
+			log.warning(errorMessage);
 			String debugMessage = null;
 			printErrorMessagePage(req, res, errorMessage, debugMessage);
 			return;
@@ -39,7 +39,7 @@ public class MenuModificationProcessSvl extends AbstractAdminLoginServlet {
 					.append(paramMenuNo)
 					.append("])의 값이 long 타입 정수가 아닙니다").toString();
 			
-			log.warn(errorMessage);
+			log.warning(errorMessage);
 
 			String debugMessage = null;
 			printErrorMessagePage(req, res, errorMessage, debugMessage);
@@ -52,7 +52,7 @@ public class MenuModificationProcessSvl extends AbstractAdminLoginServlet {
 					.append(paramMenuNo)
 					.append("])의 값이 음수입니다").toString();
 			
-			log.warn(errorMessage);
+			log.warning(errorMessage);
 
 			String debugMessage = null;
 			printErrorMessagePage(req, res, errorMessage, debugMessage);
@@ -67,20 +67,19 @@ public class MenuModificationProcessSvl extends AbstractAdminLoginServlet {
 					.append(CommonStaticFinalVars.UNSIGNED_INTEGER_MAX)
 					.append("] 보다 큽니다").toString();
 			
-			log.warn(errorMessage);
+			log.warning(errorMessage);
 			String debugMessage = null;
 			printErrorMessagePage(req, res, errorMessage, debugMessage);
 			return;
 		}
 		
 		String paramMenuName = req.getParameter("menuName");
-		log.info("the paramter 'menuName'=[{}]", paramMenuName);
 		
 		if (null == paramMenuName) {
 			String errorMessage = "파라미터 '메뉴이름'(=menuName) 값을 넣어주세요";
 			
 			
-			log.warn(errorMessage);
+			log.warning(errorMessage);
 
 			String debugMessage = null;
 			printErrorMessagePage(req, res, errorMessage, debugMessage);
@@ -95,7 +94,7 @@ public class MenuModificationProcessSvl extends AbstractAdminLoginServlet {
 		if (null == paramLinkURL) {
 			String errorMessage = "파라미터 '링크 URL'(=linkURL) 값을 넣어주세요";
 			
-			log.warn(errorMessage);
+			log.warning(errorMessage);
 
 			String debugMessage = null;
 			printErrorMessagePage(req, res, errorMessage, debugMessage);
@@ -123,7 +122,7 @@ public class MenuModificationProcessSvl extends AbstractAdminLoginServlet {
 					.append(outputMessage.toString())
 					.append("] 도착").toString();
 			
-			log.warn(debugMessage);
+			log.severe(debugMessage);
 
 			printErrorMessagePage(req, res, errorMessage, debugMessage);
 			return;

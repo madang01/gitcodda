@@ -32,9 +32,16 @@ import kr.pe.codda.common.etc.CommonStaticFinalVars;
  * 
  */
 public abstract class AbstractMessage {
-	protected Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
-	
-	protected String messageID = null;
+
+	private final String messageID;
+	/**
+	 * 메일함 식별자, mailboxID : unsinged short 2bytes
+	 */
+	private int mailboxID;
+	/**
+	 * 메일 식별자, mailID : int 4bytes
+	 */
+	private int mailID;
 	
 	/**
 	 * 입력 받은 메세지 식별자의 유효성을 반환한다.
@@ -50,10 +57,6 @@ public abstract class AbstractMessage {
 		boolean isValid = messageID.matches(regexMessageID);
 		return isValid;
 	}
-	
-
-	/** 메시지 운용에 필요한 메시지 헤더 정보 */
-	public MessageHeaderInfo messageHeaderInfo = new MessageHeaderInfo();
 
 	public AbstractMessage() {
 		messageID = this.getClass().getSimpleName();
@@ -62,6 +65,8 @@ public abstract class AbstractMessage {
 					.append("this class's name[")
 					.append(messageID)
 					.append("] is not a valid message id").toString();
+			
+			Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
 			log.log(Level.SEVERE, errorMessage);
 			System.exit(1);
 		}
@@ -71,6 +76,22 @@ public abstract class AbstractMessage {
 		return messageID;
 	}
 	
+	public int getMailboxID() {
+		return mailboxID;
+	}
+
+	public void setMailboxID(int mailboxID) {
+		this.mailboxID = mailboxID;
+	}
+
+	public int getMailID() {
+		return mailID;
+	}
+
+	public void setMailID(int mailID) {
+		this.mailID = mailID;
+	}
+
 	/**
 	 * 개별 항목에 대한 정보를 입력받아 StringBuffer에 저장하는 함수.
 	 * 

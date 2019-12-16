@@ -1,8 +1,5 @@
 package kr.pe.codda.weblib;
 
-import io.netty.util.internal.logging.InternalLogger;
-import io.netty.util.internal.logging.InternalLoggerFactory;
-
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
@@ -10,19 +7,21 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLConnection;
-
-import kr.pe.codda.common.buildsystem.pathsupporter.WebRootBuildSystemPathSupporter;
-import kr.pe.codda.common.config.CoddaConfiguration;
-import kr.pe.codda.common.config.CoddaConfigurationManager;
+import java.util.logging.Logger;
 
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileItemHeaders;
 import org.apache.commons.io.FileUtils;
 
+import kr.pe.codda.common.buildsystem.pathsupporter.WebRootBuildSystemPathSupporter;
+import kr.pe.codda.common.config.CoddaConfiguration;
+import kr.pe.codda.common.config.CoddaConfigurationManager;
+import kr.pe.codda.common.etc.CommonStaticFinalVars;
+
 public class FileItemMock implements FileItem {	
 	private static final long serialVersionUID = -9136132597604217176L;
 	
-	private InternalLogger log = InternalLoggerFactory.getInstance(FileItemMock.class);
+	private Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
 	
 	private File temporaryUploadFile = null;
 	private String uploadFileName = null;
@@ -66,7 +65,7 @@ public class FileItemMock implements FileItem {
 		try {
 			FileUtils.copyFile(uploadSourceFile, temporaryUploadFile);
 		} catch(IOException e) {
-			log.warn("입출력 에러로 '첨부 파일 원본 파일'을 '임시 첨부 파일'로 복사 실패, errmsg=", e.getMessage());
+			log.warning("입출력 에러로 '첨부 파일 원본 파일'을 '임시 첨부 파일'로 복사 실패, errmsg=" + e.getMessage());
 			throw e;
 		}
 		
@@ -99,7 +98,7 @@ public class FileItemMock implements FileItem {
 		if (temporaryUploadFile.exists()) {
 			boolean result = temporaryUploadFile.delete();
 			if (! result) {
-				log.warn("fail to delete the upload temporary file[{}]", temporaryUploadFile.getAbsolutePath());
+				log.warning("fail to delete the upload temporary file[" + temporaryUploadFile.getAbsolutePath() + "]");
 			}
 		}
 	}

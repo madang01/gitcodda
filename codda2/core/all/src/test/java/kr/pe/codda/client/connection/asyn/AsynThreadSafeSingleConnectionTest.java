@@ -325,7 +325,9 @@ private static Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME
 							fail("empty 메시지 수신 실패");
 						}
 						
-						assertEquals("메시지 헤더 비교", emptyReq.messageHeaderInfo, emptyRes.messageHeaderInfo);
+						
+						assertEquals(emptyReq.getMailboxID(), emptyRes.getMailboxID());
+						assertEquals(emptyReq.getMailID(), emptyRes.getMailID());
 					}
 					
 					long endTime = System.nanoTime();

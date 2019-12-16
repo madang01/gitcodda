@@ -16,6 +16,8 @@
  */
 package kr.pe.codda.servlet.admin;
 
+import java.util.logging.Level;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -43,7 +45,7 @@ public class MemberRegisterInputSvl extends AbstractServlet {
 			webServerSessionkey = serverSessionkeyManager.getMainProjectServerSessionkey();
 		} catch (SymmetricException e) {
 			String errorMessage = "fail to get a ServerSessionkeyManger class instance";
-			log.warn(errorMessage, e);			
+			log.log(Level.WARNING, errorMessage, e);			
 			
 			String debugMessage = e.getMessage();
 			printErrorMessagePage(req, res, errorMessage, debugMessage);

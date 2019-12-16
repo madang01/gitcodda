@@ -44,12 +44,14 @@ public abstract class AbstractServlet extends JDFBaseServlet {
 			
 			req.setAttribute(WebCommonStaticFinalVars.REQUEST_KEY_NAME_OF_MODULUS_HEX_STRING, webServerSessionkey.getModulusHexStrForWeb());
 		} catch (SymmetricException e) {
-			log.warn("ServerSessionkeyManger instance init error, errormessage=[{}]", e.getMessage());
+			
 			
 			String errorMessage = "ServerSessionkeyManger instance init error";
-			String debugMessage = new StringBuilder("ServerSessionkeyManger instance init error, errormessage=[")
-					.append(e.getMessage())
-					.append("]").toString();
+			String debugMessage = new StringBuilder(errorMessage).append(", errmsg=")						
+					.append(e.getMessage()).toString();
+			
+			log.warning(debugMessage);
+			
 			printErrorMessagePage(req, res, errorMessage, debugMessage);
 			return;
 		}

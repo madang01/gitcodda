@@ -26,7 +26,7 @@ public class RootMenuAdditionProcessSvl extends AbstractAdminLoginServlet {
 		if (null == paramMenuName) {
 			String errorMessage = "파라미터 '메뉴이름'(=menuName) 값을 넣어주세요";			
 			
-			log.warn(errorMessage);
+			log.warning(errorMessage);
 
 			String debugMessage = null;
 			printErrorMessagePage(req, res, errorMessage, debugMessage);
@@ -36,7 +36,7 @@ public class RootMenuAdditionProcessSvl extends AbstractAdminLoginServlet {
 		if (null == paramLinkURL) {
 			String errorMessage = "파라미터 '링크 URL'(=linkURL) 값을 넣어주세요";
 			
-			log.warn(errorMessage);
+			log.warning(errorMessage);
 
 			String debugMessage = null;
 			printErrorMessagePage(req, res, errorMessage, debugMessage);
@@ -67,7 +67,7 @@ public class RootMenuAdditionProcessSvl extends AbstractAdminLoginServlet {
 						.append(outputMessage.toString())
 						.append("] 도착").toString();
 				
-				log.warn(debugMessage);
+				log.severe(debugMessage);
 
 				printErrorMessagePage(req, res, errorMessage, debugMessage);
 				return;

@@ -9,12 +9,10 @@
 	<property name="dir.test.build" location="build/test" />
 	<property name="dir.test.lib" location="lib/test" />
 	<property name="dir.report" location="report" />
-	<property name="dir.logger.build" location="../../../../core/logger" />
 	<property name="dir.core.all.build" location="../../../../core/all" />
 	<property name="dir.core.common.build" location="../../../../core/common" />
 	<property name="dir.core.server.build" location="../../../../core/server" />
-	<property name="core.all.jar.name" value="codda-core-all.jar" />
-	<property name="core.junitlib.jar.name" value="codda-core-junitlib.jar" />
+	<property name="core.all.jar.name" value="codda-core-all.jar" />	
 	<property name="weblib.jar.name" value="CoddaWebLib.jar" />	
 	<property name="dir.user.webinf.classes" location="../../user_web_app_base/ROOT/WEB-INF/classes" />
 	<property name="dir.user.webinf.lib" location="../../user_web_app_base/ROOT/WEB-INF/lib" />
@@ -247,8 +245,7 @@
 				<fileset file="${dir.dist}/${weblib.jar.name}" />
 				<pathelement location="${dir.user.webinf.classes}" />
 				
-				<union refid="core.junitlib.jarlibs" />				
-				<fileset file="${dir.core.common.build}/dist/${core.junitlib.jar.name}" />
+				<union refid="core.junitlib.jarlibs" />
 				<fileset dir="${dir.test.lib}">
 					<include name="**/*.jar" />
 				</fileset>				
@@ -273,8 +270,7 @@
 				<fileset file="${dir.dist}/${weblib.jar.name}" />
 				<pathelement location="${dir.user.webinf.classes}" />
 				
-				<union refid="core.junitlib.jarlibs" />
-				<fileset file="${dir.core.common.build}/dist/${core.junitlib.jar.name}" />
+				<union refid="core.junitlib.jarlibs" />				
 				<fileset dir="${dir.test.lib}">
 					<include name="**/*.jar" />
 				</fileset>

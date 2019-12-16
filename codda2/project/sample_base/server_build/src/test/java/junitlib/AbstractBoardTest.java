@@ -41,12 +41,6 @@ public abstract class AbstractBoardTest {
 	
 	protected final static String TEST_DBCP_NAME = ServerCommonStaticFinalVars.GENERAL_TEST_DBCP_NAME;
 	
-	private static void initJDKLogger() {
-		java.util.logging.LogManager.getLogManager().reset();
-		SLF4JBridgeHandler.removeHandlersForRootLogger();
-		SLF4JBridgeHandler.install();
-	}
-	
 	private static void setupLogbackEnvromenetVariable(String installedPathString, String mainProejct) throws IllegalStateException {
 		if (null == installedPathString) {
 			throw new IllegalArgumentException("the parameter installedPathString is null");
@@ -122,11 +116,14 @@ public abstract class AbstractBoardTest {
 				rootLogPathString);
 		System.setProperty(CommonStaticFinalVars.JAVA_SYSTEM_PROPERTIES_KEY_LOGBACK_CONFIG_FILE,
 				logbackConfigFilePathString);
+		
+		java.util.logging.LogManager.getLogManager().reset();
+		SLF4JBridgeHandler.removeHandlersForRootLogger();
+		SLF4JBridgeHandler.install();
 	}
 	
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
-		initJDKLogger();
 		
 		installedBasePath = new File("D:\\gitcodda");
 		
@@ -161,13 +158,6 @@ public abstract class AbstractBoardTest {
 		if (! wasLibPath.isDirectory()) {
 			fail("the was libaray path isn't a directory");
 		}
-		
-		try {
-			setupLogbackEnvromenetVariable(installedPathString, mainProjectName);
-		} catch(IllegalArgumentException | IllegalStateException e) {
-			fail(e.getMessage());
-		}
-		
 				
 		System
 				.setProperty(CommonStaticFinalVars.JAVA_SYSTEM_PROPERTIES_KEY_RUNNING_PROJECT_NAME,
@@ -175,6 +165,12 @@ public abstract class AbstractBoardTest {
 		System
 				.setProperty(CommonStaticFinalVars.JAVA_SYSTEM_PROPERTIES_KEY_INSTALLED_PATH,
 						installedPathString);
+		
+		try {
+			setupLogbackEnvromenetVariable(installedPathString, mainProjectName);
+		} catch(IllegalArgumentException | IllegalStateException e) {
+			fail(e.getMessage());
+		}
 		
 		
 		ServerDBUtil.initializeDBEnvoroment(TEST_DBCP_NAME);

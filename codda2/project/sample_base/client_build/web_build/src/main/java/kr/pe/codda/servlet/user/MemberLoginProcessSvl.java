@@ -1,6 +1,7 @@
 package kr.pe.codda.servlet.user;
 
 import java.util.Arrays;
+import java.util.logging.Level;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -79,10 +80,7 @@ public class MemberLoginProcessSvl extends AbstractServlet {
 		 * debugMessage); return; }
 		 */
 
-		log.info("param sessionkeyBase64=[{}]", paramSessionKeyBase64);
-		log.info("param ivBase64=[{}]", paramIVBase64);
-		log.info("param userID=[{}]", paramUserIDCipherBase64);
-		log.info("param pwd=[{}}]", paramPwdCipherBase64);
+		// log.info(req.getParameterMap().toString());
 
 		// req.setAttribute("isSuccess", Boolean.FALSE);
 
@@ -90,14 +88,14 @@ public class MemberLoginProcessSvl extends AbstractServlet {
 		try {
 			sessionkeyBytes = CommonStaticUtil.Base64Decoder.decode(paramSessionKeyBase64);
 		} catch (Exception e) {
-			log.warn("base64 encoding error for the parameter paramSessionKeyBase64[{}], errormessage=[{}]",
-					paramSessionKeyBase64, e.getMessage());
 
 			String errorMessage = "세션키 파라미터가 잘못되었습니다";
 			String debugMessage = new StringBuilder().append("the parameter '")
 					.append(WebCommonStaticFinalVars.PARAMETER_KEY_NAME_OF_SESSION_KEY).append("'[")
 					.append(paramSessionKeyBase64).append("] is not a base64 encoding string, errmsg=")
 					.append(e.getMessage()).toString();
+			
+			log.warning(debugMessage);
 
 			printErrorMessagePage(req, res, errorMessage, debugMessage);
 			return;
@@ -106,14 +104,13 @@ public class MemberLoginProcessSvl extends AbstractServlet {
 		try {
 			ivBytes = CommonStaticUtil.Base64Decoder.decode(paramIVBase64);
 		} catch (Exception e) {
-			log.warn("base64 encoding error for the parameter paramIVBase64[{}], errormessage=[{}]", paramIVBase64,
-					e.getMessage());
-
 			String errorMessage = "세션키 소금 파라미터가 잘못되었습니다";
 			String debugMessage = new StringBuilder().append("the parameter '")
 					.append(WebCommonStaticFinalVars.PARAMETER_KEY_NAME_OF_SESSION_KEY_IV).append("'[")
 					.append(paramIVBase64).append("] is not a base64 encoding string, errmsg=").append(e.getMessage())
 					.toString();
+			
+			log.warning(debugMessage);
 
 			printErrorMessagePage(req, res, errorMessage, debugMessage);
 			return;
@@ -125,7 +122,7 @@ public class MemberLoginProcessSvl extends AbstractServlet {
 			webServerSessionkey = serverSessionkeyManager.getMainProjectServerSessionkey();
 		} catch (SymmetricException e) {
 			String errorMessage = "fail to get a ServerSessionkeyManger class instance";
-			log.warn(errorMessage, e);
+			log.log(Level.WARNING, errorMessage, e);
 
 			String debugMessage = e.getMessage();
 			printErrorMessagePage(req, res, errorMessage, debugMessage);
@@ -138,7 +135,7 @@ public class MemberLoginProcessSvl extends AbstractServlet {
 					ivBytes);
 		} catch (IllegalArgumentException e) {
 			String errorMessage = "웹 세션키 인스턴스 생성 실패";
-			log.warn(errorMessage, e);
+			log.log(Level.WARNING, errorMessage, e);
 
 			String debugMessage = new StringBuilder("sessionkeyBytes=[")
 					.append(HexUtil.getHexStringFromByteArray(sessionkeyBytes)).append("], ivBytes=[")
@@ -148,7 +145,7 @@ public class MemberLoginProcessSvl extends AbstractServlet {
 			return;
 		} catch (SymmetricException e) {
 			String errorMessage = "웹 세션키 인스턴스 생성 실패";
-			log.warn(errorMessage, e);
+			log.log(Level.WARNING, errorMessage, e);
 
 			String debugMessage = new StringBuilder("sessionkeyBytes=[")
 					.append(HexUtil.getHexStringFromByteArray(sessionkeyBytes)).append("], ivBytes=[")
@@ -199,7 +196,7 @@ public class MemberLoginProcessSvl extends AbstractServlet {
 					.append("]에 대한 비 정상 출력 메시지[").append(binaryPublicKeyOutputMessage.toString()).append("] 도착")
 					.toString();
 
-			log.error(debugMessage);
+			log.log(Level.WARNING, debugMessage);
 
 			printErrorMessagePage(req, res, errorMessage, debugMessage);
 			return;
@@ -209,7 +206,7 @@ public class MemberLoginProcessSvl extends AbstractServlet {
 		byte[] binaryPublicKeyBytes = binaryPublicKeyRes.getPublicKeyBytes();
 
 		ClientSessionKeyIF clientSessionKey = ClientSessionKeyManager.getInstance()
-				.getNewClientSessionKey(binaryPublicKeyBytes, false);
+				.createNewClientSessionKey(binaryPublicKeyBytes, false);
 
 		byte sessionKeyBytesOfServer[] = clientSessionKey.getDupSessionKeyBytes();
 		byte ivBytesOfServer[] = clientSessionKey.getDupIVBytes();
@@ -245,7 +242,7 @@ public class MemberLoginProcessSvl extends AbstractServlet {
 					.append(outputMessage.toString())
 					.append("] 도착").toString();
 			
-			log.error(debugMessage);
+			log.severe(debugMessage);
 
 			printErrorMessagePage(req, res, errorMessage, debugMessage);
 			return;
@@ -265,7 +262,7 @@ public class MemberLoginProcessSvl extends AbstractServlet {
 					.append(memberLoginRes.getMemberRole())
 					.append("] 가 잘못되었습니다").toString();
 
-			log.error(debugMessage);
+			log.severe(debugMessage);
 
 			printErrorMessagePage(req, res, errorMessage, debugMessage);
 			return;
@@ -277,7 +274,7 @@ public class MemberLoginProcessSvl extends AbstractServlet {
 					.append(memberLoginRes.getUserID())
 					.append("]는 손님으로 로그인 할 수 없습니다").toString();
 
-			log.error(debugMessage);
+			log.severe(debugMessage);
 
 			printErrorMessagePage(req, res, errorMessage, debugMessage);
 			return;

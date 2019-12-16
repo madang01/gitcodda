@@ -22,8 +22,9 @@ public abstract class AbstractMultipartServlet extends AbstractServlet {
 			String debugMessage = new StringBuilder(errorMessage).append(", userID=")
 					.append(userID)
 					.append(", ip=")
-					.append(req.getRemoteAddr()).toString();
-			log.warn("errorMessage={}, debugMessage={}", errorMessage, debugMessage);		
+					.append(req.getRemoteAddr()).toString();			
+			
+			log.warning(debugMessage);		
 			
 			printErrorMessagePage(req, res, errorMessage, debugMessage);		
 			return;

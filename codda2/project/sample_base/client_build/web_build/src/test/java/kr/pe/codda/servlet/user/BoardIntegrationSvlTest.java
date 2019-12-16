@@ -12,7 +12,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URLConnection;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.logging.ConsoleHandler;
+import java.util.logging.Handler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletConfig;
@@ -33,7 +38,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
 
-import junitlib.AbstractJunitTest;
 import kr.pe.codda.common.buildsystem.pathsupporter.WebRootBuildSystemPathSupporter;
 import kr.pe.codda.common.config.CoddaConfiguration;
 import kr.pe.codda.common.config.CoddaConfigurationManager;
@@ -44,29 +48,87 @@ import kr.pe.codda.common.sessionkey.ClientSessionKeyManager;
 import kr.pe.codda.common.sessionkey.ServerSessionkeyIF;
 import kr.pe.codda.common.sessionkey.ServerSessionkeyManager;
 import kr.pe.codda.common.util.CommonStaticUtil;
+import kr.pe.codda.common.util.JDKLoggerCustomFormatter;
 import kr.pe.codda.impl.message.BoardModifyRes.BoardModifyRes;
 import kr.pe.codda.impl.message.BoardReplyRes.BoardReplyRes;
 import kr.pe.codda.impl.message.BoardWriteRes.BoardWriteRes;
 import kr.pe.codda.impl.message.MessageResultRes.MessageResultRes;
 import kr.pe.codda.weblib.MockServletInputStream;
-import kr.pe.codda.weblib.common.MemberRoleType;
 import kr.pe.codda.weblib.common.AccessedUserInformation;
+import kr.pe.codda.weblib.common.MemberRoleType;
 import kr.pe.codda.weblib.common.WebCommonStaticFinalVars;
 import kr.pe.codda.weblib.exception.WebClientException;
 import nl.captcha.Captcha;
 
-public class BoardIntegrationSvlTest extends AbstractJunitTest {
-	
+public class BoardIntegrationSvlTest {
+	private Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
+	private static File installedBasePath = null;
+	private static File installedPath = null;
+	private static File wasLibPath = null;
+	private final static String mainProjectName = "sample_base";
+
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
-		AbstractJunitTest.setUpBeforeClass();
-		
+		Logger rootLogger = Logger.getLogger("");
+
+		Handler[] handlers = rootLogger.getHandlers();
+
+		for (Handler handler : handlers) {
+			rootLogger.removeHandler(handler);
+		}
+
+		Handler handler = new ConsoleHandler();
+
+		JDKLoggerCustomFormatter formatter = new JDKLoggerCustomFormatter();
+		handler.setFormatter(formatter);
+
+		rootLogger.setLevel(Level.INFO);
+		rootLogger.addHandler(handler);
+//////////////////////////////////////////////////
+
+		installedBasePath = new File("D:\\gitcodda");
+
+		if (!installedBasePath.exists()) {
+			fail("the installed path doesn't exist");
+		}
+
+		if (!installedBasePath.isDirectory()) {
+			fail("the installed path isn't a directory");
+		}
+
+		String installedPathString = new StringBuilder(installedBasePath.getAbsolutePath()).append(File.separator)
+				.append(CommonStaticFinalVars.ROOT_PROJECT_NAME).toString();
+
+		installedPath = new File(installedPathString);
+
+		if (!installedPath.exists()) {
+			fail("the installed path doesn't exist");
+		}
+
+		if (!installedPath.isDirectory()) {
+			fail("the installed path isn't a directory");
+		}
+
+		wasLibPath = new File("D:\\apache-tomcat-8.5.32\\lib");
+		// wasLibPath = new File("/usr/share/tomcat8/lib");
+		if (!wasLibPath.exists()) {
+			fail("the was libaray path doesn't exist");
+		}
+
+		if (!wasLibPath.isDirectory()) {
+			fail("the was libaray path isn't a directory");
+		}
+
+		System.setProperty(CommonStaticFinalVars.JAVA_SYSTEM_PROPERTIES_KEY_RUNNING_PROJECT_NAME, mainProjectName);
+		System.setProperty(CommonStaticFinalVars.JAVA_SYSTEM_PROPERTIES_KEY_INSTALLED_PATH, installedPathString);
+
+//////////////////////////////////////////////////
 		class MembershipRequestMockBuilder {
 			public HttpServletRequest build(String userID, String pwd, String nickname, String pwdHint,
 					String pwdAnswer) {
-				Captcha captcha = new Captcha.Builder(200, 50).build();	
+				Captcha captcha = new Captcha.Builder(200, 50).build();
 				String captchaAnswer = captcha.getAnswer();
-				
+
 				String sessionKeyBase64 = null;
 				String ivBase64 = null;
 				String paramUserIDBase64 = null;
@@ -89,13 +151,14 @@ public class BoardIntegrationSvlTest extends AbstractJunitTest {
 				ClientSessionKeyIF clientSessionKey = null;
 				try {
 					clientSessionKey = clientSessionKeyManager
-							.getNewClientSessionKey(mainProjectServerSessionkey.getDupPublicKeyBytes(), true);
+							.createNewClientSessionKey(mainProjectServerSessionkey.getDupPublicKeyBytes(), true);
 				} catch (SymmetricException e1) {
 					fail("fail to get a intanace of ClientSessionKeyIF class");
 				}
 
 				try {
-					sessionKeyBase64 = CommonStaticUtil.Base64Encoder.encodeToString(clientSessionKey.getDupSessionKeyBytes());
+					sessionKeyBase64 = CommonStaticUtil.Base64Encoder
+							.encodeToString(clientSessionKey.getDupSessionKeyBytes());
 					ivBase64 = CommonStaticUtil.Base64Encoder.encodeToString(clientSessionKey.getDupIVBytes());
 
 					if (null != userID) {
@@ -112,36 +175,41 @@ public class BoardIntegrationSvlTest extends AbstractJunitTest {
 
 					if (null != nickname) {
 						byte[] bytesOfNickname = nickname.getBytes(CommonStaticFinalVars.CIPHER_CHARSET);
-						byte[] encryptedBytesOfNickname = clientSessionKey.getClientSymmetricKey().encrypt(bytesOfNickname);
+						byte[] encryptedBytesOfNickname = clientSessionKey.getClientSymmetricKey()
+								.encrypt(bytesOfNickname);
 						paramNicknameBase64 = CommonStaticUtil.Base64Encoder.encodeToString(encryptedBytesOfNickname);
 					}
 
 					if (null != pwdHint) {
 						byte[] bytesOfPwdHint = pwdHint.getBytes(CommonStaticFinalVars.CIPHER_CHARSET);
-						byte[] encryptedBytesOfPwdHint = clientSessionKey.getClientSymmetricKey().encrypt(bytesOfPwdHint);
+						byte[] encryptedBytesOfPwdHint = clientSessionKey.getClientSymmetricKey()
+								.encrypt(bytesOfPwdHint);
 						paramPwdHintBase64 = CommonStaticUtil.Base64Encoder.encodeToString(encryptedBytesOfPwdHint);
 					}
 
 					if (null != pwdAnswer) {
 						byte[] bytesOfPwdAnswer = pwdAnswer.getBytes(CommonStaticFinalVars.CIPHER_CHARSET);
-						byte[] encryptedBytesOfPwdAnswer = clientSessionKey.getClientSymmetricKey().encrypt(bytesOfPwdAnswer);
+						byte[] encryptedBytesOfPwdAnswer = clientSessionKey.getClientSymmetricKey()
+								.encrypt(bytesOfPwdAnswer);
 						paramPwdAnswerBase64 = CommonStaticUtil.Base64Encoder.encodeToString(encryptedBytesOfPwdAnswer);
 					}
 
 					if (null != captchaAnswer) {
 						byte[] bytesOfCaptchaAnswer = captchaAnswer.getBytes(CommonStaticFinalVars.CIPHER_CHARSET);
-						byte[] encryptedBytesOfCaptchaAnswer = clientSessionKey.getClientSymmetricKey().encrypt(bytesOfCaptchaAnswer);
-						paramCaptchaAnswerBase64 = CommonStaticUtil.Base64Encoder.encodeToString(encryptedBytesOfCaptchaAnswer);
+						byte[] encryptedBytesOfCaptchaAnswer = clientSessionKey.getClientSymmetricKey()
+								.encrypt(bytesOfCaptchaAnswer);
+						paramCaptchaAnswerBase64 = CommonStaticUtil.Base64Encoder
+								.encodeToString(encryptedBytesOfCaptchaAnswer);
 					}
 
 				} catch (Exception e) {
-					log.warn("파라미터 구성 실패", e);
+					Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
+					log.log(Level.WARNING, "파라미터 구성 실패", e);
 					fail("파라미터 구성 실패");
 				}
-				
+
 				HttpSession sessionMock = mock(HttpSession.class);
-				when(sessionMock.getAttribute(Captcha.NAME))
-						.thenReturn(captcha);
+				when(sessionMock.getAttribute(Captcha.NAME)).thenReturn(captcha);
 
 				HttpServletRequest requestMock = mock(HttpServletRequest.class);
 				when(requestMock.getMethod()).thenReturn("POST");
@@ -168,7 +236,8 @@ public class BoardIntegrationSvlTest extends AbstractJunitTest {
 			}
 		}
 
-		HttpServletRequest requestMock = new MembershipRequestMockBuilder().build("test00", "test1234$", "별명00", "질문", "답변");
+		HttpServletRequest requestMock = new MembershipRequestMockBuilder().build("test00", "test1234$", "별명00", "질문",
+				"답변");
 		HttpServletResponse responseMock = mock(HttpServletResponse.class);
 
 		MemberRegisterProcessSvl membershipProcessSvl = new MemberRegisterProcessSvl();
@@ -176,27 +245,35 @@ public class BoardIntegrationSvlTest extends AbstractJunitTest {
 		try {
 			initServlet(membershipProcessSvl, "/servlet/UserSiteMembershipInput");
 		} catch (Exception e) {
-			log.warn("서블릿 초기화 실패", e);
+			Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
+			log.log(Level.WARNING, "서블릿 초기화 실패", e);
 			fail("서블릿 초기화 실패");
 		}
 
 		MessageResultRes messageResultRes = null;
 		try {
 			messageResultRes = membershipProcessSvl.doWork(requestMock, responseMock);
-			
-			if (! messageResultRes.getIsSuccess()) {
+
+			if (!messageResultRes.getIsSuccess()) {
 				assertEquals("중복 아이디 검사", "기존 회원과 중복되는 아이디[test00] 입니다", messageResultRes.getResultMessage());
 			}
-			
+
 		} catch (WebClientException e) {
-			log.warn("errmsg={}, debugmsg={}", e.getErrorMessage(), e.getDebugMessage());
+			HashMap<String, Object> logHash = new HashMap<String, Object>();
+			logHash.put("errmsg", e.getErrorMessage());
+			logHash.put("debugmsg", e.getDebugMessage());
+
+			Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
+			log.warning(logHash.toString());
+
 			fail("일반 회원 가입 서블릿 수행 실패");
 		} catch (Exception e) {
-			log.warn("unknown error", e);
+			Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
+			log.log(Level.WARNING, "unknown error", e);
 			fail("일반 회원 가입 서블릿 수행 실패");
 		}
 	}
-	
+
 	private static void initServlet(HttpServlet targetServlet, String menuGroupURL) throws Exception {
 		RequestDispatcher requestDispatcherMock = mock(RequestDispatcher.class);
 
@@ -211,16 +288,15 @@ public class BoardIntegrationSvlTest extends AbstractJunitTest {
 
 		targetServlet.init(servletConfigMock);
 	}
-	
-	private BoardWriteRes executeBoardWriteProcessServlet(String loginID, 
-			String paramBoardID, String paramSubject, String paramContents, List<File> newAttachedFileList) {
-		
+
+	private BoardWriteRes executeBoardWriteProcessServlet(String loginID, String paramBoardID, String paramSubject,
+			String paramContents, List<File> newAttachedFileList) {
+
 		class BoardWriteProcessRequestMockBuilder {
-			public HttpServletRequest build(String loginID, 
-					String paramBoardID, String paramSubject, String paramContents, List<File> newAttachedFileList) {
-				ServerSessionkeyManager serverSessionkeyManager = ServerSessionkeyManager
-						.getInstance();
-				
+			public HttpServletRequest build(String loginID, String paramBoardID, String paramSubject,
+					String paramContents, List<File> newAttachedFileList) {
+				ServerSessionkeyManager serverSessionkeyManager = ServerSessionkeyManager.getInstance();
+
 				ClientSessionKeyManager clientSessionKeyManager = ClientSessionKeyManager.getInstance();
 				ServerSessionkeyIF mainProjectServerSessionkey = null;
 				try {
@@ -228,58 +304,55 @@ public class BoardIntegrationSvlTest extends AbstractJunitTest {
 				} catch (SymmetricException e2) {
 					fail("fail to get a intanace of ServerSessionkeyIF class");
 				}
-				
+
 				ClientSessionKeyIF clientSessionKey = null;
 				try {
-					clientSessionKey = clientSessionKeyManager.getNewClientSessionKey(mainProjectServerSessionkey.getDupPublicKeyBytes(), true);
+					clientSessionKey = clientSessionKeyManager
+							.createNewClientSessionKey(mainProjectServerSessionkey.getDupPublicKeyBytes(), true);
 				} catch (SymmetricException e1) {
 					fail("fail to get a intanace of ClientSessionKeyIF class");
 				}
-				
+
 				String sessionKeyBase64 = null;
-				String ivBase64 = null;	
+				String ivBase64 = null;
 				try {
-					sessionKeyBase64 = CommonStaticUtil.Base64Encoder.encodeToString(clientSessionKey.getDupSessionKeyBytes());
+					sessionKeyBase64 = CommonStaticUtil.Base64Encoder
+							.encodeToString(clientSessionKey.getDupSessionKeyBytes());
 					ivBase64 = CommonStaticUtil.Base64Encoder.encodeToString(clientSessionKey.getDupIVBytes());
 				} catch (Exception e) {
-					log.warn("파라미터 구성 실패", e);
+					log.log(Level.WARNING, "파라미터 구성 실패", e);
 					fail("파라미터 구성 실패");
 				}
-				
+
 				MultipartEntityBuilder writeBuilder = MultipartEntityBuilder.create();
 
-				writeBuilder.addTextBody(WebCommonStaticFinalVars.PARAMETER_KEY_NAME_OF_SESSION_KEY, 
-						sessionKeyBase64, 
+				writeBuilder.addTextBody(WebCommonStaticFinalVars.PARAMETER_KEY_NAME_OF_SESSION_KEY, sessionKeyBase64,
 						ContentType.create("text/plain", "UTF-8"));
-				
-				writeBuilder.addTextBody(WebCommonStaticFinalVars.PARAMETER_KEY_NAME_OF_SESSION_KEY_IV, 
-						ivBase64, 
+
+				writeBuilder.addTextBody(WebCommonStaticFinalVars.PARAMETER_KEY_NAME_OF_SESSION_KEY_IV, ivBase64,
 						ContentType.create("text/plain", "UTF-8"));
-				
-				writeBuilder.addTextBody("boardID", paramBoardID, 
-						ContentType.create("text/plain", "UTF-8"));				
-				
-				writeBuilder.addTextBody("subject", paramSubject, 
-						ContentType.create("text/plain", "UTF-8"));
-				
-				writeBuilder.addTextBody("contents", paramContents, 
-						ContentType.create("text/plain", "UTF-8"));	
+
+				writeBuilder.addTextBody("boardID", paramBoardID, ContentType.create("text/plain", "UTF-8"));
+
+				writeBuilder.addTextBody("subject", paramSubject, ContentType.create("text/plain", "UTF-8"));
+
+				writeBuilder.addTextBody("contents", paramContents, ContentType.create("text/plain", "UTF-8"));
 
 				for (File newAttachedFile : newAttachedFileList) {
 					byte[] contentsOfUploadFile = null;
 					try {
-						contentsOfUploadFile = CommonStaticUtil.readFileToByteArray(newAttachedFile, WebCommonStaticFinalVars.ATTACHED_FILE_MAX_SIZE);
+						contentsOfUploadFile = CommonStaticUtil.readFileToByteArray(newAttachedFile,
+								WebCommonStaticFinalVars.ATTACHED_FILE_MAX_SIZE);
 					} catch (IOException e) {
 						fail("첨부 파일로 지정한 파일 읽기 실패");
 					}
-					
+
 					InputStream attachedFileInputStream = new ByteArrayInputStream(contentsOfUploadFile);
 					String mimeTypeOfUploadFile = null;
 					try {
-						mimeTypeOfUploadFile = URLConnection
-								.guessContentTypeFromStream(attachedFileInputStream);
+						mimeTypeOfUploadFile = URLConnection.guessContentTypeFromStream(attachedFileInputStream);
 					} catch (IOException e) {
-						log.warn("입출력 에러가 발생하여 파일 유형 추출 실패, errmsg={}", e.getMessage());
+						log.warning("입출력 에러가 발생하여 파일 유형 추출 실패, errmsg=" + e.getMessage());
 						fail("입출력 에러가 발생하여 파일 유형 추출 실패");
 					} finally {
 						try {
@@ -287,36 +360,40 @@ public class BoardIntegrationSvlTest extends AbstractJunitTest {
 						} catch (IOException e) {
 						}
 					}
-					
+
 					if (null == mimeTypeOfUploadFile) {
 						fail("파일 유형을 알 수 없습니다");
 					}
-					
-					writeBuilder.addBinaryBody("newAttachedFile", contentsOfUploadFile, ContentType.create(mimeTypeOfUploadFile), newAttachedFile.getName());
-				}		
-				
+
+					writeBuilder.addBinaryBody("newAttachedFile", contentsOfUploadFile,
+							ContentType.create(mimeTypeOfUploadFile), newAttachedFile.getName());
+				}
+
 				HttpEntity writeEntity = writeBuilder.build();
 
-		        ByteArrayOutputStream writeByteArrayOputStream = new ByteArrayOutputStream();
-		        try {
+				ByteArrayOutputStream writeByteArrayOputStream = new ByteArrayOutputStream();
+				try {
 					writeEntity.writeTo(writeByteArrayOputStream);
 				} catch (IOException e) {
-					log.warn("입출력 에러로 HttpEntity 의 내용을 출력 스트림에 쓰기  실패, errmsg={}", e.getMessage());
+					log.warning("입출력 에러로 HttpEntity 의 내용을 출력 스트림에 쓰기  실패, errmsg=" + e.getMessage());
 					fail("입출력 에러로 HttpEntity 의 내용을 출력 스트림에 쓰기  실패");
 				}
-		        
-		        ByteArrayInputStream writeByteArrayInputStream = new ByteArrayInputStream(writeByteArrayOputStream.toByteArray());
-		        
-		        HttpSession sessionMock = mock(HttpSession.class);
-				when(sessionMock.getAttribute(WebCommonStaticFinalVars.HTTPSESSION_KEY_NAME_OF_LOGINED_USER_INFORMATION))
-				.thenReturn(new AccessedUserInformation(true, loginID, "테스터", MemberRoleType.MEMBER));
-				
+
+				ByteArrayInputStream writeByteArrayInputStream = new ByteArrayInputStream(
+						writeByteArrayOputStream.toByteArray());
+
+				HttpSession sessionMock = mock(HttpSession.class);
+				when(sessionMock
+						.getAttribute(WebCommonStaticFinalVars.HTTPSESSION_KEY_NAME_OF_LOGINED_USER_INFORMATION))
+								.thenReturn(new AccessedUserInformation(true, loginID, "테스터", MemberRoleType.MEMBER));
+
 				HttpServletRequest requestMock = mock(HttpServletRequest.class);
 				when(requestMock.getMethod()).thenReturn("POST");
 				when(requestMock.getContentType()).thenReturn(writeEntity.getContentType().getValue());
-		        when(requestMock.getContentLength()).thenReturn((int)writeEntity.getContentLength());
-		        try {
-					when(requestMock.getInputStream()).thenReturn(new MockServletInputStream(writeByteArrayInputStream));
+				when(requestMock.getContentLength()).thenReturn((int) writeEntity.getContentLength());
+				try {
+					when(requestMock.getInputStream())
+							.thenReturn(new MockServletInputStream(writeByteArrayInputStream));
 				} catch (IOException e) {
 					fail("dead code");
 				}
@@ -325,20 +402,20 @@ public class BoardIntegrationSvlTest extends AbstractJunitTest {
 				when(requestMock.getRemoteHost()).thenReturn("");
 				when(requestMock.getRemoteAddr()).thenReturn("172.0.1.32");
 				when(requestMock.getRemoteUser()).thenReturn("");
-						
+
 				// Create a factory for disk-based file items
 				DiskFileItemFactory diskFileItemFactory = new DiskFileItemFactory();
 
 				// Set factory constraints
 				diskFileItemFactory.setSizeThreshold(WebCommonStaticFinalVars.APACHE_FILEUPLOAD_MAX_MEMORY_SIZE);
-				
+
 				CoddaConfigurationManager configurationManager = CoddaConfigurationManager.getInstance();
 				CoddaConfiguration runningProjectConfiguration = configurationManager.getRunningProjectConfiguration();
 				String mainProjectName = runningProjectConfiguration.getMainProjectName();
 				String installedPathString = runningProjectConfiguration.getInstalledPathString();
-				String userWebTempPathString = WebRootBuildSystemPathSupporter.getUserWebTempPathString(installedPathString,
-						mainProjectName);
-				
+				String userWebTempPathString = WebRootBuildSystemPathSupporter
+						.getUserWebTempPathString(installedPathString, mainProjectName);
+
 				diskFileItemFactory.setRepository(new File(userWebTempPathString));
 
 				// Create a new file upload handler
@@ -355,13 +432,13 @@ public class BoardIntegrationSvlTest extends AbstractJunitTest {
 				List<FileItem> fileItemList = null;
 				try {
 					/**
-					 * WARNING! 파싱은 request 가 가진  입력 스트림을 소진합니다, 하여 파싱후 그 결과를 전달해 주어야 합니다.
-					 * 이때 쓰레드 세이프 문제 때문에 변수 fileItemList 는 멤버 변수가 아닌 request 객체를 통해 전달합니다.
+					 * WARNING! 파싱은 request 가 가진 입력 스트림을 소진합니다, 하여 파싱후 그 결과를 전달해 주어야 합니다. 이때 쓰레드 세이프
+					 * 문제 때문에 변수 fileItemList 는 멤버 변수가 아닌 request 객체를 통해 전달합니다.
 					 */
-					fileItemList = upload.parseRequest(requestMock);					
+					fileItemList = upload.parseRequest(requestMock);
 					when(requestMock.getAttribute("fileItemList")).thenReturn(fileItemList);
 				} catch (FileUploadException e) {
-					log.error("dead code", e);
+					log.log(Level.SEVERE, "dead code", e);
 					System.exit(1);
 
 				}
@@ -369,52 +446,51 @@ public class BoardIntegrationSvlTest extends AbstractJunitTest {
 				return requestMock;
 			}
 		}
-		
-		HttpServletRequest requestMock = new BoardWriteProcessRequestMockBuilder().build(loginID,
-				paramBoardID,
+
+		HttpServletRequest requestMock = new BoardWriteProcessRequestMockBuilder().build(loginID, paramBoardID,
 				paramSubject, paramContents, newAttachedFileList);
 		HttpServletResponse responseMock = mock(HttpServletResponse.class);
-				
-				
+
 		BoardWriteProcessSvl boardWriteProcessSvl = new BoardWriteProcessSvl();
-		
+
 		try {
 			initServlet(boardWriteProcessSvl, "/servlet/BoardList");
 		} catch (Exception e) {
-			log.warn("서블릿 초기화 실패", e);
+			log.log(Level.WARNING, "서블릿 초기화 실패", e);
 			fail("서블릿 초기화 실패");
 		}
-		
+
 		BoardWriteRes boardWriteRes = null;
-		
+
 		try {
-			// boardWriteProcessSvl.service(requestMock, responseMock);			
+			// boardWriteProcessSvl.service(requestMock, responseMock);
 			boardWriteRes = boardWriteProcessSvl.doWork(requestMock, responseMock);
-			
+
 			// log.info(boardWriteRes.toString());
 		} catch (WebClientException e) {
-			log.warn("errmsg={}, debugmsg={}", e.getErrorMessage(), e.getDebugMessage());
+			HashMap<String, Object> logHash = new HashMap<String, Object>();
+			logHash.put("errmsg", e.getErrorMessage());
+			logHash.put("debugmsg", e.getDebugMessage());
+
+			log.warning(logHash.toString());
+
 			fail("게시판 쓰기 서블릿 수행 실패");
 		} catch (Exception e) {
-			log.warn("unknown error", e);
+			log.log(Level.WARNING, "unknown error", e);
 			fail("게시판 쓰기 서블릿 수행 실패");
 		}
-		
+
 		return boardWriteRes;
 	}
-	
-	
-	private BoardReplyRes execuateBoardReplyProcessServlet(String loginID, 
-			String paramBoardID, String paramParentBoardNo, String paramSubject, 
-			String paramContents, List<File> attachedFileList) {
-		
+
+	private BoardReplyRes execuateBoardReplyProcessServlet(String loginID, String paramBoardID,
+			String paramParentBoardNo, String paramSubject, String paramContents, List<File> attachedFileList) {
+
 		class BoardReplyProcessRequestMockBuilder {
-			public HttpServletRequest build(String loginID, 
-					String paramBoardID, String paramParentBoardNo, String paramSubject, 
-					String paramContents, List<File> attachedFileList) {
-				ServerSessionkeyManager serverSessionkeyManager = ServerSessionkeyManager
-						.getInstance();
-				
+			public HttpServletRequest build(String loginID, String paramBoardID, String paramParentBoardNo,
+					String paramSubject, String paramContents, List<File> attachedFileList) {
+				ServerSessionkeyManager serverSessionkeyManager = ServerSessionkeyManager.getInstance();
+
 				ClientSessionKeyManager clientSessionKeyManager = ClientSessionKeyManager.getInstance();
 				ServerSessionkeyIF mainProjectServerSessionkey = null;
 				try {
@@ -422,55 +498,51 @@ public class BoardIntegrationSvlTest extends AbstractJunitTest {
 				} catch (SymmetricException e2) {
 					fail("fail to get a intanace of ServerSessionkeyIF class");
 				}
-				
+
 				ClientSessionKeyIF clientSessionKey = null;
 				try {
-					clientSessionKey = clientSessionKeyManager.getNewClientSessionKey(mainProjectServerSessionkey.getDupPublicKeyBytes(), true);
+					clientSessionKey = clientSessionKeyManager
+							.createNewClientSessionKey(mainProjectServerSessionkey.getDupPublicKeyBytes(), true);
 				} catch (SymmetricException e1) {
 					fail("fail to get a intanace of ClientSessionKeyIF class");
 				}
-				
-				final String sessionKeyBase64 = CommonStaticUtil.Base64Encoder.encodeToString(clientSessionKey.getDupSessionKeyBytes());
+
+				final String sessionKeyBase64 = CommonStaticUtil.Base64Encoder
+						.encodeToString(clientSessionKey.getDupSessionKeyBytes());
 				final String ivBase64 = CommonStaticUtil.Base64Encoder.encodeToString(clientSessionKey.getDupIVBytes());
-				
+
 				MultipartEntityBuilder replyBuilder = MultipartEntityBuilder.create();
 
-				replyBuilder.addTextBody(WebCommonStaticFinalVars.PARAMETER_KEY_NAME_OF_SESSION_KEY, 
-						sessionKeyBase64, 
+				replyBuilder.addTextBody(WebCommonStaticFinalVars.PARAMETER_KEY_NAME_OF_SESSION_KEY, sessionKeyBase64,
 						ContentType.create("text/plain", "UTF-8"));
-				
-				replyBuilder.addTextBody(WebCommonStaticFinalVars.PARAMETER_KEY_NAME_OF_SESSION_KEY_IV, 
-						ivBase64, 
+
+				replyBuilder.addTextBody(WebCommonStaticFinalVars.PARAMETER_KEY_NAME_OF_SESSION_KEY_IV, ivBase64,
 						ContentType.create("text/plain", "UTF-8"));
-				
-				replyBuilder.addTextBody("boardID", paramBoardID, 
+
+				replyBuilder.addTextBody("boardID", paramBoardID, ContentType.create("text/plain", "UTF-8"));
+
+				replyBuilder.addTextBody("parentBoardNo", paramParentBoardNo,
 						ContentType.create("text/plain", "UTF-8"));
-				
-				replyBuilder.addTextBody("parentBoardNo", paramParentBoardNo, 
-						ContentType.create("text/plain", "UTF-8"));
-				
-				replyBuilder.addTextBody("subject", paramSubject, 
-						ContentType.create("text/plain", "UTF-8"));
-				
-				replyBuilder.addTextBody("contents", paramContents, 
-						ContentType.create("text/plain", "UTF-8"));
-				
-				
+
+				replyBuilder.addTextBody("subject", paramSubject, ContentType.create("text/plain", "UTF-8"));
+
+				replyBuilder.addTextBody("contents", paramContents, ContentType.create("text/plain", "UTF-8"));
+
 				for (File attachedFile : attachedFileList) {
 					byte[] contentsOfUploadFile = null;
 					try {
-						contentsOfUploadFile = CommonStaticUtil.readFileToByteArray(attachedFile, WebCommonStaticFinalVars.ATTACHED_FILE_MAX_SIZE);
+						contentsOfUploadFile = CommonStaticUtil.readFileToByteArray(attachedFile,
+								WebCommonStaticFinalVars.ATTACHED_FILE_MAX_SIZE);
 					} catch (IOException e) {
 						fail("첨부 파일로 지정한 파일 읽기 실패");
 					}
-					
+
 					InputStream attachedFileInputStream = new ByteArrayInputStream(contentsOfUploadFile);
 					String mimeTypeOfUploadFile = null;
 					try {
-						mimeTypeOfUploadFile = URLConnection
-								.guessContentTypeFromStream(attachedFileInputStream);
+						mimeTypeOfUploadFile = URLConnection.guessContentTypeFromStream(attachedFileInputStream);
 					} catch (IOException e) {
-						log.warn("입출력 에러가 발생하여 파일 유형 추출 실패, errmsg={}", e.getMessage());
+						log.warning("입출력 에러가 발생하여 파일 유형 추출 실패, errmsg=" + e.getMessage());
 						fail("입출력 에러가 발생하여 파일 유형 추출 실패");
 					} finally {
 						try {
@@ -478,37 +550,40 @@ public class BoardIntegrationSvlTest extends AbstractJunitTest {
 						} catch (IOException e) {
 						}
 					}
-					
+
 					if (null == mimeTypeOfUploadFile) {
 						fail("파일 유형을 알 수 없습니다");
 					}
-					
-					replyBuilder.addBinaryBody("newAttachedFile", contentsOfUploadFile, ContentType.create(mimeTypeOfUploadFile), attachedFile.getName());
+
+					replyBuilder.addBinaryBody("newAttachedFile", contentsOfUploadFile,
+							ContentType.create(mimeTypeOfUploadFile), attachedFile.getName());
 				}
-				
-				
+
 				HttpEntity replyEntity = replyBuilder.build();
-				
+
 				ByteArrayOutputStream replyByteArrayOputStream = new ByteArrayOutputStream();
-		        try {
-		        	replyEntity.writeTo(replyByteArrayOputStream);
+				try {
+					replyEntity.writeTo(replyByteArrayOputStream);
 				} catch (IOException e) {
-					log.warn("입출력 에러로 HttpEntity 의 내용을 출력 스트림에 쓰기  실패, errmsg={}", e.getMessage());
+					log.warning("입출력 에러로 HttpEntity 의 내용을 출력 스트림에 쓰기  실패, errmsg=" + e.getMessage());
 					fail("입출력 에러로 HttpEntity 의 내용을 출력 스트림에 쓰기  실패");
 				}
-		        
-		        ByteArrayInputStream replyByteArrayInputStream = new ByteArrayInputStream(replyByteArrayOputStream.toByteArray());
-		        
-		        HttpSession sessionMock = mock(HttpSession.class);
-				when(sessionMock.getAttribute(WebCommonStaticFinalVars.HTTPSESSION_KEY_NAME_OF_LOGINED_USER_INFORMATION))
-				.thenReturn(new AccessedUserInformation(true, loginID, "테스터", MemberRoleType.MEMBER));
-				
-		        HttpServletRequest requestMock = mock(HttpServletRequest.class);
+
+				ByteArrayInputStream replyByteArrayInputStream = new ByteArrayInputStream(
+						replyByteArrayOputStream.toByteArray());
+
+				HttpSession sessionMock = mock(HttpSession.class);
+				when(sessionMock
+						.getAttribute(WebCommonStaticFinalVars.HTTPSESSION_KEY_NAME_OF_LOGINED_USER_INFORMATION))
+								.thenReturn(new AccessedUserInformation(true, loginID, "테스터", MemberRoleType.MEMBER));
+
+				HttpServletRequest requestMock = mock(HttpServletRequest.class);
 				when(requestMock.getMethod()).thenReturn("POST");
 				when(requestMock.getContentType()).thenReturn(replyEntity.getContentType().getValue());
-		        when(requestMock.getContentLength()).thenReturn((int)replyEntity.getContentLength());
-		        try {
-					when(requestMock.getInputStream()).thenReturn(new MockServletInputStream(replyByteArrayInputStream));
+				when(requestMock.getContentLength()).thenReturn((int) replyEntity.getContentLength());
+				try {
+					when(requestMock.getInputStream())
+							.thenReturn(new MockServletInputStream(replyByteArrayInputStream));
 				} catch (IOException e) {
 					fail("dead code");
 				}
@@ -517,20 +592,20 @@ public class BoardIntegrationSvlTest extends AbstractJunitTest {
 				when(requestMock.getRemoteHost()).thenReturn("");
 				when(requestMock.getRemoteAddr()).thenReturn("172.0.1.32");
 				when(requestMock.getRemoteUser()).thenReturn("");
-				
+
 				// Create a factory for disk-based file items
 				DiskFileItemFactory diskFileItemFactory = new DiskFileItemFactory();
 
 				// Set factory constraints
 				diskFileItemFactory.setSizeThreshold(WebCommonStaticFinalVars.APACHE_FILEUPLOAD_MAX_MEMORY_SIZE);
-				
+
 				CoddaConfigurationManager configurationManager = CoddaConfigurationManager.getInstance();
 				CoddaConfiguration runningProjectConfiguration = configurationManager.getRunningProjectConfiguration();
 				String mainProjectName = runningProjectConfiguration.getMainProjectName();
 				String installedPathString = runningProjectConfiguration.getInstalledPathString();
-				String userWebTempPathString = WebRootBuildSystemPathSupporter.getUserWebTempPathString(installedPathString,
-						mainProjectName);
-				
+				String userWebTempPathString = WebRootBuildSystemPathSupporter
+						.getUserWebTempPathString(installedPathString, mainProjectName);
+
 				diskFileItemFactory.setRepository(new File(userWebTempPathString));
 
 				// Create a new file upload handler
@@ -547,13 +622,13 @@ public class BoardIntegrationSvlTest extends AbstractJunitTest {
 				List<FileItem> fileItemList = null;
 				try {
 					/**
-					 * WARNING! 파싱은 request 가 가진  입력 스트림을 소진합니다, 하여 파싱후 그 결과를 전달해 주어야 합니다.
-					 * 이때 쓰레드 세이프 문제 때문에 변수 fileItemList 는 멤버 변수가 아닌 request 객체를 통해 전달합니다.
+					 * WARNING! 파싱은 request 가 가진 입력 스트림을 소진합니다, 하여 파싱후 그 결과를 전달해 주어야 합니다. 이때 쓰레드 세이프
+					 * 문제 때문에 변수 fileItemList 는 멤버 변수가 아닌 request 객체를 통해 전달합니다.
 					 */
-					fileItemList = upload.parseRequest(requestMock);					
+					fileItemList = upload.parseRequest(requestMock);
 					when(requestMock.getAttribute("fileItemList")).thenReturn(fileItemList);
 				} catch (FileUploadException e) {
-					log.error("dead code", e);
+					log.log(Level.SEVERE, "dead code", e);
 					System.exit(1);
 
 				}
@@ -561,54 +636,52 @@ public class BoardIntegrationSvlTest extends AbstractJunitTest {
 				return requestMock;
 			}
 		}
-		
-		HttpServletRequest requestMock = new BoardReplyProcessRequestMockBuilder().build(loginID,
-				paramBoardID,
-				paramParentBoardNo,
-				paramSubject, paramContents, attachedFileList);
+
+		HttpServletRequest requestMock = new BoardReplyProcessRequestMockBuilder().build(loginID, paramBoardID,
+				paramParentBoardNo, paramSubject, paramContents, attachedFileList);
 		HttpServletResponse responseMock = mock(HttpServletResponse.class);
-				
+
 		BoardReplyProcessSvl boardReplyProcessSvl = new BoardReplyProcessSvl();
-		
+
 		try {
 			initServlet(boardReplyProcessSvl, "/servlet/BoardList");
 		} catch (Exception e) {
-			log.warn("서블릿 초기화 실패", e);
+			log.log(Level.WARNING, "서블릿 초기화 실패", e);
 			fail("서블릿 초기화 실패");
 		}
-		
+
 		BoardReplyRes boardReplyRes = null;
-		
+
 		try {
 			boardReplyRes = boardReplyProcessSvl.doWork(requestMock, responseMock);
-			
+
 			// log.info(boardReplyRes.toString());
 		} catch (WebClientException e) {
-			log.warn("errmsg={}, debugmsg={}", e.getErrorMessage(), e.getDebugMessage());
+			HashMap<String, Object> logHash = new HashMap<String, Object>();
+			logHash.put("errmsg", e.getErrorMessage());
+			logHash.put("debugmsg", e.getDebugMessage());
+
+			log.warning(logHash.toString());
+
 			fail("게시판 댓글 서블릿 수행 실패");
 		} catch (Exception e) {
-			log.warn("unknown error", e);
+			log.log(Level.WARNING, "unknown error", e);
 			fail("게시판 댓글 서블릿 수행 실패");
 		}
-		
+
 		return boardReplyRes;
 	}
 
-	
-	
-	private BoardModifyRes executeBoardModifyProcessServlet(String loginID, 
-			String paramBoardID, String paramBoardNo, String paramSubject, String paramContents, 
-			String paramNextAttachedFileSeq,
+	private BoardModifyRes executeBoardModifyProcessServlet(String loginID, String paramBoardID, String paramBoardNo,
+			String paramSubject, String paramContents, String paramNextAttachedFileSeq,
 			List<Short> oldAttachedFileSeqList, List<File> newAttachedFileList) {
-		
+
 		class BoardModifyProcessRequestMockBuilder {
-			public HttpServletRequest build(String loginID, 
-					String paramBoardID, String paramBoardNo, String paramSubject, String paramContents, 
-					String paramNextAttachedFileSeq,
+			public HttpServletRequest build(String loginID, String paramBoardID, String paramBoardNo,
+					String paramSubject, String paramContents, String paramNextAttachedFileSeq,
 					List<Short> oldAttachedFileSeqList, List<File> newAttachedFileList) {
-				ServerSessionkeyManager serverSessionkeyManager = ServerSessionkeyManager
-						.getInstance();
-				
+				ServerSessionkeyManager serverSessionkeyManager = ServerSessionkeyManager.getInstance();
+
 				ClientSessionKeyManager clientSessionKeyManager = ClientSessionKeyManager.getInstance();
 				ServerSessionkeyIF mainProjectServerSessionkey = null;
 				try {
@@ -616,69 +689,65 @@ public class BoardIntegrationSvlTest extends AbstractJunitTest {
 				} catch (SymmetricException e2) {
 					fail("fail to get a intanace of ServerSessionkeyIF class");
 				}
-				
+
 				ClientSessionKeyIF clientSessionKey = null;
 				try {
-					clientSessionKey = clientSessionKeyManager.getNewClientSessionKey(mainProjectServerSessionkey.getDupPublicKeyBytes(), true);
+					clientSessionKey = clientSessionKeyManager
+							.createNewClientSessionKey(mainProjectServerSessionkey.getDupPublicKeyBytes(), true);
 				} catch (SymmetricException e1) {
 					fail("fail to get a intanace of ClientSessionKeyIF class");
 				}
-				
+
 				String sessionKeyBase64 = null;
-				String ivBase64 = null;	
+				String ivBase64 = null;
 				try {
-					sessionKeyBase64 = CommonStaticUtil.Base64Encoder.encodeToString(clientSessionKey.getDupSessionKeyBytes());
+					sessionKeyBase64 = CommonStaticUtil.Base64Encoder
+							.encodeToString(clientSessionKey.getDupSessionKeyBytes());
 					ivBase64 = CommonStaticUtil.Base64Encoder.encodeToString(clientSessionKey.getDupIVBytes());
 				} catch (Exception e) {
-					log.warn("파라미터 구성 실패", e);
+					log.log(Level.WARNING, "파라미터 구성 실패", e);
 					fail("파라미터 구성 실패");
 				}
-				
+
 				MultipartEntityBuilder writeBuilder = MultipartEntityBuilder.create();
 
-				writeBuilder.addTextBody(WebCommonStaticFinalVars.PARAMETER_KEY_NAME_OF_SESSION_KEY, 
-						sessionKeyBase64, 
+				writeBuilder.addTextBody(WebCommonStaticFinalVars.PARAMETER_KEY_NAME_OF_SESSION_KEY, sessionKeyBase64,
 						ContentType.create("text/plain", "UTF-8"));
-				
-				writeBuilder.addTextBody(WebCommonStaticFinalVars.PARAMETER_KEY_NAME_OF_SESSION_KEY_IV, 
-						ivBase64, 
+
+				writeBuilder.addTextBody(WebCommonStaticFinalVars.PARAMETER_KEY_NAME_OF_SESSION_KEY_IV, ivBase64,
 						ContentType.create("text/plain", "UTF-8"));
-				
-				writeBuilder.addTextBody("boardID", paramBoardID, 
-						ContentType.create("text/plain", "UTF-8"));		
-				
-				writeBuilder.addTextBody("boardNo", paramBoardNo, 
+
+				writeBuilder.addTextBody("boardID", paramBoardID, ContentType.create("text/plain", "UTF-8"));
+
+				writeBuilder.addTextBody("boardNo", paramBoardNo, ContentType.create("text/plain", "UTF-8"));
+
+				writeBuilder.addTextBody("subject", paramSubject, ContentType.create("text/plain", "UTF-8"));
+
+				writeBuilder.addTextBody("contents", paramContents, ContentType.create("text/plain", "UTF-8"));
+
+				writeBuilder.addTextBody("nextAttachedFileSeq", paramNextAttachedFileSeq,
 						ContentType.create("text/plain", "UTF-8"));
-				
-				writeBuilder.addTextBody("subject", paramSubject, 
-						ContentType.create("text/plain", "UTF-8"));
-				
-				writeBuilder.addTextBody("contents", paramContents, 
-						ContentType.create("text/plain", "UTF-8"));
-				
-				writeBuilder.addTextBody("nextAttachedFileSeq", paramNextAttachedFileSeq, 
-						ContentType.create("text/plain", "UTF-8"));				
 
 				for (short oldAttachedFileSeq : oldAttachedFileSeqList) {
-					writeBuilder.addTextBody("oldAttachedFileSeq", String.valueOf(oldAttachedFileSeq), 
+					writeBuilder.addTextBody("oldAttachedFileSeq", String.valueOf(oldAttachedFileSeq),
 							ContentType.create("text/plain", "UTF-8"));
 				}
 
 				for (File newAttachedFile : newAttachedFileList) {
 					byte[] contentsOfUploadFile = null;
 					try {
-						contentsOfUploadFile = CommonStaticUtil.readFileToByteArray(newAttachedFile, WebCommonStaticFinalVars.ATTACHED_FILE_MAX_SIZE);
+						contentsOfUploadFile = CommonStaticUtil.readFileToByteArray(newAttachedFile,
+								WebCommonStaticFinalVars.ATTACHED_FILE_MAX_SIZE);
 					} catch (IOException e) {
 						fail("첨부 파일로 지정한 파일 읽기 실패");
 					}
-					
+
 					InputStream attachedFileInputStream = new ByteArrayInputStream(contentsOfUploadFile);
 					String mimeTypeOfUploadFile = null;
 					try {
-						mimeTypeOfUploadFile = URLConnection
-								.guessContentTypeFromStream(attachedFileInputStream);
+						mimeTypeOfUploadFile = URLConnection.guessContentTypeFromStream(attachedFileInputStream);
 					} catch (IOException e) {
-						log.warn("입출력 에러가 발생하여 파일 유형 추출 실패, errmsg={}", e.getMessage());
+						log.warning("입출력 에러가 발생하여 파일 유형 추출 실패, errmsg=" + e.getMessage());
 						fail("입출력 에러가 발생하여 파일 유형 추출 실패");
 					} finally {
 						try {
@@ -686,36 +755,40 @@ public class BoardIntegrationSvlTest extends AbstractJunitTest {
 						} catch (IOException e) {
 						}
 					}
-					
+
 					if (null == mimeTypeOfUploadFile) {
 						fail("파일 유형을 알 수 없습니다");
 					}
-					
-					writeBuilder.addBinaryBody("newAttachedFile", contentsOfUploadFile, ContentType.create(mimeTypeOfUploadFile), newAttachedFile.getName());
-				}		
-				
+
+					writeBuilder.addBinaryBody("newAttachedFile", contentsOfUploadFile,
+							ContentType.create(mimeTypeOfUploadFile), newAttachedFile.getName());
+				}
+
 				HttpEntity writeEntity = writeBuilder.build();
 
-		        ByteArrayOutputStream writeByteArrayOputStream = new ByteArrayOutputStream();
-		        try {
+				ByteArrayOutputStream writeByteArrayOputStream = new ByteArrayOutputStream();
+				try {
 					writeEntity.writeTo(writeByteArrayOputStream);
 				} catch (IOException e) {
-					log.warn("입출력 에러로 HttpEntity 의 내용을 출력 스트림에 쓰기  실패, errmsg={}", e.getMessage());
+					log.warning("입출력 에러로 HttpEntity 의 내용을 출력 스트림에 쓰기  실패, errmsg=" + e.getMessage());
 					fail("입출력 에러로 HttpEntity 의 내용을 출력 스트림에 쓰기  실패");
 				}
-		        
-		        ByteArrayInputStream writeByteArrayInputStream = new ByteArrayInputStream(writeByteArrayOputStream.toByteArray());
-		        
-		        HttpSession sessionMock = mock(HttpSession.class);
-				when(sessionMock.getAttribute(WebCommonStaticFinalVars.HTTPSESSION_KEY_NAME_OF_LOGINED_USER_INFORMATION))
-				.thenReturn(new AccessedUserInformation(true, loginID, "테스터", MemberRoleType.MEMBER));
-				
+
+				ByteArrayInputStream writeByteArrayInputStream = new ByteArrayInputStream(
+						writeByteArrayOputStream.toByteArray());
+
+				HttpSession sessionMock = mock(HttpSession.class);
+				when(sessionMock
+						.getAttribute(WebCommonStaticFinalVars.HTTPSESSION_KEY_NAME_OF_LOGINED_USER_INFORMATION))
+								.thenReturn(new AccessedUserInformation(true, loginID, "테스터", MemberRoleType.MEMBER));
+
 				HttpServletRequest requestMock = mock(HttpServletRequest.class);
 				when(requestMock.getMethod()).thenReturn("POST");
 				when(requestMock.getContentType()).thenReturn(writeEntity.getContentType().getValue());
-		        when(requestMock.getContentLength()).thenReturn((int)writeEntity.getContentLength());
-		        try {
-					when(requestMock.getInputStream()).thenReturn(new MockServletInputStream(writeByteArrayInputStream));
+				when(requestMock.getContentLength()).thenReturn((int) writeEntity.getContentLength());
+				try {
+					when(requestMock.getInputStream())
+							.thenReturn(new MockServletInputStream(writeByteArrayInputStream));
 				} catch (IOException e) {
 					fail("dead code");
 				}
@@ -724,20 +797,20 @@ public class BoardIntegrationSvlTest extends AbstractJunitTest {
 				when(requestMock.getRemoteHost()).thenReturn("");
 				when(requestMock.getRemoteAddr()).thenReturn("172.0.1.32");
 				when(requestMock.getRemoteUser()).thenReturn("");
-				
+
 				// Create a factory for disk-based file items
 				DiskFileItemFactory diskFileItemFactory = new DiskFileItemFactory();
 
 				// Set factory constraints
 				diskFileItemFactory.setSizeThreshold(WebCommonStaticFinalVars.APACHE_FILEUPLOAD_MAX_MEMORY_SIZE);
-				
+
 				CoddaConfigurationManager configurationManager = CoddaConfigurationManager.getInstance();
 				CoddaConfiguration runningProjectConfiguration = configurationManager.getRunningProjectConfiguration();
 				String mainProjectName = runningProjectConfiguration.getMainProjectName();
 				String installedPathString = runningProjectConfiguration.getInstalledPathString();
-				String userWebTempPathString = WebRootBuildSystemPathSupporter.getUserWebTempPathString(installedPathString,
-						mainProjectName);
-				
+				String userWebTempPathString = WebRootBuildSystemPathSupporter
+						.getUserWebTempPathString(installedPathString, mainProjectName);
+
 				diskFileItemFactory.setRepository(new File(userWebTempPathString));
 
 				// Create a new file upload handler
@@ -754,13 +827,13 @@ public class BoardIntegrationSvlTest extends AbstractJunitTest {
 				List<FileItem> fileItemList = null;
 				try {
 					/**
-					 * WARNING! 파싱은 request 가 가진  입력 스트림을 소진합니다, 하여 파싱후 그 결과를 전달해 주어야 합니다.
-					 * 이때 쓰레드 세이프 문제 때문에 변수 fileItemList 는 멤버 변수가 아닌 request 객체를 통해 전달합니다.
+					 * WARNING! 파싱은 request 가 가진 입력 스트림을 소진합니다, 하여 파싱후 그 결과를 전달해 주어야 합니다. 이때 쓰레드 세이프
+					 * 문제 때문에 변수 fileItemList 는 멤버 변수가 아닌 request 객체를 통해 전달합니다.
 					 */
-					fileItemList = upload.parseRequest(requestMock);					
+					fileItemList = upload.parseRequest(requestMock);
 					when(requestMock.getAttribute("fileItemList")).thenReturn(fileItemList);
 				} catch (FileUploadException e) {
-					log.error("dead code", e);
+					log.log(Level.SEVERE, "dead code", e);
 					System.exit(1);
 
 				}
@@ -768,209 +841,231 @@ public class BoardIntegrationSvlTest extends AbstractJunitTest {
 				return requestMock;
 			}
 		}
-		
-		HttpServletRequest requestMock = new BoardModifyProcessRequestMockBuilder().build(loginID,
-				paramBoardID, paramBoardNo,
-				paramSubject, paramContents, paramNextAttachedFileSeq, oldAttachedFileSeqList, newAttachedFileList);
+
+		HttpServletRequest requestMock = new BoardModifyProcessRequestMockBuilder().build(loginID, paramBoardID,
+				paramBoardNo, paramSubject, paramContents, paramNextAttachedFileSeq, oldAttachedFileSeqList,
+				newAttachedFileList);
 		HttpServletResponse responseMock = mock(HttpServletResponse.class);
-				
-				
+
 		BoardModifyProcessSvl boardModifyProcessSvl = new BoardModifyProcessSvl();
-		
+
 		try {
 			initServlet(boardModifyProcessSvl, "/servlet/BoardList");
 		} catch (Exception e) {
-			log.warn("서블릿 초기화 실패", e);
+			log.log(Level.WARNING, "서블릿 초기화 실패", e);
 			fail("서블릿 초기화 실패");
 		}
-		
+
 		BoardModifyRes boardModifyRes = null;
-		
+
 		try {
-			// boardWriteProcessSvl.service(requestMock, responseMock);			
+			// boardWriteProcessSvl.service(requestMock, responseMock);
 			boardModifyRes = boardModifyProcessSvl.doWork(requestMock, responseMock);
-			
+
 			// log.info(boardWriteRes.toString());
 		} catch (WebClientException e) {
-			log.warn("errmsg={}, debugmsg={}", e.getErrorMessage(), e.getDebugMessage());
+			HashMap<String, Object> logHash = new HashMap<String, Object>();
+			logHash.put("errmsg", e.getErrorMessage());
+			logHash.put("debugmsg", e.getDebugMessage());
+
+			log.warning(logHash.toString());
 			fail("게시판 수정 서블릿 수행 실패");
 		} catch (Exception e) {
-			log.warn("unknown error", e);
+			log.log(Level.WARNING, "unknown error", e);
 			fail("게시판 수정 서블릿 수행 실패");
 		}
-		
+
 		return boardModifyRes;
 	}
-	
-	
+
 	@Test
 	public void 게시글본문쓰기_정상() {
 		List<File> attachedFileList = new ArrayList<File>();
-		
-		String[] attachedFileShortNames = {"sinnori_server_framework01.png", 
-				"sinnori_server_framework02.png"};
-		
+
+		String[] attachedFileShortNames = { "sinnori_server_framework01.png", "sinnori_server_framework02.png" };
+
 		for (String attachedFileShortName : attachedFileShortNames) {
 			String writeUploadFilePathString = new StringBuilder()
-			.append(WebRootBuildSystemPathSupporter.getUserWebRootPathString(installedPath.getAbsolutePath(), mainProjectName))
-			.append(File.separator)
-			.append("images")
-			.append(File.separator).append(attachedFileShortName).toString();
-			
+					.append(WebRootBuildSystemPathSupporter.getUserWebRootPathString(installedPath.getAbsolutePath(),
+							mainProjectName))
+					.append(File.separator).append("images").append(File.separator).append(attachedFileShortName)
+					.toString();
+
 			File writeUploadFile = new File(writeUploadFilePathString);
-			
-			if (! writeUploadFile.exists()) {
-				log.warn("업로드할 대상 파일[{}]이 존재하지 않습니다", writeUploadFilePathString);
+
+			if (!writeUploadFile.exists()) {
+				String errorMessage = new StringBuilder().append("업로드할 대상 파일[").append(writeUploadFilePathString)
+						.append("]이 존재하지 않습니다").toString();
+
+				log.warning(errorMessage);
 				fail("업로드할 대상 파일이 존재하지 않습니다");
 			}
-			
-			if (! writeUploadFile.isFile()) {
-				log.warn("업로드할 대상 파일[{}]이 일반 파일이 아닙니다", writeUploadFilePathString);
+
+			if (!writeUploadFile.isFile()) {
+				String errorMessage = new StringBuilder().append("업로드할 대상 파일[").append(writeUploadFilePathString)
+						.append("]이 일반 파일이 아닙니다").toString();
+
+				log.warning(errorMessage);
 				fail("업로드할 대상 파일이 존재하지 않습니다");
 			}
-			
+
 			attachedFileList.add(writeUploadFile);
-		}		
-		
+		}
+
 		String paramBoardID = "3";
-		
-		BoardWriteRes boardWriteRes = executeBoardWriteProcessServlet("test00", 
-				paramBoardID, 
-				"본문제목::01", "본문내용::01", attachedFileList);
+
+		BoardWriteRes boardWriteRes = executeBoardWriteProcessServlet("test00", paramBoardID, "본문제목::01", "본문내용::01",
+				attachedFileList);
 		log.info(boardWriteRes.toString());
 	}
 
 	@Test
 	public void 게시글댓글_정상() {
 		List<File> attachedFileList = new ArrayList<File>();
-		
+
 		String writeUploadFilePathString = new StringBuilder()
-		.append(WebRootBuildSystemPathSupporter.getUserWebRootPathString(installedPath.getAbsolutePath(), mainProjectName))
-		.append(File.separator)
-		.append("images")
-		.append(File.separator).append("sinnori_server_framework01.png").toString();
-		
+				.append(WebRootBuildSystemPathSupporter.getUserWebRootPathString(installedPath.getAbsolutePath(),
+						mainProjectName))
+				.append(File.separator).append("images").append(File.separator).append("sinnori_server_framework01.png")
+				.toString();
+
 		File writeUploadFile = new File(writeUploadFilePathString);
-		
-		if (! writeUploadFile.exists()) {
-			log.warn("업로드할 대상 파일[{}]이 존재하지 않습니다", writeUploadFilePathString);
+
+		if (!writeUploadFile.exists()) {
+			String errorMessage = new StringBuilder().append("업로드할 대상 파일[").append(writeUploadFilePathString)
+					.append("]이 존재하지 않습니다").toString();
+
+			log.warning(errorMessage);
 			fail("업로드할 대상 파일이 존재하지 않습니다");
 		}
-		
-		if (! writeUploadFile.isFile()) {
-			log.warn("업로드할 대상 파일[{}]이 일반 파일이 아닙니다", writeUploadFilePathString);
+
+		if (!writeUploadFile.isFile()) {
+			String errorMessage = new StringBuilder().append("업로드할 대상 파일[").append(writeUploadFilePathString)
+					.append("]이 일반 파일이 아닙니다").toString();
+
+			log.warning(errorMessage);
 			fail("업로드할 대상 파일이 존재하지 않습니다");
 		}
-		
+
 		attachedFileList.add(writeUploadFile);
-		
+
 		String paramBoardID = "3";
-		
-		BoardWriteRes boardWriteRes = executeBoardWriteProcessServlet("test00", 
-				paramBoardID, 
-				"본문제목::02", "본문내용::02", attachedFileList);
-		
+
+		BoardWriteRes boardWriteRes = executeBoardWriteProcessServlet("test00", paramBoardID, "본문제목::02", "본문내용::02",
+				attachedFileList);
+
 		attachedFileList.clear();
-		
+
 		String replyUploadFilePathString = new StringBuilder()
-		.append(WebRootBuildSystemPathSupporter.getUserWebRootPathString(installedPath.getAbsolutePath(), mainProjectName))
-		.append(File.separator)
-		.append("images")
-		.append(File.separator).append("sinnori_webpage_frame.png").toString();
-		
+				.append(WebRootBuildSystemPathSupporter.getUserWebRootPathString(installedPath.getAbsolutePath(),
+						mainProjectName))
+				.append(File.separator).append("images").append(File.separator).append("sinnori_webpage_frame.png")
+				.toString();
+
 		File replyUploadFile = new File(replyUploadFilePathString);
-		
-		if (! replyUploadFile.exists()) {
-			log.warn("업로드할 대상 파일[{}]이 존재하지 않습니다", replyUploadFilePathString);
+
+		if (!replyUploadFile.exists()) {
+			String errorMessage = new StringBuilder().append("업로드할 대상 파일[").append(writeUploadFilePathString)
+					.append("]이 존재하지 않습니다").toString();
+
+			log.warning(errorMessage);
 			fail("업로드할 대상 파일이 존재하지 않습니다");
 		}
-		
-		if (! replyUploadFile.isFile()) {
-			log.warn("업로드할 대상 파일[{}]이 일반 파일이 아닙니다", replyUploadFilePathString);
+
+		if (!replyUploadFile.isFile()) {
+			String errorMessage = new StringBuilder().append("업로드할 대상 파일[").append(writeUploadFilePathString)
+					.append("]이 일반 파일이 아닙니다").toString();
+
+			log.warning(errorMessage);
 			fail("업로드할 대상 파일이 존재하지 않습니다");
-		}		
-		
-		attachedFileList.add(replyUploadFile);	
-		
-		
-		
-		BoardReplyRes boardReplyRes = execuateBoardReplyProcessServlet("test00",
-				paramBoardID,
-				String.valueOf(boardWriteRes.getBoardNo()), 
-				"댓글제목::02-01", "본문내용::02-01", attachedFileList);
-		
-		log.info(boardReplyRes.toString());		
+		}
+
+		attachedFileList.add(replyUploadFile);
+
+		BoardReplyRes boardReplyRes = execuateBoardReplyProcessServlet("test00", paramBoardID,
+				String.valueOf(boardWriteRes.getBoardNo()), "댓글제목::02-01", "본문내용::02-01", attachedFileList);
+
+		log.info(boardReplyRes.toString());
 	}
-	
+
 	@Test
 	public void 게시글수정_정상() {
 		List<File> attachedFileList = new ArrayList<File>();
-		
-		String[] attachedFileShortNames = {"sinnori_server_framework01.png", 
-				"sinnori_server_framework02.png"};
-		
+
+		String[] attachedFileShortNames = { "sinnori_server_framework01.png", "sinnori_server_framework02.png" };
+
 		for (String attachedFileShortName : attachedFileShortNames) {
 			String writeUploadFilePathString = new StringBuilder()
-			.append(WebRootBuildSystemPathSupporter.getUserWebRootPathString(installedPath.getAbsolutePath(), mainProjectName))
-			.append(File.separator)
-			.append("images")
-			.append(File.separator).append(attachedFileShortName).toString();
-			
+					.append(WebRootBuildSystemPathSupporter.getUserWebRootPathString(installedPath.getAbsolutePath(),
+							mainProjectName))
+					.append(File.separator).append("images").append(File.separator).append(attachedFileShortName)
+					.toString();
+
 			File writeUploadFile = new File(writeUploadFilePathString);
-			
-			if (! writeUploadFile.exists()) {
-				log.warn("업로드할 대상 파일[{}]이 존재하지 않습니다", writeUploadFilePathString);
+
+			if (!writeUploadFile.exists()) {
+				String errorMessage = new StringBuilder().append("업로드할 대상 파일[").append(writeUploadFilePathString)
+						.append("]이 존재하지 않습니다").toString();
+
+				log.warning(errorMessage);
 				fail("업로드할 대상 파일이 존재하지 않습니다");
 			}
-			
-			if (! writeUploadFile.isFile()) {
-				log.warn("업로드할 대상 파일[{}]이 일반 파일이 아닙니다", writeUploadFilePathString);
+
+			if (!writeUploadFile.isFile()) {
+				String errorMessage = new StringBuilder().append("업로드할 대상 파일[").append(writeUploadFilePathString)
+						.append("]이 일반 파일이 아닙니다").toString();
+
+				log.warning(errorMessage);
 				fail("업로드할 대상 파일이 존재하지 않습니다");
 			}
-			
+
 			attachedFileList.add(writeUploadFile);
-		}		
-		
+		}
+
 		String paramBoardID = "3";
-		
-		BoardWriteRes boardWriteRes = executeBoardWriteProcessServlet("test00", 
-				paramBoardID, 
-				"본문제목::03", "본문내용::03", attachedFileList);
-		
+
+		BoardWriteRes boardWriteRes = executeBoardWriteProcessServlet("test00", paramBoardID, "본문제목::03", "본문내용::03",
+				attachedFileList);
+
 		List<File> newAttachedFileList = new ArrayList<File>();
-		String[] newAttachedFileShortNames = {"sinnori_web_network_diagram.png"};
-		
+		String[] newAttachedFileShortNames = { "sinnori_web_network_diagram.png" };
+
 		for (String newAttachedFileShortName : newAttachedFileShortNames) {
 			String writeUploadFilePathString = new StringBuilder()
-			.append(WebRootBuildSystemPathSupporter.getUserWebRootPathString(installedPath.getAbsolutePath(), mainProjectName))
-			.append(File.separator)
-			.append("images")
-			.append(File.separator).append(newAttachedFileShortName).toString();
-			
+					.append(WebRootBuildSystemPathSupporter.getUserWebRootPathString(installedPath.getAbsolutePath(),
+							mainProjectName))
+					.append(File.separator).append("images").append(File.separator).append(newAttachedFileShortName)
+					.toString();
+
 			File writeUploadFile = new File(writeUploadFilePathString);
-			
-			if (! writeUploadFile.exists()) {
-				log.warn("업로드할 대상 파일[{}]이 존재하지 않습니다", writeUploadFilePathString);
+
+			if (!writeUploadFile.exists()) {
+				String errorMessage = new StringBuilder().append("업로드할 대상 파일[").append(writeUploadFilePathString)
+						.append("]이 존재하지 않습니다").toString();
+
+				log.warning(errorMessage);
 				fail("업로드할 대상 파일이 존재하지 않습니다");
 			}
-			
-			if (! writeUploadFile.isFile()) {
-				log.warn("업로드할 대상 파일[{}]이 일반 파일이 아닙니다", writeUploadFilePathString);
+
+			if (!writeUploadFile.isFile()) {
+				String errorMessage = new StringBuilder().append("업로드할 대상 파일[").append(writeUploadFilePathString)
+						.append("]이 일반 파일이 아닙니다").toString();
+
+				log.warning(errorMessage);
 				fail("업로드할 대상 파일이 존재하지 않습니다");
 			}
-			
+
 			newAttachedFileList.add(writeUploadFile);
-		}	
-		
+		}
+
 		List<Short> oldAttachedFileSeqList = new ArrayList<Short>();
-		oldAttachedFileSeqList.add((short)1);		
-		
+		oldAttachedFileSeqList.add((short) 1);
+
 		BoardModifyRes boardModifyRes = executeBoardModifyProcessServlet("test00", paramBoardID,
-				String.valueOf(boardWriteRes.getBoardNo()),
-				"본문제목::수정03", "본문내용::수정03", String.valueOf(attachedFileList.size()), 
-				oldAttachedFileSeqList, newAttachedFileList);
-		
+				String.valueOf(boardWriteRes.getBoardNo()), "본문제목::수정03", "본문내용::수정03",
+				String.valueOf(attachedFileList.size()), oldAttachedFileSeqList, newAttachedFileList);
+
 		log.info(boardModifyRes.toString());
-		
+
 	}
 }

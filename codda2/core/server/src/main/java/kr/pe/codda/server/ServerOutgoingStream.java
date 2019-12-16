@@ -1,7 +1,6 @@
 package kr.pe.codda.server;
 
 import java.io.IOException;
-import java.nio.channels.CancelledKeyException;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
 import java.util.ArrayDeque;
@@ -62,7 +61,7 @@ public class ServerOutgoingStream implements ServerOutgoingStreamIF {
 			workingStreamBuffer = messageStreamBuffer;
 		}
 
-		turnOnSocketWriteMode();
+		ownerSelectionKey.interestOps(ownerSelectionKey.interestOps() | SelectionKey.OP_WRITE & ~SelectionKey.OP_READ);
 
 		return true;
 
@@ -100,7 +99,7 @@ public class ServerOutgoingStream implements ServerOutgoingStreamIF {
 					/** socket write event turn off */
 					ret = -1;
 
-					turnOffSocketWriteMode();
+					ownerSelectionKey.interestOps(ownerSelectionKey.interestOps() & ~SelectionKey.OP_WRITE | SelectionKey.OP_READ);
 				} else {
 					workingStreamBuffer = streamBufferArrayDeque.peekFirst();
 
@@ -123,6 +122,7 @@ public class ServerOutgoingStream implements ServerOutgoingStreamIF {
 	 * return hasRemaing; }
 	 */
 
+	/*
 	private void turnOnSocketWriteMode() throws CancelledKeyException {
 		ownerSelectionKey.interestOps(ownerSelectionKey.interestOps() | SelectionKey.OP_WRITE);
 	}
@@ -130,6 +130,7 @@ public class ServerOutgoingStream implements ServerOutgoingStreamIF {
 	private void turnOffSocketWriteMode() throws CancelledKeyException {
 		ownerSelectionKey.interestOps(ownerSelectionKey.interestOps() & ~SelectionKey.OP_WRITE);
 	}
+	*/
 
 	/*
 	 * private void turnOnSocketReadMode() throws CancelledKeyException {

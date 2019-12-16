@@ -1,18 +1,18 @@
 package kr.pe.codda.weblib.sitemenu;
 
-import io.netty.util.internal.logging.InternalLogger;
-import io.netty.util.internal.logging.InternalLoggerFactory;
-import kr.pe.codda.common.etc.CommonStaticFinalVars;
-import kr.pe.codda.common.exception.NoMoreDataPacketBufferException;
-import kr.pe.codda.weblib.htmlstring.StringEscapeActorUtil;
+import java.util.logging.Logger;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
+import kr.pe.codda.common.etc.CommonStaticFinalVars;
+import kr.pe.codda.common.exception.NoMoreDataPacketBufferException;
+import kr.pe.codda.weblib.htmlstring.StringEscapeActorUtil;
+
 public class UserSiteMenuManger {
-	private InternalLogger log = InternalLoggerFactory
-			.getInstance(UserSiteMenuManger.class);
+	private Logger log = Logger.getLogger(UserSiteMenuManger.class.getName());
+	
 	private WebsiteMenuInfoFileWatcher websiteMenuPartStringFileWatcher = null;
 
 	/** 동기화 쓰지 않고 싱글턴 구현을 위한 비공개 클래스 */
@@ -54,7 +54,7 @@ public class UserSiteMenuManger {
 		for (int i = 0; i < size; i++) {
 			JsonElement menuJsonElement = menuListJsonArray.get(i);
 			if (!menuJsonElement.isJsonObject()) {
-				log.warn("the var menuJsonElement is not a JsonObject");
+				log.warning("the var menuJsonElement is not a JsonObject");
 				return "";
 			}
 
@@ -67,57 +67,77 @@ public class UserSiteMenuManger {
 			JsonElement childMenuListJsonElement = menuJsonObject
 					.get("childMenuList");
 
-			if (null == menuNameJsonElement) {
-				log.warn(
-						"the menuList[{}]'s menuJsonObject doesn't have a member maching menuName",
-						i);
+			if (null == menuNameJsonElement) {				
+				String errorMessage = new StringBuilder()
+						.append("the parameter menuListJsonArray[")
+						.append(i)
+						.append("] doesn't have a menuName element").toString();
+				
+				log.warning(errorMessage);
 				return "";
 			}
-
-			if (null == linkURLJsonElement) {
-				log.warn(
-						"the menuList[{}]'s menuJsonObject doesn't have a member maching linkURL",
-						i);
-				return "";
-			}
-
-			if (null == childMenuListSizeJsonElement) {
-				log.warn(
-						"the menuList[{}]'s menuJsonObject doesn't have a member maching childMenuList",
-						i);
-				return "";
-			}
-
-			if (null == childMenuListJsonElement) {
-				log.warn(
-						"the menuList[{}]'s menuJsonObject doesn't have a member maching childMenuListSize",
-						i);
-				return "";
-			}
-
+			
 			String menuName = null;
 
 			try {
 				menuName = menuNameJsonElement.getAsString();
 			} catch (Exception e) {
-				log.warn("fail to convert the menuName jsonElement to string");
+				log.warning("fail to convert the menuName jsonElement to string");
 				return "";
 			}
+
+
+			if (null == linkURLJsonElement) {
+				String errorMessage = new StringBuilder()
+						.append("the parameter menuListJsonArray[index=")
+						.append(i)
+						.append(", menuName=")
+						.append(menuName)
+						.append("] doesn't have a linkURL element").toString();
+				
+				log.warning(errorMessage);
+				return "";
+			}
+			
 			String linkURL = null;
 			try {
 				linkURL = linkURLJsonElement.getAsString();
 			} catch (Exception e) {
-				log.warn("fail to convert the linkURL jsonElement to string");
+				log.warning("fail to convert the linkURL jsonElement to string");
 				return "";
 			}
 
+			if (null == childMenuListSizeJsonElement) {
+				String errorMessage = new StringBuilder()
+						.append("the parameter menuListJsonArray[index=")
+						.append(i)
+						.append(", menuName=")
+						.append(menuName)
+						.append("] doesn't have a childMenuListSize element").toString();
+				
+				log.warning(errorMessage);
+				return "";
+			}
+			
 			int childMenuListSize;
 			try {
 				childMenuListSize = childMenuListSizeJsonElement.getAsInt();
 			} catch (Exception e) {
-				log.warn("fail to convert the childMenuListSize jsonElement to integer");
+				log.warning("fail to convert the childMenuListSize jsonElement to integer");
 				return "";
 			}
+
+			if (null == childMenuListJsonElement) {
+				String errorMessage = new StringBuilder()
+						.append("the parameter menuListJsonArray[index=")
+						.append(i)
+						.append(", menuName=")
+						.append(menuName)
+						.append("] doesn't have a childMenuList element").toString();
+				
+				log.warning(errorMessage);
+				return "";
+			}			
 
 			if (0 == childMenuListSize) {
 				websiteMenuPartStringBuilder.append(getTabStrings(tapStep));
@@ -137,10 +157,15 @@ public class UserSiteMenuManger {
 				websiteMenuPartStringBuilder
 						.append(CommonStaticFinalVars.NEWLINE);
 			} else {
-				if (!childMenuListJsonElement.isJsonArray()) {
-					log.warn(
-							"the var menuName[{}]'s childMenuListJsonElement is not a JsonArray",
-							menuName);
+				if (! childMenuListJsonElement.isJsonArray()) {
+					String errorMessage = new StringBuilder()
+							.append("the parameter menuListJsonArray[index=")
+							.append(i)
+							.append(", menuName=")
+							.append(menuName)
+							.append("'s childMenuList is not a JsonArray").toString();
+					
+					log.warning(errorMessage);
 					return "";
 				}
 

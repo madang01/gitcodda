@@ -1,5 +1,7 @@
 package kr.pe.codda.servlet.user;
 
+import java.util.logging.Level;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -20,8 +22,7 @@ public class JSRSAProcessSvl extends AbstractServlet {
 		String paramEncryptedHexTextWithPublicKey = req.getParameter("encryptedHexTextWithPublicKey");
 		String paramPlainText = req.getParameter("plainText");
 		
-		log.info("paramEncryptedHexTextWithPublicKey[{}]", paramEncryptedHexTextWithPublicKey);
-		log.info("paramPlainText[{}]", paramPlainText);
+		// log.info(req.getParameterMap().toString());
 		
 		
 		if (null == paramEncryptedHexTextWithPublicKey) {
@@ -44,7 +45,7 @@ public class JSRSAProcessSvl extends AbstractServlet {
 			webServerSessionkey = serverSessionkeyManager.getMainProjectServerSessionkey();
 		} catch (SymmetricException e) {
 			String errorMessage = "fail to get a ServerSessionkeyManger class instance";
-			log.warn(errorMessage, e);			
+			log.log(Level.WARNING, errorMessage, e);			
 			
 			String debugMessage = e.getMessage();
 			printErrorMessagePage(req, res, errorMessage, debugMessage);
@@ -67,7 +68,7 @@ public class JSRSAProcessSvl extends AbstractServlet {
 			decryptedBytesUsingPrivateKey = webServerSessionkey.decryptUsingPrivateKey(encryptedBytesWithPublicKey);
 		} catch (SymmetricException e) {
 			String errorMessage = "fail to initialize a Cipher class instance with a key and a set of algorithm parameters";
-			log.warn(errorMessage, e);			
+			log.log(Level.WARNING, errorMessage, e);			
 			
 			String debugMessage = new StringBuilder("paramEncryptedHexTextWithPublicKey=[")
 					.append(paramEncryptedHexTextWithPublicKey)					
@@ -75,10 +76,11 @@ public class JSRSAProcessSvl extends AbstractServlet {
 			printErrorMessagePage(req, res, errorMessage, debugMessage);
 		}			
 		String decryptedHexTextUsingPrivateKey = HexUtil.getHexStringFromByteArray(decryptedBytesUsingPrivateKey);
-		//log.info(String.format("decryptUsingPrivateKey=[%s]", decryptUsingPrivateKeyHex));
 		
-		log.info("plainHexText={}", plainHexText);
-		log.info("decryptedHexTextUsingPrivateKey={}", decryptedHexTextUsingPrivateKey);
+		/*
+		log.info("plainHexText=[" + plainHexText + "]");
+		log.info("decryptedHexTextUsingPrivateKey=[" + decryptedHexTextUsingPrivateKey + "]");
+		*/
 		
 		boolean isSame = plainHexText.equals(decryptedHexTextUsingPrivateKey);
 		//log.info(String.format("resultMessage=[%s]", resultMessage));

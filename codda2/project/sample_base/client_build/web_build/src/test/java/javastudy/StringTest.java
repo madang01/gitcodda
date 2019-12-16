@@ -2,12 +2,11 @@ package javastudy;
 
 import java.util.HashMap;
 
-import junitlib.AbstractJunitTest;
-import kr.pe.codda.common.sessionkey.ClientSessionKeyIF;
-
 import org.junit.Test;
 
-public class StringTest extends AbstractJunitTest {
+import kr.pe.codda.common.sessionkey.ClientSessionKeyIF;
+
+public class StringTest {
 	
 	@Test
 	public void testSplit() {

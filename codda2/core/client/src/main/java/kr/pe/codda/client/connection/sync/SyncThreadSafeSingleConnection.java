@@ -176,8 +176,8 @@ public final class SyncThreadSafeSingleConnection implements SyncConnectionIF {
 				mailID++;
 			}
 
-			inputMessage.messageHeaderInfo.mailboxID = mailboxID;
-			inputMessage.messageHeaderInfo.mailID = mailID;
+			inputMessage.setMailboxID(mailboxID);
+			inputMessage.setMailID(mailID);
 
 			try {
 				messageEncoder = messageCodecManger.getMessageEncoder(inputMessage.getMessageID());

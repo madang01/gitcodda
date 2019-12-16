@@ -1,7 +1,5 @@
 package kr.pe.codda.servlet.admin;
 
-import java.util.concurrent.TimeUnit;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -28,15 +26,18 @@ public class MenuManagementSvl extends AbstractAdminLoginServlet {
 		
 		AnyProjectConnectionPoolIF mainProjectConnectionPool = ConnectionPoolManager.getInstance().getMainProjectConnectionPool();
 		
+		/*
 		long startTime = 0;
 		long endTime = 0;
 		startTime = System.nanoTime();
+		*/
 		
 		AbstractMessage outputMessage = mainProjectConnectionPool.sendSyncInputMessage(ClientMessageCodecManger.getInstance(), menuListReq);
 		
-		endTime = System.nanoTime();
-		
+		/*
+		endTime = System.nanoTime();		
 		log.info("elapsed={}", TimeUnit.MICROSECONDS.convert((endTime - startTime), TimeUnit.NANOSECONDS));
+		*/
 		
 		
 		if (! (outputMessage instanceof ArraySiteMenuRes) && ! (outputMessage instanceof MessageResultRes)) {
@@ -47,7 +48,7 @@ public class MenuManagementSvl extends AbstractAdminLoginServlet {
 					.append(outputMessage.toString())
 					.append("] 도착").toString();
 			
-			log.error(debugMessage);
+			log.severe(debugMessage);
 
 			printErrorMessagePage(req, res, errorMessage, debugMessage);
 			return;

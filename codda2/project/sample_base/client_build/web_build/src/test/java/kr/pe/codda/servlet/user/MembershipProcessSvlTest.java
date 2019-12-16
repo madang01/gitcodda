@@ -4,6 +4,12 @@ import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.util.HashMap;
+import java.util.logging.ConsoleHandler;
+import java.util.logging.Handler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
@@ -12,10 +18,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
 
-import junitlib.AbstractJunitTest;
 import kr.pe.codda.common.etc.CommonStaticFinalVars;
 import kr.pe.codda.common.exception.SymmetricException;
 import kr.pe.codda.common.sessionkey.ClientSessionKeyIF;
@@ -23,12 +29,34 @@ import kr.pe.codda.common.sessionkey.ClientSessionKeyManager;
 import kr.pe.codda.common.sessionkey.ServerSessionkeyIF;
 import kr.pe.codda.common.sessionkey.ServerSessionkeyManager;
 import kr.pe.codda.common.util.CommonStaticUtil;
+import kr.pe.codda.common.util.JDKLoggerCustomFormatter;
 import kr.pe.codda.impl.message.MessageResultRes.MessageResultRes;
 import kr.pe.codda.weblib.common.WebCommonStaticFinalVars;
 import kr.pe.codda.weblib.exception.WebClientException;
 import nl.captcha.Captcha;
 
-public class MembershipProcessSvlTest extends AbstractJunitTest {
+public class MembershipProcessSvlTest {
+	private Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
+	
+	
+	@BeforeClass
+	public static void setUpBeforeClass() throws Exception {
+		Logger rootLogger = Logger.getLogger("");
+
+		Handler[] handlers = rootLogger.getHandlers();
+
+		for (Handler handler : handlers) {
+			rootLogger.removeHandler(handler);
+		}
+
+		Handler handler = new ConsoleHandler();
+
+		JDKLoggerCustomFormatter formatter = new JDKLoggerCustomFormatter();
+		handler.setFormatter(formatter);
+
+		rootLogger.setLevel(Level.INFO);
+		rootLogger.addHandler(handler);		
+	}
 
 	private void initServlet(HttpServlet targetServlet, String menuGroupURL) throws Exception {
 		RequestDispatcher requestDispatcherMock = mock(RequestDispatcher.class);
@@ -78,7 +106,7 @@ public class MembershipProcessSvlTest extends AbstractJunitTest {
 				ClientSessionKeyIF clientSessionKey = null;
 				try {
 					clientSessionKey = clientSessionKeyManager
-							.getNewClientSessionKey(mainProjectServerSessionkey.getDupPublicKeyBytes(), true);
+							.createNewClientSessionKey(mainProjectServerSessionkey.getDupPublicKeyBytes(), true);
 				} catch (SymmetricException e1) {
 					fail("fail to get a intanace of ClientSessionKeyIF class");
 				}
@@ -124,7 +152,7 @@ public class MembershipProcessSvlTest extends AbstractJunitTest {
 					}
 
 				} catch (Exception e) {
-					log.warn("파라미터 구성 실패", e);
+					log.log(Level.WARNING, "파라미터 구성 실패", e);
 					fail("파라미터 구성 실패");
 				}
 				
@@ -165,7 +193,7 @@ public class MembershipProcessSvlTest extends AbstractJunitTest {
 		try {
 			initServlet(membershipProcessSvl, "/servlet/UserSiteMembershipInput");
 		} catch (Exception e) {
-			log.warn("서블릿 초기화 실패", e);
+			log.log(Level.WARNING, "서블릿 초기화 실패", e);
 			fail("서블릿 초기화 실패");
 		}
 
@@ -174,15 +202,19 @@ public class MembershipProcessSvlTest extends AbstractJunitTest {
 			messageResultRes = membershipProcessSvl.doWork(requestMock, responseMock);
 			
 			if (! messageResultRes.getIsSuccess()) {
-				log.warn(messageResultRes.getResultMessage());
+				log.warning(messageResultRes.getResultMessage());
 				fail(messageResultRes.getResultMessage());
 			}
 			
 		} catch (WebClientException e) {
-			log.warn("errmsg={}, debugmsg={}", e.getErrorMessage(), e.getDebugMessage());
+			HashMap<String, Object> logHash = new HashMap<String, Object>();
+			logHash.put("errmsg", e.getErrorMessage());
+			logHash.put("debugmsg", e.getDebugMessage());
+			
+			log.warning(logHash.toString());
 			fail("일반 회원 가입 서블릿 수행 실패");
 		} catch (Exception e) {
-			log.warn("unknown error", e);
+			log.log(Level.WARNING, "unknown error", e);
 			fail("일반 회원 가입 서블릿 수행 실패");
 		}
 	}

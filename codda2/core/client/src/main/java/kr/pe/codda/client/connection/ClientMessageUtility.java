@@ -53,8 +53,8 @@ public abstract class ClientMessageUtility {
 					
 				
 				SelfExnRes selfExnRes = new SelfExnRes();
-				selfExnRes.messageHeaderInfo.mailboxID = mailboxID;
-				selfExnRes.messageHeaderInfo.mailID = mailID;
+				selfExnRes.setMailboxID(mailboxID);
+				selfExnRes.setMailID(mailID);
 				selfExnRes.setErrorPlace(SelfExn.ErrorPlace.CLIENT);
 				selfExnRes.setErrorType(SelfExn.ErrorType.valueOf(DynamicClassCallException.class));
 			
@@ -80,8 +80,8 @@ public abstract class ClientMessageUtility {
 				log.log(Level.WARNING, errorMessage, e);
 				
 				SelfExnRes selfExnRes = new SelfExnRes();
-				selfExnRes.messageHeaderInfo.mailboxID = mailboxID;
-				selfExnRes.messageHeaderInfo.mailID = mailID;
+				selfExnRes.setMailboxID(mailboxID);
+				selfExnRes.setMailID(mailID);
 				selfExnRes.setErrorPlace(SelfExn.ErrorPlace.CLIENT);
 				selfExnRes.setErrorType(SelfExn.ErrorType.valueOf(DynamicClassCallException.class));
 			
@@ -94,8 +94,8 @@ public abstract class ClientMessageUtility {
 			AbstractMessage outputMessage = null;
 			try {
 				outputMessage = messageProtocol.O2M(messageDecoder, mailboxID, mailID, messageID, readableMiddleObject);
-				outputMessage.messageHeaderInfo.mailboxID = mailboxID;
-				outputMessage.messageHeaderInfo.mailID = mailID;
+				outputMessage.setMailboxID(mailboxID);
+				outputMessage.setMailID(mailID);
 			} catch (BodyFormatException e) {
 				String errorMessage = new StringBuilder("fail to decode the var 'readableMiddleObject' of the ")
 						.append(title)
@@ -115,8 +115,8 @@ public abstract class ClientMessageUtility {
 				log.warning(errorMessage);		
 				
 				SelfExnRes selfExnRes = new SelfExnRes();
-				selfExnRes.messageHeaderInfo.mailboxID = mailboxID;
-				selfExnRes.messageHeaderInfo.mailID = mailID;
+				selfExnRes.setMailboxID(mailboxID);
+				selfExnRes.setMailID(mailID);
 				selfExnRes.setErrorPlace(SelfExn.ErrorPlace.CLIENT);
 				selfExnRes.setErrorType(SelfExn.ErrorType.valueOf(BodyFormatException.class));
 			
@@ -143,8 +143,8 @@ public abstract class ClientMessageUtility {
 				log.log(Level.WARNING, errorMessage, e);
 				
 				SelfExnRes selfExnRes = new SelfExnRes();
-				selfExnRes.messageHeaderInfo.mailboxID = mailboxID;
-				selfExnRes.messageHeaderInfo.mailID = mailID;
+				selfExnRes.setMailboxID(mailboxID);
+				selfExnRes.setMailID(mailID);
 				selfExnRes.setErrorPlace(SelfExn.ErrorPlace.CLIENT);
 				selfExnRes.setErrorType(SelfExn.ErrorType.valueOf(BodyFormatException.class));
 			
@@ -152,10 +152,7 @@ public abstract class ClientMessageUtility {
 				selfExnRes.setErrorReason(errorMessage);
 				
 				return selfExnRes;
-			}
-			
-			outputMessage.messageHeaderInfo.mailboxID = mailboxID;
-			outputMessage.messageHeaderInfo.mailID = mailID;
+			}			
 
 			return outputMessage;
 		} finally {

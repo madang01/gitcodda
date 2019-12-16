@@ -72,8 +72,8 @@ public class ToLetterCarrier {
 			String errorReason) {
 		
 		SelfExnRes selfExnRes = new SelfExnRes();
-		selfExnRes.messageHeaderInfo.mailboxID = mailboxIDOfSelfExn;
-		selfExnRes.messageHeaderInfo.mailID = mailIDOfSelfExn;
+		selfExnRes.setMailboxID(mailboxIDOfSelfExn);
+		selfExnRes.setMailID(mailIDOfSelfExn);
 		selfExnRes.setErrorPlace(SelfExn.ErrorPlace.SERVER);
 		selfExnRes.setErrorType(errorType);
 	
@@ -177,8 +177,8 @@ public class ToLetterCarrier {
 			AbstractMessage outputMessage,			
 			MessageProtocolIF messageProtocol) throws InterruptedException {
 		SelfExnRes selfExnRes = buildSelfExn( 
-				outputMessage.messageHeaderInfo.mailboxID,
-				outputMessage.messageHeaderInfo.mailID,
+				outputMessage.getMailboxID(),
+				outputMessage.getMailID(),
 				outputMessage.getMessageID(),
 				errorType,
 				errorReason);
@@ -209,7 +209,7 @@ public class ToLetterCarrier {
 	
 	
 	public void addBypassOutputMessage(AbstractMessage bypassOutputMessage) throws InterruptedException {		
-		if (inputMessage.messageHeaderInfo.mailboxID == CommonStaticFinalVars.ASYN_MAILBOX_ID) {
+		if (inputMessage.getMailboxID() == CommonStaticFinalVars.ASYN_MAILBOX_ID) {
 			addAsynOutputMessage(bypassOutputMessage);
 		} else {
 			addSyncOutputMessage(bypassOutputMessage);
@@ -220,7 +220,7 @@ public class ToLetterCarrier {
 		if (null == syncOutputMessage) {
 			throw new IllegalArgumentException("the parameter syncOutputMessage is null");
 		}
-		if (CommonStaticFinalVars.ASYN_MAILBOX_ID == inputMessage.messageHeaderInfo.mailboxID) {			
+		if (CommonStaticFinalVars.ASYN_MAILBOX_ID == inputMessage.getMailboxID()) {			
 			throw new IllegalArgumentException("the synchronous output message can't be added becase the inputMessage is a asynchronous message");
 		}
 		
@@ -230,7 +230,9 @@ public class ToLetterCarrier {
 		
 		this.syncOutputMessage =  syncOutputMessage;
 		
-		syncOutputMessage.messageHeaderInfo = inputMessage.messageHeaderInfo;		
+		syncOutputMessage.setMailboxID(inputMessage.getMailboxID());
+		syncOutputMessage.setMailID(inputMessage.getMailID());
+		
 		doAddOutputMessage(fromAcceptedConnection, syncOutputMessage, messageProtocol);
 	}
 	
@@ -239,8 +241,8 @@ public class ToLetterCarrier {
 			throw new IllegalArgumentException("the parameter asynOutputMessage is null");
 		}
 		
-		asynOutputMessage.messageHeaderInfo.mailboxID = CommonStaticFinalVars.ASYN_MAILBOX_ID;
-		asynOutputMessage.messageHeaderInfo.mailID = fromAcceptedConnection.getServerMailID();	
+		asynOutputMessage.setMailboxID(CommonStaticFinalVars.ASYN_MAILBOX_ID);
+		asynOutputMessage.setMailID(fromAcceptedConnection.getServerMailID());	
 		
 		doAddOutputMessage(fromAcceptedConnection, asynOutputMessage, messageProtocol);
 	}
@@ -276,8 +278,8 @@ public class ToLetterCarrier {
 		
 		AcceptedConnection loignUserAcceptedConnection = (AcceptedConnection)attachedObject;
 		
-		asynOutputMessage.messageHeaderInfo.mailboxID = CommonStaticFinalVars.ASYN_MAILBOX_ID;
-		asynOutputMessage.messageHeaderInfo.mailID = loignUserAcceptedConnection.getServerMailID();		
+		asynOutputMessage.setMailboxID(CommonStaticFinalVars.ASYN_MAILBOX_ID);
+		asynOutputMessage.setMailID(loignUserAcceptedConnection.getServerMailID());		
 		
 		doAddOutputMessage(loignUserAcceptedConnection, asynOutputMessage, messageProtocol);
 	}

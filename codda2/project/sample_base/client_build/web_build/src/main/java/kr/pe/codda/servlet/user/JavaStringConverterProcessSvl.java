@@ -17,7 +17,7 @@ public class JavaStringConverterProcessSvl extends AbstractServlet {
 			throws Exception {
 		String paramSourceString = req.getParameter("sourceString");
 		
-		log.info("paramSourceString={}", paramSourceString);
+		//log.info("paramSourceString=" + paramSourceString);
 		
 		
 		if (null == paramSourceString) {

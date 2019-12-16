@@ -2,6 +2,7 @@ package kr.pe.codda.servlet.admin;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.util.logging.Level;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -129,7 +130,7 @@ public class UserWebsiteMenuInfoFileUpdaterSvl extends
 						.append(outputMessage.toString()).append("] 도착")
 						.toString();
 
-				log.error(debugMessage);
+				log.severe(debugMessage);
 
 				printErrorMessagePage(req, res, errorMessage, debugMessage);
 				return;
@@ -159,7 +160,7 @@ public class UserWebsiteMenuInfoFileUpdaterSvl extends
         				.append("] is not a regular file").toString();
     			String debugMessage = null;
     			
-    			log.warn(errorMessage);
+    			log.warning(errorMessage);
     			
     			printErrorMessagePage(req, res, errorMessage, debugMessage);
     			return;
@@ -172,7 +173,7 @@ public class UserWebsiteMenuInfoFileUpdaterSvl extends
     		fos = new FileOutputStream(watcherFile, false);
     		fos.write(treeSiteMenuResJsonString.getBytes(CommonStaticFinalVars.SOURCE_FILE_CHARSET));
     	} catch(Exception e) {
-    		log.warn("'웹사이트 메뉴 파트 문자열 파일' 쓰기 실패", e);
+    		log.log(Level.WARNING, "'웹사이트 메뉴 파트 문자열 파일' 쓰기 실패", e);
     		
     		String errorMessage = "'웹사이트 메뉴 파트 문자열 파일' 쓰기 실패";
 			String debugMessage = e.getMessage();

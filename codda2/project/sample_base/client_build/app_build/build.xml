@@ -4,8 +4,7 @@
 	<property name="dir.main.build" location="build/main" />
 	<property name="dir.main.lib" location="lib/main" />
 	<property name="dir.dist" location="dist" />
-	<property name="dir.corelib" location="corelib" />	
-	<property name="dir.logger.build" location="../../../../core/logger" />
+	<property name="dir.corelib" location="corelib" />
 	<property name="dir.core.all.build" location="../../../../core/all" />
 	<property name="dir.core.common.build" location="../../../../core/common" />
 	<property name="dir.core.server.build" location="../../../../core/server" />
@@ -22,14 +21,7 @@
 	<condition property="is.unix.yes">
 		<os family="unix" />
 	</condition>
-
-	<union id="logback.jarlibs">
-		<fileset file="${dir.logger.build}/lib/ex/slf4j-api-1.7.25.jar" />
-		<fileset file="${dir.logger.build}/lib/ex/logback-core-1.2.3.jar" />
-		<fileset file="${dir.logger.build}/lib/ex/logback-classic-1.2.3.jar" />
-		<!-- dbcp2 depends Apache commons-logging(=jcl-over-slf4j) -->
-		<fileset file="${dir.logger.build}/lib/ex/jcl-over-slf4j-1.7.25.jar" />
-	</union>
+	
 
 	<union id="core.common.jarlibs">
 		<fileset file="${dir.core.common.build}/lib/main/ex/gson-2.8.5.jar" />
@@ -89,10 +81,7 @@
 
 		<copy todir="${dir.corelib}/in" verbose="true" overwrite="true">
 			<fileset file="${dir.core.all.build}/dist/${core.all.jar.name}" />
-		</copy>
-		<copy todir="${dir.corelib}/ex" verbose="true" overwrite="false">
 			<union refid="core.all.jarlibs" />
-			<union refid="logback.jarlibs" />
 		</copy>
 	</target>
 

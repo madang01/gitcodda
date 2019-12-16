@@ -9,6 +9,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Level;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -92,10 +93,16 @@ public class BoardModifyProcessSvl extends AbstractMultipartServlet {
 			String debugMessage = e.getDebugMessage();
 			
 			AccessedUserInformation accessedUserformation = getAccessedUserInformationFromSession(req);
+			
+			String logMessage = new StringBuilder()
+					.append((null == debugMessage) ? errorMessage : debugMessage)
+					.append(", userID=[")
+					.append(accessedUserformation.getUserID())
+					.append("], ip=[")
+					.append(req.getRemoteAddr())
+					.append("]").toString();
 
-			log.warn("{}, userID={}, ip={}",
-					(null == debugMessage) ? errorMessage : debugMessage,
-							accessedUserformation.getUserID(), req.getRemoteAddr());
+			log.warning(logMessage);
 
 			printErrorMessagePage(req, res, errorMessage, debugMessage);
 			return;
@@ -141,8 +148,7 @@ public class BoardModifyProcessSvl extends AbstractMultipartServlet {
 			if (fileItem.isFormField()) {
 				String formFieldName = fileItem.getFieldName();
 				String formFieldValue = fileItem.getString("UTF-8");
-
-				log.info("form field's name={} and value={}", formFieldName, formFieldValue);
+				
 
 				/**************** 파라미터 시작 *******************/
 				if (formFieldName
@@ -217,7 +223,11 @@ public class BoardModifyProcessSvl extends AbstractMultipartServlet {
 
 					oldAttachedFileList.add(oldAttachedFile);
 				} else {
-					log.warn("필요 없은 웹 파라미터 '{}' 전달 받음", formFieldName);
+					String errorMessage = new StringBuilder()
+							.append("필요 없은 웹 파라미터 '")
+							.append(formFieldName)
+							.append("' 전달 받음").toString();
+					log.warning(errorMessage);
 				}
 
 				/**************** 파라미터 종료 *******************/
@@ -390,7 +400,7 @@ public class BoardModifyProcessSvl extends AbstractMultipartServlet {
 			webServerSessionkey = serverSessionkeyManager
 					.getMainProjectServerSessionkey();
 		} catch (SymmetricException e) {
-			log.warn("SymmetricException", e);
+			log.log(Level.WARNING, "SymmetricException", e);
 
 			String errorMessage = "fail to initialize ServerSessionkeyManger instance";
 			String debugMessage = new StringBuilder()
@@ -510,7 +520,7 @@ public class BoardModifyProcessSvl extends AbstractMultipartServlet {
 								ivBytes);
 			} catch (IllegalArgumentException e) {
 				String errorMessage = "웹 세션키 인스턴스 생성 실패";
-				log.warn(errorMessage, e);
+				log.log(Level.WARNING, errorMessage, e);
 
 				String debugMessage = new StringBuilder("sessionkeyBytes=[")
 						.append(HexUtil.getHexStringFromByteArray(sessionkeyBytes))
@@ -521,7 +531,7 @@ public class BoardModifyProcessSvl extends AbstractMultipartServlet {
 				throw new WebClientException(errorMessage, debugMessage);
 			} catch (SymmetricException e) {
 				String errorMessage = "웹 세션키 인스턴스 생성 실패";
-				log.warn(errorMessage, e);
+				log.log(Level.WARNING, errorMessage, e);
 
 				String debugMessage = new StringBuilder("sessionkeyBytes=[")
 						.append(HexUtil.getHexStringFromByteArray(sessionkeyBytes))
@@ -550,7 +560,7 @@ public class BoardModifyProcessSvl extends AbstractMultipartServlet {
 				md = MessageDigest.getInstance(WebCommonStaticFinalVars.BOARD_HASH_ALGORITHM);
 			} catch (NoSuchAlgorithmException e) {
 				String errorMessage = "fail to get a MessageDigest class instance";
-				log.warn(errorMessage, e);			
+				log.log(Level.WARNING, errorMessage, e);			
 				
 				String debugMessage = new StringBuilder("the 'algorithm'[")
 						.append(WebCommonStaticFinalVars.BOARD_HASH_ALGORITHM)
@@ -635,8 +645,7 @@ public class BoardModifyProcessSvl extends AbstractMultipartServlet {
 			
 
 			if (! delectedAttachedFile.exists()) {
-				log.warn("게시글의 삭제된 첨부 파일[{}] 이 존재하지 않습니다",
-						delectedAttachedFilePathString);
+				log.warning("게시글의 삭제된 첨부 파일[" + delectedAttachedFilePathString + "] 이 존재하지 않습니다");
 				continue;
 			}
 
@@ -644,13 +653,23 @@ public class BoardModifyProcessSvl extends AbstractMultipartServlet {
 				boolean result = destFile.delete();
 
 				if (result) {
-					log.warn(
-							"게시글의 삭제된 첨부 파일[{}] 이 이동할 임시 경로[{}]에 존재하여 임시 경로에 있는 파일 삭제하였습니다",
-							delectedAttachedFilePathString, destFilePathString);
+					String errrorMessage = new StringBuilder()
+							.append("게시글의 삭제된 첨부 파일[")
+							.append(delectedAttachedFilePathString)
+							.append("] 이 이동할 임시 경로[")
+							.append(destFilePathString)
+							.append("]에 존재하여 임시 경로에 있는 파일 삭제하였습니다").toString();
+					
+					log.warning(errrorMessage);
 				} else {
-					log.warn(
-							"게시글의 삭제된 첨부 파일[{}] 이 이동할 임시 경로[{}]에 존재하여 임시 경로에 있는 파일 삭제 시도했지만 실패하였습니다",
-							delectedAttachedFilePathString, destFilePathString);
+					String errrorMessage = new StringBuilder()
+							.append("게시글의 삭제된 첨부 파일[")
+							.append(delectedAttachedFilePathString)
+							.append("] 이 이동할 임시 경로[")
+							.append(destFilePathString)
+							.append("]에 존재하여 임시 경로에 있는 파일 삭제 시도했지만 실패하였습니다").toString();
+					
+					log.warning(errrorMessage);
 
 					continue;
 				}
@@ -659,10 +678,15 @@ public class BoardModifyProcessSvl extends AbstractMultipartServlet {
 			try {
 				FileUtils.moveFile(delectedAttachedFile, destFile);
 			} catch (Exception e) {
-				log.warn(
-						"에러가 발생하여 게시글의 삭제된 첨부 파일[{}] 임시 디렉토리[{}]로 이동하는데 실패하였습니다, errmsg={}",
-						delectedAttachedFilePathString, destFilePathString,
-						e.getMessage());
+				String errrorMessage = new StringBuilder()
+						.append("에러가 발생하여 게시글의 삭제된 첨부 파일[")
+						.append(delectedAttachedFilePathString)
+						.append("]을 임시 디렉토리[")
+						.append(destFilePathString)
+						.append("]로 이동하는데 실패하였습니다, errmsg=")
+						.append(e.getMessage()).toString();
+				
+				log.warning(errrorMessage);
 				continue;
 			}
 		}
@@ -691,7 +715,7 @@ public class BoardModifyProcessSvl extends AbstractMultipartServlet {
 							.append(newAttachedFilePathString)
 							.append("] 하는데 실패하였습니다").toString();
 
-					log.warn(errorMessage, e);
+					log.log(Level.WARNING, errorMessage, e);
 				}
 
 				newAttachedFileSeq++;

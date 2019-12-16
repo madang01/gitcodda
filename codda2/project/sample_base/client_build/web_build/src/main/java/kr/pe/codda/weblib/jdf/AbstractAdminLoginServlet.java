@@ -24,12 +24,14 @@ public abstract class AbstractAdminLoginServlet extends AbstractSessionKeyServle
 				ServerSessionkeyManager serverSessionkeyManager = ServerSessionkeyManager.getInstance();
 				webServerSessionkey = serverSessionkeyManager.getMainProjectServerSessionkey();			
 			} catch (SymmetricException e) {
-				log.warn("ServerSessionkeyManger instance init error, errormessage=[{}]", e.getMessage());
+				
 				
 				String errorMessage = "ServerSessionkeyManger instance init error";
-				String debugMessage = new StringBuilder("ServerSessionkeyManger instance init error, errormessage=[")
-						.append(e.getMessage())
-						.append("]").toString();
+				String debugMessage = new StringBuilder(errorMessage).append(", errmsg=")						
+						.append(e.getMessage()).toString();
+				
+				log.warning(debugMessage);
+				
 				printErrorMessagePage(req, res, errorMessage, debugMessage);
 				return;
 			}

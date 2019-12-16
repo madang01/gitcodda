@@ -142,8 +142,8 @@ public final class SyncNoShareConnection implements SyncConnectionIF {
 		}
 
 		syncOutputMessageReceiver.ready(messageCodecManger);
-		inputMessage.messageHeaderInfo.mailboxID = mailboxID;
-		inputMessage.messageHeaderInfo.mailID = mailID;
+		inputMessage.setMailboxID(mailboxID);
+		inputMessage.setMailID(mailID);
 
 		AbstractMessageEncoder messageEncoder = null;
 

@@ -128,8 +128,8 @@ public class THBMessageProtocol implements MessageProtocolIF {
 	public void M2S(AbstractMessage inputMessage, AbstractMessageEncoder messageEncoder, StreamBuffer targetStreamBuffer) 
 			throws NoMoreDataPacketBufferException, BodyFormatException, HeaderFormatException {
 		String messageID = inputMessage.getMessageID();
-		int mailboxID = inputMessage.messageHeaderInfo.mailboxID;
-		int mailID = inputMessage.messageHeaderInfo.mailID;
+		int mailboxID = inputMessage.getMailboxID();
+		int mailID = inputMessage.getMailID();
 		
 		long messageStartPostion = targetStreamBuffer.getPosition();
 				
