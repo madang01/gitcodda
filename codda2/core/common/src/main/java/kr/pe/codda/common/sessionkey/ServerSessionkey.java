@@ -29,14 +29,14 @@ public class ServerSessionkey implements ServerSessionkeyIF {
 		this.symmetricIVSize = symmetricIVSize; 
 	}
 
-	public ServerSymmetricKeyIF getNewInstanceOfServerSymmetricKey(byte[] sessionkeyBytes, byte[] ivBytes) throws SymmetricException {
-		return this.getNewInstanceOfServerSymmetricKey(false, sessionkeyBytes, ivBytes);
+	public ServerSymmetricKeyIF createNewInstanceOfServerSymmetricKey(byte[] sessionkeyBytes, byte[] ivBytes) throws SymmetricException {
+		return this.createNewInstanceOfServerSymmetricKey(false, sessionkeyBytes, ivBytes);
 	}
 	
 	/**
 	 * 참고) 웹에서는 RAS 관련 javascript API 가 이진 데이터를 다룰 수 없기때문에 부득이 base64 인코딩하여 문자열로 만들어 사용하였다. 하여 대칭키를 얻고자 한다면 base64 디코딩 해야한다. 
 	 */
-	public ServerSymmetricKeyIF getNewInstanceOfServerSymmetricKey(boolean isBase64, byte[] sessionkeyBytes, byte[] ivBytes) throws SymmetricException {
+	public ServerSymmetricKeyIF createNewInstanceOfServerSymmetricKey(boolean isBase64, byte[] sessionkeyBytes, byte[] ivBytes) throws SymmetricException {
 		// log.info("isBase64={}", isBase64);
 		
 		if (null == sessionkeyBytes) {

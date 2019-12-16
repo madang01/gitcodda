@@ -172,7 +172,7 @@ public class MemberRegisterReqServerTask extends AbstractServerTask {
 		try {
 			ServerSessionkeyIF serverSessionkey = ServerSessionkeyManager.getInstance()
 					.getMainProjectServerSessionkey();
-			serverSymmetricKey = serverSessionkey.getNewInstanceOfServerSymmetricKey(sessionKeyBytes, ivBytes);
+			serverSymmetricKey = serverSessionkey.createNewInstanceOfServerSymmetricKey(sessionKeyBytes, ivBytes);
 		} catch (IllegalArgumentException e) {
 			String debugMessage = new StringBuilder().append("잘못된 파라미터로 인한 대칭키 생성 실패, ")
 					.append(memberRegisterReq.toString()).toString();

@@ -57,7 +57,7 @@ public final class SyncNoShareConnection implements SyncConnectionIF {
 	private final Socket clientSocket;
 	private final InputStream clientInputStream;
 	private final OutputStream clientOutputStream;
-	private final int mailboxID = 1;
+	// private final int mailboxID = CommonStaticFinalVars.SYNC_MAILBOX_START_ID;
 	private transient int mailID = Integer.MIN_VALUE;
 	private transient java.util.Date finalReadTime = new java.util.Date();
 	private boolean isQueueIn = true;
@@ -142,7 +142,7 @@ public final class SyncNoShareConnection implements SyncConnectionIF {
 		}
 
 		syncOutputMessageReceiver.ready(messageCodecManger);
-		inputMessage.setMailboxID(mailboxID);
+		inputMessage.setMailboxID(CommonStaticFinalVars.SYNC_MAILBOX_START_ID);
 		inputMessage.setMailID(mailID);
 
 		AbstractMessageEncoder messageEncoder = null;
@@ -230,7 +230,7 @@ public final class SyncNoShareConnection implements SyncConnectionIF {
 
 				// log.info("numberOfReadBytes={}, readableMiddleObjectWrapperQueue.isEmpty={}",
 				// numberOfReadBytes, readableMiddleObjectWrapperQueue.isEmpty());
-			} while (! syncOutputMessageReceiver.isReceivedMessage());
+			} while (! syncOutputMessageReceiver.isReceivedMessage() && ! syncOutputMessageReceiver.isError());
 
 		} catch (NoMoreDataPacketBufferException e) {
 			String errorMessage = new StringBuilder()
@@ -263,9 +263,8 @@ public final class SyncNoShareConnection implements SyncConnectionIF {
 		}
 		
 		if (syncOutputMessageReceiver.isError()) {
-			String errorMessage = "there are one or more recevied messages";
 			close();
-			throw new IOException(errorMessage);
+			throw new IOException(syncOutputMessageReceiver.getErrorMessage());
 		}
 
 		AbstractMessage outputMessage = syncOutputMessageReceiver.getReceiveMessage();

@@ -88,8 +88,8 @@ public class AsynThreadSafeSingleConnection
 
 		this.syncMessageMailboxQueue = new ArrayBlockingQueue<SyncMessageMailbox>(
 				clientSyncMessageMailboxCountPerAsynShareConnection);
-		this.syncMessageMailboxArray = new SyncMessageMailbox[clientSyncMessageMailboxCountPerAsynShareConnection + 1];
-		for (int i = 1; i < syncMessageMailboxArray.length; i++) {
+		this.syncMessageMailboxArray = new SyncMessageMailbox[clientSyncMessageMailboxCountPerAsynShareConnection + 2];
+		for (int i = CommonStaticFinalVars.SYNC_MAILBOX_START_ID; i < syncMessageMailboxArray.length; i++) {
 			SyncMessageMailbox syncMessageMailbox = new SyncMessageMailbox(this, i, socketTimeout, messageProtocol);
 			syncMessageMailboxArray[i] = syncMessageMailbox;
 			syncMessageMailboxQueue.offer(syncMessageMailbox);
@@ -294,7 +294,26 @@ public class AsynThreadSafeSingleConnection
 	@Override
 	public void putReceivedMessage(int mailboxID, int mailID, String messageID, Object readableMiddleObject)
 			throws InterruptedException {
-		if (CommonStaticFinalVars.ASYN_MAILBOX_ID == mailboxID) {
+		
+		
+		if (CommonStaticFinalVars.SERVER_ASYN_MAILBOX_ID == mailboxID) {
+			try {
+				AbstractClientTask clientTask = clientTaskManger.getClientTask(messageID);
+				clientTask.execute(hashCode(), projectName, this, mailboxID, mailID, messageID, readableMiddleObject,
+						messageProtocol);
+			} catch (InterruptedException e) {
+				throw e;
+			} catch (Exception | Error e) {
+				log.log(Level.WARNING, "unknwon error::fail to execute a output message client task", e);
+				return;
+			} finally {
+				// readableMiddleObjectWrapper.closeReadableMiddleObject();
+				messageProtocol.closeReadableMiddleObject(mailboxID, mailID, messageID, readableMiddleObject);
+			}
+			
+		} else if (CommonStaticFinalVars.CLIENT_ASYN_MAILBOX_ID == mailboxID) {
+			outgoingStream.decreaseOutputMessageCount();
+			
 			try {
 				AbstractClientTask clientTask = clientTaskManger.getClientTask(messageID);
 				clientTask.execute(hashCode(), projectName, this, mailboxID, mailID, messageID, readableMiddleObject,

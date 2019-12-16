@@ -113,6 +113,16 @@ public class ClientOutgoingStream implements ClientOutgoingStreamIF {
 			return true;
 		}
 	}
+	
+	public void decreaseOutputMessageCount() {
+		synchronized (monitor) {
+			if (streamBufferCount > 0) {
+				streamBufferCount--;
+			}
+
+			monitor.notify();
+		}
+	}
 
 	public int write(SocketChannel writableSocketChannel) throws IOException, NoMoreDataPacketBufferException {
 		if (null == workingStreamBuffer) {
@@ -125,8 +135,6 @@ public class ClientOutgoingStream implements ClientOutgoingStreamIF {
 		if (! workingStreamBuffer.hasRemaining()) {
 
 			synchronized (monitor) {
-
-				streamBufferCount--;
 				streamBufferArrayDeque.removeFirst().releaseAllWrapBuffers();
 
 				if (0 == streamBufferCount) {
@@ -144,8 +152,6 @@ public class ClientOutgoingStream implements ClientOutgoingStreamIF {
 					// FIXME!
 					// log.info("작업 버퍼의 내용 송신 완료로 인한 새 작업 버퍼로 교체");
 				}
-
-				monitor.notify();
 			}
 		}
 

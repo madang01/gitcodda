@@ -150,7 +150,7 @@ public class AdminLoginProcessSvl extends AbstractServlet {
 		
 		ServerSymmetricKeyIF symmetricKeyFromSessionkey = null;
 		try {
-			symmetricKeyFromSessionkey = webServerSessionkey.getNewInstanceOfServerSymmetricKey(true, sessionkeyBytes, ivBytes);
+			symmetricKeyFromSessionkey = webServerSessionkey.createNewInstanceOfServerSymmetricKey(true, sessionkeyBytes, ivBytes);
 		} catch(IllegalArgumentException e) {
 			String errorMessage = "웹 세션키 인스턴스 생성 실패";
 			log.log(Level.WARNING, errorMessage, e);

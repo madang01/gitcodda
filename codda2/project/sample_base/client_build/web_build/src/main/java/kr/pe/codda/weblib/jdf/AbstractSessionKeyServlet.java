@@ -136,7 +136,7 @@ public abstract class AbstractSessionKeyServlet extends AbstractServlet {
 		ServerSymmetricKeyIF symmetricKeyFromSessionkey = null;
 
 		try {
-			symmetricKeyFromSessionkey = webServerSessionkey.getNewInstanceOfServerSymmetricKey(true, sessionkeyBytes,
+			symmetricKeyFromSessionkey = webServerSessionkey.createNewInstanceOfServerSymmetricKey(true, sessionkeyBytes,
 					ivBytes);
 		} catch (Exception e) {
 			String errorMessage = "fail to create a new instance of ServerSymmetricKeyIF class";

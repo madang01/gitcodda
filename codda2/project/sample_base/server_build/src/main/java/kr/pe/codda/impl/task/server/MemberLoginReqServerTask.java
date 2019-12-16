@@ -152,7 +152,7 @@ public class MemberLoginReqServerTask extends AbstractServerTask {
 			ServerSessionkeyIF serverSessionkey = ServerSessionkeyManager.getInstance()
 					.getMainProjectServerSessionkey();
 
-			serverSymmetricKey = serverSessionkey.getNewInstanceOfServerSymmetricKey(sessionKeyBytes, ivBytes);
+			serverSymmetricKey = serverSessionkey.createNewInstanceOfServerSymmetricKey(sessionKeyBytes, ivBytes);
 
 		} catch (IllegalArgumentException e) {
 			String errorMessage = "서버 세션키를 얻는데 실패하였습니다";

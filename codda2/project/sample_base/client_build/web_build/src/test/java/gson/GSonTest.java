@@ -1,5 +1,7 @@
 package gson;
 
+import static org.junit.Assert.assertEquals;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.ConsoleHandler;
@@ -54,8 +56,12 @@ public class GSonTest {
 	}
 	
 	@Test
-	public void test() {
-		ArraySiteMenuRes menuListRes = new ArraySiteMenuRes();
+	public void test메시지를존슨문자열로만든후역으로메시지객체로만들어비교() {
+		ArraySiteMenuRes expectedArraySiteMenuRes = new ArraySiteMenuRes();
+		
+		
+		expectedArraySiteMenuRes.setMailboxID(1);
+		expectedArraySiteMenuRes.setMailID(3);
 		
 		
 		List<ArraySiteMenuRes.Menu> menuList = new ArrayList<ArraySiteMenuRes.Menu>();
@@ -69,15 +75,21 @@ public class GSonTest {
 		
 		menuList.add(menu);
 		
-		menuListRes.setCnt(menuList.size());
-		menuListRes.setMenuList(menuList);
+		expectedArraySiteMenuRes.setCnt(menuList.size());
+		expectedArraySiteMenuRes.setMenuList(menuList);
 		
-		// log.info(menuListRes.toString());
+		log.info(expectedArraySiteMenuRes.toString());
 		
-		String menuListResJson = new Gson().toJson(menuListRes);
+		String expectedArraySiteMenuResJson = new Gson().toJson(expectedArraySiteMenuRes);
 		
 		
-		log.info("menuListResJson=" + menuListResJson);
+		log.info("expectedArraySiteMenuResJson=" + expectedArraySiteMenuResJson);
+		
+		ArraySiteMenuRes actualArraySiteMenuRes = new Gson().fromJson(expectedArraySiteMenuResJson, ArraySiteMenuRes.class);		
+		
+		assertEquals(expectedArraySiteMenuRes.getMailboxID(), actualArraySiteMenuRes.getMailboxID());
+		assertEquals(expectedArraySiteMenuRes.getMailID(), actualArraySiteMenuRes.getMailID());
+		assertEquals(expectedArraySiteMenuRes.toString(), actualArraySiteMenuRes.toString());
 		
 	}
 }

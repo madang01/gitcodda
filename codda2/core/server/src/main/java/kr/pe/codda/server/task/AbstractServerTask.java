@@ -18,7 +18,6 @@
 package kr.pe.codda.server.task;
 
 import java.util.HashMap;
-import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -145,7 +144,8 @@ public abstract class AbstractServerTask implements MessageEncoderManagerIF {
 		/*log.info("classLoader[{}], serverTask[{}], create new messageDecoder", 
 				classLoaderOfSererTask.hashCode(),
 				inputMessageID);*/
-		long startTime = System.nanoTime();
+		
+		// long startTime = System.nanoTime();
 			
 		AbstractMessage inputMessage = null;
 		try {
@@ -233,6 +233,7 @@ public abstract class AbstractServerTask implements MessageEncoderManagerIF {
 					mailboxID, mailID, messageID, fromAcceptedConnection, messageProtocol);
 			return;
 		} finally {
+			/*
 			long endTime = System.nanoTime();
 			String infoMessage = new StringBuilder().append("this server task[")
 					.append(messageID)
@@ -242,6 +243,7 @@ public abstract class AbstractServerTask implements MessageEncoderManagerIF {
 			
 			Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
 			log.info(infoMessage);
+			*/
 		}
 	}
 	

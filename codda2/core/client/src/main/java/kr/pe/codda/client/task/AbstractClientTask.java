@@ -1,6 +1,5 @@
 package kr.pe.codda.client.task;
 
-import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -62,7 +61,7 @@ public abstract class AbstractClientTask {
 			return;
 		}
 		
-		long startTime = System.nanoTime();
+		// long startTime = System.nanoTime();
 
 		try {
 			doTask(projectName, asynConnection, outputMessage);
@@ -84,13 +83,15 @@ public abstract class AbstractClientTask {
 			log.log(Level.WARNING, errorReason, e);
 			return;
 		} finally {
+			/*
 			long endTime = System.nanoTime();
 			String infoMessage = new StringBuilder().append("this client task[")
 					.append(messageID)
 					.append("] elapsed time[")
 					.append(TimeUnit.MICROSECONDS.convert((endTime - startTime), TimeUnit.NANOSECONDS))
-					.append(" ms]").toString();
+					.append(" MICROSECONDS]").toString();
 			log.info(infoMessage);
+			*/
 		}
 		
 	}

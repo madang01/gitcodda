@@ -178,7 +178,7 @@ public class HardCodingMemberLoginProcessSvl extends AbstractServlet {
 		
 		ServerSymmetricKeyIF webServerSymmetricKey = null;
 		try {
-			webServerSymmetricKey = webServerSessionkey.getNewInstanceOfServerSymmetricKey(true, sessionkeyBytes, ivBytes);
+			webServerSymmetricKey = webServerSessionkey.createNewInstanceOfServerSymmetricKey(true, sessionkeyBytes, ivBytes);
 		} catch(IllegalArgumentException e) {
 			String errorMessage = "웹 세션키 인스턴스 생성 실패";
 			log.log(Level.WARNING, errorMessage, e);

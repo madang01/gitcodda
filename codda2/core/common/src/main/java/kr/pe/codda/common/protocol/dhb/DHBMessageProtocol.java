@@ -365,6 +365,18 @@ public class DHBMessageProtocol implements MessageProtocolIF {
 
 							throw new HeaderFormatException(errorMessage);
 						}
+						
+						if (CommonStaticFinalVars.SERVER_ASYN_MAILBOX_ID == mailboxID) {
+							String errorMessage = new StringBuilder()
+									.append("the recevied message[messageID=")
+									.append(messageID)
+									.append(", mailboxID=")
+									.append(mailboxID)
+									.append(", mailID=")
+									.append(mailID)
+									.append("]'s mailbox id is bad, any client message can't have a server asyn mailbox id").toString();
+							throw new HeaderFormatException(errorMessage);
+						}
 
 						try {
 							receivedMessageForwarder.putReceivedMessage(mailboxID, mailID, messageID,

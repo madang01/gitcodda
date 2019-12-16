@@ -100,7 +100,7 @@ public class AsynNoShareConnection implements AsynConnectionIF, ClientIOEventHan
 		clientSC.setOption(StandardSocketOptions.SO_LINGER, 0);
 		clientSC.setOption(StandardSocketOptions.SO_REUSEADDR, true);
 
-		syncMessageMailbox = new SyncMessageMailbox(this, 1, socketTimeout, messageProtocol);
+		syncMessageMailbox = new SyncMessageMailbox(this, CommonStaticFinalVars.SYNC_MAILBOX_START_ID, socketTimeout, messageProtocol);
 		
 	}
 
@@ -317,7 +317,23 @@ public class AsynNoShareConnection implements AsynConnectionIF, ClientIOEventHan
 	@Override
 	public void putReceivedMessage(int mailboxID, int mailID, String messageID, Object readableMiddleObject)
 			throws InterruptedException {
-		if (CommonStaticFinalVars.ASYN_MAILBOX_ID == mailboxID) {
+
+		if (CommonStaticFinalVars.SERVER_ASYN_MAILBOX_ID == mailboxID) {
+			try {
+				AbstractClientTask clientTask = clientTaskManger.getClientTask(messageID);
+				clientTask.execute(hashCode(), projectName, this, mailboxID, mailID, messageID, readableMiddleObject,
+						messageProtocol);
+			} catch (InterruptedException e) {
+				throw e;
+			} catch (Exception | Error e) {
+				log.log(Level.WARNING, "unknwon error::fail to execute a output message client task", e);
+				return;
+			} finally {
+				messageProtocol.closeReadableMiddleObject(mailboxID, mailID, messageID, readableMiddleObject);
+			}
+		} else if (CommonStaticFinalVars.CLIENT_ASYN_MAILBOX_ID == mailboxID) {
+			outgoingStream.decreaseOutputMessageCount();
+			
 			try {
 				AbstractClientTask clientTask = clientTaskManger.getClientTask(messageID);
 				clientTask.execute(hashCode(), projectName, this, mailboxID, mailID, messageID, readableMiddleObject,
@@ -331,6 +347,7 @@ public class AsynNoShareConnection implements AsynConnectionIF, ClientIOEventHan
 				messageProtocol.closeReadableMiddleObject(mailboxID, mailID, messageID, readableMiddleObject);
 			}
 		} else {
+			outgoingStream.decreaseOutputMessageCount();
 			syncMessageMailbox.putSyncOutputMessage(mailboxID, mailID, messageID, readableMiddleObject);
 		}
 	}

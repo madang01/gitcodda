@@ -61,7 +61,7 @@ public class ServerOutgoingStream implements ServerOutgoingStreamIF {
 			workingStreamBuffer = messageStreamBuffer;
 		}
 
-		ownerSelectionKey.interestOps(ownerSelectionKey.interestOps() | SelectionKey.OP_WRITE & ~SelectionKey.OP_READ);
+		ownerSelectionKey.interestOps(ownerSelectionKey.interestOps() | SelectionKey.OP_WRITE);
 
 		return true;
 
@@ -99,7 +99,7 @@ public class ServerOutgoingStream implements ServerOutgoingStreamIF {
 					/** socket write event turn off */
 					ret = -1;
 
-					ownerSelectionKey.interestOps(ownerSelectionKey.interestOps() & ~SelectionKey.OP_WRITE | SelectionKey.OP_READ);
+					ownerSelectionKey.interestOps(ownerSelectionKey.interestOps() & ~SelectionKey.OP_WRITE);
 				} else {
 					workingStreamBuffer = streamBufferArrayDeque.peekFirst();
 

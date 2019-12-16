@@ -202,7 +202,7 @@ public class SyncNoShareConnectionTest {
 		String host = "localhost";
 		
 		int port = 9499;
-		int clientConnectionCount = 5;
+		int clientConnectionCount = 3;
 		boolean clientDataPacketBufferIsDirect = false;
 		ProjectPartConfiguration projectPartConfigurationForTest = null;
 		MessageProtocolType messageProtocolTypeForTest = MessageProtocolType.DHB;

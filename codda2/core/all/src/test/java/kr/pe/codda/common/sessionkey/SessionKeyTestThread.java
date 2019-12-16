@@ -51,7 +51,7 @@ public class SessionKeyTestThread extends Thread {
 				ClientSymmetricKeyIF  clientSymmetricKey = mainProjectClientSessionKey.getClientSymmetricKey();
 				
 				ServerSymmetricKeyIF serverSymmetricKey = mainProjectServerSessionkey
-				.getNewInstanceOfServerSymmetricKey(sessionKeyBytes, ivBytes);
+				.createNewInstanceOfServerSymmetricKey(sessionKeyBytes, ivBytes);
 				
 				
 				byte encryptedBytesOfClient[] = clientSymmetricKey.encrypt(plainTextBytesOfClient);

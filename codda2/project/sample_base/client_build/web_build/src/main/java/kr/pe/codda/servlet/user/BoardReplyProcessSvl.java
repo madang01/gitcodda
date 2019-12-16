@@ -366,14 +366,42 @@ public class BoardReplyProcessSvl extends AbstractMultipartServlet {
 		// log.info("sessionkeyBytes=[{}]",
 		// HexUtil.getHexStringFromByteArray(sessionkeyBytes));
 		// log.info("ivBytes=[{}]", HexUtil.getHexStringFromByteArray(ivBytes));
+		
+		ServerSymmetricKeyIF webServerSymmetricKey = null;
+		try {
+			webServerSymmetricKey = webServerSessionkey
+					.createNewInstanceOfServerSymmetricKey(true, sessionkeyBytes,
+							ivBytes);
+		} catch (IllegalArgumentException e) {
+			String errorMessage = "웹 세션키 인스턴스 생성 실패";
+			log.log(Level.WARNING, errorMessage, e);
+
+			String debugMessage = new StringBuilder("sessionkeyBytes=[")
+					.append(HexUtil.getHexStringFromByteArray(sessionkeyBytes))
+					.append("], ivBytes=[")
+					.append(HexUtil.getHexStringFromByteArray(ivBytes))
+					.append("]").toString();
+
+			throw new WebClientException(errorMessage, debugMessage);
+		} catch (SymmetricException e) {
+			String errorMessage = "웹 세션키 인스턴스 생성 실패";
+			log.log(Level.WARNING, errorMessage, e);
+
+			String debugMessage = new StringBuilder("sessionkeyBytes=[")
+					.append(HexUtil.getHexStringFromByteArray(sessionkeyBytes))
+					.append("], ivBytes=[")
+					.append(HexUtil.getHexStringFromByteArray(ivBytes))
+					.append("]").toString();
+
+			throw new WebClientException(errorMessage, debugMessage);
+		}
 
 		req.setAttribute(
 				WebCommonStaticFinalVars.REQUEST_KEY_NAME_OF_MODULUS_HEX_STRING,
 				webServerSessionkey.getModulusHexStrForWeb());
 		req.setAttribute(
 				WebCommonStaticFinalVars.REQUEST_KEY_NAME_OF_SYMMETRIC_KEY_FROM_SESSIONKEY,
-				webServerSessionkey.getNewInstanceOfServerSymmetricKey(true,
-						sessionkeyBytes, ivBytes));
+				webServerSymmetricKey);
 		
 		short boardID = -1;
 		long parentBoardNo = 0L;
@@ -401,34 +429,7 @@ public class BoardReplyProcessSvl extends AbstractMultipartServlet {
 		if (null == paramBoardPwdCipherBase64) {
 			boardPwdHashBase64 = "";
 		} else {
-			ServerSymmetricKeyIF webServerSymmetricKey = null;
-			try {
-				webServerSymmetricKey = webServerSessionkey
-						.getNewInstanceOfServerSymmetricKey(true, sessionkeyBytes,
-								ivBytes);
-			} catch (IllegalArgumentException e) {
-				String errorMessage = "웹 세션키 인스턴스 생성 실패";
-				log.log(Level.WARNING, errorMessage, e);
-
-				String debugMessage = new StringBuilder("sessionkeyBytes=[")
-						.append(HexUtil.getHexStringFromByteArray(sessionkeyBytes))
-						.append("], ivBytes=[")
-						.append(HexUtil.getHexStringFromByteArray(ivBytes))
-						.append("]").toString();
-
-				throw new WebClientException(errorMessage, debugMessage);
-			} catch (SymmetricException e) {
-				String errorMessage = "웹 세션키 인스턴스 생성 실패";
-				log.log(Level.WARNING, errorMessage, e);
-
-				String debugMessage = new StringBuilder("sessionkeyBytes=[")
-						.append(HexUtil.getHexStringFromByteArray(sessionkeyBytes))
-						.append("], ivBytes=[")
-						.append(HexUtil.getHexStringFromByteArray(ivBytes))
-						.append("]").toString();
-
-				throw new WebClientException(errorMessage, debugMessage);
-			}
+			
 			
 			byte[] boardPasswordBytes = webServerSymmetricKey.decrypt(CommonStaticUtil.Base64Decoder
 					.decode(paramBoardPwdCipherBase64));

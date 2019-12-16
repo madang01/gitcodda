@@ -7,6 +7,7 @@ import kr.pe.codda.common.message.AbstractMessage;
 
 
 public class EmptyClientTask extends AbstractClientTask {
+	public static int count = 0;
 
 	public EmptyClientTask() throws DynamicClassCallException {
 		super();
@@ -14,6 +15,7 @@ public class EmptyClientTask extends AbstractClientTask {
 
 	@Override
 	public void doTask(String projectName, AsynConnectionIF asynConnection, AbstractMessage outputMessage) throws Exception {
+		/*
 		String infoMessage = new StringBuilder()
 				.append("socket channel[")
 				.append(asynConnection.hashCode())
@@ -21,5 +23,7 @@ public class EmptyClientTask extends AbstractClientTask {
 				.append(outputMessage.toString()).toString();
 		
 		log.finest(infoMessage);
+		*/
+		count++;
 	}
 }

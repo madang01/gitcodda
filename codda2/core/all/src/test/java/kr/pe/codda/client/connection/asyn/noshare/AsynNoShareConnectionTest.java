@@ -36,6 +36,7 @@ import kr.pe.codda.common.util.CommonStaticUtil;
 import kr.pe.codda.common.util.JDKLoggerCustomFormatter;
 import kr.pe.codda.impl.classloader.ClientMessageCodecManger;
 import kr.pe.codda.impl.message.Empty.Empty;
+import kr.pe.codda.impl.task.client.EmptyClientTask;
 import kr.pe.codda.server.AnyProjectServer;
 
 public class AsynNoShareConnectionTest {
@@ -79,8 +80,8 @@ public class AsynNoShareConnectionTest {
 			fail(errorMessage);
 		}
 
-		File coddaAPPINFClassDirectory = new File(CommonStaticUtil
-				.changeRelativePathStringToOSPathString(CODDA_TEMP_ROOT_PATH_STRING + "/project/sample_base/server_build/APP-INF/classes"));
+		File coddaAPPINFClassDirectory = new File(CommonStaticUtil.changeRelativePathStringToOSPathString(
+				CODDA_TEMP_ROOT_PATH_STRING + "/project/sample_base/server_build/APP-INF/classes"));
 
 		log.info(coddaAPPINFClassDirectory.getAbsolutePath());
 
@@ -95,8 +96,8 @@ public class AsynNoShareConnectionTest {
 			fail("가짜 프로젝트 서버 동적 클래스 경로 만들기 실패");
 		}
 
-		File coddaResoruceDirectory = new File(
-				CommonStaticUtil.changeRelativePathStringToOSPathString(CODDA_TEMP_ROOT_PATH_STRING + "/project/sample_base/resources"));
+		File coddaResoruceDirectory = new File(CommonStaticUtil.changeRelativePathStringToOSPathString(
+				CODDA_TEMP_ROOT_PATH_STRING + "/project/sample_base/resources"));
 
 		log.info(coddaResoruceDirectory.getAbsolutePath());
 
@@ -185,7 +186,7 @@ public class AsynNoShareConnectionTest {
 		int serverDataPacketBufferPoolSize = 10000;
 		// int serverMaxClients = 10;
 		int serverInputMessageQueueSize = 5;
-		int serverOutputMessageQueueSize = 5;
+		int serverOutputMessageQueueSize = 10;
 
 		projectPartConfigurationForTest.build(host, port, byteOrder, charset, messageIDFixedSize, messageProtocolType,
 				clientMonitorTimeInterval, clientDataPacketBufferIsDirect, clientDataPacketBufferMaxCntPerMessage,
@@ -222,8 +223,8 @@ public class AsynNoShareConnectionTest {
 		} catch (Exception e) {
 			log.log(Level.WARNING, "error", e);
 
-			String errorMessage = new StringBuilder()
-					.append("fail to mapping configuration's item value to ProjectPartConfiguration's item value::errmsg=")
+			String errorMessage = new StringBuilder().append(
+					"fail to mapping configuration's item value to ProjectPartConfiguration's item value::errmsg=")
 					.append(e.getMessage()).toString();
 
 			fail(errorMessage);
@@ -280,7 +281,7 @@ public class AsynNoShareConnectionTest {
 				if (!(emptyRes instanceof Empty)) {
 					fail("empty 메시지 수신 실패");
 				}
-				
+
 				assertEquals(emptyReq.getMailboxID(), emptyRes.getMailboxID());
 				assertEquals(emptyReq.getMailID(), emptyRes.getMailID());
 			}
@@ -296,8 +297,7 @@ public class AsynNoShareConnectionTest {
 		} catch (Exception e) {
 			log.log(Level.WARNING, "error", e);
 
-			String errorMessage = new StringBuilder()
-					.append("fail to get a output message::errmsg=")
+			String errorMessage = new StringBuilder().append("fail to get a output message::errmsg=")
 					.append(e.getMessage()).toString();
 
 			fail(errorMessage);
@@ -387,8 +387,8 @@ public class AsynNoShareConnectionTest {
 		} catch (Exception e) {
 			log.log(Level.WARNING, "error", e);
 
-			String errorMessage = new StringBuilder()
-					.append("fail to mapping configuration's item value to ProjectPartConfiguration's item value::errmsg=")
+			String errorMessage = new StringBuilder().append(
+					"fail to mapping configuration's item value to ProjectPartConfiguration's item value::errmsg=")
 					.append(e.getMessage()).toString();
 
 			fail(errorMessage);
@@ -433,8 +433,7 @@ public class AsynNoShareConnectionTest {
 			try {
 				endThreadName = noticeBlockingQueue.take();
 
-				System.out.printf("end thread[%s]", endThreadName);
-				System.out.println();
+				log.info("end thread[" + endThreadName + "]");
 			} catch (InterruptedException e) {
 			}
 		}
@@ -463,8 +462,8 @@ public class AsynNoShareConnectionTest {
 		} catch (Exception e) {
 			log.log(Level.WARNING, "error", e);
 
-			String errorMessage = new StringBuilder()
-					.append("fail to mapping configuration's item value to ProjectPartConfiguration's item value::errmsg=")
+			String errorMessage = new StringBuilder().append(
+					"fail to mapping configuration's item value to ProjectPartConfiguration's item value::errmsg=")
 					.append(e.getMessage()).toString();
 
 			fail(errorMessage);
@@ -499,39 +498,34 @@ public class AsynNoShareConnectionTest {
 		}
 		int i = 0;
 		try {
+			long startTime = System.nanoTime();
+			
 			for (; i < retryCount; i++) {
-				long startTime = System.nanoTime();
+				
 
 				try {
 					anyProjectConnectionPool.sendAsynInputMessage(ClientMessageCodecManger.getInstance(), emptyReq);
 				} catch (SocketTimeoutException e) {
-					String errorMessage = new StringBuilder()
-							.append("SocketTimeoutException, emptyReq[mailboxID=")
-							.append(emptyReq.getMailboxID())
-							.append(", mailID=")
-							.append(emptyReq.getMailID())
+					String errorMessage = new StringBuilder().append("SocketTimeoutException, emptyReq[mailboxID=")
+							.append(emptyReq.getMailboxID()).append(", mailID=").append(emptyReq.getMailID())
 							.append("]").toString();
-									
-					
+
 					log.info(errorMessage);
 				}
-
-				long endTime = System.nanoTime();
-
-				String infoMessage = new StringBuilder().append(retryCount).append(" 회 평균시간[")
-						.append(TimeUnit.MICROSECONDS.convert((endTime - startTime), TimeUnit.NANOSECONDS) / retryCount)
-						.append("] microseconds").toString();
-				log.info(infoMessage);
 			}
+			
+			long endTime = System.nanoTime();
+
+			String infoMessage = new StringBuilder().append(retryCount).append(" 회 평균시간[")
+					.append(TimeUnit.MICROSECONDS.convert((endTime - startTime), TimeUnit.NANOSECONDS) / retryCount)
+					.append("] microseconds").toString();
+			log.info(infoMessage);
 
 		} catch (Exception e) {
 			log.log(Level.WARNING, "error", e);
 
-			String errorMessage = new StringBuilder()
-					.append("fail to get a ")
-					.append(i)
-					.append(" 번째 output message::errmsg=")
-					.append(e.getMessage()).toString();
+			String errorMessage = new StringBuilder().append("fail to get a ").append(i)
+					.append(" 번째 output message::errmsg=").append(e.getMessage()).toString();
 
 			fail(errorMessage);
 		}
@@ -574,7 +568,7 @@ public class AsynNoShareConnectionTest {
 						continue;
 					}
 
-					Thread.sleep(0, 5);
+					// Thread.sleep(0, 5);
 				}
 
 				long endTime = System.nanoTime();
@@ -599,7 +593,7 @@ public class AsynNoShareConnectionTest {
 		String host = "localhost";
 		int port = 9093;
 		boolean clientDataPacketBufferIsDirect = true;
-		MessageProtocolType messageProtocolTypeForTest = MessageProtocolType.THB;
+		MessageProtocolType messageProtocolTypeForTest = MessageProtocolType.DHB;
 		int clientConnectionCount = 3;
 		int clientConnectionMaxCount = clientConnectionCount;
 		int serverMaxClients = clientConnectionCount;
@@ -619,8 +613,8 @@ public class AsynNoShareConnectionTest {
 		} catch (Exception e) {
 			log.log(Level.WARNING, "error", e);
 
-			String errorMessage = new StringBuilder()
-					.append("fail to mapping configuration's item value to ProjectPartConfiguration's item value::errmsg=")
+			String errorMessage = new StringBuilder().append(
+					"fail to mapping configuration's item value to ProjectPartConfiguration's item value::errmsg=")
 					.append(e.getMessage()).toString();
 
 			fail(errorMessage);
@@ -653,6 +647,8 @@ public class AsynNoShareConnectionTest {
 		}
 
 		Thread[] threadSafeTester = new Thread[numberOfThread];
+		
+		EmptyClientTask.count = 0;
 
 		for (int i = 0; i < numberOfThread; i++) {
 			threadSafeTester[i] = new Thread(
@@ -674,7 +670,13 @@ public class AsynNoShareConnectionTest {
 		}
 
 		try {
-			Thread.sleep(5000);
+			log.info("1.EmptyClientTask.count=" + EmptyClientTask.count);
+			
+			while (retryCount * numberOfThread != EmptyClientTask.count) {
+				Thread.sleep(1000);
+				
+				log.info("2.EmptyClientTask.count=" + EmptyClientTask.count);
+			}
 		} catch (InterruptedException e) {
 		}
 	}

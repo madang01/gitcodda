@@ -17,6 +17,7 @@ public class SyncOutputMessageReceiver implements ReceivedMessageForwarderIF {
 	private MessageCodecMangerIF messageCodecManger = null;
 	private AbstractMessage receivedMessage = null;
 	private boolean isError = false;
+	private String errorMessage = null;
 
 	public SyncOutputMessageReceiver(MessageProtocolIF messageProtocol) {
 		this.messageProtocol = messageProtocol;
@@ -32,11 +33,29 @@ public class SyncOutputMessageReceiver implements ReceivedMessageForwarderIF {
 			AbstractMessage discardedMessage = ClientMessageUtility.buildOutputMessage("discarded", messageCodecManger,
 					messageProtocol, mailboxID, mailID, messageID, readableMiddleObject);
 
-			String warnMessage = new StringBuilder().append("discard the received message[")
+			errorMessage = new StringBuilder().append("discard the received message[")
 					.append(discardedMessage.toString())
 					.append("] becase there are one more recevied messages").toString();
 			
-			log.warning(warnMessage);
+			log.warning(errorMessage);
+
+			return;
+		}
+		
+		if ((CommonStaticFinalVars.CLIENT_ASYN_MAILBOX_ID == mailboxID) || (CommonStaticFinalVars.SERVER_ASYN_MAILBOX_ID == mailboxID)) {
+			/** discard message */
+			isError = true;
+
+			AbstractMessage discardedMessage = ClientMessageUtility.buildOutputMessage("discarded", messageCodecManger,
+					messageProtocol, mailboxID, mailID, messageID, readableMiddleObject);
+
+			errorMessage = new StringBuilder().append("discard the received message[")
+					.append(discardedMessage.toString())
+					.append("] becase the var mailboxID[")
+					.append(mailboxID)
+					.append("] is not a sync mailbox id").toString();
+			
+			log.warning(errorMessage);
 
 			return;
 		}
@@ -62,4 +81,9 @@ public class SyncOutputMessageReceiver implements ReceivedMessageForwarderIF {
 	public boolean isError() {
 		return isError;
 	}
+	
+	public String getErrorMessage() {
+		return errorMessage;
+	}
+	
 }

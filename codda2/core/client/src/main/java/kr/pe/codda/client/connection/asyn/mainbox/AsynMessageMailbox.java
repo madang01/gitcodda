@@ -7,7 +7,7 @@ public abstract class AsynMessageMailbox {
 	private transient static int mailID = Integer.MIN_VALUE;
 
 	public static int getMailboxID() {
-		return CommonStaticFinalVars.ASYN_MAILBOX_ID;
+		return CommonStaticFinalVars.CLIENT_ASYN_MAILBOX_ID;
 	}
 
 	public synchronized static int getNextMailID() {

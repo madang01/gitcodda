@@ -46,7 +46,7 @@ public final class SyncThreadSafeSingleConnection implements SyncConnectionIF {
 	private final StreamBuffer inputMessageStreamBuffer;
 	private final InputStream clientInputStream;
 	private final OutputStream clientOutputStream;
-	private final int mailboxID = 1;
+	//private final int mailboxID = CommonStaticFinalVars.SYNC_MAILBOX_START_ID;
 	private transient int mailID = Integer.MIN_VALUE;
 	private transient java.util.Date finalReadTime = new java.util.Date();	
 	private final IncomingStream incomingStream;
@@ -176,7 +176,7 @@ public final class SyncThreadSafeSingleConnection implements SyncConnectionIF {
 				mailID++;
 			}
 
-			inputMessage.setMailboxID(mailboxID);
+			inputMessage.setMailboxID(CommonStaticFinalVars.SYNC_MAILBOX_START_ID);
 			inputMessage.setMailID(mailID);
 
 			try {
@@ -256,7 +256,7 @@ public final class SyncThreadSafeSingleConnection implements SyncConnectionIF {
 						throw new IOException(errorMessage);
 					}
 					
-				} while (! syncOutputMessageReceiver.isReceivedMessage());
+				} while (! syncOutputMessageReceiver.isReceivedMessage() && ! syncOutputMessageReceiver.isError());
 
 			} catch (NoMoreDataPacketBufferException e) {
 				String errorMessage = new StringBuilder()
@@ -287,9 +287,8 @@ public final class SyncThreadSafeSingleConnection implements SyncConnectionIF {
 			}
 			
 			if (syncOutputMessageReceiver.isError()) {
-				String errorMessage = "there are one or more recevied messages";
 				close();
-				throw new IOException(errorMessage);
+				throw new IOException(syncOutputMessageReceiver.getErrorMessage());
 			}
 			
 			outputMessage = syncOutputMessageReceiver.getReceiveMessage();
