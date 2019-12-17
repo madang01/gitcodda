@@ -17,67 +17,29 @@ public class ServerSymmetricKey implements ServerSymmetricKeyIF {
 	// private final int symmetricIVSize;
 	
 	public ServerSymmetricKey(String symmetricKeyAlgorithm, byte[] symmetricKeyBytes, byte[] ivBytes) throws SymmetricException {
+		if (null == symmetricKeyAlgorithm) {
+			throw new IllegalArgumentException("the parameter symmetricKeyAlgorithm is null");
+		}
+		
 		if (null == symmetricKeyBytes) {
-			throw new IllegalArgumentException("the paramter symmetricKeyBytes is null");
+			throw new IllegalArgumentException("the parameter symmetricKeyBytes is null");
 		}
+		
 		if (null == ivBytes) {
-			throw new IllegalArgumentException("the paramter ivBytes is null");
+			throw new IllegalArgumentException("the parameter ivBytes is null");
 		}
 		
-		/*
-		CoddaConfiguration runningProjectConfiguration = 
-				CoddaConfigurationManager.getInstance()
-				.getRunningProjectConfiguration();		
-		CommonPartConfiguration commonPart = runningProjectConfiguration.getCommonPartConfiguration();
-		int symmetricIVSize = commonPart.getSymmetricIVSizeOfSessionKey();		
-		symmetricKeyAlgorithm = commonPart.getSymmetricKeyAlgorithmOfSessionKey();
-		symmetricKeySize = commonPart.getSymmetricKeySizeOfSessionKey();
-		*/
-		
-		/*
-		if (symmetricKeySize != symmetricKeyBytes.length) {
-			String errorMessage = new StringBuilder()
-					.append("the parameter sessionkeyBytes's length[")
-					.append(symmetricKeyBytes.length)
-					.append("] is differenct from symmetric key size[")
-					.append(symmetricKeySize)
-					.append("] of configuration").toString();
-			
-			throw new SymmetricException(errorMessage);
-		}
-		
-		if (symmetricIVSize != ivBytes.length) {
-			String errorMessage = new StringBuilder()
-					.append("the parameter ivBytes length[")
-					.append(ivBytes.length)
-					.append("] is differenct from symmetric iv size[")
-					.append(symmetricIVSize)
-					.append("] of configuration").toString();
-			
-			
-			throw new SymmetricException(errorMessage);
-		}
-		*/
 		this.symmetricKeyAlgorithm = symmetricKeyAlgorithm;
 		this.symmetricKeyBytes = symmetricKeyBytes;
 		this.ivBytes = ivBytes;
-		// this.symmetricKeySize = symmetricKeySize;
-		// this.symmetricIVSize = symmetricIVSize;
 	}
 	
 	
 	public byte[] encrypt(byte[] plainTextBytes) throws IllegalArgumentException, SymmetricException {
-		if (null == symmetricKeyBytes) {
-			throw new SymmetricException("sessionkey not setting");
-		}
 		return symmetricKeyManager.encrypt(symmetricKeyAlgorithm, symmetricKeyBytes, plainTextBytes, ivBytes);
 	}
 	
-	public byte[] decrypt(byte[] encryptedBytes) throws IllegalArgumentException, SymmetricException {
-		if (null == symmetricKeyBytes) {
-			throw new SymmetricException("sessionkey not setting");
-		}
-		
+	public byte[] decrypt(byte[] encryptedBytes) throws IllegalArgumentException, SymmetricException {		
 		return symmetricKeyManager.decrypt(symmetricKeyAlgorithm, symmetricKeyBytes, encryptedBytes, ivBytes);
 	}
 }

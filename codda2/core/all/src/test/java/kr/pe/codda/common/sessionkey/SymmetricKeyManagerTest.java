@@ -57,7 +57,7 @@ public class SymmetricKeyManagerTest {
 	
 	
 	@Test
-	public void testEncrypt_paramter_symmetricKeyAlgorithm_null() {
+	public void testEncrypt_parameter_symmetricKeyAlgorithm_null() {
 		
 		try {
 			SymmetricKeyManager.getInstance().encrypt(null, null, null, null);
@@ -74,7 +74,7 @@ public class SymmetricKeyManagerTest {
 	}
 	
 	@Test
-	public void testEncrypt_paramter_symmetricKeyBytes_null() {
+	public void testEncrypt_parameter_symmetricKeyBytes_null() {
 		
 		try {
 			SymmetricKeyManager.getInstance().encrypt("AES", null, null, null);
@@ -91,7 +91,7 @@ public class SymmetricKeyManagerTest {
 	}
 	
 	@Test
-	public void testEncrypt_paramter_plainTextBytes_null() {
+	public void testEncrypt_parameter_plainTextBytes_null() {
 		
 		String symmetricKeyAlgorithm = "AES";
 		byte symmetricKeyBytes[] = new byte[128]; 
@@ -119,7 +119,7 @@ public class SymmetricKeyManagerTest {
 	
 	
 	@Test
-	public void testEncrypt_paramter_ivBytes_null() {
+	public void testEncrypt_parameter_ivBytes_null() {
 		String symmetricKeyAlgorithm = "AES";
 		byte symmetricKeyBytes[] = new byte[128]; 
 		byte [] plainTextBytes  = "hello한글".getBytes(CommonStaticFinalVars.DEFUALT_CHARSET);
@@ -144,7 +144,7 @@ public class SymmetricKeyManagerTest {
 	}
 	
 	@Test
-	public void testEncrypt_paramter_symmetricKeyAlgorithm_unknownSymmetricKeyAlgorithm() {
+	public void testEncrypt_parameter_symmetricKeyAlgorithm_unknownSymmetricKeyAlgorithm() {
 		String symmetricKeyAlgorithm = "AAA";
 		byte symmetricKeyBytes[] = new byte[128]; 
 		byte [] plainTextBytes  = "hello한글".getBytes(CommonStaticFinalVars.DEFUALT_CHARSET);

@@ -100,19 +100,19 @@ public final class SymmetricKeyManager {
 			throws IllegalArgumentException, SymmetricException {
 
 		if (null == symmetricKeyAlgorithm) {
-			throw new IllegalArgumentException("the paramter symmetricKeyAlgorithm is null");
+			throw new IllegalArgumentException("the parameter symmetricKeyAlgorithm is null");
 		}
 
 		if (null == symmetricKeyBytes) {
-			throw new IllegalArgumentException("the paramter symmetricKeyBytes is null");
+			throw new IllegalArgumentException("the parameter symmetricKeyBytes is null");
 		}
 
 		if (null == encryptedBytes) {
-			throw new IllegalArgumentException("the paramter encryptedBytes is null");
+			throw new IllegalArgumentException("the parameter encryptedBytes is null");
 		}
 
 		if (null == ivBytes) {
-			throw new IllegalArgumentException("the paramter ivBytes is null");
+			throw new IllegalArgumentException("the parameter ivBytes is null");
 		}
 
 		String transformation = symmetricKeyTransformationHash.get(symmetricKeyAlgorithm);

@@ -28,7 +28,7 @@ public class ClientRSA implements ClientRSAIF {
 			throw new IllegalArgumentException("the parameter publicKeyBytes is null");
 		}
 		
-		this.publicKeyBytes =publicKeyBytes;		
+		this.publicKeyBytes = publicKeyBytes;		
 	}
 	
 	public byte[] getDupPublicKeyBytes() {		
@@ -63,10 +63,9 @@ public class ClientRSA implements ClientRSAIF {
 			throw new SymmetricException(errorMessage);
 		}
 		
-		Cipher rsaEncModeCipher = null;
+		Cipher rsaCipher = null;
 		try {
-			rsaEncModeCipher = Cipher.getInstance(CommonStaticFinalVars.RSA_TRANSFORMATION);
-			// rsaDecModeCipher = Cipher.getInstance("RSA/ECB/NoPadding");
+			rsaCipher = Cipher.getInstance(CommonStaticFinalVars.RSA_TRANSFORMATION);
 		} catch (NoSuchAlgorithmException e) {
 			String errorMessage = String
 					.format("RSA Cipher.getInstance NoSuchAlgorithmException, errormessage=%s", e.getMessage());
@@ -80,7 +79,7 @@ public class ClientRSA implements ClientRSAIF {
 		}
 
 		try {
-			rsaEncModeCipher.init(Cipher.ENCRYPT_MODE, publicKey);
+			rsaCipher.init(Cipher.ENCRYPT_MODE, publicKey);
 		} catch (InvalidKeyException e) {
 			String errorMessage = String
 					.format("RSA Cipher InvalidKeyException, errormessage=%s", e.getMessage());
@@ -90,7 +89,7 @@ public class ClientRSA implements ClientRSAIF {
 		
 		byte encryptedBytes[] = null;
 		try {
-			encryptedBytes = rsaEncModeCipher
+			encryptedBytes = rsaCipher
 					.doFinal(plainTextBytes);
 		} catch (IllegalBlockSizeException e) {
 			String errorMessage = String

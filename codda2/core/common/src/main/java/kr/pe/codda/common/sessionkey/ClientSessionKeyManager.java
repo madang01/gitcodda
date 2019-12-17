@@ -1,10 +1,7 @@
 package kr.pe.codda.common.sessionkey;
 
-import java.util.concurrent.ConcurrentHashMap;
-
 import kr.pe.codda.common.config.CoddaConfiguration;
 import kr.pe.codda.common.config.CoddaConfigurationManager;
-import kr.pe.codda.common.config.subset.AllSubProjectPartConfiguration;
 import kr.pe.codda.common.config.subset.CommonPartConfiguration;
 import kr.pe.codda.common.exception.SymmetricException;
 
@@ -12,9 +9,10 @@ public final class ClientSessionKeyManager {
 	private static String symmetricKeyAlgorithm;
 	private static int symmetricKeySize;
 	private static int symmetricIVSize;
-	private static ClientSessionKeyIF mainClientSessionKey = null;	
-	private static ConcurrentHashMap<String, ClientSessionKeyIF> subProjectNameToClientSessionKeyHash = new ConcurrentHashMap<String, ClientSessionKeyIF>();
-	private static AllSubProjectPartConfiguration allSubProjectPartConfiguration;
+	
+	// private static ClientSessionKeyIF mainClientSessionKey = null;	
+	// private static ConcurrentHashMap<String, ClientSessionKeyIF> subProjectNameToClientSessionKeyHash = new ConcurrentHashMap<String, ClientSessionKeyIF>();
+	// private static AllSubProjectPartConfiguration allSubProjectPartConfiguration;
 	
 	
 	/** 동기화 쓰지 않고 싱글턴 구현을 위한 비공개 클래스 */
@@ -36,10 +34,11 @@ public final class ClientSessionKeyManager {
 		symmetricKeyAlgorithm = commonPart.getSymmetricKeyAlgorithmOfSessionKey();
 		symmetricKeySize = commonPart.getSymmetricKeySizeOfSessionKey();
 		symmetricIVSize = commonPart.getSymmetricIVSizeOfSessionKey();
-		allSubProjectPartConfiguration = runningProjectConfiguration.getAllSubProjectPartConfiguration();
+		// allSubProjectPartConfiguration = runningProjectConfiguration.getAllSubProjectPartConfiguration();		
 	}
 
-	public synchronized ClientSessionKeyIF getMainProjectClientSessionKey(AbstractRSAPublickeyGetter clientRSAPublickeyGetter, boolean isBase64) throws SymmetricException, InterruptedException {
+	/*
+	public synchronized ClientSessionKeyIF getMainProjectClientSessionKey() throws SymmetricException, InterruptedException {
 		if (null == mainClientSessionKey) {
 			
 			byte[] publicKeyBytes = clientRSAPublickeyGetter.getMainProjectPublickeyBytes();
@@ -68,6 +67,7 @@ public final class ClientSessionKeyManager {
 		return subClientSessionKey;
 	}
 	
+	*/
 	
 	public ClientSessionKeyIF createNewClientSessionKey(byte[] publicKeyBytes, boolean isBase64) throws SymmetricException {
 		if (null == publicKeyBytes) {

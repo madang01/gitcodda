@@ -35,16 +35,7 @@ public class ClientSessionKey implements ClientSessionKeyIF {
 		}
 		
 		this.clientRSA = clientRSA;
-		
-		/*
-		CoddaConfiguration runningProjectConfiguration = 
-				CoddaConfigurationManager.getInstance()
-				.getRunningProjectConfiguration();		
-		CommonPartConfiguration commonPart = runningProjectConfiguration.getCommonPartConfiguration();
-		
-		int symmetricIVSize = commonPart.getSymmetricIVSizeOfSessionKey();
-		*/		
-		
+				
 		symmetricKeyBytes = new byte[symmetricKeySize];
 		ivBytes = new byte[symmetricIVSize];
 		

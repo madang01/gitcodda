@@ -14,11 +14,6 @@ import org.junit.BeforeClass;
 import org.junit.Ignore;
 
 import kr.pe.codda.common.etc.CommonStaticFinalVars;
-import kr.pe.codda.common.exception.SymmetricException;
-import kr.pe.codda.common.sessionkey.ClientSessionKeyIF;
-import kr.pe.codda.common.sessionkey.ClientSessionKeyManager;
-import kr.pe.codda.common.sessionkey.ServerSessionkeyIF;
-import kr.pe.codda.common.sessionkey.ServerSessionkeyManager;
 import kr.pe.codda.common.util.JDKLoggerCustomFormatter;
 
 public class SessionKeyTest {
@@ -66,8 +61,8 @@ public class SessionKeyTest {
 		try {
 			mainProjectServerSessionkey = serverSessionkeyManager.getMainProjectServerSessionkey();
 			mainProjectClientSessionKey = clientSessionKeyManager
-					.getMainProjectClientSessionKey(RSAPublickeyGetterBuilder.build(), false);
-		} catch (SymmetricException | InterruptedException e) {
+					.createNewClientSessionKey(mainProjectServerSessionkey.getDupPublicKeyBytes(), false);
+		} catch (Exception e) {
 			log.log(Level.WARNING, e.getMessage(), e);
 			fail(e.getMessage());
 		}
