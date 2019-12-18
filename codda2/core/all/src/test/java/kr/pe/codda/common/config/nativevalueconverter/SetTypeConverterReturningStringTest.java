@@ -61,7 +61,7 @@ public class SetTypeConverterReturningStringTest {
 	
 	
 	@Test
-	public void testConstructor_NoParameter() {
+	public void testSetTypeConverterReturningString_NoParameter() {
 		try {
 			new SetTypeConverterReturningString();
 			
@@ -84,7 +84,7 @@ public class SetTypeConverterReturningStringTest {
 	}
 	
 	@Test
-	public void testConstructor_TrimString() {
+	public void testSetTypeConverterReturningString_TrimString() {
 		try {
 			new SetTypeConverterReturningString("AES", "DESede", "DES ");
 			

@@ -27,7 +27,7 @@ public class StreamCharsetFamilyTest {
 	}
 
 	@Test
-	public void testConstructor_theParameterStreamCharsetIsNull() {
+	public void testStreamCharsetFamily_theParameterStreamCharsetIsNull() {
 		try {
 			new StreamCharsetFamily(null);
 			

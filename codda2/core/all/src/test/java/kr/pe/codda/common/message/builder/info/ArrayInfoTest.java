@@ -51,7 +51,7 @@ private Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
 	}
 	
 	@Test
-	public void testConstructor_배열크기직접입력방식_문자인배열크기() {
+	public void testArrayInfo_배열크기직접입력방식_문자인배열크기() {
 		String testTitle = "배열 크기 직접 입력 방식_문자인 배열 크기";	
 				
 		String arrayName = "member";
@@ -84,7 +84,7 @@ private Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
 
 	
 	@Test
-	public void testConstructor_배열크기직접입력방식_0보다작은배열크기() {
+	public void testArrayInfo_배열크기직접입력방식_0보다작은배열크기() {
 		String testTitle = "배열 크기 직접 입력 방식_0보다 작은 배열 크기";	
 				
 		String arrayName = "member";
@@ -116,7 +116,7 @@ private Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
 	}
 	
 	@Test
-	public void testConstructor_잘못된배열크기방식지정() {
+	public void testArrayInfo_잘못된배열크기방식지정() {
 		String testTitle = "잘못된배열크기방식지정";	
 				
 		String arrayName = "member";

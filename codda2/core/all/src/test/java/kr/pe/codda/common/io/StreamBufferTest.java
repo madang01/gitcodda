@@ -67,7 +67,7 @@ public class StreamBufferTest {
 	}
 
 	@Test
-	public void testConstructor_theParameterStreamCharsetFamilyIsNull() {
+	public void testStreamBuffer_theParameterStreamCharsetFamilyIsNull() {
 		try {
 			new StreamBuffer(null, 1, null);
 
@@ -80,7 +80,7 @@ public class StreamBufferTest {
 	}
 
 	@Test
-	public void testConstructor_theParameterWrapBufferPoolIsNull() {
+	public void testStreamBuffer_theParameterWrapBufferPoolIsNull() {
 		StreamCharsetFamily streamCharsetFamily = new StreamCharsetFamily(Charset.defaultCharset());
 		try {
 			new StreamBuffer(streamCharsetFamily, 1, null);
@@ -94,7 +94,7 @@ public class StreamBufferTest {
 	}
 
 	@Test
-	public void testConstructor_theParameterDataPacketBufferMaxCountIsLessThanOrEqualToZero() {
+	public void testStreamBuffer_theParameterDataPacketBufferMaxCountIsLessThanOrEqualToZero() {
 		StreamCharsetFamily streamCharsetFamily = new StreamCharsetFamily(Charset.defaultCharset());
 		WrapBufferPoolIF wrapBufferPool = new WrapBufferPool(false, ByteOrder.LITTLE_ENDIAN, 2048, 10);
 
@@ -130,7 +130,7 @@ public class StreamBufferTest {
 	}
 
 	@Test
-	public void testConstructor_ok() {
+	public void testStreamBuffer_ok() {
 		StreamCharsetFamily streamCharsetFamily = new StreamCharsetFamily(Charset.defaultCharset());
 		WrapBufferPoolIF wrapBufferPool = new WrapBufferPool(false, ByteOrder.LITTLE_ENDIAN, 1024, 10);
 

@@ -29,13 +29,16 @@ import kr.pe.codda.common.protocol.MessageCodecIF;
  */
 public final class PublicKeyReqClientCodec implements MessageCodecIF {
 
+	private AbstractMessageDecoder messageDecoder = new PublicKeyReqDecoder();
+	private AbstractMessageEncoder messageEncoder = new PublicKeyReqEncoder();
+
 	@Override
 	public AbstractMessageDecoder getMessageDecoder() throws DynamicClassCallException {
-		return new PublicKeyReqDecoder();
+		return messageDecoder;
 	}
 
 	@Override
 	public AbstractMessageEncoder getMessageEncoder() throws DynamicClassCallException {
-		return new PublicKeyReqEncoder();
+		return messageEncoder;
 	}
 }

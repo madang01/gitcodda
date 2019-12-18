@@ -51,7 +51,7 @@ public class ServerRSATest {
 	}
 
 	@Test
-	public void testConstructor_theParameterRSAKeypairIsNull() {
+	public void testServerRSA_theParameterRSAKeypairIsNull() {
 		try {
 			new ServerRSA(null);
 			

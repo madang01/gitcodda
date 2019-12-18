@@ -16,7 +16,7 @@ public class ItemIDInfoTest {
 	
 	
 	@Test(expected=IllegalArgumentException.class)
-	public void testConstructor_NullParameter_configPart() throws Exception {
+	public void testItemIDInfo_NullParameter_configPart() throws Exception {
 		try {
 			ItemIDInfo.ConfigurationPart configPart = null;
 			ViewType configItemViewType = ItemIDInfo.ViewType.TEXT;
@@ -39,7 +39,7 @@ public class ItemIDInfoTest {
 	}
 	
 	@Test(expected=IllegalArgumentException.class)
-	public void testConstructor_NullParameter_configItemViewType() throws Exception {
+	public void testItemIDInfo_NullParameter_configItemViewType() throws Exception {
 		try {
 			ItemIDInfo.ConfigurationPart configPart = ItemIDInfo.ConfigurationPart.COMMON;
 			ViewType configItemViewType = null;
@@ -62,7 +62,7 @@ public class ItemIDInfoTest {
 	}
 	
 	@Test(expected=IllegalArgumentException.class)
-	public void testConstructor_NullParameter_itemID() throws Exception {
+	public void testItemIDInfo_NullParameter_itemID() throws Exception {
 		try {
 			ItemIDInfo.ConfigurationPart configPart = ItemIDInfo.ConfigurationPart.COMMON;
 			ViewType configItemViewType = ItemIDInfo.ViewType.TEXT;
@@ -85,7 +85,7 @@ public class ItemIDInfoTest {
 	}
 	
 	@Test(expected=IllegalArgumentException.class)
-	public void testConstructor_NullParameter_description() throws Exception {
+	public void testItemIDInfo_NullParameter_description() throws Exception {
 		try {
 			ItemIDInfo.ConfigurationPart configPart = ItemIDInfo.ConfigurationPart.COMMON;
 			ViewType configItemViewType = ItemIDInfo.ViewType.TEXT;
@@ -108,7 +108,7 @@ public class ItemIDInfoTest {
 	}
 	
 	@Test(expected=IllegalArgumentException.class)
-	public void testConstructor_NullParameter_defaultValue() throws Exception {
+	public void testItemIDInfo_NullParameter_defaultValue() throws Exception {
 		try {
 			ItemIDInfo.ConfigurationPart configPart = ItemIDInfo.ConfigurationPart.COMMON;
 			ViewType configItemViewType = ItemIDInfo.ViewType.TEXT;
@@ -132,7 +132,7 @@ public class ItemIDInfoTest {
 	
 	
 	@Test(expected=IllegalArgumentException.class)
-	public void testConstructor_NullParameter_nativeValueConverter() throws Exception {
+	public void testItemIDInfo_NullParameter_nativeValueConverter() throws Exception {
 		try {
 			ItemIDInfo.ConfigurationPart configPart = ItemIDInfo.ConfigurationPart.COMMON;
 			ViewType configItemViewType = ItemIDInfo.ViewType.TEXT;
@@ -154,7 +154,7 @@ public class ItemIDInfoTest {
 	}
 	
 	@Test(expected=IllegalArgumentException.class)
-	public void testConstructor_EmptyParameter_itemID() throws Exception {
+	public void testItemIDInfo_EmptyParameter_itemID() throws Exception {
 		try {
 			ItemIDInfo.ConfigurationPart configPart = ItemIDInfo.ConfigurationPart.COMMON;
 			ViewType configItemViewType = ItemIDInfo.ViewType.TEXT;
@@ -177,7 +177,7 @@ public class ItemIDInfoTest {
 	}
 	
 	@Test(expected=IllegalArgumentException.class)
-	public void testConstructor_EmptyParameter_description() throws Exception {
+	public void testItemIDInfo_EmptyParameter_description() throws Exception {
 		try {
 			ItemIDInfo.ConfigurationPart configPart = ItemIDInfo.ConfigurationPart.COMMON;
 			ViewType configItemViewType = ItemIDInfo.ViewType.TEXT;
@@ -201,7 +201,7 @@ public class ItemIDInfoTest {
 	
 	
 	@Test(expected=IllegalArgumentException.class)
-	public void testConstructor_ValidButBadParameter_defaultValue() throws Exception {
+	public void testItemIDInfo_ValidButBadParameter_defaultValue() throws Exception {
 		try {
 			ItemIDInfo.ConfigurationPart configPart = ItemIDInfo.ConfigurationPart.COMMON;
 			ViewType configItemViewType = ItemIDInfo.ViewType.TEXT;

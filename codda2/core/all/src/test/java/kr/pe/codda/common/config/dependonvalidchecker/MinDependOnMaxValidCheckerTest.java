@@ -108,7 +108,7 @@ public class MinDependOnMaxValidCheckerTest {
 
 	
 	@Test
-	public void testConstructor_BadGeneralType_dependentTargetItemIDInfo() {
+	public void testMinAndMaxDependencyValidator_BadGeneralType_dependentTargetItemIDInfo() {
 		try {
 			String dependentTargetItemID = "server.pool.executor_processor.max_size.value";
 			ItemIDInfo<?> dependentTargetItemIDInfo = new ItemIDInfo<Long>(
@@ -151,7 +151,7 @@ public class MinDependOnMaxValidCheckerTest {
 	}
 	
 	@Test
-	public void testConstructor_BadGeneralType_dependentSourceItemIDInfo() {
+	public void testMinAndMaxDependencyValidator_BadGeneralType_dependentSourceItemIDInfo() {
 		try {
 			String dependentTargetItemID = "server.pool.executor_processor.max_size.value";
 			ItemIDInfo<?> dependentTargetItemIDInfo = new ItemIDInfo<Integer>(
@@ -194,7 +194,7 @@ public class MinDependOnMaxValidCheckerTest {
 	}
 	
 	@Test
-	public void testConstructor_BadInstance_MaxNativeValueConverter() {
+	public void testMinAndMaxDependencyValidator_BadInstance_MaxNativeValueConverter() {
 		ItemIDInfo<?> charsetTypeMaxItemIDInfo = null;
 		ItemIDInfo<?> integerTypeMinItemIDInfo = null;
 		try {
@@ -244,7 +244,7 @@ public class MinDependOnMaxValidCheckerTest {
 	}
 	
 	@Test
-	public void testConstructor_BadInstance_MinNativeValueConverter() {
+	public void testMinAndMaxDependencyValidator_BadInstance_MinNativeValueConverter() {
 		ItemIDInfo<?> integerTypeMaxItemIDInfo = null;
 		ItemIDInfo<?> charsetTypeMinItemIDInfo = null;
 		try {
@@ -293,7 +293,7 @@ public class MinDependOnMaxValidCheckerTest {
 	}
 
 	@Test
-	public void testConstructor_GenericTypeDifferent_MaxNativeValueConverter() {
+	public void testMinAndMaxDependencyValidator_GenericTypeDifferent_MaxNativeValueConverter() {
 		ItemIDInfo<?> longTypeMaxItemIDInfo = null;
 		ItemIDInfo<?> integerTypeMinItemIDInfo = null;
 		try {
@@ -344,7 +344,7 @@ public class MinDependOnMaxValidCheckerTest {
 	}
 
 	@Test
-	public void testConstructor_GenericTypeDifferent_MinNativeValueConverter() {
+	public void testMinAndMaxDependencyValidator_GenericTypeDifferent_MinNativeValueConverter() {
 		ItemIDInfo<Integer> integerTypeMaxItemIDInfo = null;
 		ItemIDInfo<?> longTypeMinItemIDInfo = null;
 		try {
@@ -394,7 +394,7 @@ public class MinDependOnMaxValidCheckerTest {
 	}
 
 	@Test
-	public void testConstructor_NullParameter_dependentSourceItemIDInfo()
+	public void testMinAndMaxDependencyValidator_NullParameter_dependentSourceItemIDInfo()
 			throws Exception {
 		try {
 			new MinAndMaxDependencyValidator<Long>(
@@ -416,7 +416,7 @@ public class MinDependOnMaxValidCheckerTest {
 	}
 
 	@Test
-	public void testConstructor_NullParameter_dependentTargetItemIDInfo()
+	public void testMinAndMaxDependencyValidator_NullParameter_dependentTargetItemIDInfo()
 			throws Exception {
 		try {
 			new MinAndMaxDependencyValidator<Long>(
@@ -438,7 +438,7 @@ public class MinDependOnMaxValidCheckerTest {
 	}
 
 	@Test
-	public void testConstructor_NullParameter_genericTypeClass()
+	public void testMinAndMaxDependencyValidator_NullParameter_genericTypeClass()
 			throws Exception {
 		try {
 			new MinAndMaxDependencyValidator<Long>(

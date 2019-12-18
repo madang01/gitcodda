@@ -34,7 +34,7 @@ public class ProjectBuilderTest extends AbstractJunitTest {
 	final int EXIT_SUCCESS = 0;	
 	
 	@Test
-	public void testConstructor_badInstalledPath_notExist() {
+	public void testProjectBuilder_badInstalledPath_notExist() {
 		Random r = new Random();
 		
 		String installedPathString = new StringBuilder("temp_directory_")
@@ -59,7 +59,7 @@ public class ProjectBuilderTest extends AbstractJunitTest {
 	
 	
 	@Test
-	public void testConstructor_badInstalledPath_notDirecotry() {
+	public void testProjectBuilder_badInstalledPath_notDirecotry() {
 		File tempFile = null;		
 		try {
 			tempFile = File.createTempFile("temp", ".tmp");
@@ -87,7 +87,7 @@ public class ProjectBuilderTest extends AbstractJunitTest {
 	}
 
 	@Test
-	public void testConstructor_badProjectBasePath_notExist() {
+	public void testProjectBuilder_badProjectBasePath_notExist() {
 		File tempProjectBasePath = new File("temp");
 		try {
 			tempProjectBasePath.mkdir(); 
@@ -116,7 +116,7 @@ public class ProjectBuilderTest extends AbstractJunitTest {
 	}
 
 	@Test
-	public void testConstructor_badProjectBasePath_notDirectory() {
+	public void testProjectBuilder_badProjectBasePath_notDirectory() {
 		String installedPathString = installedPath.getAbsolutePath();
 		
 		String installedPathStringForTest = new StringBuilder(installedPathString)
@@ -161,7 +161,7 @@ public class ProjectBuilderTest extends AbstractJunitTest {
 	}
 
 	@Test
-	public void testConstructor_badProjectName_notDirectory() {
+	public void testProjectBuilder_badProjectName_notDirectory() {
 		String installedPathString = installedPath.getAbsolutePath();
 		
 		String installedPathStringForTest = new StringBuilder(installedPathString)

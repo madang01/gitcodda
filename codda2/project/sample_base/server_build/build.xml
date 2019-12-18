@@ -29,14 +29,7 @@
 		<fileset file="${dir.core.common.build}/lib/main/ex/gson-2.8.5.jar" />
 	</union>
 
-	<union id="core.server.jarlibs">
-		<!-- jcl-over-slf4j-1.7.25.jar DBCP use apache.common.logger  -->
-		<fileset file="${dir.core.server.build}/lib/main/ex/jcl-over-slf4j-1.7.25.jar" />
-		<!-- slf4j-jdk14-1.7.25.jar CODDA2 user jdk1.4 logger -->
-		<fileset file="${dir.core.server.build}/lib/main/ex/jul-to-slf4j-1.7.26.jar" />
-		<fileset file="${dir.core.server.build}/lib/main/ex/slf4j-api-1.7.25.jar" />
-		<fileset file="${dir.core.server.build}/lib/main/ex/logback-core-1.2.3.jar" />
-		<fileset file="${dir.core.server.build}/lib/main/ex/logback-classic-1.2.3.jar" />
+	<union id="core.server.jarlibs">		
 		<fileset file="${dir.core.server.build}/lib/main/ex/commons-dbcp2-2.0.1.jar" />
 		<fileset file="${dir.core.server.build}/lib/main/ex/commons-pool2-2.5.0.jar" />
 	</union>
@@ -49,10 +42,12 @@
 	<union id="core.junitlib.jarlibs">
 		<fileset file="${dir.core.common.build}/lib/test/hamcrest-core-1.3.jar" />
 		<fileset file="${dir.core.common.build}/lib/test/junit-4.12.jar" />
+		
 		<fileset file="${dir.core.common.build}/lib/test/byte-buddy-1.7.9.jar" />
 		<fileset file="${dir.core.common.build}/lib/test/byte-buddy-agent-1.7.9.jar" />
+		<fileset file="${dir.core.common.build}/lib/test/objenesis-2.6.jar" />		
 		<fileset file="${dir.core.common.build}/lib/test/mockito-core-2.13.4.jar" />
-		<fileset file="${dir.core.common.build}/lib/test/objenesis-2.6.jar" />
+		
 		<fileset file="${dir.core.common.build}/lib/test/commons-exec-1.3.jar" />
 	</union>
 

@@ -504,10 +504,10 @@ public class ProjectBuilder {
 			throw new IllegalArgumentException("the paramet servletSystemLibraryPathString is null");
 		}
 
-		createNewWebClientAntBuildFile();
-		createNewWebClientAntPropertiesFile(servletSystemLibraryPathString);
-		createNewWebClientMessageIOFileSet();
 		copyWebClientSampleFiles();
+		createNewWebClientAntBuildXMLFile();
+		createNewWebClientAntPropertiesFile(servletSystemLibraryPathString);
+		createNewWebClientMessageIOFileSet();		
 
 		log.info("main project[{}]'s web client build system files creation task end", mainProjectName);
 	}
@@ -595,11 +595,8 @@ public class ProjectBuilder {
 		log.info("main project[{}]'s web root sample files copy task end", mainProjectName);
 	}
 
-	private void createNewWebClientAntBuildFile() throws BuildSystemException {
+	private void createNewWebClientAntBuildXMLFile() throws BuildSystemException {
 		log.info("main project[{}]'s web client ant build.xml file creation task start", mainProjectName);
-
-		String webClientAntBuildXMLFileContents = BuildSystemFileContents
-				.getWebClientAntBuildXMLFileContents(mainProjectName);
 
 		String webClientAntBuildXMLFilePahtString = WebClientBuildSystemPathSupporter
 				.getWebClientAntBuildXMLFilePathString(installedPathString, mainProjectName);
@@ -607,7 +604,13 @@ public class ProjectBuilder {
 		File webClientAntBuildXMLFile = new File(webClientAntBuildXMLFilePahtString);
 
 		try {
-			CommonStaticUtil.createNewFile(webClientAntBuildXMLFile, webClientAntBuildXMLFileContents,
+			byte[] readBytes = CommonStaticUtil.readFileToByteArray(webClientAntBuildXMLFile, 1024L*1024L*10L);
+			
+			String webClientAntBuildXMLFileContents = new String(readBytes, CommonStaticFinalVars.SOURCE_FILE_CHARSET);
+			
+			webClientAntBuildXMLFileContents.replace("sample_test_webclient", mainProjectName);
+						
+			CommonStaticUtil.overwriteFile(webClientAntBuildXMLFile, webClientAntBuildXMLFileContents,
 					CommonStaticFinalVars.SOURCE_FILE_CHARSET);
 		} catch (IOException e) {
 			String errorMessage = new StringBuilder("fail to save the main project[").append(mainProjectName)
@@ -677,10 +680,10 @@ public class ProjectBuilder {
 	private void createAppClientBuildSystemFiles() throws BuildSystemException {
 		log.info("mainproject[{}]'s application client build system files creation task start", mainProjectName);
 
+		copyAppClientSampleFiles();
 		createNewAppClientAntBuildXMLFile();
 		createNewAppClientDosShellFile();
-		createNewAppClientUnixShellFile();
-		copyAppClientSampleFiles();
+		createNewAppClientUnixShellFile();		
 		createNewAppClientAllMessageIOFileSet();
 
 		log.info("mainproject[{}]'s application client build system files creation task end", mainProjectName);
@@ -711,15 +714,20 @@ public class ProjectBuilder {
 	private void createNewAppClientAntBuildXMLFile() throws BuildSystemException {
 		log.info("main project[{}]'s application client ant build.xml file creation task start", mainProjectName);
 
-		String appClientAntBuildXMLFileContents = BuildSystemFileContents.getAppClientAntBuildXMLFileContents(mainProjectName);
-
 		String appClientAntBuildXMLFilePahtString = AppClientBuildSystemPathSupporter
 				.getAppClientAntBuildXMLFilePathString(installedPathString, mainProjectName);
 
 		File appClientAntBuildXMLFile = new File(appClientAntBuildXMLFilePahtString);
 
 		try {
-			CommonStaticUtil.createNewFile(appClientAntBuildXMLFile, appClientAntBuildXMLFileContents,
+			byte[] readBytes = CommonStaticUtil.readFileToByteArray(appClientAntBuildXMLFile, 1024L*1024L*10L);
+			
+			String appClientAntBuildXMLFileContents = new String(readBytes, CommonStaticFinalVars.SOURCE_FILE_CHARSET);
+			
+			appClientAntBuildXMLFileContents.replace("sample_test_appclient", mainProjectName);
+						
+			
+			CommonStaticUtil.overwriteFile(appClientAntBuildXMLFile, appClientAntBuildXMLFileContents,
 					CommonStaticFinalVars.SOURCE_FILE_CHARSET);
 		} catch (IOException e) {
 			String errorMessage = new StringBuilder("fail to save the main project[").append(mainProjectName)
@@ -931,10 +939,10 @@ public class ProjectBuilder {
 	private void createServerBuildSystemFiles() throws BuildSystemException {
 		log.info("server build system files creation task start");
 
+		copyServerSampleFiles();
 		createNewServerAntBuildXMLFile();
 		createNewServerDosShellFile();
-		createNewServerUnixShellFile();
-		copyServerSampleFiles();
+		createNewServerUnixShellFile();		
 		createServerMessageIOFileSet();
 
 		log.info("server build system files creation task end");
@@ -1412,14 +1420,24 @@ public class ProjectBuilder {
 	private void createNewServerAntBuildXMLFile() throws BuildSystemException {
 		log.info("main project[{}]'s server ant build.xml file creation task start", mainProjectName);
 
-		String sererAntBuildXMLFileContents = BuildSystemFileContents.getServerAntBuildXMLFileContent(mainProjectName);
-
 		String serverAntBuildXMLFilePahtString = ServerBuildSytemPathSupporter.getServerAntBuildXMLFilePathString(installedPathString, mainProjectName);
 
 		File serverAntBuildXMLFile = new File(serverAntBuildXMLFilePahtString);
 
 		try {
-			CommonStaticUtil.createNewFile(serverAntBuildXMLFile, sererAntBuildXMLFileContents,
+			byte[] readBytes = CommonStaticUtil.readFileToByteArray(serverAntBuildXMLFile, 1024L*1024L*10L);
+			
+			String sererAntBuildXMLFileContents = new String(readBytes, CommonStaticFinalVars.SOURCE_FILE_CHARSET);
+			
+			sererAntBuildXMLFileContents.replace("sample_test_server", mainProjectName);
+			
+			String PREFIX_OF_DYNAMIC_CLASS_RELATIVE_PATH = 
+					new StringBuilder().append(CommonStaticFinalVars.BASE_DYNAMIC_CLASS_FULL_NAME.replaceAll("\\.", "/"))
+					.append("/**").toString();
+			
+			sererAntBuildXMLFileContents.replace("kr/pe/codda/impl/**", PREFIX_OF_DYNAMIC_CLASS_RELATIVE_PATH);
+			
+			CommonStaticUtil.overwriteFile(serverAntBuildXMLFile, sererAntBuildXMLFileContents,
 					CommonStaticFinalVars.SOURCE_FILE_CHARSET);
 		} catch (IOException e) {
 			String errorMessage = new StringBuilder("fail to save the main project[").append(mainProjectName)
@@ -1516,7 +1534,6 @@ public class ProjectBuilder {
 		log.info("main project[{}]'s web client ant properties file creation task end", mainProjectName);
 	}
 	
-	// FIXME!
 	private void modifyWebClientAntPropertiesFile(String servletSystemLibraryPathString) throws BuildSystemException {
 		log.info("main project[{}]'s web client ant properties file modification task start", mainProjectName);
 		

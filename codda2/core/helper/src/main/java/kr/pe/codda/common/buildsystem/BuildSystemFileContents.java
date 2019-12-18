@@ -5,21 +5,7 @@ import kr.pe.codda.common.etc.CommonStaticFinalVars;
 import kr.pe.codda.common.type.LogType;
 
 public abstract class BuildSystemFileContents {
-	
-	/** server_build/build.xml */
-	public static String getServerAntBuildXMLFileContent(String mainProjectName) {
-		return ServerAntBuildXMLFileContenetsBuilder.build(mainProjectName);
-	}
 
-	/** client_build/app_build/build.xml */
-	public static String getAppClientAntBuildXMLFileContents(String mainProjectName) {		
-		return AppClientAntBuildXMLFileContenetsBuilder.build(mainProjectName);
-	}
-
-	/** client_build/web_build/build.xml */
-	public static String getWebClientAntBuildXMLFileContents(String mainProjectName) {
-		return WebClientAntBuildXMLFileContenetsBuilder.build(mainProjectName);
-	}
 
 	/**
 	 * server_build/<main project name>.sh or client_build/app_build/<main

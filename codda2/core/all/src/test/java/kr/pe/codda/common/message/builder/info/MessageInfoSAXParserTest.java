@@ -16,7 +16,6 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.xml.sax.SAXException;
 
@@ -89,11 +88,6 @@ public class MessageInfoSAXParserTest {
 	 * return testDataXmlFilePathString; }
 	 */
 
-	@Ignore
-	@Test(expected = SAXException.class)
-	public void testConstructor() throws Exception {
-		/** TODO how to meet bug? I don't know. help me! */
-	}
 
 	@Test
 	public void testGetMessageIDFromXMLFilePathString_NullParameter_messageInformationXMLFilePathString() {

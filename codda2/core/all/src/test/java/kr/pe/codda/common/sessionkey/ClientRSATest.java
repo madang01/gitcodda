@@ -52,7 +52,7 @@ public class ClientRSATest {
 	}
 
 	@Test
-	public void testConstructor_theParameterPublicKeyBytesIsNull() {
+	public void testClientRSA_theParameterPublicKeyBytesIsNull() {
 		try {
 			new ClientRSA(null);
 		} catch(IllegalArgumentException e) {

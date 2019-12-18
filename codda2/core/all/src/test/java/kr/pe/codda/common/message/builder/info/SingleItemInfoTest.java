@@ -55,7 +55,7 @@ public class SingleItemInfoTest {
 	
 	
 	@Test
-	public void testConstructor_잘못된항목이름_한글자() {
+	public void testSingleItemInfo_잘못된항목이름_한글자() {
 		String testTitle = "잘못된 아이템 항목 이름-한글자";
 		
 		String expectedMessage  = "this single item's attribute 'name' value length is greater than or eqaul to 2";
@@ -86,7 +86,7 @@ public class SingleItemInfoTest {
 	}
 	
 	@Test
-	public void testConstructor_잘못된항목이름_xml로시작하여태그이름규칙에맞지않는이름() {
+	public void testSingleItemInfo_잘못된항목이름_xml로시작하여태그이름규칙에맞지않는이름() {
 		String testTitle = "잘못된 아이템 항목 이름-xml로 시작하여 태그 규칙에 맞지 않는 이름";
 		
 		String expectedMessage  = "this single item name[xMlabc] must not begin with the string 'xml' that would match (('X'|'x') ('M'|'m') ('L'|'l'))";
@@ -116,7 +116,7 @@ public class SingleItemInfoTest {
 	}
 	
 	@Test
-	public void testConstructor_잘못된항목이름_태그이름범위를벗어난문자를가져태그이름규칙에맞지않는이름() {
+	public void testSingleItemInfo_잘못된항목이름_태그이름범위를벗어난문자를가져태그이름규칙에맞지않는이름() {
 		String testTitle = "잘못된 아이템 항목 이름-태그 이름 범위를 벗어난 문자를 가져 태그 규칙에 맞지 않는 이름";
 		
 		String expectedMessage  = "this single item name[;abcd] should be decided in accordance with java xml tag name rule";
@@ -150,7 +150,7 @@ public class SingleItemInfoTest {
 	}
 	
 	@Test
-	public void testConstructor_잘못된항목값타입() {
+	public void testSingleItemInfo_잘못된항목값타입() {
 		String testTitle = "잘못된 항목값 타입";
 		
 		String expectedMessage  = "this single item[a2]'s attribute 'type' value[byte22]) is not an element of item value type set";
@@ -181,7 +181,7 @@ public class SingleItemInfoTest {
 	}
 	
 	@Test
-	public void testConstructor_잘못된디폴트값_숫자형에문자열() {
+	public void testSingleItemInfo_잘못된디폴트값_숫자형에문자열() {
 		Set<String> numberTypeNameSet = new LinkedHashSet<String>();
 		numberTypeNameSet.add("byte");
 		numberTypeNameSet.add("unsigned byte");
@@ -234,7 +234,7 @@ public class SingleItemInfoTest {
 	}
 	
 	@Test
-	public void testConstructor_잘못된디폴트값_문자형앞뒤로공백() {
+	public void testSingleItemInfo_잘못된디폴트값_문자형앞뒤로공백() {
 		Set<String> stringTypeNameSet = new LinkedHashSet<String>();
 		stringTypeNameSet.add("ub pascal string");
 		stringTypeNameSet.add("us pascal string");
@@ -275,7 +275,7 @@ public class SingleItemInfoTest {
 	}
 	
 	@Test
-	public void testConstructor_잘못된디폴트값_부호없는숫자형_음수() {		
+	public void testSingleItemInfo_잘못된디폴트값_부호없는숫자형_음수() {		
 		Set<String> unsignedNumberTypeNameSet = new LinkedHashSet<String>();
 		unsignedNumberTypeNameSet.add("unsigned byte");
 		unsignedNumberTypeNameSet.add("unsigned short");
@@ -319,7 +319,7 @@ public class SingleItemInfoTest {
 	}
 	
 	@Test
-	public void testConstructor_잘못된디폴트값_부호없는숫자형_최대값초과() {		
+	public void testSingleItemInfo_잘못된디폴트값_부호없는숫자형_최대값초과() {		
 		Set<String> unsignedNumberTypeNameSet = new LinkedHashSet<String>();
 		unsignedNumberTypeNameSet.add("unsigned byte");
 		unsignedNumberTypeNameSet.add("unsigned short");
@@ -375,7 +375,7 @@ public class SingleItemInfoTest {
 	}
 	
 	@Test
-	public void testConstructor_필수속성크기생략() {		
+	public void testSingleItemInfo_필수속성크기생략() {		
 		Set<String> sizeDemandTypeNameSet = new LinkedHashSet<String>();
 		sizeDemandTypeNameSet.add("fixed length string");
 		sizeDemandTypeNameSet.add("fixed length byte[]");
@@ -412,7 +412,7 @@ public class SingleItemInfoTest {
 	}
 	
 	@Test
-	public void testConstructor_음수인필수속성크기() {		
+	public void testSingleItemInfo_음수인필수속성크기() {		
 		Set<String> sizeDemandTypeNameSet = new LinkedHashSet<String>();
 		sizeDemandTypeNameSet.add("fixed length string");
 		sizeDemandTypeNameSet.add("fixed length byte[]");
@@ -454,7 +454,7 @@ public class SingleItemInfoTest {
 	
 		
 	@Test
-	public void testConstructor_문자인필수속성크기() {		
+	public void testSingleItemInfo_문자인필수속성크기() {		
 		Set<String> sizeDemandTypeNameSet = new LinkedHashSet<String>();
 		sizeDemandTypeNameSet.add("fixed length string");
 		sizeDemandTypeNameSet.add("fixed length byte[]");
@@ -495,7 +495,7 @@ public class SingleItemInfoTest {
 	}
 	
 	@Test
-	public void testConstructor_잘못된문자셋명() {		
+	public void testSingleItemInfo_잘못된문자셋명() {		
 		Set<String> charsetOptionTypeNameSet = new LinkedHashSet<String>();
 		charsetOptionTypeNameSet.add("ub pascal string");
 		charsetOptionTypeNameSet.add("us pascal string");
@@ -544,7 +544,7 @@ public class SingleItemInfoTest {
 	
 		
 	@Test
-	public void testConstructor_미지원하는defaultValue속성지정() {
+	public void testSingleItemInfo_미지원하는defaultValue속성지정() {
 		Set<String> noSupportTypeNameSet = new LinkedHashSet<String>();		
 		noSupportTypeNameSet.add("ub variable length byte[]");
 		noSupportTypeNameSet.add("us variable length byte[]");
@@ -588,7 +588,7 @@ public class SingleItemInfoTest {
 	}
 	
 	@Test
-	public void testConstructor_미지원하는size속성지정() {
+	public void testSingleItemInfo_미지원하는size속성지정() {
 		Set<String> noSupportTypeNameSet = new LinkedHashSet<String>();
 		noSupportTypeNameSet.add("byte");
 		noSupportTypeNameSet.add("unsigned byte");
@@ -639,7 +639,7 @@ public class SingleItemInfoTest {
 	}
 	
 	@Test
-	public void testConstructor_미지원하는charset속성지정() {
+	public void testSingleItemInfo_미지원하는charset속성지정() {
 		Set<String> noSupportTypeNameSet = new LinkedHashSet<String>();
 		noSupportTypeNameSet.add("byte");
 		noSupportTypeNameSet.add("unsigned byte");

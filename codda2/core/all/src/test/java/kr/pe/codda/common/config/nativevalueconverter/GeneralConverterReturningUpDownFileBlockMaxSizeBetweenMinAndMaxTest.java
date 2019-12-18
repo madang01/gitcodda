@@ -62,7 +62,7 @@ public class GeneralConverterReturningUpDownFileBlockMaxSizeBetweenMinAndMaxTest
 	
 
 	@Test
-	public void testConstructor_theParmaeterMinIsLessThanZero() {
+	public void testGeneralConverterReturningUpDownFileBlockMaxSizeBetweenMinAndMax_theParmaeterMinIsLessThanZero() {
 		final int min = -1;
 		final int max = 1;
 		
@@ -89,7 +89,7 @@ public class GeneralConverterReturningUpDownFileBlockMaxSizeBetweenMinAndMaxTest
 	}
 
 	@Test
-	public void testConstructor_theParmaeterMaxIsLessThan1024() {
+	public void testGeneralConverterReturningUpDownFileBlockMaxSizeBetweenMinAndMax_theParmaeterMaxIsLessThan1024() {
 		final int min = 2;
 		final int max = 1023;
 		
@@ -116,7 +116,7 @@ public class GeneralConverterReturningUpDownFileBlockMaxSizeBetweenMinAndMaxTest
 	}
 
 	@Test
-	public void testConstructor_theParamterMinIsGreaterThanTheParameterMax() {
+	public void testGeneralConverterReturningUpDownFileBlockMaxSizeBetweenMinAndMax_theParamterMinIsGreaterThanTheParameterMax() {
 		final int min = 1025;
 		final int max = 1024;
 		
