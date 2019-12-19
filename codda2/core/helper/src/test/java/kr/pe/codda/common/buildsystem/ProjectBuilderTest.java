@@ -31,55 +31,50 @@ import kr.pe.codda.common.util.SequencedProperties;
 import kr.pe.codda.common.util.SequencedPropertiesUtil;
 
 public class ProjectBuilderTest extends AbstractJunitTest {
-	final int EXIT_SUCCESS = 0;	
-	
+	final int EXIT_SUCCESS = 0;
+
 	@Test
 	public void testProjectBuilder_badInstalledPath_notExist() {
 		Random r = new Random();
-		
-		String installedPathString = new StringBuilder("temp_directory_")
-				.append(r.nextInt())
-				.append("_")
-				.append(r.nextInt())
-				.append("_that_does_not_exit").toString();
+
+		String installedPathString = new StringBuilder("temp_directory_").append(r.nextInt()).append("_")
+				.append(r.nextInt()).append("_that_does_not_exit").toString();
 		String mainProjectName = "sample_test";
 		try {
 			new ProjectBuilder(installedPathString, mainProjectName);
-			
+
 			fail("this test must throw BuildSystemException");
 		} catch (BuildSystemException e) {
 			String errorMessage = e.getMessage();
-			if (!errorMessage.equals(
-					String.format("the installed path[%s] does not exist", installedPathString))) {
+			if (!errorMessage.equals(String.format("the installed path[%s] does not exist", installedPathString))) {
 				log.warn(e.getMessage(), e);
 				fail(e.getMessage());
 			}
 		}
 	}
-	
-	
+
 	@Test
 	public void testProjectBuilder_badInstalledPath_notDirecotry() {
-		File tempFile = null;		
+		File tempFile = null;
 		try {
 			tempFile = File.createTempFile("temp", ".tmp");
 		} catch (IOException e) {
 			fail("fail to create a temp file");
 		}
-		
+
 		tempFile.deleteOnExit();
-		
-		String installedPathString = tempFile.getAbsolutePath();;
+
+		String installedPathString = tempFile.getAbsolutePath();
+		;
 		String mainProjectName = "sample_test";
 
-		try {			
+		try {
 			new ProjectBuilder(installedPathString, mainProjectName);
-			
+
 			fail("this test must throw BuildSystemException");
 		} catch (BuildSystemException e) {
 			String errorMessage = e.getMessage();
-			if (!errorMessage.equals(
-					String.format("the installed path[%s] isn't a directory", installedPathString))) {
+			if (!errorMessage.equals(String.format("the installed path[%s] isn't a directory", installedPathString))) {
 				log.warn(e.getMessage(), e);
 				fail(e.getMessage());
 			}
@@ -90,16 +85,15 @@ public class ProjectBuilderTest extends AbstractJunitTest {
 	public void testProjectBuilder_badProjectBasePath_notExist() {
 		File tempProjectBasePath = new File("temp");
 		try {
-			tempProjectBasePath.mkdir(); 
+			tempProjectBasePath.mkdir();
 		} catch (Exception e) {
 			fail("fail to create a temp project base path");
 		}
-		
+
 		tempProjectBasePath.deleteOnExit();
-		
+
 		String installedPathString = tempProjectBasePath.getAbsolutePath();
-		String mainProjectName = new StringBuilder("sample_test_")
-				.append("ffefe").toString();
+		String mainProjectName = new StringBuilder("sample_test_").append("ffefe").toString();
 		try {
 			new ProjectBuilder(installedPathString, mainProjectName);
 
@@ -118,16 +112,15 @@ public class ProjectBuilderTest extends AbstractJunitTest {
 	@Test
 	public void testProjectBuilder_badProjectBasePath_notDirectory() {
 		String installedPathString = installedPath.getAbsolutePath();
-		
-		String installedPathStringForTest = new StringBuilder(installedPathString)
-				.append(File.separator)
+
+		String installedPathStringForTest = new StringBuilder(installedPathString).append(File.separator)
 				.append("testking3").toString();
-		
+
 		String mainProjectName = "sample_test";
-		
+
 		File installedPathForTest = new File(installedPathStringForTest);
 		boolean resultCreatingInstalledPathForTest = installedPathForTest.mkdir();
-		if (! resultCreatingInstalledPathForTest) {
+		if (!resultCreatingInstalledPathForTest) {
 			fail("fail to create installed path For Test");
 		}
 		installedPathForTest.deleteOnExit();
@@ -144,7 +137,7 @@ public class ProjectBuilderTest extends AbstractJunitTest {
 		}
 
 		proejctBasePath.deleteOnExit();
-		
+
 		try {
 			new ProjectBuilder(installedPathStringForTest, mainProjectName);
 
@@ -163,11 +156,10 @@ public class ProjectBuilderTest extends AbstractJunitTest {
 	@Test
 	public void testProjectBuilder_badProjectName_notDirectory() {
 		String installedPathString = installedPath.getAbsolutePath();
-		
-		String installedPathStringForTest = new StringBuilder(installedPathString)
-				.append(File.separator)
+
+		String installedPathStringForTest = new StringBuilder(installedPathString).append(File.separator)
 				.append("testking2").toString();
-		
+
 		String badMainProjectName = "sample_notdir";
 
 		File installedPathForTest = new File(installedPathStringForTest);
@@ -185,7 +177,7 @@ public class ProjectBuilderTest extends AbstractJunitTest {
 		if (!isSuccess) {
 			fail("fail to create file having project base path[" + proejctBasePathString + "]");
 		}
-		
+
 		proejctBasePath.deleteOnExit();
 
 		String projectPathString = ProjectBuildSytemPathSupporter.getProjectPathString(installedPathStringForTest,
@@ -208,8 +200,9 @@ public class ProjectBuilderTest extends AbstractJunitTest {
 		} catch (BuildSystemException e) {
 			String errorMessage = e.getMessage();
 			// log.info(errorMessage, e);
-			if (!errorMessage.equals(String.format("the project path[%s] isn't a directory", ProjectBuildSytemPathSupporter
-					.getProjectPathString(installedPathStringForTest, badMainProjectName)))) {
+			if (!errorMessage
+					.equals(String.format("the project path[%s] isn't a directory", ProjectBuildSytemPathSupporter
+							.getProjectPathString(installedPathStringForTest, badMainProjectName)))) {
 				log.warn(e.getMessage(), e);
 				fail(e.getMessage());
 			}
@@ -273,17 +266,6 @@ public class ProjectBuilderTest extends AbstractJunitTest {
 				projectBuilder.dropProject();
 			}
 
-			/*File servletSystemLibraryPath = new File(servletSystemLibraryPathString);
-			if (!servletSystemLibraryPath.exists()) {
-				fail(new StringBuilder("the servelt system library path[").append(servletSystemLibraryPathString)
-						.append("] for web-client build doesn't exist, this test needs Tomcat").toString());
-			}
-
-			if (!servletSystemLibraryPath.isDirectory()) {
-				fail(new StringBuilder("the servelt system library path[").append(servletSystemLibraryPathString)
-						.append("] for web-client build isn't a directory, this test needs Tomcat").toString());
-			}*/
-
 			projectBuilder.createProject(isServer, isAppClient, isWebClient, servletSystemLibraryPathString);
 		} catch (BuildSystemException e) {
 			log.warn(e.getMessage(), e);
@@ -301,8 +283,6 @@ public class ProjectBuilderTest extends AbstractJunitTest {
 			checkAntBuildForWebClient(installedPathString, mainProjectName);
 		}
 	}
-
-	
 
 	private void checkAntBuildForServer(String installedPathString, String mainProjectName) {
 		org.apache.commons.exec.CommandLine antCommandLine = null;
@@ -347,7 +327,6 @@ public class ProjectBuilderTest extends AbstractJunitTest {
 
 		int exitCode = resultHandler.getExitValue();
 
-		
 		assertEquals("ant 수행 결과 코드", EXIT_SUCCESS, exitCode);
 
 		log.info("success server ant build");
@@ -448,8 +427,6 @@ public class ProjectBuilderTest extends AbstractJunitTest {
 
 		log.info("success web-client ant build");
 	}
-
-	
 
 	@Test
 	public void testCreateProject_onlyServerBuild() {
@@ -577,9 +554,10 @@ public class ProjectBuilderTest extends AbstractJunitTest {
 						isServer = isServerBooleanSet[i];
 						isAppClient = isAppClientBooleanSet[j];
 						isWebClient = isWebClientBooleanSet[k];
-						
+
 						/** 전체 빌드 시스템 없는 경우는 생략 */
-						if (!isServer && !isAppClient && !isWebClient) continue;
+						if (!isServer && !isAppClient && !isWebClient)
+							continue;
 
 						if (projectBuilder.whetherOnlyProjectPathExists()) {
 							projectBuilder.dropProject();
@@ -653,10 +631,11 @@ public class ProjectBuilderTest extends AbstractJunitTest {
 						isServer = isServerBooleanSet[i];
 						isAppClient = isAppClientBooleanSet[j];
 						isWebClient = isWebClientBooleanSet[k];
-						
+
 						/** 전체 빌드 시스템 없는 경우는 생략 */
-						if (!isServer && !isAppClient && !isWebClient) continue;
-						
+						if (!isServer && !isAppClient && !isWebClient)
+							continue;
+
 						if (projectBuilder.whetherOnlyProjectPathExists()) {
 							projectBuilder.dropProject();
 						}
@@ -664,8 +643,7 @@ public class ProjectBuilderTest extends AbstractJunitTest {
 						projectBuilder.createProject(isServer, isAppClient, isWebClient,
 								servletSystemLibraryPathString);
 
-						CoddaConfiguration configuration = new CoddaConfiguration(installedPathString,
-								mainProjectName);
+						CoddaConfiguration configuration = new CoddaConfiguration(installedPathString, mainProjectName);
 						SequencedProperties modifiedConfigSequencedProperties = configuration
 								.getConfigurationSequencedPropties();
 
@@ -676,9 +654,10 @@ public class ProjectBuilderTest extends AbstractJunitTest {
 									isServer = !isServerBooleanSet[ii];
 									isAppClient = !isAppClientBooleanSet[jj];
 									isWebClient = !isWebClientBooleanSet[kk];
-									
+
 									/** 전체 빌드 시스템 없는 경우는 생략 */
-									if (!isServer && !isAppClient && !isWebClient) continue;
+									if (!isServer && !isAppClient && !isWebClient)
+										continue;
 
 									projectBuilder.changeProjectState(isServer, isAppClient, isWebClient,
 											servletSystemLibraryPathString, modifiedConfigSequencedProperties);
@@ -745,7 +724,7 @@ public class ProjectBuilderTest extends AbstractJunitTest {
 			fail(e.getMessage());
 		}
 	}
-	
+
 	@Test
 	public void testApplyInstalledPath() {
 		String installedPathString = installedPath.getAbsolutePath();
@@ -755,66 +734,63 @@ public class ProjectBuilderTest extends AbstractJunitTest {
 		boolean isAppClient = true;
 		boolean isWebClient = true;
 		String servletSystemLibraryPathString = wasLibPath.getAbsolutePath();
-		
+
 		try {
 			ProjectBuilder projectBuilder = new ProjectBuilder(installedPathString, mainProjectName);
-			
+
 			if (projectBuilder.whetherOnlyProjectPathExists()) {
 				projectBuilder.dropProject();
 			}
 
 			projectBuilder.createProject(isServer, isAppClient, isWebClient, servletSystemLibraryPathString);
-			
-			String projectResourcesDirectoryPathString = ProjectBuildSytemPathSupporter.getProjectResourcesDirectoryPathString(installedPathString, mainProjectName);
+
+			String projectResourcesDirectoryPathString = ProjectBuildSytemPathSupporter
+					.getProjectResourcesDirectoryPathString(installedPathString, mainProjectName);
 			String dbcpFilePathStringOfSampeTest = new StringBuilder(projectResourcesDirectoryPathString)
-					.append(File.separator)
-					.append("dbcp")
-					.append(File.separator)
-					.append("dbcp.")
-					.append(sampleBaseDBCPName)
-					.append(".properties")
-					.toString();
-			
+					.append(File.separator).append("dbcp").append(File.separator).append("dbcp.")
+					.append(sampleBaseDBCPName).append(".properties").toString();
+
 			// log.info("dbcpFilePathStringOfSampeTest={}", dbcpFilePathStringOfSampeTest);
-			
-			SequencedPropertiesUtil.createNewSequencedPropertiesFile(new SequencedProperties(), "the sampe_test's sample dbcp", 
-					dbcpFilePathStringOfSampeTest, CommonStaticFinalVars.SOURCE_FILE_CHARSET);
-			
+
+			SequencedPropertiesUtil.createNewSequencedPropertiesFile(new SequencedProperties(),
+					"the sampe_test's sample dbcp", dbcpFilePathStringOfSampeTest,
+					CommonStaticFinalVars.SOURCE_FILE_CHARSET);
+
 			SequencedProperties sequencedPropertiesForModify = projectBuilder.loadConfigPropertiesFile();
-			
-			sequencedPropertiesForModify.setProperty(ItemIDDefiner.CommonPartItemIDDefiner.SESSIONKEY_RSA_PRIVATEKEY_FILE_ITEMID, "aaaa");
-			sequencedPropertiesForModify.setProperty(ItemIDDefiner.CommonPartItemIDDefiner.SESSIONKEY_RSA_PUBLICKEY_FILE_ITEMID, "bbbb");
-			
-			
+
+			sequencedPropertiesForModify
+					.setProperty(ItemIDDefiner.CommonPartItemIDDefiner.SESSIONKEY_RSA_PRIVATEKEY_FILE_ITEMID, "aaaa");
+			sequencedPropertiesForModify
+					.setProperty(ItemIDDefiner.CommonPartItemIDDefiner.SESSIONKEY_RSA_PUBLICKEY_FILE_ITEMID, "bbbb");
+
 			sequencedPropertiesForModify.setProperty("dbcp.name_list.value", sampleBaseDBCPName);
-			sequencedPropertiesForModify.setProperty(new StringBuilder("dbcp.")
-					.append(sampleBaseDBCPName)
-					.append(".")
-					.append(ItemIDDefiner.DBCPPartItemIDDefiner.DBCP_CONFIGE_FILE_ITEMID).toString(), "fjfjieifjf");
-			
-			
-			// log.info("sequencedPropertiesForModify={}", sequencedPropertiesForModify.toString());
-			
+			sequencedPropertiesForModify.setProperty(
+					new StringBuilder("dbcp.").append(sampleBaseDBCPName).append(".")
+							.append(ItemIDDefiner.DBCPPartItemIDDefiner.DBCP_CONFIGE_FILE_ITEMID).toString(),
+					"fjfjieifjf");
+
+			// log.info("sequencedPropertiesForModify={}",
+			// sequencedPropertiesForModify.toString());
+
 			projectBuilder.overwriteConfigFile(sequencedPropertiesForModify);
-			
-			
+
 			projectBuilder.applyInstalledPath();
-			
+
 			SequencedProperties sequencedPropertiesForResult = projectBuilder.loadConfigPropertiesFile();
-			
-			
-			if (! ProjectBuildSytemPathSupporter
+
+			if (!ProjectBuildSytemPathSupporter
 					.getSessionKeyRSAPrivatekeyFilePathString(installedPathString, mainProjectName)
 					.equals(sequencedPropertiesForResult
-							.getProperty(ItemIDDefiner.CommonPartItemIDDefiner.SESSIONKEY_RSA_PRIVATEKEY_FILE_ITEMID)) || 
-					! ProjectBuildSytemPathSupporter
-					.getSessionKeyRSAPublickeyFilePathString(installedPathString, mainProjectName)
-					.equals(sequencedPropertiesForResult
-							.getProperty(ItemIDDefiner.CommonPartItemIDDefiner.SESSIONKEY_RSA_PUBLICKEY_FILE_ITEMID))) {				
-				
-				fail(String.format("the backup seq properties is not same to the modified seq properties applying installed path"));
+							.getProperty(ItemIDDefiner.CommonPartItemIDDefiner.SESSIONKEY_RSA_PRIVATEKEY_FILE_ITEMID))
+					|| !ProjectBuildSytemPathSupporter
+							.getSessionKeyRSAPublickeyFilePathString(installedPathString, mainProjectName)
+							.equals(sequencedPropertiesForResult.getProperty(
+									ItemIDDefiner.CommonPartItemIDDefiner.SESSIONKEY_RSA_PUBLICKEY_FILE_ITEMID))) {
+
+				fail(String.format(
+						"the backup seq properties is not same to the modified seq properties applying installed path"));
 			}
-			
+
 		} catch (BuildSystemException e) {
 			log.warn(e.getMessage(), e);
 			fail(e.getMessage());

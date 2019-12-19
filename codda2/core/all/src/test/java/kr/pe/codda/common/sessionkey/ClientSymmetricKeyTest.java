@@ -53,8 +53,16 @@ public class ClientSymmetricKeyTest {
 
 	@Test
 	public void testClientSymmetricKey_theParameterSymmetricKeyAlgorithmIsNull() {
+		String symmetricKeyAlgorithm = null;
+		byte[] symmetricKeyBytes = new byte[16];
+		byte[] ivBytes = new byte[16];
+		
+		Random random = new Random();
+		random.nextBytes(symmetricKeyBytes);
+		random.nextBytes(ivBytes);
+		
 		try {
-			new ClientSymmetricKey(null, null, null);
+			new ClientSymmetricKey(symmetricKeyAlgorithm, symmetricKeyBytes, ivBytes);
 			
 			fail("no IllegalArgumentException");
 		} catch (IllegalArgumentException e) {
@@ -72,8 +80,15 @@ public class ClientSymmetricKeyTest {
 	
 	@Test
 	public void testClientSymmetricKey_theParameterSymmetricKeyBytesIsNull() {
+		String symmetricKeyAlgorithm = "AES";
+		byte[] symmetricKeyBytes = null;
+		byte[] ivBytes = new byte[16];
+		
+		Random random = new Random();
+		random.nextBytes(ivBytes);
+		
 		try {
-			new ClientSymmetricKey("AES", null, null);
+			new ClientSymmetricKey(symmetricKeyAlgorithm, symmetricKeyBytes, ivBytes);
 			
 			fail("no IllegalArgumentException");
 		} catch (IllegalArgumentException e) {
@@ -91,12 +106,16 @@ public class ClientSymmetricKeyTest {
 	
 	@Test
 	public void testClientSymmetricKey_theParameterIvBytesIsNull() {
+		String symmetricKeyAlgorithm = "AES";
+		
 		byte[] symmetricKeyBytes = new byte[1024];
 		Random random = new Random();
 		random.nextBytes(symmetricKeyBytes);
 		
+		byte[] ivBytes = null;
+		
 		try {
-			new ClientSymmetricKey("AES", symmetricKeyBytes, null);
+			new ClientSymmetricKey(symmetricKeyAlgorithm, symmetricKeyBytes, ivBytes);
 			
 			fail("no IllegalArgumentException");
 		} catch (IllegalArgumentException e) {
@@ -114,6 +133,8 @@ public class ClientSymmetricKeyTest {
 
 	@Test
 	public void testClientSymmetricKey_ok() {
+		String symmetricKeyAlgorithm = "AES";
+		
 		byte[] symmetricKeyBytes = new byte[16];
 		byte[] ivBytes = new byte[16];
 		
@@ -122,7 +143,7 @@ public class ClientSymmetricKeyTest {
 		random.nextBytes(ivBytes);
 		
 		try {
-			ClientSymmetricKey clientSymmetricKey = new ClientSymmetricKey("AES", symmetricKeyBytes, ivBytes);
+			ClientSymmetricKey clientSymmetricKey = new ClientSymmetricKey(symmetricKeyAlgorithm, symmetricKeyBytes, ivBytes);
 			
 			byte[] plainTextBytes = new byte[1024];
 			random.nextBytes(plainTextBytes);
@@ -143,6 +164,7 @@ public class ClientSymmetricKeyTest {
 
 	@Test
 	public void testEncrypt_theParameterPlainTextBytesIsNull() {
+		String symmetricKeyAlgorithm = "AES";
 		byte[] symmetricKeyBytes = new byte[16];
 		byte[] ivBytes = new byte[16];
 		
@@ -151,7 +173,7 @@ public class ClientSymmetricKeyTest {
 		random.nextBytes(ivBytes);
 		
 		try {
-			ClientSymmetricKey clientSymmetricKey = new ClientSymmetricKey("AES", symmetricKeyBytes, ivBytes);
+			ClientSymmetricKey clientSymmetricKey = new ClientSymmetricKey(symmetricKeyAlgorithm, symmetricKeyBytes, ivBytes);
 			
 			
 			clientSymmetricKey.encrypt(null);
@@ -172,6 +194,8 @@ public class ClientSymmetricKeyTest {
 
 	@Test
 	public void testDecrypt_theParameterEncryptedBytesIsNull() {
+		String symmetricKeyAlgorithm = "AES";
+		
 		byte[] symmetricKeyBytes = new byte[16];
 		byte[] ivBytes = new byte[16];
 		
@@ -180,7 +204,7 @@ public class ClientSymmetricKeyTest {
 		random.nextBytes(ivBytes);
 		
 		try {
-			ClientSymmetricKey clientSymmetricKey = new ClientSymmetricKey("AES", symmetricKeyBytes, ivBytes);
+			ClientSymmetricKey clientSymmetricKey = new ClientSymmetricKey(symmetricKeyAlgorithm, symmetricKeyBytes, ivBytes);
 			
 			
 			clientSymmetricKey.decrypt(null);
