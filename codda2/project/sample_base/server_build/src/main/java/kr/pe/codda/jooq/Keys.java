@@ -17,6 +17,7 @@ import kr.pe.codda.jooq.tables.SbMemberTb;
 import kr.pe.codda.jooq.tables.SbSeqTb;
 import kr.pe.codda.jooq.tables.SbSiteLogTb;
 import kr.pe.codda.jooq.tables.SbSitemenuTb;
+import kr.pe.codda.jooq.tables.SbUploadImageTb;
 import kr.pe.codda.jooq.tables.records.SbAccountSerarchTbRecord;
 import kr.pe.codda.jooq.tables.records.SbBoardFilelistTbRecord;
 import kr.pe.codda.jooq.tables.records.SbBoardHistoryTbRecord;
@@ -28,6 +29,7 @@ import kr.pe.codda.jooq.tables.records.SbMemberTbRecord;
 import kr.pe.codda.jooq.tables.records.SbSeqTbRecord;
 import kr.pe.codda.jooq.tables.records.SbSiteLogTbRecord;
 import kr.pe.codda.jooq.tables.records.SbSitemenuTbRecord;
+import kr.pe.codda.jooq.tables.records.SbUploadImageTbRecord;
 
 import org.jooq.ForeignKey;
 import org.jooq.UniqueKey;
@@ -70,6 +72,7 @@ public class Keys {
     public static final UniqueKey<SbSeqTbRecord> KEY_SB_SEQ_TB_PRIMARY = UniqueKeys0.KEY_SB_SEQ_TB_PRIMARY;
     public static final UniqueKey<SbSitemenuTbRecord> KEY_SB_SITEMENU_TB_PRIMARY = UniqueKeys0.KEY_SB_SITEMENU_TB_PRIMARY;
     public static final UniqueKey<SbSiteLogTbRecord> KEY_SB_SITE_LOG_TB_PRIMARY = UniqueKeys0.KEY_SB_SITE_LOG_TB_PRIMARY;
+    public static final UniqueKey<SbUploadImageTbRecord> KEY_SB_UPLOAD_IMAGE_TB_PRIMARY = UniqueKeys0.KEY_SB_UPLOAD_IMAGE_TB_PRIMARY;
 
     // -------------------------------------------------------------------------
     // FOREIGN KEY definitions
@@ -103,6 +106,7 @@ public class Keys {
         public static final UniqueKey<SbSeqTbRecord> KEY_SB_SEQ_TB_PRIMARY = Internal.createUniqueKey(SbSeqTb.SB_SEQ_TB, "KEY_sb_seq_tb_PRIMARY", SbSeqTb.SB_SEQ_TB.SQ_ID);
         public static final UniqueKey<SbSitemenuTbRecord> KEY_SB_SITEMENU_TB_PRIMARY = Internal.createUniqueKey(SbSitemenuTb.SB_SITEMENU_TB, "KEY_sb_sitemenu_tb_PRIMARY", SbSitemenuTb.SB_SITEMENU_TB.MENU_NO);
         public static final UniqueKey<SbSiteLogTbRecord> KEY_SB_SITE_LOG_TB_PRIMARY = Internal.createUniqueKey(SbSiteLogTb.SB_SITE_LOG_TB, "KEY_sb_site_log_tb_PRIMARY", SbSiteLogTb.SB_SITE_LOG_TB.YYYYMMDD, SbSiteLogTb.SB_SITE_LOG_TB.DAY_LOG_SQ);
+        public static final UniqueKey<SbUploadImageTbRecord> KEY_SB_UPLOAD_IMAGE_TB_PRIMARY = Internal.createUniqueKey(SbUploadImageTb.SB_UPLOAD_IMAGE_TB, "KEY_sb_upload_image_tb_PRIMARY", SbUploadImageTb.SB_UPLOAD_IMAGE_TB.YYYYMMDD, SbUploadImageTb.SB_UPLOAD_IMAGE_TB.DAY_SQ);
     }
 
     private static class ForeignKeys0 {

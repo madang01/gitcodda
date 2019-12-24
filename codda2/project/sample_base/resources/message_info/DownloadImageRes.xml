@@ -5,7 +5,7 @@
 					ub pascal string, us pascal string, si pascal string, 
 					fixed length byte[], ub variable length byte[], 
 					us variable length byte[], si variable length byte[]
-					java sql date, java sql timestamp, boolean
+					java sql date, java sql timestamp
 	array counter type : reference 변수참조, direct 직접입력
 	direction : FROM_NONE_TO_NONE, FROM_SERVER_TO_CLINET, FROM_CLIENT_TO_SERVER, FROM_ALL_TO_ALL
 	(1) FROM_NONE_TO_NONE : 메시지는 서버에서 클라이언트로 혹은 클라이언트에서 서버로 양쪽 모두에서 전송되지 않는다.
@@ -14,15 +14,11 @@
 	(4) FROM_ALL_TO_ALL : 메시지는 서버에서 클라이언트로도 혹은 클라이언트에서 서버로 양쪽 모두에서 전송된다.
 -->
 <message>
-<messageID>BoardReplyReq</messageID>
-<direction>FROM_CLIENT_TO_SERVER</direction>
-<desc>게시판 댓글 등록 요청 메시지</desc>
-<singleitem name="requestedUserID" type="ub pascal string" />
-<singleitem name="boardState" type="byte" />
-<singleitem name="boardSearchType" type="byte" />
-<singleitem name="boardSearchValue" type="ub pascal string" />
-<singleitem name="fromDateString" type="ub pascal string" />
-<singleitem name="toDateString" type="ub pascal string" />
-<singleitem name="pageNo" type="integer" />
-<singleitem name="pageSize" type="unsigned short" />
+<messageID>DownloadImageRes</messageID>
+<direction>FROM_SERVER_TO_CLINET</direction>
+<desc>업로드 이미지 응답 메시지</desc>
+<singleitem name="yyyyMMdd" type="ub pascal string" />
+<singleitem name="daySequence" type="unsigned integer" />
+<singleitem name="imageFileName" type="ub pascal string" />
+<singleitem name="fileSize" type="long" />
 </message>

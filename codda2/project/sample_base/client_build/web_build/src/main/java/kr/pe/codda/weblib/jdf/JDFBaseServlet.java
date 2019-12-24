@@ -37,7 +37,9 @@ import kr.pe.codda.common.config.CoddaConfigurationManager;
 import kr.pe.codda.common.config.subset.CommonPartConfiguration;
 import kr.pe.codda.common.etc.CommonStaticFinalVars;
 import kr.pe.codda.common.exception.ConnectionPoolException;
+import kr.pe.codda.weblib.common.AccessedUserInformation;
 import kr.pe.codda.weblib.common.WebCommonStaticFinalVars;
+import kr.pe.codda.weblib.exception.WebClientException;
 
 /**
  * <pre>
@@ -277,7 +279,7 @@ public abstract class JDFBaseServlet extends AbstractBaseServlet {
 					 * 이때 쓰레드 세이프 문제 때문에 변수 fileItemList 는 멤버 변수가 아닌 request 객체를 통해 전달합니다.
 					 */
 					fileItemList = upload.parseRequest(req);					
-					req.setAttribute("fileItemList", fileItemList);
+					req.setAttribute(WebCommonStaticFinalVars.MULTIPART_PARSING_RESULT_ATTRIBUTE_OF_REQUEST, fileItemList);
 
 				} catch (FileUploadException e) {
 					log.log(Level.WARNING, "fail to parse a multipart request", e);
@@ -382,27 +384,52 @@ public abstract class JDFBaseServlet extends AbstractBaseServlet {
 
 			String userMessage = "서버 접속이 실패하였습니다";
 			printErrorMessagePage(req, res, userMessage, debugMessage);
+		} catch (WebClientException e) {
+			String errorMessage = e.getErrorMessage();
+			String debugMessage = e.getDebugMessage();
+
+			AccessedUserInformation accessedUserformation = getAccessedUserInformationFromSession(req);
+			
+			String logMessage = new StringBuilder()
+					.append((null == debugMessage) ? errorMessage : debugMessage)
+					.append(", userID=[")
+					.append(accessedUserformation.getUserID())
+					.append("], ip=[")
+					.append(req.getRemoteAddr())
+					.append("]").toString();
+
+			log.warning(logMessage);
+
+			printErrorMessagePage(req, res, errorMessage, debugMessage);
+			return;		
 		} catch (Exception | java.lang.Error e) {
-			log.log(Level.WARNING, "unknown error", e);
-
 			java.io.ByteArrayOutputStream bos = new java.io.ByteArrayOutputStream();
+			
 			java.io.PrintWriter writer = new java.io.PrintWriter(bos);
-			e.printStackTrace(writer);
-			writer.flush();
-
+			try {
+				e.printStackTrace(writer);
+				writer.flush();
+			} finally {
+				try {
+					writer.close();
+				} catch (Exception e1) {
+					e1.printStackTrace();
+				}
+			}
+						
 			String errorMessage = bos.toString();
 
-			try {
-				writer.close();
-			} catch (Exception e1) {
-				e1.printStackTrace();
-			}
+			AccessedUserInformation accessedUserformation = getAccessedUserInformationFromSession(req);
 
-			// String errString = "Programmer's Exception: " +logMsg +
-			// CommonStaticFinal.NEWLINE + bos.toString();
-			// Logger.err.println(this, errString);
 			String debugMessage = new StringBuilder("Programmer's Exception: ").append(traceLogBaseMsg)
-					.append(CommonStaticFinalVars.NEWLINE).append(errorMessage).toString();
+					.append(CommonStaticFinalVars.NEWLINE).append(errorMessage)
+					.append(", userID=[")
+					.append(accessedUserformation.getUserID())
+					.append("], ip=[")
+					.append(req.getRemoteAddr())
+					.append("]").toString();
+			
+			log.warning(debugMessage);
 
 			String userMessage = "알 수 없는 에러가 발생하였습니다";
 			printErrorMessagePage(req, res, userMessage, debugMessage);

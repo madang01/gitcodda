@@ -436,7 +436,7 @@ public class BoardIntegrationSvlTest {
 					 * 문제 때문에 변수 fileItemList 는 멤버 변수가 아닌 request 객체를 통해 전달합니다.
 					 */
 					fileItemList = upload.parseRequest(requestMock);
-					when(requestMock.getAttribute("fileItemList")).thenReturn(fileItemList);
+					when(requestMock.getAttribute(WebCommonStaticFinalVars.MULTIPART_PARSING_RESULT_ATTRIBUTE_OF_REQUEST)).thenReturn(fileItemList);
 				} catch (FileUploadException e) {
 					log.log(Level.SEVERE, "dead code", e);
 					System.exit(1);

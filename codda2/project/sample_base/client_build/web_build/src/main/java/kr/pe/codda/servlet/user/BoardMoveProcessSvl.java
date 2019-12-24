@@ -111,12 +111,12 @@ public class BoardMoveProcessSvl extends AbstractUserLoginServlet {
 				short attachedFileSeq = attachedFile.getAttachedFileSeq();
 				
 				String fromAttachedFilePathString = WebCommonStaticUtil
-						.getAttachedFilePathString(installedPathString,
+						.buildAttachedFilePathString(installedPathString,
 								mainProjectName, sourceBoardID,
 								fromBoadNo, attachedFileSeq);
 				
 				String toAttachedFilePathString = WebCommonStaticUtil
-						.getAttachedFilePathString(installedPathString,
+						.buildAttachedFilePathString(installedPathString,
 								mainProjectName, targetBoardID,
 								toBoardNo, attachedFileSeq);
 				

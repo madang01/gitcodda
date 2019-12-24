@@ -30,17 +30,17 @@ import org.jooq.types.UInteger;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class SbSeqTbRecord extends UpdatableRecordImpl<SbSeqTbRecord> implements Record3<UByte, UInteger, String> {
 
-    private static final long serialVersionUID = 1583884808;
+    private static final long serialVersionUID = -1625425958;
 
     /**
-     * Setter for <code>sb_db.sb_seq_tb.sq_id</code>. 시퀀스 식별자, 0:메뉴, 1:공지게시판 시퀀스, 2:자유게시판시퀀스, 3:FAQ시퀀스
+     * Setter for <code>sb_db.sb_seq_tb.sq_id</code>. 시퀀스 식별자, 0:메뉴에 사용되는 시퀀스, 1:부분 키인 날짜별 시퀀스를 얻기 위한 목적의 SB_SITE_LOG_TB 테이블 락에 사용되는 시퀀스, 2:부분 키인 날짜별 시퀀스를 얻기 위한 목적의 SB_UPLOAD_IMAGE_TB 테이블 락에 사용되는 시퀀스
      */
     public void setSqId(UByte value) {
         set(0, value);
     }
 
     /**
-     * Getter for <code>sb_db.sb_seq_tb.sq_id</code>. 시퀀스 식별자, 0:메뉴, 1:공지게시판 시퀀스, 2:자유게시판시퀀스, 3:FAQ시퀀스
+     * Getter for <code>sb_db.sb_seq_tb.sq_id</code>. 시퀀스 식별자, 0:메뉴에 사용되는 시퀀스, 1:부분 키인 날짜별 시퀀스를 얻기 위한 목적의 SB_SITE_LOG_TB 테이블 락에 사용되는 시퀀스, 2:부분 키인 날짜별 시퀀스를 얻기 위한 목적의 SB_UPLOAD_IMAGE_TB 테이블 락에 사용되는 시퀀스
      */
     public UByte getSqId() {
         return (UByte) get(0);

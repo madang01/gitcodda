@@ -131,7 +131,7 @@
 						</thead>
 						<tbody>					
 							<tr>
-								<td colspan="5" style="white-space:pre-wrap;"><%= StringEscapeActorUtil.replace(boardChangeHistory.getContents(), STRING_REPLACEMENT_ACTOR_TYPE.ESCAPEHTML4) %></td>						
+								<td colspan="5" style="white-space:pre-wrap;"><%= boardChangeHistory.getContents() %></td>						
 							</tr><%
 	}
 %>

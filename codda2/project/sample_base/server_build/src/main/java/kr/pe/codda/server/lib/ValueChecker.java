@@ -644,7 +644,7 @@ public class ValueChecker {
 	
 	public static void checkValidFileName(String fileName) throws IllegalArgumentException {
 		if (null == fileName || fileName.isEmpty()) {
-			throw new IllegalArgumentException("첨부 파일 이름을 넣어주세요");
+			throw new IllegalArgumentException("파일 이름을 넣어주세요");
 		}
 		
 		char[] fileNameChars = fileName.toCharArray();
@@ -653,38 +653,27 @@ public class ValueChecker {
 			char workingChar = fileNameChars[i];
 			
 			if (isLineSeparator(workingChar)) {
-				String errorMessage = new StringBuilder("첨부 파일명[")
+				String errorMessage = new StringBuilder("파일명[")
 						.append(fileName)
 						.append("]에 개행 문자가 존재합니다").toString();
 				throw new IllegalArgumentException(errorMessage);
 			} else if (isSpaceOrTab(workingChar)) {
-				String errorMessage = new StringBuilder("첨부 파일명[")
+				String errorMessage = new StringBuilder("파일명[")
 						.append(fileName)
 						.append("]에 공백 문자가 존재합니다").toString();
 				throw new IllegalArgumentException(errorMessage);			
 			} else if (workingChar == '.') {
 				if (i > 0 && fileNameChars[i-1] == '.') {
-					String errorMessage = new StringBuilder("첨부 파일명[")
+					String errorMessage = new StringBuilder("파일명[")
 					.append(fileName)
 					.append("]에 금지된 문자열[..]이 존재합니다").toString();
 					throw new IllegalArgumentException(errorMessage);
 				}
-			} else if (isPunct(workingChar) || Character.isLetterOrDigit(workingChar)) {
-				for (char forbiddenChar : ServerCommonStaticFinalVars.FILENAME_FORBIDDEN_CHARS) {
-					if (workingChar == forbiddenChar) {
-						String errorMessage = new StringBuilder("첨부 파일명[")
-								.append(fileName)
-								.append("]에 금지된 문자[")
-								.append(forbiddenChar)
-								.append("]가 존재합니다").toString();
-						throw new IllegalArgumentException(errorMessage);
-					} 
-				}
-			} else {
+			} else if (! isPunct(workingChar) && ! Character.isLetterOrDigit(workingChar)) {
 				int codePoint = Character.codePointAt(fileNameChars, i);
 				
 				String errorMessage = new StringBuilder()
-						.append("첨부 파일명에 허용되지 않은 문자[inx=")
+						.append("파일명에 허용되지 않은 문자[inx=")
 						.append(i)
 						.append(", type=")
 						.append(Character.getType(workingChar))
@@ -693,8 +682,19 @@ public class ValueChecker {
 						.append(", name=")
 						.append(Character.getName(codePoint))
 						.append("]가 존재합니다").toString();
-				throw new IllegalArgumentException(errorMessage);
+				throw new IllegalArgumentException(errorMessage);				
 				
+			} else {
+				for (char forbiddenChar : ServerCommonStaticFinalVars.FILENAME_FORBIDDEN_CHARS) {
+					if (workingChar == forbiddenChar) {
+						String errorMessage = new StringBuilder("파일명[")
+								.append(fileName)
+								.append("]에 금지된 문자[")
+								.append(forbiddenChar)
+								.append("]가 존재합니다").toString();
+						throw new IllegalArgumentException(errorMessage);
+					} 
+				}				
 			}
 		}	
 	}

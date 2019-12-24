@@ -1,6 +1,9 @@
 package kr.pe.codda.weblib.common;
 
 public abstract class WebCommonStaticFinalVars {
+	public static final String MULTIPART_PARSING_RESULT_ATTRIBUTE_OF_REQUEST = "fileItemList";
+	
+	
 	public static final String USER_WEBSITE_TITLE = "Codda Home";
 	public static final String ADMIN_WEBSITE_TITLE = "Codda Admin";
 	
@@ -48,10 +51,6 @@ public abstract class WebCommonStaticFinalVars {
 	/** 게시판 쪽수 목록의 크기 */
 	public static final int WEBSITE_BOARD_PAGE_LIST_SIZE = 5;
 	
-	
-	
-	
-	
 	/** 아파치 파일 업로드에서 메모리에서 직접 처리할 수 있는 최대 파일 크기, 단위 byte */
 	public static final int APACHE_FILEUPLOAD_MAX_MEMORY_SIZE = 1024*1024;
 	
@@ -62,6 +61,8 @@ public abstract class WebCommonStaticFinalVars {
 	
 	
 	
+	/** 업로드 되는이미지 파일의 시스템 파일명의 접두어 */
+	public static final String WEBSITE_UPLOAD_IMAGE_FILE_PREFIX = "UploadImage";
 	
 	/** 업로드 되는 파일의 시스템 파일명의 접두어 */
 	public static final String WEBSITE_ATTACHED_FILE_PREFIX = "AttachedFile";
@@ -73,7 +74,7 @@ public abstract class WebCommonStaticFinalVars {
 	public static final int WEBSITE_ATTACHED_FILE_MAX_COUNT = 2;
 	
 	
-	public static final short UPLOAD_FILENAME_SEQ_TYPE_ID = 1;
+	// public static final short UPLOAD_FILENAME_SEQ_TYPE_ID = 1;
 	
 	public static final char[] FILENAME_FORBIDDEN_CHARS = {'&', '/', '\\', '?',  '%', '*', ':', '|', '\"', '<', '>', '\''};
 	
@@ -117,6 +118,7 @@ public abstract class WebCommonStaticFinalVars {
 	public static final int MAX_NUMBER_OF_BOARDNAME_CHARRACTERS = 10;
 	
 	public static final AccessedUserInformation GUEST_USER_SESSION_INFORMATION = new AccessedUserInformation(false, "guest", "손님", MemberRoleType.GUEST);
+	
 	
 	
 }

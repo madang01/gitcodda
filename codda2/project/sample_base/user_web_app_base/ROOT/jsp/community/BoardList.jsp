@@ -65,6 +65,10 @@
 <!-- Latest compiled JavaScript -->
 <script src="/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 
+<!-- include summernote css/js-->
+<link href="/summernote/summernote.css" rel="stylesheet">
+<script src="/summernote/summernote.js"></script>
+
 <script type="text/javascript" src="/js/jsbn/jsbn.js"></script>
 <script type="text/javascript" src="/js/jsbn/jsbn2.js"></script>
 <script type="text/javascript" src="/js/jsbn/prng4.js"></script>
@@ -199,7 +203,7 @@
 		g.<%= WebCommonStaticFinalVars.PARAMETER_KEY_NAME_OF_SESSION_KEY_IV %>.value = CryptoJS.enc.Base64.stringify(iv);
 		
 		g.subject.value = f.subject.value;
-		g.contents.value = f.contents.value;
+		g.contents.value = $('#contentsOfBoard').summernote('code');
 		
 		if (f.pwd != undefined) {
 			var symmetricKeyObj = CryptoJS.AES;		
@@ -213,11 +217,23 @@
 		alert("게시글 작성이 완료되었습니다");		
 		goListPage(1);
 	}	
-	
-	
+		
 	function showWriteEditScreen() {	
-		var writePartObj = document.getElementById('editScreenOfBoard0');
-		writePartObj.style.display = "block";
+		var editScreenNodeOfBoard0 = document.getElementById('editScreenOfBoard0');
+		editScreenNodeOfBoard0.style.display = "block";
+		
+		$('#contentsOfBoard').summernote({
+			placeholder: '이곳에 글을 작성해 주세요',
+			tabsize: 2,
+			height: 200,
+			callbacks: {
+				onImageUpload: function(imageFiles) {		        		
+					for (var i=0; i < imageFiles.length; i++) {
+						uploadImageFile(imageFiles[i]);
+					}
+				}
+			}
+		});
 		
 		var f = document.writeInputFrm;	
 		f.reset();
@@ -229,9 +245,45 @@
 		}
 	}
 	
+	function uploadImageFile(imageFile) {
+		console.log('size=' + imageFile.size);
+		console.log('type=' + imageFile.type);
+		console.log('name=' + imageFile.name);
+		
+		// var cloneImageFile = imageFile.clone();
+		
+		var formData = new FormData(document.uploadImageProcessFrm);
+		formData.append("uplodImageFile", imageFile, imageFile.name);
+		// formData.append("uplodImageFile", cloneImageFile, cloneImageFile.name);		
+		
+		// var uploadImageProcessFrm = document.uploadImageProcessFrm;
+		// uploadImageProcessFrm.submit();		
+		
+		$.ajax({
+            method: 'POST',
+            url: '/servlet/UploadImageProcess',
+            contentType: false,
+            cache: false,
+            processData: false,
+            data: formData,
+            success: function (responseText) { 
+            	var uploadImageResJsonObj = JSON.parse(responseText);
+            	
+            	var imageURL = "/servlet/DownloadImage?yyyyMMdd=" + uploadImageResJsonObj.yyyyMMdd + "&daySequence=" + uploadImageResJsonObj.daySequence;
+            	
+            	$('#contentsOfBoard').summernote("insertImage", imageURL);
+            },
+            error: function (jqXHR, textStatus, errorThrown) {            	
+                console.error(textStatus + " " + errorThrown);
+                alert("이미지[" + imageFile.name + "]를 업로드 하는데 실패하였습니다");
+            }
+        });
+		
+	}
+	
 	function hideWriteEditScreen() {	
-		var writePartObj = document.getElementById('editScreenOfBoard0');
-		writePartObj.style.display = "none";
+		var editScreenNodeOfBoard0 = document.getElementById('editScreenOfBoard0');
+		editScreenNodeOfBoard0.style.display = "none";
 	}
 	
 	
@@ -244,7 +296,6 @@
 			document.location.href = detailPageURL;
 		}		
 	}
-
 	
 	function goListPage(pageNo) {
 		var iv = buildIV();
@@ -363,6 +414,9 @@
 <input type="hidden" name="<%= WebCommonStaticFinalVars.PARAMETER_KEY_NAME_OF_SESSION_KEY %>" />
 <input type="hidden" name="<%= WebCommonStaticFinalVars.PARAMETER_KEY_NAME_OF_SESSION_KEY_IV %>" />
 </form>
+
+<form name=uploadImageProcessFrm enctype="multipart/form-data" method="post" target="hiddenFrame" action="/servlet/UploadImageProcess" style="display:none"></form>
+
 <div class="content">
 	<div class="container">
 		<div class="panel panel-default">
@@ -505,8 +559,8 @@
 						<div class="form-group">
 							<label for="subject">제목</label>
 							<input type="text" name="subject" class="form-control" placeholder="Enter subject" />
-							<label for="content">내용</label>
-							<textarea name="contents" id="contentsInWritePart" class="form-control input-block-level" placeholder="Enter contents" rows="20"></textarea><%
+							<label for="content">내용</label>							
+							<textarea name="contents" id="contentsOfBoard" class="form-control input-block-level" placeholder="Enter contents" rows="20"></textarea><%
 								if (! accessedUserformation.isLoginedIn()) {
 							%>
 							<label for="content">게시글 비밀번호</label>

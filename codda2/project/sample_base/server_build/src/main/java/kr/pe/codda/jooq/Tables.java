@@ -17,6 +17,7 @@ import kr.pe.codda.jooq.tables.SbMemberTb;
 import kr.pe.codda.jooq.tables.SbSeqTb;
 import kr.pe.codda.jooq.tables.SbSiteLogTb;
 import kr.pe.codda.jooq.tables.SbSitemenuTb;
+import kr.pe.codda.jooq.tables.SbUploadImageTb;
 
 
 /**
@@ -86,4 +87,9 @@ public class Tables {
      * The table <code>sb_db.sb_site_log_tb</code>.
      */
     public static final SbSiteLogTb SB_SITE_LOG_TB = kr.pe.codda.jooq.tables.SbSiteLogTb.SB_SITE_LOG_TB;
+
+    /**
+     * The table <code>sb_db.sb_upload_image_tb</code>.
+     */
+    public static final SbUploadImageTb SB_UPLOAD_IMAGE_TB = kr.pe.codda.jooq.tables.SbUploadImageTb.SB_UPLOAD_IMAGE_TB;
 }

@@ -13,7 +13,7 @@ public class ClientSessionKey implements ClientSessionKeyIF {
 	private byte[] symmetricKeyBytes;
 	private byte[] ivBytes;
 	
-	private ClientSymmetricKeyIF clientSymmetricKey = null;
+	private final ClientSymmetricKeyIF clientSymmetricKey;
 	
 	private byte[] sessionKeyBytes;
 	

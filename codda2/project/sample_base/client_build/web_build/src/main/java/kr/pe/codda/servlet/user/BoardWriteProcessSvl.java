@@ -15,6 +15,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.fileupload.FileItem;
+import org.jsoup.Jsoup;
 
 import kr.pe.codda.client.AnyProjectConnectionPoolIF;
 import kr.pe.codda.client.ConnectionPoolManager;
@@ -37,6 +38,8 @@ import kr.pe.codda.weblib.common.WebCommonStaticFinalVars;
 import kr.pe.codda.weblib.common.WebCommonStaticUtil;
 import kr.pe.codda.weblib.exception.WebClientException;
 import kr.pe.codda.weblib.jdf.AbstractMultipartServlet;
+import kr.pe.codda.weblib.jsoup.SampleBaseUserSiteWhitelist;
+import kr.pe.codda.weblib.jsoup.WhitelistManager;
 
 public class BoardWriteProcessSvl extends AbstractMultipartServlet {
 
@@ -59,29 +62,7 @@ public class BoardWriteProcessSvl extends AbstractMultipartServlet {
 	protected void performTask(HttpServletRequest req, HttpServletResponse res)
 			throws Exception {
 
-		BoardWriteRes boardWriteRes = null;
-
-		try {
-			boardWriteRes = doWork(req, res);
-		} catch (WebClientException e) {
-			String errorMessage = e.getErrorMessage();
-			String debugMessage = e.getDebugMessage();
-
-			AccessedUserInformation accessedUserformation = getAccessedUserInformationFromSession(req);
-			
-			String logMessage = new StringBuilder()
-					.append((null == debugMessage) ? errorMessage : debugMessage)
-					.append(", userID=[")
-					.append(accessedUserformation.getUserID())
-					.append("], ip=[")
-					.append(req.getRemoteAddr())
-					.append("]").toString();
-
-			log.warning(logMessage);
-
-			printErrorMessagePage(req, res, errorMessage, debugMessage);
-			return;
-		}
+		BoardWriteRes boardWriteRes = doWork(req, res);		
 
 		req.setAttribute("boardWriteRes", boardWriteRes);
 
@@ -108,7 +89,7 @@ public class BoardWriteProcessSvl extends AbstractMultipartServlet {
 		 * 멤버 변수는 쓰레드 세이프 하지 않아 request 객체로 전달 받습니다. 
 		 */
 		@SuppressWarnings("unchecked")
-		List<FileItem> fileItemList = (List<FileItem>)req.getAttribute("fileItemList");
+		List<FileItem> fileItemList = (List<FileItem>)req.getAttribute(WebCommonStaticFinalVars.MULTIPART_PARSING_RESULT_ATTRIBUTE_OF_REQUEST);
 
 		for (FileItem fileItem : fileItemList) {
 			/*
@@ -177,30 +158,14 @@ public class BoardWriteProcessSvl extends AbstractMultipartServlet {
 				 * newAtttachedFileSize);
 				 */
 
-				for (char ch : newAttachedFileName.toCharArray()) {
-					if (Character.isWhitespace(ch)) {
-						String errorMessage = new StringBuilder("첨부 파일명[")
-								.append(newAttachedFileName)
-								.append("]에 공백 문자가 존재합니다").toString();
+				try {
+					ValueChecker.checkValidFileName(newAttachedFileName);
+				} catch(IllegalArgumentException e) {
+					String errorMessage = "첨부 파일 이름에 금지된 글자가 포함되었습니다";
 
-						String debugMessage = null;
-
-						throw new WebClientException(errorMessage, debugMessage);
-					} else {
-						for (char forbiddenChar : WebCommonStaticFinalVars.FILENAME_FORBIDDEN_CHARS) {
-							if (ch == forbiddenChar) {
-								String errorMessage = new StringBuilder(
-										"첨부 파일명[").append(newAttachedFileName)
-										.append("]에 금지된 문자[")
-										.append(forbiddenChar)
-										.append("]가 존재합니다").toString();
-
-								String debugMessage = null;
-								throw new WebClientException(errorMessage,
-										debugMessage);
-							}
-						}
-					}
+					String debugMessage = e.getMessage();
+					throw new WebClientException(errorMessage,
+							debugMessage);
 				}
 
 				String lowerCaseFileName = newAttachedFileName.toLowerCase();
@@ -408,7 +373,25 @@ public class BoardWriteProcessSvl extends AbstractMultipartServlet {
 			boardID = ValueChecker.checkValidBoardID(paramBoardID);
 		
 			ValueChecker.checkValidSubject(paramSubject);
+			
+			
+			
 			ValueChecker.checkValidContents(paramContents);
+			
+			
+			boolean isValid = Jsoup.isValid(paramContents, WhitelistManager.getInstance());
+			if (! isValid) {
+				SampleBaseUserSiteWhitelist errorReportWhitelist = new SampleBaseUserSiteWhitelist();				
+				Jsoup.isValid(paramContents, errorReportWhitelist);
+				
+				
+				String errorMessage = new StringBuilder()
+						.append("게시글 내용에 정책상 허용하지 않는 내용이 포함되었습니다\n원문 : ")
+						.append(paramContents).toString();
+				String debugMessage = null;
+				throw new WebClientException(errorMessage, debugMessage);
+			}
+			
 		} catch(IllegalArgumentException e) {
 			String errorMessage = e.getMessage();
 			String debugMessage = null;
@@ -501,7 +484,7 @@ public class BoardWriteProcessSvl extends AbstractMultipartServlet {
 			for (FileItem fileItem : fileItemList) {
 				if (! fileItem.isFormField()) {
 					String newAttachedFilePathString = WebCommonStaticUtil
-							.getAttachedFilePathString(installedPathString,
+							.buildAttachedFilePathString(installedPathString,
 									mainProjectName, boardID,
 									boardWriteRes.getBoardNo(), newAttachedFileSeq);
 

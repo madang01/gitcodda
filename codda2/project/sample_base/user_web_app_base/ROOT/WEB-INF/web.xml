@@ -583,6 +583,35 @@
 		<url-pattern>/servlet/MemberWithdrawProcess</url-pattern>
 	</servlet-mapping>
 	
+	<!-- 이미지 업로드 처리 -->
+	<servlet>
+		<servlet-name>UploadImageProcess</servlet-name>
+		<servlet-class>kr.pe.codda.servlet.user.UploadImageProcessSvl</servlet-class>
+		<init-param>
+			<param-name>menuGroupURL</param-name>
+			<param-value>/servlet/BoardList</param-value>
+		</init-param>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>UploadImageProcess</servlet-name>
+		<url-pattern>/servlet/UploadImageProcess</url-pattern>
+	</servlet-mapping>
+	
+	
+	<!-- 이미지 다운로드 -->
+	<servlet>
+		<servlet-name>DownloadImage</servlet-name>
+		<servlet-class>kr.pe.codda.servlet.user.DownloadImageSvl</servlet-class>
+		<init-param>
+			<param-name>menuGroupURL</param-name>
+			<param-value>/servlet/BoardList</param-value>
+		</init-param>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>DownloadImage</servlet-name>
+		<url-pattern>/servlet/DownloadImage</url-pattern>
+	</servlet-mapping>
+	
 	<!-- Simple Captcha start -->
 	<servlet>
         <servlet-name>StickyCaptcha</servlet-name>

@@ -824,24 +824,26 @@ public abstract class ServerDBUtil {
 		// SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
 		// String yyyyMMdd = sdf.format(registeredDate);
 		
-		Field<String> yyyyMMdd = DSL.field("date_format({0}, {1})", String.class, registeredDate, DSL.inline("%Y%m%d"));
-		
-		
+		Field<String> yyyyMMdd = DSL.field("date_format({0}, {1})", String.class, registeredDate, DSL.inline("%Y%m%d"));		
 		
 		/** '일별 로그 순번' 동기화를 위해 락을 건다 */
 		create.select(SB_SEQ_TB.SQ_ID).from(SB_SEQ_TB)
 		.where(SB_SEQ_TB.SQ_ID.eq(SequenceType.SITE_LOG_LOCK.getSequenceID()))
 		.forUpdate().fetchOne();
 		
-		UInteger dayLogSeq = create.select(DSL.field("if ({0} is null, {1}, {2})", 
-				UInteger.class, SB_SITE_LOG_TB.DAY_LOG_SQ.max(), UInteger.valueOf(0), 
-				SB_SITE_LOG_TB.DAY_LOG_SQ.max().add(1)))
+		long maxOfDayLogSeq = create.select(DSL.field("if ({0} is null, {1}, {2})", 
+				Long.class, SB_SITE_LOG_TB.DAY_LOG_SQ.max(), Long.valueOf(0), 
+				SB_SITE_LOG_TB.DAY_LOG_SQ.max()))
 		.from(SB_SITE_LOG_TB)
 		.where(SB_SITE_LOG_TB.YYYYMMDD.eq(yyyyMMdd)).fetchOne().value1();
 		
+		if (maxOfDayLogSeq == CommonStaticFinalVars.UNSIGNED_INTEGER_MAX) {
+			throw new ServerServiceException("작업 시점의 SB_SITE_LOG_TB 테이블의 날짜 시퀀스가 최대치에 도달하여 더 이상 로그를 추가할 수 없습니다");
+		}
+		
 		create.insertInto(SB_SITE_LOG_TB)
 		.set(SB_SITE_LOG_TB.YYYYMMDD, yyyyMMdd)
-		.set(SB_SITE_LOG_TB.DAY_LOG_SQ, dayLogSeq)
+		.set(SB_SITE_LOG_TB.DAY_LOG_SQ, UInteger.valueOf(maxOfDayLogSeq + 1))
 		.set(SB_SITE_LOG_TB.USER_ID, userID)		
 		.set(SB_SITE_LOG_TB.LOG_TXT, logText)		
 		.set(SB_SITE_LOG_TB.REG_DT, registeredDate)

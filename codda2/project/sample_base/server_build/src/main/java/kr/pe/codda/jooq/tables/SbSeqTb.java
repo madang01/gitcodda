@@ -40,7 +40,7 @@ import org.jooq.types.UInteger;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class SbSeqTb extends TableImpl<SbSeqTbRecord> {
 
-    private static final long serialVersionUID = 227312809;
+    private static final long serialVersionUID = 545506171;
 
     /**
      * The reference instance of <code>sb_db.sb_seq_tb</code>
@@ -56,9 +56,9 @@ public class SbSeqTb extends TableImpl<SbSeqTbRecord> {
     }
 
     /**
-     * The column <code>sb_db.sb_seq_tb.sq_id</code>. 시퀀스 식별자, 0:메뉴, 1:공지게시판 시퀀스, 2:자유게시판시퀀스, 3:FAQ시퀀스
+     * The column <code>sb_db.sb_seq_tb.sq_id</code>. 시퀀스 식별자, 0:메뉴에 사용되는 시퀀스, 1:부분 키인 날짜별 시퀀스를 얻기 위한 목적의 SB_SITE_LOG_TB 테이블 락에 사용되는 시퀀스, 2:부분 키인 날짜별 시퀀스를 얻기 위한 목적의 SB_UPLOAD_IMAGE_TB 테이블 락에 사용되는 시퀀스
      */
-    public final TableField<SbSeqTbRecord, UByte> SQ_ID = createField("sq_id", org.jooq.impl.SQLDataType.TINYINTUNSIGNED.nullable(false), this, "시퀀스 식별자, 0:메뉴, 1:공지게시판 시퀀스, 2:자유게시판시퀀스, 3:FAQ시퀀스");
+    public final TableField<SbSeqTbRecord, UByte> SQ_ID = createField("sq_id", org.jooq.impl.SQLDataType.TINYINTUNSIGNED.nullable(false), this, "시퀀스 식별자, 0:메뉴에 사용되는 시퀀스, 1:부분 키인 날짜별 시퀀스를 얻기 위한 목적의 SB_SITE_LOG_TB 테이블 락에 사용되는 시퀀스, 2:부분 키인 날짜별 시퀀스를 얻기 위한 목적의 SB_UPLOAD_IMAGE_TB 테이블 락에 사용되는 시퀀스");
 
     /**
      * The column <code>sb_db.sb_seq_tb.sq_value</code>. 시퀀스 값, 1 부터 시작

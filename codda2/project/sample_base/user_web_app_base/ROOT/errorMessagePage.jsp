@@ -54,7 +54,7 @@
 					STRING_REPLACEMENT_ACTOR_TYPE.ESCAPEHTML4,
 					STRING_REPLACEMENT_ACTOR_TYPE.LINE2BR)%></div>
 					</div><%
-	if (null != debugMessage) {
+	if (null != debugMessage && ! debugMessage.trim().isEmpty()) {
 %>
 					<div class="row">
 						<div class="col-sm-1">디버깅</div>

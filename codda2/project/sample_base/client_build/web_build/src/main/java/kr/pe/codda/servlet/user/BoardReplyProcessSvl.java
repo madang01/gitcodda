@@ -15,6 +15,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.fileupload.FileItem;
+import org.jsoup.Jsoup;
 
 import kr.pe.codda.client.AnyProjectConnectionPoolIF;
 import kr.pe.codda.client.ConnectionPoolManager;
@@ -37,6 +38,8 @@ import kr.pe.codda.weblib.common.WebCommonStaticFinalVars;
 import kr.pe.codda.weblib.common.WebCommonStaticUtil;
 import kr.pe.codda.weblib.exception.WebClientException;
 import kr.pe.codda.weblib.jdf.AbstractMultipartServlet;
+import kr.pe.codda.weblib.jsoup.SampleBaseUserSiteWhitelist;
+import kr.pe.codda.weblib.jsoup.WhitelistManager;
 
 public class BoardReplyProcessSvl extends AbstractMultipartServlet {
 
@@ -418,6 +421,18 @@ public class BoardReplyProcessSvl extends AbstractMultipartServlet {
 			}
 			
 			ValueChecker.checkValidContents(paramContents);
+			
+			boolean isValid = Jsoup.isValid(paramContents, WhitelistManager.getInstance());
+			if (! isValid) {
+				SampleBaseUserSiteWhitelist errorReportWhitelist = new SampleBaseUserSiteWhitelist();				
+				Jsoup.isValid(paramContents, errorReportWhitelist);
+				
+				String errorMessage = new StringBuilder()
+						.append("게시글 내용에 정책상 허용하지 않는 내용이 포함되었습니다\n원문 : ")
+						.append(paramContents).toString();
+				String debugMessage = null;
+				throw new WebClientException(errorMessage, debugMessage);
+			}
 		} catch(IllegalArgumentException e) {
 			String errorMessage = e.getMessage();
 			String debugMessage = null;
@@ -508,7 +523,7 @@ public class BoardReplyProcessSvl extends AbstractMultipartServlet {
 			for (FileItem fileItem : fileItemList) {
 				if (!fileItem.isFormField()) {
 					String newAttachedFilePathString = WebCommonStaticUtil
-							.getAttachedFilePathString(installedPathString,
+							.buildAttachedFilePathString(installedPathString,
 									mainProjectName, boardID,
 									boardReplyRes.getBoardNo(), newAttachedFileSeq);
 

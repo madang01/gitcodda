@@ -16,6 +16,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.io.FileUtils;
+import org.jsoup.Jsoup;
 
 import kr.pe.codda.client.AnyProjectConnectionPoolIF;
 import kr.pe.codda.client.ConnectionPoolManager;
@@ -40,6 +41,8 @@ import kr.pe.codda.weblib.common.WebCommonStaticFinalVars;
 import kr.pe.codda.weblib.common.WebCommonStaticUtil;
 import kr.pe.codda.weblib.exception.WebClientException;
 import kr.pe.codda.weblib.jdf.AbstractMultipartServlet;
+import kr.pe.codda.weblib.jsoup.SampleBaseUserSiteWhitelist;
+import kr.pe.codda.weblib.jsoup.WhitelistManager;
 
 /**
  * 
@@ -136,7 +139,7 @@ public class BoardModifyProcessSvl extends AbstractMultipartServlet {
 		 * 멤버 변수는 쓰레드 세이프 하지 않아 request 객체로 전달 받습니다. 
 		 */
 		@SuppressWarnings("unchecked")
-		List<FileItem> fileItemList = (List<FileItem>)req.getAttribute("fileItemList");
+		List<FileItem> fileItemList = (List<FileItem>)req.getAttribute(WebCommonStaticFinalVars.MULTIPART_PARSING_RESULT_ATTRIBUTE_OF_REQUEST);
 
 		for (FileItem fileItem : fileItemList) {
 
@@ -496,12 +499,26 @@ public class BoardModifyProcessSvl extends AbstractMultipartServlet {
 			boardNo = ValueChecker.checkValidBoardNo(paramBoardNo);
 			
 			if (null != paramSubject) {
-				ValueChecker.checkValidSubject(paramSubject);
+				ValueChecker.checkValidSubject(paramSubject);				
 			} else {
 				paramSubject = "";
 			}
 			
 			ValueChecker.checkValidContents(paramContents);
+			
+			
+			boolean isValid = Jsoup.isValid(paramContents, WhitelistManager.getInstance());
+			if (! isValid) {
+				SampleBaseUserSiteWhitelist errorReportWhitelist = new SampleBaseUserSiteWhitelist();				
+				Jsoup.isValid(paramContents, errorReportWhitelist);
+				
+				String errorMessage = new StringBuilder()
+						.append("게시글 내용에 정책상 허용하지 않는 내용이 포함되었습니다\n원문 : ")
+						.append(paramContents).toString();
+				String debugMessage = null;
+				throw new WebClientException(errorMessage, debugMessage);
+			}
+			
 		} catch(IllegalArgumentException e) {
 			String errorMessage = e.getMessage();
 			String debugMessage = null;
@@ -625,11 +642,11 @@ public class BoardModifyProcessSvl extends AbstractMultipartServlet {
 					.getAttachedFileSeq();
 
 			String shortFileNameOfDelectedAttachedFile = WebCommonStaticUtil
-					.getShortFileNameOfAttachedFile(boardID, boardNo,
+					.buildShortFileNameOfAttachedFile(boardID, boardNo,
 							deletedAttachedFileSequence);
 
 			String delectedAttachedFilePathString = WebCommonStaticUtil
-					.getAttachedFilePathString(installedPathString,
+					.buildAttachedFilePathString(installedPathString,
 							mainProjectName, boardID, boardNo,
 							deletedAttachedFileSequence);
 
@@ -697,7 +714,7 @@ public class BoardModifyProcessSvl extends AbstractMultipartServlet {
 		for (FileItem fileItem : fileItemList) {
 			if (!fileItem.isFormField()) {
 				String newAttachedFilePathString = WebCommonStaticUtil
-						.getAttachedFilePathString(installedPathString,
+						.buildAttachedFilePathString(installedPathString,
 								mainProjectName, boardID, boardNo,
 								newAttachedFileSeq);
 

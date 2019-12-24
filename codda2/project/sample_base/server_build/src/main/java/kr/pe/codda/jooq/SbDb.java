@@ -21,6 +21,7 @@ import kr.pe.codda.jooq.tables.SbMemberTb;
 import kr.pe.codda.jooq.tables.SbSeqTb;
 import kr.pe.codda.jooq.tables.SbSiteLogTb;
 import kr.pe.codda.jooq.tables.SbSitemenuTb;
+import kr.pe.codda.jooq.tables.SbUploadImageTb;
 
 import org.jooq.Catalog;
 import org.jooq.Table;
@@ -40,7 +41,7 @@ import org.jooq.impl.SchemaImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class SbDb extends SchemaImpl {
 
-    private static final long serialVersionUID = -514416720;
+    private static final long serialVersionUID = 1910019043;
 
     /**
      * The reference instance of <code>sb_db</code>
@@ -103,6 +104,11 @@ public class SbDb extends SchemaImpl {
     public final SbSiteLogTb SB_SITE_LOG_TB = kr.pe.codda.jooq.tables.SbSiteLogTb.SB_SITE_LOG_TB;
 
     /**
+     * The table <code>sb_db.sb_upload_image_tb</code>.
+     */
+    public final SbUploadImageTb SB_UPLOAD_IMAGE_TB = kr.pe.codda.jooq.tables.SbUploadImageTb.SB_UPLOAD_IMAGE_TB;
+
+    /**
      * No further instances allowed
      */
     private SbDb() {
@@ -137,6 +143,7 @@ public class SbDb extends SchemaImpl {
             SbMemberTb.SB_MEMBER_TB,
             SbSeqTb.SB_SEQ_TB,
             SbSitemenuTb.SB_SITEMENU_TB,
-            SbSiteLogTb.SB_SITE_LOG_TB);
+            SbSiteLogTb.SB_SITE_LOG_TB,
+            SbUploadImageTb.SB_UPLOAD_IMAGE_TB);
     }
 }

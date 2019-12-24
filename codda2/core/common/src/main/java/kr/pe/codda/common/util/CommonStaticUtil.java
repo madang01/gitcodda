@@ -2,7 +2,6 @@ package kr.pe.codda.common.util;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -245,8 +244,16 @@ public abstract class CommonStaticUtil {
 		return sourcePath;
 	}
 
+	/**
+	 * 지정한 내용을 갖는 신규 파일을 지정한 문자셋을 저장한다. 파일이 존재하면 에러를 던진다. 
+	 *  
+	 * @param targetFile 저장할 신규 파일
+	 * @param contents 파일 내용
+	 * @param targetCharset 문자셋
+	 * @throws IOException 파일이 이미 존재할 경우 혹은 입출력 처리시 에러 발생시 던지는 예외
+	 */
 	public static void createNewFile(File targetFile, String contents, Charset targetCharset)
-			throws FileNotFoundException, IOException {
+			throws IOException {
 		if (null == targetFile) {
 			throw new IllegalArgumentException("the parameter 'targetFile' is null");
 		}
@@ -264,10 +271,10 @@ public abstract class CommonStaticUtil {
 					.append(targetFile.getAbsolutePath())
 					.append("] is file that already exist")
 					.toString();
-			throw new FileNotFoundException(errorMessage);
+			throw new IOException(errorMessage);
 		}
 
-		if (!targetFile.isFile()) {
+		if (! targetFile.isFile()) {
 			String errorMessage = new StringBuilder()
 					.append("the parameter targetFile[")
 					.append(targetFile.getAbsolutePath())
@@ -302,6 +309,14 @@ public abstract class CommonStaticUtil {
 		}
 	}
 
+	/**
+	 * 기존 파일에 지정한 문자셋으로 지정한 내용으로 덮어쓴다. 파일이 존재하지 않으면 에러를 던진다. 
+	 * 
+	 * @param targetFile 저장할 기존 파일
+	 * @param contents 파일 내용
+	 * @param targetCharset 문자셋
+	 * @throws IOException 파일이 존재하지 않거나 입출력 에러시 던지는 예외
+	 */
 	public static void overwriteFile(File targetFile, String contents, Charset targetCharset) throws IOException {
 		if (null == targetFile) {
 			throw new IllegalArgumentException("the parameter 'targetFile' is null");
@@ -359,6 +374,14 @@ public abstract class CommonStaticUtil {
 		}
 	}
 
+	/**
+	 * 신규 파일인 경우 지정한 파일에 지정한 문자셋으로 지정한 내용을 저장하고 기존 파일인 경우 지정한 문자셋으로 지정한 내용으로 덮어 쓴다
+	 *  
+	 * @param targetFile 저장할 파일
+	 * @param contents 파일 내용
+	 * @param targetCharset 문자셋
+	 * @throws IOException 입출력 할때 에러 발생시 던지는 예외
+	 */
 	public static void saveFile(File targetFile, String contents, Charset targetCharset) throws IOException {
 		if (null == targetFile) {
 			throw new IllegalArgumentException("the parameter 'targetFile' is null");
