@@ -126,6 +126,90 @@ public class JsoupTest {
 		
 	}
 	
+	@Test
+	public void testClean_span_style_fontWeight_ok() {
+		// String unsafe = "<p><a href='ftp://example.com/' onfocus='invalidLink()'>Link</a></p><a href='ftp://example2.com/'>Link 2</a>";
+		//String unsafe = "<IMG src=\"javascript:alert('hello')\">";
+		String unsafe = "<span style=\"font-weight: bold;\">	ffff</span>";
+		// String safe = Jsoup.clean(unsafe, Whitelist.basic());
+		
+		SampleBaseUserSiteWhitelist errorReportWhitelist = new SampleBaseUserSiteWhitelist();
+		
+		boolean isValid = Jsoup.isValid(unsafe, errorReportWhitelist);
+		
+		
+		assertEquals(true, isValid);
+		
+	}
+	
+	@Test
+	public void testClean_span_style_fontWeight_잘못된값() {
+		// String unsafe = "<p><a href='ftp://example.com/' onfocus='invalidLink()'>Link</a></p><a href='ftp://example2.com/'>Link 2</a>";
+		//String unsafe = "<IMG src=\"javascript:alert('hello')\">";
+		String unsafe = "<span style=\"font-weight: bold2;\">	ffff</span>";
+		// String safe = Jsoup.clean(unsafe, Whitelist.basic());
+		
+		SampleBaseUserSiteWhitelist errorReportWhitelist = new SampleBaseUserSiteWhitelist();
+		
+		boolean isValid = Jsoup.isValid(unsafe, errorReportWhitelist);
+		
+		
+		assertEquals(false, isValid);
+		
+	}
+	
+	@Test
+	public void testClean_span_style_fontWeight_키와값에서값이없는경우() {
+		// String unsafe = "<p><a href='ftp://example.com/' onfocus='invalidLink()'>Link</a></p><a href='ftp://example2.com/'>Link 2</a>";
+		//String unsafe = "<IMG src=\"javascript:alert('hello')\">";
+		String unsafe = "<span style=\"font-weight:;\">	ffff</span>";
+		// String safe = Jsoup.clean(unsafe, Whitelist.basic());
+		
+		SampleBaseUserSiteWhitelist errorReportWhitelist = new SampleBaseUserSiteWhitelist();
+		
+		boolean isValid = Jsoup.isValid(unsafe, errorReportWhitelist);
+		
+		
+		assertEquals(false, isValid);
+		
+	}
+	
+	@Test
+	public void testClean_span_style_unsafe_키와값에서키가없는경우() {
+		// String unsafe = "<p><a href='ftp://example.com/' onfocus='invalidLink()'>Link</a></p><a href='ftp://example2.com/'>Link 2</a>";
+		//String unsafe = "<IMG src=\"javascript:alert('hello')\">";
+		String unsafe = "<span style=\"font-weight:bold;:bold;\">	ffff</span>";
+		// String safe = Jsoup.clean(unsafe, Whitelist.basic());
+		
+		SampleBaseUserSiteWhitelist errorReportWhitelist = new SampleBaseUserSiteWhitelist();
+		
+		boolean isValid = Jsoup.isValid(unsafe, errorReportWhitelist);
+		
+		
+		assertEquals(false, isValid);
+		
+	}
+	
+	@Test
+	public void testClean_span_style_unsafe_구별자세미콜론없는경우() {
+		// String unsafe = "<p><a href='ftp://example.com/' onfocus='invalidLink()'>Link</a></p><a href='ftp://example2.com/'>Link 2</a>";
+		//String unsafe = "<IMG src=\"javascript:alert('hello')\">";
+		String unsafe = "<span style=\"font-weight;\">	ffff</span>";
+		// String safe = Jsoup.clean(unsafe, Whitelist.basic());
+		
+		SampleBaseUserSiteWhitelist errorReportWhitelist = new SampleBaseUserSiteWhitelist();
+		
+		boolean isValid = Jsoup.isValid(unsafe, errorReportWhitelist);
+		
+		
+		assertEquals(false, isValid);
+		
+	}
+	
+	@Test
+	public void testClean_span_style_unsafe_textDecorationLine_() {
+		
+	}
 	
 	/**
 	 * Null breaks up JavaScript directive 는 어떻게 테스트 해야 할지 몰라서 생략

@@ -33,4 +33,8 @@
 	<logger name="org.jooq" level="INFO">
 		<appender-ref ref="logfile"/>
 	</logger>
+	
+	<logger name="com.nhncorp.lucy" level="INFO">
+		<appender-ref ref="logfile"/>
+	</logger>
 </configuration>
