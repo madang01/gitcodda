@@ -55,4 +55,5 @@ public abstract class WebCommonStaticUtil {
 	public static FastDateFormat SIMPLE_DATE_FORMAT = FastDateFormat.getInstance( "yyyy.MM.dd HHmmss");
 	
 	
+	
 }

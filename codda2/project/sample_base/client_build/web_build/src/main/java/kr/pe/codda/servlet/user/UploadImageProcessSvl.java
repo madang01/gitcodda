@@ -23,7 +23,6 @@ import kr.pe.codda.impl.classloader.ClientMessageCodecManger;
 import kr.pe.codda.impl.message.MessageResultRes.MessageResultRes;
 import kr.pe.codda.impl.message.UploadImageReq.UploadImageReq;
 import kr.pe.codda.impl.message.UploadImageRes.UploadImageRes;
-import kr.pe.codda.weblib.common.AccessedUserInformation;
 import kr.pe.codda.weblib.common.ValueChecker;
 import kr.pe.codda.weblib.common.WebCommonStaticFinalVars;
 import kr.pe.codda.weblib.common.WebCommonStaticUtil;
@@ -68,16 +67,10 @@ public class UploadImageProcessSvl extends AbstractMultipartServlet {
 	}
 
 	public UploadImageRes doWork(HttpServletRequest req, HttpServletResponse res) throws Exception {
-		AccessedUserInformation accessedUserformation = getAccessedUserInformationFromSession(req);
-
-		if (!accessedUserformation.isLoginedIn()) {
-			String errorMessage = "이미지 업로드 서비스는 로그인 서비스입니다, 로그인 해 주시기 바랍니다";
-			String debugMessage = null;
-			throw new WebClientException(errorMessage, debugMessage);
-		}
+		// AccessedUserInformation accessedUserformation = getAccessedUserInformationFromSession(req);
+		
 
 		UploadImageReq uploadImageReq = new UploadImageReq();
-		uploadImageReq.setRequestedUserID(accessedUserformation.getUserID());
 
 		@SuppressWarnings("unchecked")
 		List<FileItem> fileItemList = (List<FileItem>) req.getAttribute(WebCommonStaticFinalVars.MULTIPART_PARSING_RESULT_ATTRIBUTE_OF_REQUEST);
@@ -103,7 +96,6 @@ public class UploadImageProcessSvl extends AbstractMultipartServlet {
 				String uploadImageFileName = fileItem.getName();
 				String uploadImageFileContentType = fileItem.getContentType();
 				long uploadImageFileSize = fileItem.getSize();
-
 				
 				if (!formFieldName.equals("uplodImageFile")) {
 					String errorMessage = new StringBuilder().append("'uplodImageFile' 로 정해진 첨부 파일의 웹 파라미터 이름[")

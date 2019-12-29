@@ -1,4 +1,6 @@
-<%@page import="kr.pe.codda.common.etc.CommonStaticFinalVars"%><%
+<%@page import="kr.pe.codda.weblib.summernote.SummerNoteConfiguration"%><%
+%><%@page import="kr.pe.codda.weblib.summernote.SummerNoteConfigurationManger"%><%
+%><%@page import="kr.pe.codda.common.etc.CommonStaticFinalVars"%><%
 %><%@page import="kr.pe.codda.weblib.common.AccessedUserInformation"%><%
 %><%@page import="kr.pe.codda.weblib.common.PermissionType"%><%	
 %><%@page import="kr.pe.codda.weblib.common.BoardListType"%><%	
@@ -9,6 +11,8 @@
 %><%@ page import="kr.pe.codda.impl.message.BoardListRes.BoardListRes" %><%
 %><%@ page extends="kr.pe.codda.weblib.jdf.AbstractUserJSP" language="java" session="true" autoFlush="true" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %><%
 %><jsp:useBean id="boardListRes" class="kr.pe.codda.impl.message.BoardListRes.BoardListRes" scope="request" /><%//String boardListResJsonString = new Gson().toJson(boardListRes);
+
+	SummerNoteConfiguration summerNoteConfiguration = SummerNoteConfigurationManger.getInstance();
 
 	/* {
 	String requestUserID = "guest";
@@ -223,16 +227,10 @@
 		editScreenNodeOfBoard0.style.display = "block";
 		
 		$('#contentsOfBoard').summernote({
+<%= summerNoteConfiguration.buildInitializationOptionsString(3) %>,
 			placeholder: '이곳에 글을 작성해 주세요',
 			tabsize: 2,
-			height: 200,
-			callbacks: {
-				onImageUpload: function(imageFiles) {		        		
-					for (var i=0; i < imageFiles.length; i++) {
-						uploadImageFile(imageFiles[i]);
-					}
-				}
-			}
+			height: 200
 		});
 		
 		var f = document.writeInputFrm;	

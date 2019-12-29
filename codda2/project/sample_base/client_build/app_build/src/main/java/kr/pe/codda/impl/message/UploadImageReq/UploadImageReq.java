@@ -25,17 +25,9 @@ import kr.pe.codda.common.message.AbstractMessage;
  *
  */
 public class UploadImageReq extends AbstractMessage {
-	private String requestedUserID;
 	private String imageFileName;
 	private long fileSize;
 
-	public String getRequestedUserID() {
-		return requestedUserID;
-	}
-
-	public void setRequestedUserID(String requestedUserID) {
-		this.requestedUserID = requestedUserID;
-	}
 	public String getImageFileName() {
 		return imageFileName;
 	}
@@ -55,9 +47,7 @@ public class UploadImageReq extends AbstractMessage {
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
 		builder.append("uploadImageReq[");
-		builder.append("requestedUserID=");
-		builder.append(requestedUserID);
-		builder.append(", imageFileName=");
+		builder.append("imageFileName=");
 		builder.append(imageFileName);
 		builder.append(", fileSize=");
 		builder.append(fileSize);

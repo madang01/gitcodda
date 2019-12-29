@@ -39,13 +39,6 @@ public final class UploadImageReqEncoder extends AbstractMessageEncoder {
 		pathStack.push("UploadImageReq");
 
 
-		singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "requestedUserID"
-			, kr.pe.codda.common.type.SingleItemType.UB_PASCAL_STRING // itemType
-			, uploadImageReq.getRequestedUserID() // itemValue
-			, -1 // itemSize
-			, null // nativeItemCharset
-			, middleWritableObject);
-
 		singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "imageFileName"
 			, kr.pe.codda.common.type.SingleItemType.UB_PASCAL_STRING // itemType
 			, uploadImageReq.getImageFileName() // itemValue

@@ -36,7 +36,7 @@ public class SummerNoteConfiguration {
 	}
 	
 	
-	public boolean isFontFamaily() {
+	public boolean isFontNames() {
 		return isFontNames;
 	}
 	
@@ -46,46 +46,62 @@ public class SummerNoteConfiguration {
 		return fontNameList;
 	}
 	
-	public String buildToolBarString() {
+	
+	private String buildTabString(int depth) {
+		StringBuilder tabStringBuilder = new StringBuilder();
+		
+		for (int i=0; i < depth; i++) {
+			tabStringBuilder.append("\t");
+		}
+		
+		return tabStringBuilder.toString();
+	}
+	
+	public String buildToolBarString(int depth) {
 		StringBuilder toolBarStringBuilder =  new StringBuilder()
-				.append("toolbar: ['fontStyle', ['style', 'bold', 'italic', 'underline', 'strikethrough', 'clear]]");
+				.append(buildTabString(depth)).append("toolbar: [")
+				.append(CommonStaticFinalVars.NEWLINE).append(buildTabString(depth+1)).append("['fontStyle', ['style', 'bold', 'italic', 'underline', 'strikethrough', 'clear']]");
 				
 		
 		if (isFontNames) {
 			toolBarStringBuilder
-			.append(",").append(CommonStaticFinalVars.NEWLINE).append("['fontname', ['fontname']]");
+			.append(",").append(CommonStaticFinalVars.NEWLINE).append(buildTabString(depth+1)).append("['fontname', ['fontname']]");
 		}		
 		
 		toolBarStringBuilder
-		.append(",").append(CommonStaticFinalVars.NEWLINE).append("['color', ['color']]")
-		.append(",").append(CommonStaticFinalVars.NEWLINE).append(" ['para', ['ul', 'ol', 'paragraph']]")
-		.append(",").append(CommonStaticFinalVars.NEWLINE).append("['table', ['table']]")
-		.append(",").append(CommonStaticFinalVars.NEWLINE).append("['insert', ['link', 'picture', 'video']]")
-		.append(",").append(CommonStaticFinalVars.NEWLINE).append("['view', ['fullscreen', 'codeview', 'help']]");
+		.append(",").append(CommonStaticFinalVars.NEWLINE).append(buildTabString(depth+1)).append("['color', ['color']]")
+		.append(",").append(CommonStaticFinalVars.NEWLINE).append(buildTabString(depth+1)).append("['para', ['ul', 'ol', 'paragraph']]")
+		.append(",").append(CommonStaticFinalVars.NEWLINE).append(buildTabString(depth+1)).append("['table', ['table']]")
+		.append(",").append(CommonStaticFinalVars.NEWLINE).append(buildTabString(depth+1)).append("['insert', ['link', 'picture', 'video']]")
+		.append(",").append(CommonStaticFinalVars.NEWLINE).append(buildTabString(depth+1)).append("['view', ['fullscreen', 'codeview', 'help']]")
+		.append(CommonStaticFinalVars.NEWLINE).append(buildTabString(depth)).append("]");
 		
 		return toolBarStringBuilder.toString();
 	}
 	
-	public String buildPopoverStringForFontFamaily() {
-		StringBuilder popoverStringBuilder =  new StringBuilder().append("popover: {");
+	public String buildPopoverStringForFont(int depth) {
+		StringBuilder popoverStringBuilder =  new StringBuilder()
+				.append(buildTabString(depth)).append("popover: {");
 		
-		popoverStringBuilder.append(CommonStaticFinalVars.NEWLINE).append("fontNames : [");
+		popoverStringBuilder.append(CommonStaticFinalVars.NEWLINE).append(buildTabString(depth+1)).append("fontNames : [");
 		
 		for (String fontName : fontNameList) {
 			popoverStringBuilder.append("'")
 			.append(fontName).append("', ");
 		}
 		
-		popoverStringBuilder.append(CommonStaticFinalVars.NEWLINE).append("]");
+		popoverStringBuilder.append(buildTabString(depth)).append("]")
+		.append(CommonStaticFinalVars.NEWLINE).append(buildTabString(depth)).append("}");
+		
 		
 		return popoverStringBuilder.toString();
 	}
 	
-	public String buildInitString() {
-		StringBuilder initStringBuilder = new StringBuilder(buildToolBarString());
+	public String buildInitializationOptionsString(int depth) {
+		StringBuilder initStringBuilder = new StringBuilder(buildToolBarString(depth));
 		
 		if (isFontNames) {
-			initStringBuilder.append(CommonStaticFinalVars.NEWLINE).append(buildPopoverStringForFontFamaily());
+			initStringBuilder.append(",").append(CommonStaticFinalVars.NEWLINE).append(buildPopoverStringForFont(depth));
 		}
 		
 		return initStringBuilder.toString();

@@ -1,4 +1,6 @@
-<%@page import="kr.pe.codda.weblib.common.AccessedUserInformation"%><%
+<%@page import="kr.pe.codda.weblib.summernote.SummerNoteConfiguration"%><%
+%><%@page import="kr.pe.codda.weblib.summernote.SummerNoteConfigurationManger"%><%
+%><%@page import="kr.pe.codda.weblib.common.AccessedUserInformation"%><%
 %><%@page import="kr.pe.codda.weblib.common.MemberRoleType"%><%
 %><%@page import="kr.pe.codda.common.etc.CommonStaticFinalVars"%><%
 %><%@page import="kr.pe.codda.weblib.common.BoardReplyPolicyType"%><%
@@ -12,6 +14,8 @@
 %><%@page import="kr.pe.codda.impl.message.BoardDetailRes.BoardDetailRes"%><%
 %><%@ page extends="kr.pe.codda.weblib.jdf.AbstractUserJSP" language="java" session="true" autoFlush="true"	contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%><%
 %><jsp:useBean id="boardDetailRes" class="kr.pe.codda.impl.message.BoardDetailRes.BoardDetailRes" scope="request" /><%
+	SummerNoteConfiguration summerNoteConfiguration = SummerNoteConfigurationManger.getInstance();
+
 	// FIXME!
 	/* boardDetailRes.setBoardID(BoardType.FREE.getBoardID());
 	boardDetailRes.setBoardNo(1);
@@ -852,16 +856,10 @@ function showReplyEditScreen(boardID, boardNo, isSubject, isPassword) {
 	targetDiv.appendChild(processFormNode);
 	
 	$('#contentsOfBoard').summernote({
+<%= summerNoteConfiguration.buildInitializationOptionsString(3) %>,		
         placeholder: '이곳에 글을 작성해 주세요',
         tabsize: 2,
-        height: 200,
-        callbacks: {
-        	onImageUpload: function(imageFiles) {		        		
-        		for (var i=0; i < imageFiles.length; i++) {
-        			uploadImageFile(imageFiles[i]);
-        		}
-            }
-          }
+        height: 200
       });
 }
 

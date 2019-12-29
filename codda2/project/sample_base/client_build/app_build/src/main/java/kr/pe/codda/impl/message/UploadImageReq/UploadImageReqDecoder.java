@@ -35,14 +35,6 @@ public final class UploadImageReqDecoder extends AbstractMessageDecoder {
 		java.util.LinkedList<String> pathStack = new java.util.LinkedList<String>();
 		pathStack.push("UploadImageReq");
 
-		uploadImageReq.setRequestedUserID((String)
-		singleItemDecoder.getValueFromReadableMiddleObject(pathStack.peek()
-			, "requestedUserID" // itemName
-			, kr.pe.codda.common.type.SingleItemType.UB_PASCAL_STRING // itemType
-			, -1 // itemSize
-			, null // nativeItemCharset
-			, middleReadableObject));
-
 		uploadImageReq.setImageFileName((String)
 		singleItemDecoder.getValueFromReadableMiddleObject(pathStack.peek()
 			, "imageFileName" // itemName

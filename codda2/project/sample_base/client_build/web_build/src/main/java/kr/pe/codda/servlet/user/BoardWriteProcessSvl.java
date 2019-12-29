@@ -1,6 +1,8 @@
 package kr.pe.codda.servlet.user;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URLConnection;
@@ -16,6 +18,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.fileupload.FileItem;
 import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
 import kr.pe.codda.client.AnyProjectConnectionPoolIF;
 import kr.pe.codda.client.ConnectionPoolManager;
@@ -32,14 +37,21 @@ import kr.pe.codda.impl.classloader.ClientMessageCodecManger;
 import kr.pe.codda.impl.message.BoardWriteReq.BoardWriteReq;
 import kr.pe.codda.impl.message.BoardWriteRes.BoardWriteRes;
 import kr.pe.codda.impl.message.MessageResultRes.MessageResultRes;
+import kr.pe.codda.impl.message.UploadImageReq.UploadImageReq;
+import kr.pe.codda.impl.message.UploadImageRes.UploadImageRes;
 import kr.pe.codda.weblib.common.AccessedUserInformation;
 import kr.pe.codda.weblib.common.ValueChecker;
 import kr.pe.codda.weblib.common.WebCommonStaticFinalVars;
 import kr.pe.codda.weblib.common.WebCommonStaticUtil;
 import kr.pe.codda.weblib.exception.WebClientException;
+import kr.pe.codda.weblib.exception.WhiteParserException;
 import kr.pe.codda.weblib.jdf.AbstractMultipartServlet;
-import kr.pe.codda.weblib.jsoup.SampleBaseUserSiteWhitelist;
-import kr.pe.codda.weblib.jsoup.WhitelistManager;
+import kr.pe.codda.weblib.summernote.BoardImageFileInformation;
+import kr.pe.codda.weblib.summernote.ImgTagDataFileNameValueXSSAttackChecker;
+import kr.pe.codda.weblib.summernote.ImgTagSrcValueXSSAtackChecker;
+import kr.pe.codda.weblib.summernote.SampleBaseUserSiteWhiteInformationManager;
+import kr.pe.codda.weblib.summernote.WhiteTag;
+import kr.pe.codda.weblib.summernote.WhiteTagAttribute;
 
 public class BoardWriteProcessSvl extends AbstractMultipartServlet {
 
@@ -75,12 +87,14 @@ public class BoardWriteProcessSvl extends AbstractMultipartServlet {
 			throws Exception {
 		String paramSessionKeyBase64 = null;
 		String paramIVBase64 = null;
-		String paramBoardID = null;
+		//String paramBoardID = null;
 		String paramBoardPwdCipherBase64 = null;
 		String paramSubject = null;
 		String paramContents = null;
 		List<BoardWriteReq.NewAttachedFile> newAttachedFileList = new ArrayList<BoardWriteReq.NewAttachedFile>();
 
+		short boardID = -1;
+		
 		/**
 		 * 참고) 공통단에서는 선택한 메뉴가 무엇인지를 정의합니다.
 		 * 게시판 관련 메뉴들은 게시판 식별자라는 파라미터 값을 알아야 메뉴가 무엇인지 정할 수 있습니다.
@@ -112,12 +126,36 @@ public class BoardWriteProcessSvl extends AbstractMultipartServlet {
 						.equals(WebCommonStaticFinalVars.PARAMETER_KEY_NAME_OF_SESSION_KEY_IV)) {
 					paramIVBase64 = formFieldValue;
 				} else if (formFieldName.equals("boardID")) {
-					paramBoardID = formFieldValue;
+					try {
+						boardID = ValueChecker.checkValidBoardID(formFieldValue);
+					} catch(IllegalArgumentException e) {
+						String errorMessage = e.getMessage();
+						String debugMessage = null;
+						throw new WebClientException(errorMessage, debugMessage);
+					}
+					
+					// paramBoardID = formFieldValue;
 				} else if (formFieldName.equals("pwd")) {
 					paramBoardPwdCipherBase64 = formFieldValue;
-				} else if (formFieldName.equals("subject")) {
+				} else if (formFieldName.equals("subject")) {	
+					try {					
+						ValueChecker.checkValidSubject(formFieldValue);						
+					} catch(IllegalArgumentException e) {
+						String errorMessage = e.getMessage();
+						String debugMessage = null;
+						throw new WebClientException(errorMessage, debugMessage);
+					}
+					
 					paramSubject = formFieldValue;
 				} else if (formFieldName.equals("contents")) {
+					try {
+						ValueChecker.checkValidContents(formFieldValue);						
+					} catch(IllegalArgumentException e) {
+						String errorMessage = e.getMessage();
+						String debugMessage = null;
+						throw new WebClientException(errorMessage, debugMessage);
+					}
+					
 					paramContents = formFieldValue;
 				} else {
 					String errorMessage = new StringBuilder()
@@ -368,35 +406,7 @@ public class BoardWriteProcessSvl extends AbstractMultipartServlet {
 				WebCommonStaticFinalVars.REQUEST_KEY_NAME_OF_SYMMETRIC_KEY_FROM_SESSIONKEY,
 				webServerSymmetricKey);
 		
-		short boardID = -1;
-		try {
-			boardID = ValueChecker.checkValidBoardID(paramBoardID);
 		
-			ValueChecker.checkValidSubject(paramSubject);
-			
-			
-			
-			ValueChecker.checkValidContents(paramContents);
-			
-			
-			boolean isValid = Jsoup.isValid(paramContents, WhitelistManager.getInstance());
-			if (! isValid) {
-				SampleBaseUserSiteWhitelist errorReportWhitelist = new SampleBaseUserSiteWhitelist();				
-				Jsoup.isValid(paramContents, errorReportWhitelist);
-				
-				
-				String errorMessage = new StringBuilder()
-						.append("게시글 내용에 정책상 허용하지 않는 내용이 포함되었습니다\n원문 : ")
-						.append(paramContents).toString();
-				String debugMessage = null;
-				throw new WebClientException(errorMessage, debugMessage);
-			}
-			
-		} catch(IllegalArgumentException e) {
-			String errorMessage = e.getMessage();
-			String debugMessage = null;
-			throw new WebClientException(errorMessage, debugMessage);
-		}
 		
 		String pwdHashBase64 = null;
 		if (null == paramBoardPwdCipherBase64) {
@@ -437,14 +447,27 @@ public class BoardWriteProcessSvl extends AbstractMultipartServlet {
 			Arrays.fill(boardPasswordBytes, (byte)0);
 		}
 		
+		
+		// FIXME!
+		/*
+		int startInxOfImgTag = paramContents.indexOf("<img");
+		int endInxOfMimeType = paramContents.indexOf(";base64,", startInxOfImgTag);
+		*/
+		
 		AccessedUserInformation accessedUserformation = getAccessedUserInformationFromSession(req);
+		
+		AnyProjectConnectionPoolIF mainProjectConnectionPool = ConnectionPoolManager
+				.getInstance().getMainProjectConnectionPool();
+		
+		String newContents = parseWithXssAttackCheck(mainProjectConnectionPool, paramContents);
+		
 
 		BoardWriteReq boardWriteReq = new BoardWriteReq();
 		boardWriteReq.setRequestedUserID(accessedUserformation.getUserID());
 		boardWriteReq.setBoardID(boardID);
 		boardWriteReq.setPwdHashBase64(pwdHashBase64);
 		boardWriteReq.setSubject(paramSubject);
-		boardWriteReq.setContents(paramContents);
+		boardWriteReq.setContents(newContents);
 		boardWriteReq.setIp(req.getRemoteAddr());
 		boardWriteReq.setNewAttachedFileCnt((short) newAttachedFileList.size());
 		boardWriteReq.setNewAttachedFileList(newAttachedFileList);
@@ -452,8 +475,8 @@ public class BoardWriteProcessSvl extends AbstractMultipartServlet {
 		// log.info("inObj={}", boardWriteReq.toString());
 		// System.out.println(boardWriteReq.toString());
 
-		AnyProjectConnectionPoolIF mainProjectConnectionPool = ConnectionPoolManager
-				.getInstance().getMainProjectConnectionPool();
+		
+		
 		AbstractMessage outputMessage = mainProjectConnectionPool
 				.sendSyncInputMessage(ClientMessageCodecManger.getInstance(), boardWriteReq);
 
@@ -512,5 +535,200 @@ public class BoardWriteProcessSvl extends AbstractMultipartServlet {
 		}
 
 		return boardWriteRes;
+	}
+	
+	/**
+	 * WARNING! 이 메소드는 게시판 본문글에 삽입된 이미지에 대한 송수신 처리가 있기때문에 반듯이 동적 클래스 즉 이곳 {@link BoardWriteProcessSvl} 에 있어야 한다.
+	 * @param mainProjectConnectionPool
+	 * @param contents
+	 * @return
+	 * @throws IllegalArgumentException
+	 * @throws WhiteParserException
+	 */
+	public String parseWithXssAttackCheck(AnyProjectConnectionPoolIF mainProjectConnectionPool, String contents) throws IllegalArgumentException, WhiteParserException {
+		if (null == contents) {
+			throw new IllegalArgumentException("the parameter contents is null");
+		}
+		
+		Document contentsDocument = Jsoup.parse(contents);
+		
+		Element bodyElement = contentsDocument.body();
+		
+		Elements allElements = bodyElement.getAllElements();
+		
+		// ArrayList<BoardImageFileInformation> boardImageFileInformationList = new ArrayList<BoardImageFileInformation>();		
+		
+		int countOfElmements = allElements.size();
+		
+		
+		for (int i=0; i < countOfElmements; i++) {
+			
+			Element element = allElements.get(i);
+			
+			String tagName = element.tagName();
+			
+			// FIXME!
+			// log.info(tagName);
+			
+			
+			
+			if ("#root".equals(tagName)) {
+				continue;
+			}
+						
+			WhiteTag whiteTag = SampleBaseUserSiteWhiteInformationManager.getInstance().getWhiteTag(tagName);
+			
+			org.jsoup.nodes.Attributes attributes = element.attributes();
+			
+			if ("img".equals(tagName)) {
+				String srcAttributeValue = attributes.get("src");
+				if (null == srcAttributeValue || srcAttributeValue.isEmpty()) {
+					String errorMessage = "img 태그에서 src 속성이 없습니다";
+					throw new WhiteParserException(errorMessage);
+				}
+				
+				WhiteTagAttribute srcTagAttribute = whiteTag.getWhiteTagAttribute("src");
+				
+				if (null == srcTagAttribute) {
+					String errorMessage = "the img tag's src atttibute is a not allowed attbitue";
+					throw new WhiteParserException(errorMessage);
+				}
+				
+				BoardImageFileInformation boardImageFileInformation = new BoardImageFileInformation();
+							
+				ImgTagSrcValueXSSAtackChecker imgTagSrcValueXSSAtackChecker = (ImgTagSrcValueXSSAtackChecker)srcTagAttribute.getAttributeValueXSSAtackChecker();
+				
+				
+				imgTagSrcValueXSSAtackChecker.checkXSSAttack(srcAttributeValue, boardImageFileInformation);				
+				
+				
+				String dataFileNameAttributeValue = attributes.get("data-filename");
+				if (null == dataFileNameAttributeValue || dataFileNameAttributeValue.isEmpty()) {
+					String errorMessage = "img 태그에서 data-filename 속성이 없습니다";
+					throw new WhiteParserException(errorMessage);
+				}				
+				
+				WhiteTagAttribute dataFileNameTagAttribute = whiteTag.getWhiteTagAttribute("data-filename");
+				
+				ImgTagDataFileNameValueXSSAttackChecker imgTagDataFileNameValueXSSAttackChecker =  (ImgTagDataFileNameValueXSSAttackChecker)dataFileNameTagAttribute.getAttributeValueXSSAtackChecker();
+				
+				imgTagDataFileNameValueXSSAttackChecker.checkXSSAttack(dataFileNameAttributeValue, boardImageFileInformation);
+				
+				
+				// FIXME!
+				try {
+					byte[] imageFileContents = boardImageFileInformation.getBoardImageFileContents();			
+					
+					UploadImageReq uploadImageReq = new UploadImageReq();
+					// uploadImageReq.setRequestedUserID(accessedUserformation.getUserID());
+					
+					uploadImageReq.setImageFileName(boardImageFileInformation.getBoardImageFileName());
+					uploadImageReq.setFileSize(imageFileContents.length);					
+					
+					AbstractMessage outputMessage = mainProjectConnectionPool
+							.sendSyncInputMessage(ClientMessageCodecManger.getInstance(), uploadImageReq);
+
+					if (!(outputMessage instanceof UploadImageRes)) {
+						if (outputMessage instanceof MessageResultRes) {
+							MessageResultRes messageResultRes = (MessageResultRes) outputMessage;
+							String errorMessage = "게시판 본문 작성하기에서 본문에 삽입된 이미지를 업로드 하는데 실패하였습니다";
+							String debugMessage = messageResultRes.toString();
+							throw new WebClientException(errorMessage, debugMessage);
+						} else {
+							String errorMessage = "게시판 본문 작성하기에서 본문에 삽입된 이미지를 업로드 하는데 실패하였습니다";
+							String debugMessage = new StringBuilder("입력 메시지[").append(uploadImageReq.getMessageID())
+									.append("]에 대한 비 정상 출력 메시지[").append(outputMessage.toString()).append("] 도착").toString();
+
+							log.severe(debugMessage);
+
+							throw new WebClientException(errorMessage, debugMessage);
+						}
+					}
+
+					UploadImageRes uploadImageRes = (UploadImageRes) outputMessage;
+					
+					String uploadImageFilePathString = WebCommonStaticUtil.buildUploadImageFilePathString(
+							installedPathString, mainProjectName, uploadImageRes.getYyyyMMdd(),
+							uploadImageRes.getDaySequence());
+					File newUploadImageFile = new File(uploadImageFilePathString);
+					
+					FileOutputStream fos = new FileOutputStream(newUploadImageFile);
+					BufferedOutputStream bos = new BufferedOutputStream(fos);
+					try {				
+						bos.write(imageFileContents);				
+					} finally {
+						if (null != bos) {
+							try {
+								bos.close();
+							} catch(Exception e) {
+								
+							}
+						}
+						
+						if (null != fos) {
+							try {
+								fos.close();
+							} catch(Exception e) {
+								
+							}
+						}
+					}
+					
+					String newImgTagSrcAttributeValue = new StringBuilder()
+							.append("/servlet/DownloadImage?yyyyMMdd=")
+							.append(uploadImageRes.getYyyyMMdd())
+							.append("&daySequence=")
+							.append(uploadImageRes.getDaySequence()).toString();
+					
+					
+					attributes.put("src", newImgTagSrcAttributeValue);
+					attributes.remove("data-filename");
+					
+				} catch(Exception e) {
+					String errorMessage = "fail to replace old image tag having base64 to new image tag having image file url";
+					log.log(Level.WARNING, errorMessage, e);
+					throw new WhiteParserException(errorMessage);
+					
+				}
+				
+				// boardImageFileInformationList.add(boardImageFileInformation);
+			}
+			
+							
+			for (org.jsoup.nodes.Attribute att : attributes.asList()) {
+				String attributeName = att.getKey();
+				
+				
+				/** img tag 의 src 와 dafa-filename 속성들은 앞에서 XSS 공격 여부를 판단했기때문에 이 과정을 건너 뛴다 */
+				if ("img".equals(tagName)) {
+					if ("src".equals(attributeName)) {						
+						continue;
+					}				
+					if ("data-filename".equals(attributeName)) {
+						continue;
+					}
+				}
+				
+				WhiteTagAttribute whiteTagAttribute = whiteTag.getWhiteTagAttribute(attributeName);
+				whiteTagAttribute.checkXSSAttack(att.getValue());	
+			}
+		}
+		
+		
+		
+		
+		String newConents = bodyElement.html();
+		
+		/*
+		int beginIndex = "<body>".length();
+		int endIndex = newConents.length() - "</body>".length() + 1;
+		
+		log.info("beginIndex="+beginIndex);
+		log.info("endIndex="+endIndex);
+		*/
+		
+		// newConents = newConents.substring(beginIndex, endIndex);;
+		
+		return newConents;
 	}
 }

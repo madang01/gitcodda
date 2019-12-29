@@ -58,16 +58,19 @@ public class MessageInfoSAXParser extends DefaultHandler {
 	private final int XML_EXTENSION_SUFFIX_LENGTH = XML_EXTENSION_SUFFIX.length();
 	
 	/** this member variables is initialized in constructor start */	
-	private SAXParser saxParser;
+	private  SAXParser saxParser;
 	// 배열 크기로 참조하는 단일 항목이 가질 수 있는 값의 타입 집합
 	private Set<String> possibleItemTypeNameSetForArraySizeReferenceVariable = new HashSet<String>();
 	/** this member variables is initialized in constructor end */
 	
+	
+	
 	/** this member variables is initialized in parse(File) start */
-	private MessageInfo messageInfo = null;
 	private boolean isFileNameCheck = true;
 	private File messageInformationXMLFile = null;
-	private String messageIDOfXMLFile = null;	
+	private String messageIDOfXMLFile = null;
+	
+	private MessageInfo messageInfo = null;		
 	private String rootTag = null;
 	private Stack<String> startTagStack = new Stack<String>();
 	private Stack<String> tagValueStack = new Stack<String>();
@@ -386,30 +389,27 @@ public class MessageInfoSAXParser extends DefaultHandler {
 
 	@Override
 	public void warning(SAXParseException e) throws SAXException {
-		StringBuilder messageStringBuilder = new StringBuilder("warning::");
-		messageStringBuilder.append(getParsingResultFromItemGroupInfoStack());
-		messageStringBuilder.append(", ");
-		messageStringBuilder.append(e.toString());	
-		throw new SAXException(messageStringBuilder.toString());
+		String errorMessage = new StringBuilder("warning::")
+				.append(getParsingResultFromItemGroupInfoStack())
+				.append(", ").append(e.toString()).toString();	
+		throw new SAXException(errorMessage);
 	}	
 	
 
 	@Override
 	public void error(SAXParseException e) throws SAXException {
-		StringBuilder messageStringBuilder = new StringBuilder("error::");
-		messageStringBuilder.append(getParsingResultFromItemGroupInfoStack());
-		messageStringBuilder.append(", ");
-		messageStringBuilder.append(e.toString());		
-		throw new SAXException(messageStringBuilder.toString());
+		String errorMessage = new StringBuilder("error::")
+				.append(getParsingResultFromItemGroupInfoStack())
+				.append(", ").append(e.toString()).toString();	
+		throw new SAXException(errorMessage);
 	}
 
 	@Override
 	public void fatalError(SAXParseException e) throws SAXException {
-		StringBuilder messageStringBuilder = new StringBuilder("fatalError::");
-		messageStringBuilder.append(getParsingResultFromItemGroupInfoStack());
-		messageStringBuilder.append(", ");
-		messageStringBuilder.append(e.toString());		
-		throw new SAXException(messageStringBuilder.toString());
+		String errorMessage = new StringBuilder("fatalError::")
+				.append(getParsingResultFromItemGroupInfoStack())
+				.append(", ").append(e.toString()).toString();	
+		throw new SAXException(errorMessage);
 	}
 
 	
@@ -466,8 +466,12 @@ public class MessageInfoSAXParser extends DefaultHandler {
 			
 			try {
 				saxParser.parse(bis, this);
-
-				return messageInfo;
+				
+				/**
+				 * WARNING! WARNING! 코드 지우지 말것, 좀더 확실하게 Thread safe 함을 보장하기 위해서 멤버 변수의 값을 직접 넘기지 않고 로컬 임시 변수에 받아 넘기도록 처리함.
+				 */
+				final MessageInfo tempMessageInfo = messageInfo;
+				return tempMessageInfo;
 			} finally {
 				try {
 					bis.close();
@@ -506,6 +510,7 @@ public class MessageInfoSAXParser extends DefaultHandler {
 	}
 	
 	private void reset() throws SAXException {
+		this.messageInfo = null;
 		this.rootTag = null;
 		this.startTagStack.clear();
 		this.tagValueStack.clear();

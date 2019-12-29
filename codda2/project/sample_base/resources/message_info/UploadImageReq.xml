@@ -17,7 +17,6 @@
 <messageID>UploadImageReq</messageID>
 <direction>FROM_CLIENT_TO_SERVER</direction>
 <desc>업로드 이미지 요청 메시지</desc>
-<singleitem name="requestedUserID" type="ub pascal string" />
 <singleitem name="imageFileName" type="ub pascal string" />
 <singleitem name="fileSize" type="long" />
 </message>

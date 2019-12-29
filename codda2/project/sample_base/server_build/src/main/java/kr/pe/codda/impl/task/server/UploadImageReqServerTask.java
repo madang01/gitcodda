@@ -1,8 +1,8 @@
 package kr.pe.codda.impl.task.server;
 
 
-import static kr.pe.codda.jooq.tables.SbUploadImageTb.SB_UPLOAD_IMAGE_TB;
 import static kr.pe.codda.jooq.tables.SbSeqTb.SB_SEQ_TB;
+import static kr.pe.codda.jooq.tables.SbUploadImageTb.SB_UPLOAD_IMAGE_TB;
 
 import java.text.SimpleDateFormat;
 
@@ -19,8 +19,6 @@ import kr.pe.codda.impl.message.MessageResultRes.MessageResultRes;
 import kr.pe.codda.impl.message.UploadImageReq.UploadImageReq;
 import kr.pe.codda.impl.message.UploadImageRes.UploadImageRes;
 import kr.pe.codda.server.PersonalLoginManagerIF;
-import kr.pe.codda.server.lib.MemberRoleType;
-import kr.pe.codda.server.lib.PermissionType;
 import kr.pe.codda.server.lib.SequenceType;
 import kr.pe.codda.server.lib.ServerCommonStaticFinalVars;
 import kr.pe.codda.server.lib.ServerDBUtil;
@@ -74,8 +72,7 @@ public class UploadImageReqServerTask extends AbstractServerTask {
 		// FIXME!
 		log.info(uploadImageReq.toString());
 
-		try {
-			ValueChecker.checkValidRequestedUserID(uploadImageReq.getRequestedUserID());
+		try {			
 			ValueChecker.checkValidFileName(uploadImageReq.getImageFileName());
 		} catch (IllegalArgumentException e) {
 			String errorMessage = e.getMessage();
@@ -92,10 +89,7 @@ public class UploadImageReqServerTask extends AbstractServerTask {
 		final SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");		
 		final String yyyyMMdd = sdf.format(registeredDate);
 
-		ServerDBUtil.execute(dbcpName, (conn, create) -> {
-			@SuppressWarnings("unused")
-			MemberRoleType memberRoleTypeOfRequestedUserID = ServerDBUtil.checkUserAccessRights(conn, create, log,
-					"이미지 업로드 서비스", PermissionType.MEMBER, uploadImageReq.getRequestedUserID());
+		ServerDBUtil.execute(dbcpName, (conn, create) -> {			
 
 			create.select(SB_SEQ_TB.SQ_ID).from(SB_SEQ_TB)
 			.where(SB_SEQ_TB.SQ_ID.eq(SequenceType.SITE_UPLOAD_IMAGE_LOCK.getSequenceID()))

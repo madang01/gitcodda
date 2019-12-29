@@ -1,33 +1,114 @@
-2019-12-25 09:35:50.877 INFO  [main] <EMBED src="http://medlabum.com/cafe/0225/harisu.wmv" width="425" height="344"> (XssSaxFilterTest.java:178)
-2019-12-25 09:38:33.034 INFO  [main] <img src="/DownloadImage?yyyyMMdd=20191224&daySequence1"> (XssSaxFilterTest.java:178)
-2019-12-25 09:38:51.989 INFO  [main] <img src="/DownloadImage?yyyyMMdd=20191224&daySequence1"> (XssSaxFilterTest.java:178)
-2019-12-25 09:39:19.608 INFO  [main] <img src="/DownloadImage?yyyyMMdd=20191224&daySequence1"> (XssSaxFilterTest.java:178)
-2019-12-25 09:39:41.232 INFO  [main] <img src="/DownloadImage?yyyyMMdd=20191224&daySequence=1"> (XssSaxFilterTest.java:178)
-2019-12-25 09:40:31.570 INFO  [main] <img src="/servlet/DownloadImage?yyyyMMdd=20191224&daySequence=1"> (XssSaxFilterTest.java:178)
-2019-12-25 09:41:18.352 INFO  [main] <img src="www.codda.pe.kr"> (XssSaxFilterTest.java:192)
-2019-12-25 09:41:40.322 INFO  [main] <img src="www.codda2.pe.kr"> (XssSaxFilterTest.java:192)
-2019-12-25 09:43:36.383 INFO  [main] <img src="www.codda2.pe.kr"> (XssSaxFilterTest.java:192)
-2019-12-25 09:45:34.099 INFO  [main] <img src="www.ajdjfjfj.pe.kr"> (XssSaxFilterTest.java:192)
-2019-12-25 09:45:51.365 INFO  [main] <img src="www.ajdjfjfj.pe.kr"> (XssSaxFilterTest.java:192)
-2019-12-25 09:52:34.900 INFO  [main] <img src="www.codda.pe.kr"> (XssSaxFilterTest.java:192)
-2019-12-25 09:53:16.508 INFO  [main] <img src="www.codda.pe.kr"> (XssSaxFilterTest.java:193)
-2019-12-25 09:55:21.446 INFO  [main] <img src="www.codda.pe.kr"> onError='' (XssSaxFilterTest.java:193)
-2019-12-25 09:55:49.492 INFO  [main] <img src="www.codda.pe.kr"> onError='' (XssSaxFilterTest.java:193)
-2019-12-25 09:56:02.450 INFO  [main] <img src="www.codda.pe.kr"> onError='' (XssSaxFilterTest.java:193)
-2019-12-25 09:56:28.861 INFO  [main] <img src="www.codda.pe.kr"> onError="alert('hello')" (XssSaxFilterTest.java:193)
-2019-12-25 10:01:01.764 INFO  [main] <img src="www.codda.pe.kr"> onClick="alert('hello')" (XssSaxFilterTest.java:193)
-2019-12-25 10:02:06.312 INFO  [main] <img src="www.codda.pe.kr"> onClick="alert('hello')" (XssSaxFilterTest.java:193)
-2019-12-25 10:14:00.001 INFO  [main] <img src="www.codda.pe.kr"> onClick="alert('hello')" (XssSaxFilterTest.java:193)
-2019-12-25 10:14:22.908 INFO  [main] <img src="www.codda.pe.kr"> onClick="alert('hello')" (XssSaxFilterTest.java:193)
-2019-12-25 10:19:46.763 INFO  [main] clean HTML::<img src="www.codda.pe.kr"> onClick="alert('hello')" (XssSaxFilterTest.java:193)
-2019-12-25 10:33:17.497 INFO  [main] clean HTML::<img src="www.codda.pe.kr"> onClick="alert('hello')" (XssSaxFilterTest.java:193)
-2019-12-25 10:50:24.423 INFO  [main] clean HTML::<img src="www.codda.pe.kr"> onclick="alert('hello')" (XssSaxFilterTest.java:193)
-2019-12-25 13:13:34.503 INFO  [main] clean HTML::<img src="www.codda.pe.kr"> onclick="alert('hello')" (XssSaxFilterTest.java:193)
-2019-12-25 13:22:27.951 INFO  [main] clean HTML::<img src="www.codda.pe.kr"> onclick="alert('hello')" (XssSaxFilterTest.java:193)
-2019-12-25 13:23:05.786 INFO  [main] clean HTML::<!-- Not Allowed Tag Filtered -->&lt;script&gt;&lt;/script&gt; (XssSaxFilterTest.java:214)
-2019-12-25 13:23:34.408 INFO  [main] clean HTML::<!-- Not Allowed Tag Filtered -->&lt;script&gt;&lt;/script&gt; (XssSaxFilterTest.java:214)
-2019-12-25 13:23:58.660 INFO  [main] clean HTML::<img src="www.codda.pe.kr"> onclick="alert('hello')" (XssSaxFilterTest.java:193)
-2019-12-25 13:24:14.295 INFO  [main] clean HTML::<img src="www.codda.pe.kr"> onClick="alert('hello')" (XssSaxFilterTest.java:193)
-2019-12-25 13:24:38.039 INFO  [main] clean HTML::<img src="www.codda2.pe.kr"> onClick="alert('hello')" (XssSaxFilterTest.java:193)
-2019-12-25 13:25:05.611 INFO  [main] clean HTML::<!-- Not Allowed Tag Filtered -->&lt;script&gt;&lt;/script&gt;<img src="www.codda2.pe.kr"> onClick="alert('hello')" (XssSaxFilterTest.java:193)
-2019-12-25 13:25:22.781 INFO  [main] clean HTML::<img src="www.codda2.pe.kr"> onClick="alert('hello')" (XssSaxFilterTest.java:193)
+2019-12-26 18:26:57.305 INFO  [main] the parameter fontNameList is null (SummerNoteConfigurationTest.java:180)
+2019-12-26 18:29:18.707 INFO  [main] toolbar: ['fontStyle', ['style', 'bold', 'italic', 'underline', 'strikethrough', 'clear]],
+['color', ['color']],
+ ['para', ['ul', 'ol', 'paragraph']],
+['table', ['table']],
+['insert', ['link', 'picture', 'video']],
+['view', ['fullscreen', 'codeview', 'help']] (SummerNoteConfigurationTest.java:201)
+2019-12-26 18:37:54.586 INFO  [main] toolbar: ['fontStyle', ['style', 'bold', 'italic', 'underline', 'strikethrough', 'clear]],
+	['color', ['color']],
+	 ['para', ['ul', 'ol', 'paragraph']],
+	['table', ['table']],
+	['insert', ['link', 'picture', 'video']],
+	['view', ['fullscreen', 'codeview', 'help'],
+] (SummerNoteConfigurationTest.java:201)
+2019-12-26 18:38:31.902 INFO  [main] toolbar: ['fontStyle', ['style', 'bold', 'italic', 'underline', 'strikethrough', 'clear]],
+	['color', ['color']],
+	['para', ['ul', 'ol', 'paragraph']],
+	['table', ['table']],
+	['insert', ['link', 'picture', 'video']],
+	['view', ['fullscreen', 'codeview', 'help'],
+] (SummerNoteConfigurationTest.java:201)
+2019-12-26 18:38:45.077 INFO  [main] 	toolbar: ['fontStyle', ['style', 'bold', 'italic', 'underline', 'strikethrough', 'clear]],
+		['color', ['color']],
+		['para', ['ul', 'ol', 'paragraph']],
+		['table', ['table']],
+		['insert', ['link', 'picture', 'video']],
+		['view', ['fullscreen', 'codeview', 'help'],
+	] (SummerNoteConfigurationTest.java:201)
+2019-12-26 18:39:01.109 INFO  [main] toolbar: ['fontStyle', ['style', 'bold', 'italic', 'underline', 'strikethrough', 'clear]],
+	['color', ['color']],
+	['para', ['ul', 'ol', 'paragraph']],
+	['table', ['table']],
+	['insert', ['link', 'picture', 'video']],
+	['view', ['fullscreen', 'codeview', 'help'],
+] (SummerNoteConfigurationTest.java:201)
+2019-12-26 18:41:05.501 INFO  [main] toolbar: ['fontStyle', ['style', 'bold', 'italic', 'underline', 'strikethrough', 'clear]],
+	['color', ['color']],
+	['para', ['ul', 'ol', 'paragraph']],
+	['table', ['table']],
+	['insert', ['link', 'picture', 'video']],
+	['view', ['fullscreen', 'codeview', 'help'],
+] (SummerNoteConfigurationTest.java:203)
+2019-12-26 18:43:47.489 INFO  [main] toolbar: ['fontStyle', ['style', 'bold', 'italic', 'underline', 'strikethrough', 'clear]],
+	['fontname', ['fontname']],
+	['color', ['color']],
+	['para', ['ul', 'ol', 'paragraph']],
+	['table', ['table']],
+	['insert', ['link', 'picture', 'video']],
+	['view', ['fullscreen', 'codeview', 'help'],
+]
+popover: {
+	fontNames : ['Arial', 
+] (SummerNoteConfigurationTest.java:233)
+2019-12-26 18:45:39.250 INFO  [main] toolbar: ['fontStyle', ['style', 'bold', 'italic', 'underline', 'strikethrough', 'clear]],
+	['color', ['color']],
+	['para', ['ul', 'ol', 'paragraph']],
+	['table', ['table']],
+	['insert', ['link', 'picture', 'video']],
+	['view', ['fullscreen', 'codeview', 'help'],
+] (SummerNoteConfigurationTest.java:203)
+2019-12-26 18:45:45.056 INFO  [main] toolbar: ['fontStyle', ['style', 'bold', 'italic', 'underline', 'strikethrough', 'clear]],
+	['fontname', ['fontname']],
+	['color', ['color']],
+	['para', ['ul', 'ol', 'paragraph']],
+	['table', ['table']],
+	['insert', ['link', 'picture', 'video']],
+	['view', ['fullscreen', 'codeview', 'help'],
+]
+popover: {
+	fontNames : ['Arial', ]
+} (SummerNoteConfigurationTest.java:233)
+2019-12-26 18:47:08.967 INFO  [main] toolbar: ['fontStyle', ['style', 'bold', 'italic', 'underline', 'strikethrough', 'clear]],
+	['fontname', ['fontname']],
+	['color', ['color']],
+	['para', ['ul', 'ol', 'paragraph']],
+	['table', ['table']],
+	['insert', ['link', 'picture', 'video']],
+	['view', ['fullscreen', 'codeview', 'help'],
+]
+popover: {
+	fontNames : ['Arial', ]
+} (SummerNoteConfigurationTest.java:233)
+2019-12-26 18:48:08.001 INFO  [main] toolbar: [
+	['fontStyle', ['style', 'bold', 'italic', 'underline', 'strikethrough', 'clear]],
+	['fontname', ['fontname']],
+	['color', ['color']],
+	['para', ['ul', 'ol', 'paragraph']],
+	['table', ['table']],
+	['insert', ['link', 'picture', 'video']],
+	['view', ['fullscreen', 'codeview', 'help'],
+]
+popover: {
+	fontNames : ['Arial', ]
+} (SummerNoteConfigurationTest.java:233)
+2019-12-26 18:48:56.292 INFO  [main] toolbar: [
+	['fontStyle', ['style', 'bold', 'italic', 'underline', 'strikethrough', 'clear]],
+	['fontname', ['fontname']],
+	['color', ['color']],
+	['para', ['ul', 'ol', 'paragraph']],
+	['table', ['table']],
+	['insert', ['link', 'picture', 'video']],
+	['view', ['fullscreen', 'codeview', 'help'],
+],
+popover: {
+	fontNames : ['Arial', ]
+} (SummerNoteConfigurationTest.java:233)
+2019-12-26 18:49:16.529 INFO  [main] toolbar: [
+	['fontStyle', ['style', 'bold', 'italic', 'underline', 'strikethrough', 'clear]],
+	['color', ['color']],
+	['para', ['ul', 'ol', 'paragraph']],
+	['table', ['table']],
+	['insert', ['link', 'picture', 'video']],
+	['view', ['fullscreen', 'codeview', 'help'],
+] (SummerNoteConfigurationTest.java:203)
