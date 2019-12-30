@@ -1,8 +1,10 @@
-package kr.pe.codda.weblib.summernote;
+package kr.pe.codda.weblib.summernote.whitevaluechecker;
 
 import java.util.Base64;
 
 import kr.pe.codda.weblib.exception.WhiteParserException;
+import kr.pe.codda.weblib.summernote.AttributeWhiteValueChekerIF;
+import kr.pe.codda.weblib.summernote.BoardImageFileInformation;
 
 /**
  * <pre>
@@ -12,7 +14,7 @@ import kr.pe.codda.weblib.exception.WhiteParserException;
  * @author Won Jonghoon
  *
  */
-public class ImgTagSrcValueXSSAtackChecker implements AttributeValueXSSAttackChekerIF {	
+public class ImgTagSrcAtrrWhiteValueChecker implements AttributeWhiteValueChekerIF {	
 	private final String tagName = "img";
 	private final String attributeName = "src";
 	
@@ -31,7 +33,7 @@ public class ImgTagSrcValueXSSAtackChecker implements AttributeValueXSSAttackChe
 	 * 이 메소드는 사용해서는 안되는 메소드이다. 파서에서는 이 클래스 객체를 얻어와서 {@link #checkXSSAttack(String, BoardImageFileInformation)} 를 사용한다. 
 	 */
 	@Override
-	public void checkXSSAttack(String attributeValue) throws WhiteParserException {		
+	public void throwExceptionIfNoWhiteValue(String attributeValue) throws WhiteParserException {		
 		throw new WhiteParserException("이 메소드를 사용하지 마세요!");
 	}	
 	

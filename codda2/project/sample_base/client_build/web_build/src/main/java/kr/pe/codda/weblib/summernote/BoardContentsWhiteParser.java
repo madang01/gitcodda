@@ -1,8 +1,8 @@
 package kr.pe.codda.weblib.summernote;
 
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.net.URLConnection;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -11,49 +11,56 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import kr.pe.codda.client.AnyProjectConnectionPoolIF;
-import kr.pe.codda.client.ConnectionPoolManager;
 import kr.pe.codda.common.etc.CommonStaticFinalVars;
-import kr.pe.codda.common.message.AbstractMessage;
-import kr.pe.codda.impl.classloader.ClientMessageCodecManger;
-import kr.pe.codda.impl.message.MessageResultRes.MessageResultRes;
-import kr.pe.codda.impl.message.UploadImageReq.UploadImageReq;
-import kr.pe.codda.impl.message.UploadImageRes.UploadImageRes;
-import kr.pe.codda.weblib.common.WebCommonStaticUtil;
-import kr.pe.codda.weblib.exception.WebClientException;
 import kr.pe.codda.weblib.exception.WhiteParserException;
+import kr.pe.codda.weblib.summernote.whitevaluechecker.ImgTagDataFileNameAttrWhiteValueChecker;
+import kr.pe.codda.weblib.summernote.whitevaluechecker.ImgTagSrcAtrrWhiteValueChecker;
 
 public class BoardContentsWhiteParser {
 	private Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
 	
-	
+		
 	/**
+	 * 주어진 '게시글 내용' 에 허락되지 않는 내용이 포함되었는지 검사를 수행하여 만약에 허락되지 않은 내용이 포함되었다면 예외를 던지고 그렇지 않고 허락된 내용만이라면  base64인 이미지 태그의 src 속성값을  주어진 '이미지 파일 URL 반환자'를 통해 얻은 값으로 치환한 게시글를 반환한다.
 	 * 
-	 * 
-	 * @param installedPathString
-	 * @param mainProjectName
-	 * @param contents
-	 * @return
-	 * @throws IllegalArgumentException
-	 * @throws WhiteParserException
+	 * @param imageFileURLGetter 이미지 파일 URL 문자열 반환자     
+	 * @param contents 이미지 태그의 src 속성값이 base64 인 게시글
+	 * @return base64인 이미지 태그의 src 속성값을  주어진 '이미지 파일 URL 반환자'를 통해 얻은 값으로 치환한 게시글
+	 * @throws IllegalArgumentException 파라미터 값이 잘못되었을때 던지는 예외
+	 * @throws WhiteParserException 처리중 에러가 발생할 경우 혹은 허락되지 않은 내용이 포함되었을 경우 던지는 예외
 	 */
-	public String parseWithXssAttackCheck(String installedPathString, String mainProjectName, String contents) throws IllegalArgumentException, WhiteParserException {
+	public String checkXssAttack(ImageFileURLGetterIF imageFileURLGetter, String contents) throws IllegalArgumentException, WhiteParserException {
+		if (null == imageFileURLGetter) {
+			throw new IllegalArgumentException("the parameter imageFileURLGetter is null");
+		}
+		
 		if (null == contents) {
 			throw new IllegalArgumentException("the parameter contents is null");
 		}
 		
-		Document contentsDocument = Jsoup.parse(contents);
+		Document contentsDocument = null;
 		
-		WhiteInformation whiteTagInformation = SampleBaseUserSiteWhiteInformationManager.getInstance();
+		try {
+			contentsDocument = Jsoup.parse(contents);
+		} catch(Exception e) {
+			String errorMessage = new StringBuilder().toString();
+			
+			log.log(Level.WARNING, errorMessage, e);
+			
+			throw new WhiteParserException(errorMessage);
+		}
+		
+		StringBuilder newContnetStringBuilder = new StringBuilder();
+		int fromIndex = 0;
+		
+		
+		WhiteList whiteList = SampleBaseUserSiteWhiteListManager.getInstance();
 		
 		Element bodyElement = contentsDocument.body();
 		
 		Elements allElements = bodyElement.getAllElements();
 		
-		// ArrayList<BoardImageFileInformation> boardImageFileInformationList = new ArrayList<BoardImageFileInformation>();		
-		
 		int countOfElmements = allElements.size();
-		
 		
 		for (int i=0; i < countOfElmements; i++) {
 			
@@ -61,16 +68,12 @@ public class BoardContentsWhiteParser {
 			
 			String tagName = element.tagName();
 			
-			// FIXME!
-			// log.info(tagName);
-			
-			
 			
 			if ("#root".equals(tagName)) {
 				continue;
 			}
 						
-			WhiteTag whiteTag = whiteTagInformation.getWhiteTag(tagName);
+			WhiteTag whiteTag = whiteList.getWhiteTag(tagName);
 			
 			org.jsoup.nodes.Attributes attributes = element.attributes();
 			
@@ -90,7 +93,7 @@ public class BoardContentsWhiteParser {
 				
 				BoardImageFileInformation boardImageFileInformation = new BoardImageFileInformation();
 							
-				ImgTagSrcValueXSSAtackChecker imgTagSrcValueXSSAtackChecker = (ImgTagSrcValueXSSAtackChecker)srcTagAttribute.getAttributeValueXSSAtackChecker();
+				ImgTagSrcAtrrWhiteValueChecker imgTagSrcValueXSSAtackChecker = (ImgTagSrcAtrrWhiteValueChecker)srcTagAttribute.getAttributeValueXSSAtackChecker();
 				
 				
 				imgTagSrcValueXSSAtackChecker.checkXSSAttack(srcAttributeValue, boardImageFileInformation);				
@@ -104,91 +107,59 @@ public class BoardContentsWhiteParser {
 				
 				WhiteTagAttribute dataFileNameTagAttribute = whiteTag.getWhiteTagAttribute("data-filename");
 				
-				ImgTagDataFileNameValueXSSAttackChecker imgTagDataFileNameValueXSSAttackChecker =  (ImgTagDataFileNameValueXSSAttackChecker)dataFileNameTagAttribute.getAttributeValueXSSAtackChecker();
+				ImgTagDataFileNameAttrWhiteValueChecker imgTagDataFileNameValueXSSAttackChecker =  (ImgTagDataFileNameAttrWhiteValueChecker)dataFileNameTagAttribute.getAttributeValueXSSAtackChecker();
 				
 				imgTagDataFileNameValueXSSAttackChecker.checkXSSAttack(dataFileNameAttributeValue, boardImageFileInformation);
 				
 				
-				// FIXME!
+				String acutalContentType = null;
+				
 				try {
-					byte[] imageFileContents = boardImageFileInformation.getBoardImageFileContents();			
-					
-					UploadImageReq uploadImageReq = new UploadImageReq();
-					// uploadImageReq.setRequestedUserID(accessedUserformation.getUserID());
-					
-					uploadImageReq.setImageFileName(boardImageFileInformation.getBoardImageFileName());
-					uploadImageReq.setFileSize(imageFileContents.length);
-					
-					
-					AnyProjectConnectionPoolIF mainProjectConnectionPool = ConnectionPoolManager
-							.getInstance().getMainProjectConnectionPool();
-					AbstractMessage outputMessage = mainProjectConnectionPool
-							.sendSyncInputMessage(ClientMessageCodecManger.getInstance(), uploadImageReq);
-
-					if (!(outputMessage instanceof UploadImageRes)) {
-						if (outputMessage instanceof MessageResultRes) {
-							MessageResultRes messageResultRes = (MessageResultRes) outputMessage;
-							String errorMessage = "게시판 상세 조회가 실패하였습니다";
-							String debugMessage = messageResultRes.toString();
-							throw new WebClientException(errorMessage, debugMessage);
-						} else {
-							String errorMessage = "게시판 상세 조회가 실패했습니다";
-							String debugMessage = new StringBuilder("입력 메시지[").append(uploadImageReq.getMessageID())
-									.append("]에 대한 비 정상 출력 메시지[").append(outputMessage.toString()).append("] 도착").toString();
-
-							log.severe(debugMessage);
-
-							throw new WebClientException(errorMessage, debugMessage);
-						}
-					}
-
-					UploadImageRes uploadImageRes = (UploadImageRes) outputMessage;
-					
-					String uploadImageFilePathString = WebCommonStaticUtil.buildUploadImageFilePathString(
-							installedPathString, mainProjectName, uploadImageRes.getYyyyMMdd(),
-							uploadImageRes.getDaySequence());
-					File newUploadImageFile = new File(uploadImageFilePathString);
-					
-					FileOutputStream fos = new FileOutputStream(newUploadImageFile);
-					BufferedOutputStream bos = new BufferedOutputStream(fos);
-					try {				
-						bos.write(imageFileContents);				
-					} finally {
-						if (null != bos) {
-							try {
-								bos.close();
-							} catch(Exception e) {
-								
-							}
-						}
-						
-						if (null != fos) {
-							try {
-								fos.close();
-							} catch(Exception e) {
-								
-							}
-						}
-					}
-					
-					String newImgTagSrcAttributeString = new StringBuilder()
-							.append("/servlet/DownloadImage?yyyyMMdd=")
-							.append(uploadImageRes.getYyyyMMdd())
-							.append("&daySequence=")
-							.append(uploadImageRes.getDaySequence()).toString();
-					
-					
-					attributes.put("src", newImgTagSrcAttributeString);
-					attributes.remove("data-filename");
-					
-				} catch(Exception e) {
-					String errorMessage = "fail to replace old image tag having base64 to new image tag having image file url";
-					log.log(Level.WARNING, errorMessage, e);
+					acutalContentType = URLConnection.guessContentTypeFromStream(new ByteArrayInputStream(boardImageFileInformation.getBoardImageFileContents()));
+				} catch(IOException e) {
+					String errorMessage = new StringBuilder("입출력 에러가 발생하여 게시글에 포함된 이미지 파일의 내용 종류를 파악하는데 실패하였습니다").toString();
 					throw new WhiteParserException(errorMessage);
-					
 				}
 				
-				// boardImageFileInformationList.add(boardImageFileInformation);
+				if (null == acutalContentType) {
+					String errorMessage = new StringBuilder("게시글에 포함된 이미지 파일의 내용 종류를 파악하는데 실패하였습니다").toString();
+					throw new WhiteParserException(errorMessage);
+				} 
+
+				if (! acutalContentType.equals(boardImageFileInformation.getBoardImageMimeType())) {
+					String errorMessage = new StringBuilder("게시글에 포함된 이미지 파일의 내용 종류[")
+							.append(acutalContentType)
+							.append("]가 이미지 태그에서 지정한 파일 내용 종류[")
+							.append(boardImageFileInformation.getBoardImageMimeType())
+							.append("]가 일치 하지 않습니다").toString();
+					throw new WhiteParserException(errorMessage);
+				}
+				
+				
+				String newImgTagSrcAttributeString = imageFileURLGetter.getImageFileURL(boardImageFileInformation);
+				
+				attributes.put("src", newImgTagSrcAttributeString);
+				attributes.remove("data-filename");
+				
+				
+				/**
+				 * WARNING! 속성 변경 후 새롭게 갱신되 내용으로 반환해 주는 Element#outerHtml 를 함부로 다른 메소드로 바꾸지 말것, 만약 이것을 Element#html 로 바꾸면 오동작함
+				 */
+				String newImgTagString = element.outerHtml();
+				
+				// log.info("[" + newImgTagString + "]");
+				
+				int beginIndex = contents.indexOf("<img");
+				int endIndex = contents.indexOf(">", beginIndex + 10 + srcAttributeValue.length() + dataFileNameAttributeValue.length()) + 1;
+				
+				/*
+				String tmp = contents.substring(beginIndex, endIndex);
+				log.info("[" + tmp + "]");
+				*/
+				newContnetStringBuilder.append(contents.substring(fromIndex, beginIndex));
+				newContnetStringBuilder.append(newImgTagString);
+				
+				fromIndex = endIndex;
 			}
 			
 							
@@ -208,24 +179,14 @@ public class BoardContentsWhiteParser {
 				}
 				
 				WhiteTagAttribute whiteTagAttribute = whiteTag.getWhiteTagAttribute(attributeName);
-				whiteTagAttribute.checkXSSAttack(att.getValue());	
+				whiteTagAttribute.throwExceptionIfNoWhiteValue(att.getValue());	
 			}
-		}
+		}		
 		
+		newContnetStringBuilder.append(contents.substring(fromIndex));
 		
+		String newConents = newContnetStringBuilder.toString();
 		
-		
-		String newConents = bodyElement.html();
-		
-		/*
-		int beginIndex = "<body>".length();
-		int endIndex = newConents.length() - "</body>".length() + 1;
-		
-		log.info("beginIndex="+beginIndex);
-		log.info("endIndex="+endIndex);
-		*/
-		
-		// newConents = newConents.substring(beginIndex, endIndex);;
 		
 		return newConents;
 	}

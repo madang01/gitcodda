@@ -18,6 +18,8 @@ import org.xml.sax.SAXParseException;
 import org.xml.sax.helpers.DefaultHandler;
 
 import kr.pe.codda.common.etc.CommonStaticFinalVars;
+import kr.pe.codda.weblib.summernote.whitevaluechecker.ImgTagDataFileNameAttrWhiteValueChecker;
+import kr.pe.codda.weblib.summernote.whitevaluechecker.ImgTagSrcAtrrWhiteValueChecker;
 
 public class BoardContentsSAXParser extends DefaultHandler {
 	private final Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
@@ -29,7 +31,7 @@ public class BoardContentsSAXParser extends DefaultHandler {
 
 	private ArrayList<BoardImageFileInformation> boardImageFileInformationList = new ArrayList<BoardImageFileInformation>();
 	
-	private WhiteInformation whiteTagInformation = null; 
+	private WhiteList whiteTagInformation = null; 
 
 	/**
 	 * <pre>
@@ -51,7 +53,7 @@ public class BoardContentsSAXParser extends DefaultHandler {
 	
 	public BoardContentsSAXParser() {
 		try {
-			whiteTagInformation = new SampleBaseUserSiteWhiteInformation();
+			whiteTagInformation = new SampleBaseUserSiteWhiteList();
 		} catch (Exception e) {	
 			log.log(Level.SEVERE, "fail to create a instance of SampleBaseUserSiteWhiteInformation class", e);
 			System.exit(1);
@@ -80,7 +82,8 @@ public class BoardContentsSAXParser extends DefaultHandler {
 			throw new SAXException(errorMessage);
 		}
 		
-		if (! whiteTag.isAttribute()) {
+		if (whiteTag.isNoAttribute()) {
+			/** 허락된 속성이 없는데 속성이 있는 경우 예외 던짐 */
 			if (0 != attributes.getLength()) {
 				String errorMessage = new StringBuilder("warning::the var startTag[").append(startTag)
 						.append("] has no attribute but one more attribute[")
@@ -106,7 +109,7 @@ public class BoardContentsSAXParser extends DefaultHandler {
 				throw new SAXException(errorMessage);
 			}
 						
-			ImgTagSrcValueXSSAtackChecker imgTagSrcValueXSSAtackChecker = (ImgTagSrcValueXSSAtackChecker)srcTagAttribute.getAttributeValueXSSAtackChecker();
+			ImgTagSrcAtrrWhiteValueChecker imgTagSrcValueXSSAtackChecker = (ImgTagSrcAtrrWhiteValueChecker)srcTagAttribute.getAttributeValueXSSAtackChecker();
 			
 			
 			imgTagSrcValueXSSAtackChecker.checkXSSAttack(srcAttributeValue, boardImageFileInformation);
@@ -127,7 +130,7 @@ public class BoardContentsSAXParser extends DefaultHandler {
 				throw new SAXException(errorMessage);
 			}
 			
-			ImgTagDataFileNameValueXSSAttackChecker imgTagDataFileNameValueXSSAttackChecker =  (ImgTagDataFileNameValueXSSAttackChecker)dataFileNameTagAttribute.getAttributeValueXSSAtackChecker();
+			ImgTagDataFileNameAttrWhiteValueChecker imgTagDataFileNameValueXSSAttackChecker =  (ImgTagDataFileNameAttrWhiteValueChecker)dataFileNameTagAttribute.getAttributeValueXSSAtackChecker();
 			
 			imgTagDataFileNameValueXSSAttackChecker.checkXSSAttack(dataFileNameAttributeValue, boardImageFileInformation);
 			
@@ -177,7 +180,7 @@ public class BoardContentsSAXParser extends DefaultHandler {
 			
 			String attributeValue = attributes.getValue(i);
 			
-			whiteTagAttribute.checkXSSAttack(attributeValue);			
+			whiteTagAttribute.throwExceptionIfNoWhiteValue(attributeValue);			
 		}		
 	}
 

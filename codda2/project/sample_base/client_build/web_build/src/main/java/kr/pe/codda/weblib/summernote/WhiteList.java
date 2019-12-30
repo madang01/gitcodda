@@ -4,9 +4,21 @@ import java.util.HashMap;
 
 import kr.pe.codda.weblib.exception.WhiteParserException;
 
-public class WhiteInformation {
+/**
+ * 화이트 리스트 클래스로 내부적으로는 허락된 태그({@link WhiteTag})를 해쉬로 관리한다. 
+ * 
+ * @author Won jonghoon
+ *
+ */
+public abstract class WhiteList {
 	private HashMap<String, WhiteTag> whiltTagHash = new HashMap<String, WhiteTag>();
 	
+	/**
+	 * 허락한 태그를 등록한다
+	 * 
+	 * @param tagName 태그 이름
+	 * @throws IllegalArgumentException 태그 이름이 null 이면 던지는 예외
+	 */
 	public void addTag(String tagName) throws IllegalArgumentException {
 		if (null == tagName) {
 			throw new IllegalArgumentException("the paramter tagName is null");
@@ -15,10 +27,15 @@ public class WhiteInformation {
 		whiltTagHash.put(tagName, new WhiteTag(tagName));
 	}
 	
-	
+	/**
+	 * 다수의 허락한 태그들을 등록한다
+	 * 
+	 * @param tagNames 다수의 허락한 태그들
+	 * @throws IllegalArgumentException 허락한 태그 이름들이  null 이면 던지는 예외
+	 */
 	public void addTags(String ... tagNames) throws IllegalArgumentException {
 		if (null == tagNames) {
-			throw new IllegalArgumentException("the paramter tagName is null");
+			throw new IllegalArgumentException("the paramter tagNames is null");
 		}
 		
 		for (int i=0; i < tagNames.length; i++) {
@@ -35,8 +52,15 @@ public class WhiteInformation {
 		}
 	}
 
-	/*
-	public void addAttribute(String tagName, String attributeName) throws IllegalArgumentException, WhitePageException {
+	/**
+	 * 
+	 * @param tagName
+	 * @param attributeName
+	 * @param attributeWhiteValueChecker
+	 * @throws IllegalArgumentException
+	 * @throws WhiteParserException
+	 */
+	public void addAttribute(String tagName, String attributeName, AttributeWhiteValueChekerIF attributeWhiteValueChecker) throws IllegalArgumentException, WhiteParserException {
 		if (null == tagName) {
 			throw new IllegalArgumentException("the paramter tagName is null");
 		}
@@ -45,31 +69,8 @@ public class WhiteInformation {
 			throw new IllegalArgumentException("the paramter attributeName is null");
 		}
 		
-		WhiteTag whiteTag = whiltTagHash.get(tagName);
-		
-		if (null == whiteTag) {
-			String errorMesssage = new StringBuilder()
-					.append("the parameter tagName[")
-					.append(tagName)
-					.append("] is not a white tag").toString();
-			throw new WhitePageException(errorMesssage);
-		}
-		
-		whiteTag.add(attributeName);
-	}
-	*/
-	
-	public void addAttribute(String tagName, String attributeName, AttributeValueXSSAttackChekerIF attributeValueXSSAtackChecker) throws IllegalArgumentException, WhiteParserException {
-		if (null == tagName) {
-			throw new IllegalArgumentException("the paramter tagName is null");
-		}
-		
-		if (null == attributeName) {
-			throw new IllegalArgumentException("the paramter attributeName is null");
-		}
-		
-		if (null == attributeValueXSSAtackChecker) {
-			throw new IllegalArgumentException("the paramter attributeValueXSSAtackChecker is null");
+		if (null == attributeWhiteValueChecker) {
+			throw new IllegalArgumentException("the paramter attributeWhiteValueChecker is null");
 		}
 		
 		WhiteTag whiteTag = whiltTagHash.get(tagName);
@@ -82,7 +83,7 @@ public class WhiteInformation {
 			throw new WhiteParserException(errorMesssage);
 		}
 		
-		whiteTag.add(attributeName, attributeValueXSSAtackChecker);
+		whiteTag.add(attributeName, attributeWhiteValueChecker);
 	
 	}
 	

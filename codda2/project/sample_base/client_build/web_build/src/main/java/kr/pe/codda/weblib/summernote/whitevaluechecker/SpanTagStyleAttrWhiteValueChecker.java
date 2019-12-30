@@ -1,107 +1,71 @@
-package kr.pe.codda.weblib.summernote;
+package kr.pe.codda.weblib.summernote.whitevaluechecker;
 
 import kr.pe.codda.weblib.exception.WhiteParserException;
+import kr.pe.codda.weblib.summernote.AttributeWhiteValueChekerIF;
+import kr.pe.codda.weblib.summernote.SummerNoteConfiguration;
+import kr.pe.codda.weblib.summernote.SummerNoteConfigurationManger;
 
-public class SpanTagStyleValueXSSAttackChecker implements AttributeValueXSSAttackChekerIF {
+public class SpanTagStyleAttrWhiteValueChecker implements AttributeWhiteValueChekerIF {
+	// Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
+	
 	private final String tagName = "span";
 	private final String attributeName = "style";
-	
+
 	private final String prefixOfRGB = "rgb(";
 	private final char[] charArrayOfPrefixOfRGB = prefixOfRGB.toCharArray();
 
 	private final char separactorOfRGB = ',';
 	private final char suffixOfRGB = ')';
-	
-	private final String dobloeQuotation = "\"";
 
+	// private final String dobloeQuotation = "\"";
 	
-	/**
-	 * @param attributeValue 'spag 태그의 style 속성의 값', WARNING! 이 값은 ';' 을 분리자로 키와
-	 *                         값으로 구별된다. 단 값 예를 들면 폰트 이름의 경우 공백을 포함한 문자열인데 따옴표('"')
-	 *                         로 감싸서 하나의 값임을 표현한다. 하여 이 값은 URL 인코딩을 되어 저장된다, 이때 URL
-	 *                         인코딩의 영향으로 따옴표('"')는'&quot;' 로 변환하여 저장되어 있다. 문제는 이것이
-	 *                         구별자와 충돌이 나기때문에 구별하기 전에 URL decode 를 먼저 해 주어야 한다. 이때
-	 *                         전체를 URL 디코딩하지 않고 URL 인코딩의 영향으로 변환되는것이 따옴표 뿐이므로 단순하게
-	 *                         '&quot;' 을 따옴표('"') 로 문자열 치환한다.
-	 * 
-	 * @return 지정한 'spag 태그의 style 속성의 값'에 악성 코드 포함 여부
-	 */
 	@Override
-	public void checkXSSAttack(String attributeValue) throws WhiteParserException {
+	public void throwExceptionIfNoWhiteValue(String attributeValue) throws WhiteParserException {
 		if (null == attributeValue) {
 			String errorMessage = new StringBuilder().append("the tag name[").append(tagName).append("]'s attribte[")
 					.append(attributeName).append("]'s value is null").toString();
 
-			/*
-			Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
-			log.warning(errorMessage);
-			return false;
-			*/
 			throw new WhiteParserException(errorMessage);
 		}
-		
+
 		if ("".equals(attributeValue)) {
 			return;
 		}
 		
-		attributeValue = attributeValue.trim();
-		
-		attributeValue = attributeValue.replace("&quot;", dobloeQuotation);
+		String[] itemList = attributeValue.split(";");
 
-		
-
-		String[] items = attributeValue.split(";");
-
-		if (null == items || 0 == items.length) {
+		if (null == itemList || 0 == itemList.length) {
 			String errorMessage = new StringBuilder().append("the tag name[").append(tagName).append("]'s attribte[")
 					.append(attributeName).append("] is a bad style becase the var items is null or empty").toString();
 
-			/*
-			Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
-			log.warning(errorMessage);
-
-			return false;
-			*/
 			throw new WhiteParserException(errorMessage);
 		}
 
-		for (String item : items) {
+		for (String item : itemList) {
 			item = item.trim();
-			
-			String[] itemSet = item.split(":");
 
-			if (null == itemSet || 0 == itemSet.length) {
+			String[] property = item.split(":");
+
+			if (null == property || 0 == property.length) {
 				String errorMessage = new StringBuilder().append("the tag name[").append(tagName)
 						.append("]'s attribte[").append(attributeName).append("] has a bad value[")
 						.append(attributeValue).append("] becase the var itemSet of the var item[").append(item)
 						.append("] is null or empty").toString();
 
-				/*
-				Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
-				log.warning(errorMessage);
-
-				return false;
-				*/
 				throw new WhiteParserException(errorMessage);
 			}
 
-			if (2 != itemSet.length) {
+			if (2 != property.length) {
 				String errorMessage = new StringBuilder().append("the tag name[").append(tagName)
 						.append("]'s attribte[").append(attributeName).append("] has a bad value[")
 						.append(attributeValue).append("] becase the var itemSet of the var item[").append(item)
 						.append("] is not a set of key and value").toString();
 
-				/*
-				Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
-				log.warning(errorMessage);
-
-				return false;
-				*/
 				throw new WhiteParserException(errorMessage);
 			}
 
-			String key = itemSet[0].trim();
-			String value = itemSet[1].trim();
+			String key = property[0].trim();
+			String value = property[1].trim();
 
 			/**
 			 * 허용된 값 : font-weight: bold; font-style: italic; text-decoration-line:
@@ -123,64 +87,33 @@ public class SpanTagStyleValueXSSAttackChecker implements AttributeValueXSSAttac
 
 				SummerNoteConfiguration summerNoteConfiguration = SummerNoteConfigurationManger.getInstance();
 
-				if (!summerNoteConfiguration.isFontNames()) {
+				if (summerNoteConfiguration.isNoFontFamily()) {
 					String errorMessage = new StringBuilder().append("the tag name[").append(tagName)
 							.append("]'s attribte[").append(attributeName).append("] has a bad value[")
 							.append(attributeValue)
 							.append("] becase 'font-family' is not allowed to the SummerNote Cconfiguration")
 							.toString();
 
-					/*
-					Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
-					log.warning(errorMessage);
-
-					return false;
-					*/
 					throw new WhiteParserException(errorMessage);
 				}
+				
+				/**
+				 * 폰트 이름은 2개 이상의 문자열로 구성될 경우 따옴표('"')로 감싸여 있으므로 폰트 이름 비교할때에는 제거가 필요하다   
+				 */
+				value = value.replace("\"", "");
+				
+				boolean isFontName = summerNoteConfiguration.isFontName(value);
 
-				String[] fontNameList = summerNoteConfiguration.getFontNameList();
-
-				for (String fontName : fontNameList) {
-					if (fontName.indexOf(" ") > 0) {
-						String newFontName = new StringBuilder().append(dobloeQuotation).append(fontName)
-								.append(dobloeQuotation).toString();
-
-						if (newFontName.equals(value)) {
-							continue;
-						}
-						
-						String errorMessage = new StringBuilder().append("the tag name[").append(tagName)
-								.append("]'s attribte[").append(attributeName).append("] has a bad value[")
-								.append(attributeValue).append("] becase the var key[").append(key).append("]'s value[")
-								.append(value).append("] is a disallowed value").toString();
-
-						/*
-						Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
-						log.warning(errorMessage);
-
-						return false;
-						*/
-						throw new WhiteParserException(errorMessage);
-					} 
-					
-					if (fontName.equals(value)) {
-						continue;
-					}
-					
-					String errorMessage = new StringBuilder().append("the tag name[").append(tagName)
-							.append("]'s attribte[").append(attributeName).append("] has a bad value[")
-							.append(attributeValue).append("] becase the var key[").append(key).append("]'s value[")
-							.append(value).append("] is a disallowed value").toString();
-
-					/*
-					Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
-					log.warning(errorMessage);
-
-					return false;
-					*/
-					throw new WhiteParserException(errorMessage);
+				if (isFontName) {
+					continue;
 				}
+
+				String errorMessage = new StringBuilder().append("the tag name[").append(tagName)
+						.append("]'s attribte[").append(attributeName).append("] has a bad value[")
+						.append(attributeValue).append("] becase the var key[").append(key).append("]'s value[")
+						.append(value).append("] is a disallowed value").toString();
+
+				throw new WhiteParserException(errorMessage);
 			}
 
 			if ("text-decoration-line".equals(key)) {
@@ -200,16 +133,16 @@ public class SpanTagStyleValueXSSAttackChecker implements AttributeValueXSSAttac
 				if (null == elements || 2 != elements.length) {
 					String errorMessage = new StringBuilder().append("the tag name[").append(tagName)
 							.append("]'s attribte[").append(attributeName).append("] has a bad value[")
-							.append(attributeValue)
-							.append("] becase the var elements is null or its length is not two").toString();
+							.append(attributeValue).append("] becase the var elements is null or its length is not two")
+							.toString();
 
 					/*
-					Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
-					log.warning(errorMessage);
+					 * Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
+					 * log.warning(errorMessage);
+					 * 
+					 * return false;
+					 */
 
-					return false;
-					*/
-					
 					throw new WhiteParserException(errorMessage);
 				}
 
@@ -222,10 +155,9 @@ public class SpanTagStyleValueXSSAttackChecker implements AttributeValueXSSAttac
 						.append(attributeValue).append("] becase  it is not 'underline line-through'").toString();
 
 				/*
-				Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
-				log.warning(errorMessage);
-				return false;
-				*/
+				 * Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
+				 * log.warning(errorMessage); return false;
+				 */
 				throw new WhiteParserException(errorMessage);
 
 			}
@@ -241,12 +173,6 @@ public class SpanTagStyleValueXSSAttackChecker implements AttributeValueXSSAttac
 							.append(attributeValue).append("] becase the var key[").append(key).append("]'s value[")
 							.append(value).append("]'s length is less than 10").toString();
 
-					/*
-					Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
-					log.warning(errorMessage);
-
-					return false;
-					*/
 					throw new WhiteParserException(errorMessage);
 				}
 
@@ -257,12 +183,6 @@ public class SpanTagStyleValueXSSAttackChecker implements AttributeValueXSSAttac
 							.append(value).append("]'s last chracter is not a '").append(suffixOfRGB).append("'")
 							.toString();
 
-					/*
-					Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
-					log.warning(errorMessage);
-
-					return false;
-					*/
 					throw new WhiteParserException(errorMessage);
 				}
 
@@ -270,16 +190,9 @@ public class SpanTagStyleValueXSSAttackChecker implements AttributeValueXSSAttac
 					if (charArrayOfPrefixOfRGB[i] != charArrayOfValue[i]) {
 						String errorMessage = new StringBuilder().append("the tag name[").append(tagName)
 								.append("]'s attribte[").append(attributeName).append("] has a bad value[")
-								.append(attributeValue).append("] becase the var key[").append(key)
-								.append("]'s value[").append(value).append("] is bad becase it doen't begin 'rgb('")
-								.toString();
-						/*
-						Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
-						log.warning(errorMessage);
+								.append(attributeValue).append("] becase the var key[").append(key).append("]'s value[")
+								.append(value).append("] is bad becase it doen't begin 'rgb('").toString();
 
-						return false;
-						*/
-						
 						throw new WhiteParserException(errorMessage);
 					}
 				}
@@ -315,12 +228,6 @@ public class SpanTagStyleValueXSSAttackChecker implements AttributeValueXSSAttac
 							.append(attributeValue).append("] becase the var key[").append(key).append("]'s value[")
 							.append(value).append("] is bad becase it doesn't have rgb").toString();
 
-					/*
-					Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
-					log.warning(errorMessage);
-
-					return false;
-					*/
 					throw new WhiteParserException(errorMessage);
 				}
 
@@ -342,12 +249,6 @@ public class SpanTagStyleValueXSSAttackChecker implements AttributeValueXSSAttac
 							.append(attributeValue).append("] becase the var key[").append(key).append("]'s value[")
 							.append(value).append("] is bad becase it is not rgb").toString();
 
-					/*
-					Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
-					log.warning(errorMessage);
-
-					return false;
-					*/
 					throw new WhiteParserException(errorMessage);
 				}
 
@@ -358,28 +259,16 @@ public class SpanTagStyleValueXSSAttackChecker implements AttributeValueXSSAttac
 							.append(value).append("] is bad becase red[").append(red)
 							.append("] is less than zero or greater than 255").toString();
 
-					/*
-					Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
-					log.warning(errorMessage);
-
-					return false;
-					*/
 					throw new WhiteParserException(errorMessage);
 				}
 
-				if (green < 0 && green > 255) {					
+				if (green < 0 && green > 255) {
 					String errorMessage = new StringBuilder().append("the tag name[").append(tagName)
 							.append("]'s attribte[").append(attributeName).append("] has a bad value[")
 							.append(attributeValue).append("] becase the var key[").append(key).append("]'s value[")
 							.append(value).append("] is bad becase green[").append(green)
 							.append("] is less than zero or greater than 255").toString();
 
-					/*
-					Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
-					log.warning(errorMessage);
-
-					return false;
-					*/
 					throw new WhiteParserException(errorMessage);
 				}
 
@@ -390,13 +279,6 @@ public class SpanTagStyleValueXSSAttackChecker implements AttributeValueXSSAttac
 							.append(value).append("] is bad becase black[").append(black)
 							.append("] is less than zero or greater than 255").toString();
 
-					/*
-					Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
-					log.warning(errorMessage);
-
-					return false;
-					*/
-					
 					throw new WhiteParserException(errorMessage);
 				}
 
@@ -409,12 +291,6 @@ public class SpanTagStyleValueXSSAttackChecker implements AttributeValueXSSAttac
 					.append("] becase the var itemSet of the var item[").append(item).append("] is a disallowed value")
 					.toString();
 
-			/*
-			Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
-			log.warning(errorMessage);
-
-			return false;
-			*/
 			throw new WhiteParserException(errorMessage);
 
 		}

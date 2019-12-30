@@ -1,13 +1,14 @@
-package kr.pe.codda.weblib.summernote;
+package kr.pe.codda.weblib.summernote.whitevaluechecker;
 
 import kr.pe.codda.weblib.exception.WhiteParserException;
+import kr.pe.codda.weblib.summernote.AttributeWhiteValueChekerIF;
 
-public class ImgTagClassValueXSSAttackChecker implements AttributeValueXSSAttackChekerIF {	
-	private final String tagName = "img";
-	private final String attributeName = "class";
+public class ATagRelAttrWhiteValueChecker implements AttributeWhiteValueChekerIF {	
+	private final String tagName = "a";
+	private final String attributeName = "rel";
 	
 	@Override
-	public void checkXSSAttack(String attributeValue) throws WhiteParserException{
+	public void throwExceptionIfNoWhiteValue(String attributeValue) throws WhiteParserException {
 		if (null == attributeValue) {
 			String errorMessage = new StringBuilder().append("the tag name[").append(tagName).append("]'s attribte[")
 					.append(attributeName).append("]'s value is null").toString();
@@ -18,13 +19,7 @@ public class ImgTagClassValueXSSAttackChecker implements AttributeValueXSSAttack
 			throw new WhiteParserException(errorMessage);
 		}
 		
-		
-		
-		if ("".equals(attributeValue)) {
-			return;
-		}
-
-		if ("table table-bordered".equals(attributeValue)) {
+		if ("nofollow".equals(attributeValue)) {
 			return;
 		}
 
@@ -32,12 +27,11 @@ public class ImgTagClassValueXSSAttackChecker implements AttributeValueXSSAttack
 				.append(attributeName).append("]'s value[").append(attributeValue)
 				.append("] is a disallowed value").toString();
 
-		/*
-		Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
-		log.warning(errorMessage);
+		// Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
+		// log.warning(errorMessage);
 
-		return false;
-		*/
+		// return false;
+		
 		throw new WhiteParserException(errorMessage);
 	}
 
@@ -49,5 +43,6 @@ public class ImgTagClassValueXSSAttackChecker implements AttributeValueXSSAttack
 	@Override
 	public String getAttributeName() {
 		return attributeName;
-	}
+	}	
+	
 }

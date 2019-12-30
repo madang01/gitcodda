@@ -1,10 +1,13 @@
 package kr.pe.codda.weblib.summernote;
 
+import java.util.HashSet;
+
 import kr.pe.codda.common.etc.CommonStaticFinalVars;
 
 public class SummerNoteConfiguration {
-	private final boolean isFontNames;
+	private final boolean isNoFontFamily;
 	private final String[] fontNameList;
+	private final HashSet<String> fontNameSet = new HashSet<String>();
 	
 	public SummerNoteConfiguration(String[] fontNameList) {
 		if (null == fontNameList) {
@@ -12,12 +15,16 @@ public class SummerNoteConfiguration {
 		}
 		
 		if (0 == fontNameList.length) {
-			isFontNames = false;
+			isNoFontFamily = true;
 		} else {
-			isFontNames = true;
+			isNoFontFamily = false;
 		}
 		
 		this.fontNameList = fontNameList;
+		
+		for (String fontName : fontNameList) {
+			fontNameSet.add(fontName);
+		}
 
 		/*
 		fontNameList = new String[] { 
@@ -36,14 +43,17 @@ public class SummerNoteConfiguration {
 	}
 	
 	
-	public boolean isFontNames() {
-		return isFontNames;
+	public boolean isNoFontFamily() {
+		return isNoFontFamily;
 	}
 	
 	
-	
-	public String[] getFontNameList() {
-		return fontNameList;
+	public boolean isFontName(String fontName) {
+		if (null == fontName) {
+			throw new IllegalArgumentException("the parameter fontName is null");
+		}
+		
+		return fontNameSet.contains(fontName);
 	}
 	
 	
@@ -63,7 +73,7 @@ public class SummerNoteConfiguration {
 				.append(CommonStaticFinalVars.NEWLINE).append(buildTabString(depth+1)).append("['fontStyle', ['style', 'bold', 'italic', 'underline', 'strikethrough', 'clear']]");
 				
 		
-		if (isFontNames) {
+		if (isNoFontFamily) {
 			toolBarStringBuilder
 			.append(",").append(CommonStaticFinalVars.NEWLINE).append(buildTabString(depth+1)).append("['fontname', ['fontname']]");
 		}		
@@ -100,7 +110,7 @@ public class SummerNoteConfiguration {
 	public String buildInitializationOptionsString(int depth) {
 		StringBuilder initStringBuilder = new StringBuilder(buildToolBarString(depth));
 		
-		if (isFontNames) {
+		if (isNoFontFamily) {
 			initStringBuilder.append(",").append(CommonStaticFinalVars.NEWLINE).append(buildPopoverStringForFont(depth));
 		}
 		

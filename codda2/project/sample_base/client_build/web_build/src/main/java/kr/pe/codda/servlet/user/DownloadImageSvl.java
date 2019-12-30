@@ -88,31 +88,35 @@ public class DownloadImageSvl extends AbstractServlet {
 
 		// 2. content-disposition의 세팅
 		res.addHeader("Content-Disposition", "attachment;filename=\"" + imageFileName + "\"");
-		byte[] bytes = new byte[1024];
+		byte[] bytes = new byte[4096];
 		FileInputStream fis = null;
 		BufferedInputStream bis = null;
 		try {
 			fis = new FileInputStream(uploadImageFile);
 			bis = new BufferedInputStream(fis);
 			OutputStream os = res.getOutputStream();
-			int i = bis.read(bytes);
-			while (i != -1) {
-				os.write(bytes, 0, i);
-				i = bis.read(bytes);
+			int n = bis.read(bytes);
+			while (n != -1) {
+				os.write(bytes, 0, n);
+				n = bis.read(bytes);
 			}
 		} catch (IOException e) {
 			String errorMessage = new StringBuilder().append("다운로드 파일[").append(uploadImageFilePathString)
 					.append("] 처리중 입출력 에러 발생, errmsg=").append(e.getMessage()).toString();
 			log.warning(errorMessage);
 		} finally {
-			try {
-				bis.close();
-			} catch (Exception e) {
+			if (null != bis) {
+				try {				
+					bis.close();
+				} catch (Exception e) {
+				}
 			}
-			try {
-				fis.close();
-			} catch (Exception e) {
-			}
+			if (null != fis) {
+				try {
+					fis.close();
+				} catch (Exception e) {
+				}
+			}			
 		}
 	}
 	
@@ -123,7 +127,7 @@ public class DownloadImageSvl extends AbstractServlet {
 		/**************** 파라미터 종료 *******************/
 
 		if (null == paramYyyyMMdd) {
-			String errorMessage = "업로드 이미지의 일자를 넣어주세요";
+			String errorMessage = "다운로드 이미지의 일자를 넣어주세요";
 			String debugMessage = null;
 			throw new WebClientException(errorMessage, debugMessage);
 		}
@@ -131,14 +135,14 @@ public class DownloadImageSvl extends AbstractServlet {
 		try {
 			Long.parseLong(paramYyyyMMdd);
 		} catch (NumberFormatException e) {
-			String errorMessage = "업로드 이미지의 일자가 잘못되었습니다";
+			String errorMessage = "다운로드 이미지의 일자가 잘못되었습니다";
 			String debugMessage = new StringBuilder().append("the web parameter yyyyMMdd[").append(paramDaySequence)
 					.append("] is not a long value").toString();
 			throw new WebClientException(errorMessage, debugMessage);
 		}
 
 		if (null == paramDaySequence) {
-			String errorMessage = "업로드 이미지의 일별 시퀀스를 넣어주세요";
+			String errorMessage = "다운로드 이미지의 일별 시퀀스를 넣어주세요";
 			String debugMessage = null;
 			throw new WebClientException(errorMessage, debugMessage);
 		}
@@ -147,14 +151,14 @@ public class DownloadImageSvl extends AbstractServlet {
 		try {
 			daySequence = Long.parseLong(paramDaySequence);
 		} catch (NumberFormatException e) {
-			String errorMessage = "업로드 이미지의 일별 시퀀스가 잘못되었습니다";
+			String errorMessage = "다운로드 이미지의 일별 시퀀스가 잘못되었습니다";
 			String debugMessage = new StringBuilder().append("the web parameter daySequence[").append(paramDaySequence)
 					.append("] is not a long value").toString();
 			throw new WebClientException(errorMessage, debugMessage);
 		}
 		
 		if (daySequence > CommonStaticFinalVars.UNSIGNED_INTEGER_MAX) {
-			String errorMessage = "업로드 이미지의 일별 시퀀스가 잘못되었습니다";
+			String errorMessage = "다운로드 이미지의 일별 시퀀스가 잘못되었습니다";
 			String debugMessage = new StringBuilder().append("the web parameter daySequence[").append(paramDaySequence)
 					.append("] is greter than unsigned integer max").toString();
 			throw new WebClientException(errorMessage, debugMessage);

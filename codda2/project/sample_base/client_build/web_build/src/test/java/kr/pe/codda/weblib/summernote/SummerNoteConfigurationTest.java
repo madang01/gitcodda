@@ -211,7 +211,7 @@ public class SummerNoteConfigurationTest {
 			
 			boolean expected = false;
 			
-			assertEquals(expected, summerNoteConfiguration.isFontNames());
+			assertEquals(expected, summerNoteConfiguration.isNoFontFamily());
 			
 			String acutalInitializationOptionsString = summerNoteConfiguration.buildInitializationOptionsString(0);
 			
@@ -231,7 +231,7 @@ public class SummerNoteConfigurationTest {
 			
 			boolean expected = true;
 			
-			assertEquals(expected, summerNoteConfiguration.isFontNames());
+			assertEquals(expected, summerNoteConfiguration.isNoFontFamily());
 			
 			String acutalInitializationOptionsString = summerNoteConfiguration.buildInitializationOptionsString(0);
 			

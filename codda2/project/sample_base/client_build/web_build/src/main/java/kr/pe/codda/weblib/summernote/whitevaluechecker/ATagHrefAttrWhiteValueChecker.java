@@ -1,10 +1,11 @@
-package kr.pe.codda.weblib.summernote;
+package kr.pe.codda.weblib.summernote.whitevaluechecker;
 
 import org.apache.commons.validator.routines.UrlValidator;
 
 import kr.pe.codda.weblib.exception.WhiteParserException;
+import kr.pe.codda.weblib.summernote.AttributeWhiteValueChekerIF;
 
-public class ATagHrefValueXSSAttackChecker implements AttributeValueXSSAttackChekerIF {	
+public class ATagHrefAttrWhiteValueChecker implements AttributeWhiteValueChekerIF {	
 	private final String tagName = "a";
 	private final String attributeName = "href";
 	
@@ -13,7 +14,7 @@ public class ATagHrefValueXSSAttackChecker implements AttributeValueXSSAttackChe
 	};
 		
 	@Override
-	public void checkXSSAttack(String attributeValue) throws WhiteParserException {
+	public void throwExceptionIfNoWhiteValue(String attributeValue) throws WhiteParserException {
 		if (null == attributeValue) {
 			String errorMessage = new StringBuilder().append("the tag name[").append(tagName).append("]'s attribte[")
 					.append(attributeName).append("]'s value is null").toString();

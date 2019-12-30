@@ -1,13 +1,14 @@
-package kr.pe.codda.weblib.summernote;
+package kr.pe.codda.weblib.summernote.whitevaluechecker;
 
 import kr.pe.codda.weblib.exception.WhiteParserException;
+import kr.pe.codda.weblib.summernote.AttributeWhiteValueChekerIF;
 
-public class ImgTagSytleXSSAttackChecker implements AttributeValueXSSAttackChekerIF {
+public class ImgTagSytleAttrWhiteValueChecker implements AttributeWhiteValueChekerIF {
 	private final String tagName = "img";
 	private final String attributeName = "style";
 
 	@Override
-	public void checkXSSAttack(String attributeValue) throws WhiteParserException {
+	public void throwExceptionIfNoWhiteValue(String attributeValue) throws WhiteParserException {
 		if (null == attributeValue) {
 			String errorMessage = new StringBuilder().append("the tag name[").append(tagName).append("]'s attribte[")
 					.append(attributeName).append("]'s value is null").toString();

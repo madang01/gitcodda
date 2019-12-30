@@ -1,24 +1,32 @@
-package kr.pe.codda.weblib.summernote;
+package kr.pe.codda.weblib.summernote.whitevaluechecker;
 
 import kr.pe.codda.weblib.exception.WhiteParserException;
+import kr.pe.codda.weblib.summernote.AttributeWhiteValueChekerIF;
 
-public class ATagRelValueXSSAttackChecker implements AttributeValueXSSAttackChekerIF {	
-	private final String tagName = "a";
-	private final String attributeName = "rel";
+public class TableTagClassAttrWhiteValueChecker implements AttributeWhiteValueChekerIF {
+	private final String tagName = "table";
+	private final String attributeName = "class";
+	
 	
 	@Override
-	public void checkXSSAttack(String attributeValue) throws WhiteParserException {
+	public void throwExceptionIfNoWhiteValue(String attributeValue) {
 		if (null == attributeValue) {
 			String errorMessage = new StringBuilder().append("the tag name[").append(tagName).append("]'s attribte[")
 					.append(attributeName).append("]'s value is null").toString();
 
-			// Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
-			// log.warning(errorMessage);
-			// return false;
+			/*
+			Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
+			log.warning(errorMessage);
+			return false;
+			*/
 			throw new WhiteParserException(errorMessage);
 		}
 		
-		if ("nofollow".equals(attributeValue)) {
+		if ("".equals(attributeValue)) {
+			return;
+		}
+
+		if ("table table-bordered".equals(attributeValue)) {
 			return;
 		}
 
@@ -26,14 +34,19 @@ public class ATagRelValueXSSAttackChecker implements AttributeValueXSSAttackChek
 				.append(attributeName).append("]'s value[").append(attributeValue)
 				.append("] is a disallowed value").toString();
 
-		// Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
-		// log.warning(errorMessage);
+		/*
+		Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
+		log.warning(errorMessage);
 
-		// return false;
-		
+		return false;
+		*/
 		throw new WhiteParserException(errorMessage);
 	}
-
+	
+	
+	
+	
+	
 	@Override
 	public String getTagName() {
 		return tagName;
@@ -42,6 +55,6 @@ public class ATagRelValueXSSAttackChecker implements AttributeValueXSSAttackChek
 	@Override
 	public String getAttributeName() {
 		return attributeName;
-	}	
-	
+	}
+
 }

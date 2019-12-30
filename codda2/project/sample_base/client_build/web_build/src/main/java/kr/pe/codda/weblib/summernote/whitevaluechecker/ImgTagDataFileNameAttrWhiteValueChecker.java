@@ -1,9 +1,11 @@
-package kr.pe.codda.weblib.summernote;
+package kr.pe.codda.weblib.summernote.whitevaluechecker;
 
 import kr.pe.codda.weblib.common.ValueChecker;
 import kr.pe.codda.weblib.exception.WhiteParserException;
+import kr.pe.codda.weblib.summernote.AttributeWhiteValueChekerIF;
+import kr.pe.codda.weblib.summernote.BoardImageFileInformation;
 
-public class ImgTagDataFileNameValueXSSAttackChecker implements AttributeValueXSSAttackChekerIF {
+public class ImgTagDataFileNameAttrWhiteValueChecker implements AttributeWhiteValueChekerIF {
 	private final String tagName = "img";
 	private final String attributeName = "data-filename";
 
@@ -12,7 +14,7 @@ public class ImgTagDataFileNameValueXSSAttackChecker implements AttributeValueXS
 	 * 이 메소드는 사용해서는 안되는 메소드이다. 파서에서는 이 클래스 객체를 얻어와서 {@link #checkXSSAttack(String, BoardImageFileInformation)} 를 사용한다.
 	 */
 	@Override
-	public void checkXSSAttack(String attributeValue) throws WhiteParserException {
+	public void throwExceptionIfNoWhiteValue(String attributeValue) throws WhiteParserException {
 		throw new WhiteParserException("이 메소드를 사용하지 마세요!");
 	}
 

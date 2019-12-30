@@ -1,25 +1,25 @@
-package kr.pe.codda.weblib.summernote;
+package kr.pe.codda.weblib.summernote.whitevaluechecker;
 
 import kr.pe.codda.weblib.exception.WhiteParserException;
+import kr.pe.codda.weblib.summernote.AttributeWhiteValueChekerIF;
 
-public class TableTagClassValueXSSAttackChecker implements AttributeValueXSSAttackChekerIF {
-	private final String tagName = "table";
+public class ImgTagClassAttrWhiteValueChecker implements AttributeWhiteValueChekerIF {	
+	private final String tagName = "img";
 	private final String attributeName = "class";
 	
-	
 	@Override
-	public void checkXSSAttack(String attributeValue) {
+	public void throwExceptionIfNoWhiteValue(String attributeValue) throws WhiteParserException{
 		if (null == attributeValue) {
 			String errorMessage = new StringBuilder().append("the tag name[").append(tagName).append("]'s attribte[")
 					.append(attributeName).append("]'s value is null").toString();
 
-			/*
-			Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
-			log.warning(errorMessage);
-			return false;
-			*/
+			// Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
+			// log.warning(errorMessage);
+			// return false;
 			throw new WhiteParserException(errorMessage);
 		}
+		
+		
 		
 		if ("".equals(attributeValue)) {
 			return;
@@ -41,11 +41,7 @@ public class TableTagClassValueXSSAttackChecker implements AttributeValueXSSAtta
 		*/
 		throw new WhiteParserException(errorMessage);
 	}
-	
-	
-	
-	
-	
+
 	@Override
 	public String getTagName() {
 		return tagName;
@@ -55,5 +51,4 @@ public class TableTagClassValueXSSAttackChecker implements AttributeValueXSSAtta
 	public String getAttributeName() {
 		return attributeName;
 	}
-
 }
