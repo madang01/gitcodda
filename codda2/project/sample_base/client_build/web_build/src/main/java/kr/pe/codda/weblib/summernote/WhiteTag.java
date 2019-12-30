@@ -42,9 +42,9 @@ public class WhiteTag {
 	 * 허락된 속성을 등록한다
 	 * 
 	 * @param attributeName 허락된 속성 이름
-	 * @param attributeWhiteValueChecker 속성 값이 허락한 값인지 여부 검사기
+	 * @param attributeWhiteValueChecker 허락되지 않은 속성 값 검사기
 	 * @throws IllegalArgumentException 속성 이름이  null 인 경우 혹은 '속성 값에 대한 XSS 공격 검사기' 가 null 인 경우 던지는 예외
-	 * @throws WhiteParserException '속성 값에 대한 XSS 공격 검사기' 의 태그와 속성값이 불일치 할 경우 던지는 예외
+	 * @throws WhiteParserException '허락되지 않은 속성 값 검사기' 의 태그와 속성값이 불일치 할 경우 던지는 예외
 	 */
 	public void add(String attributeName, AttributeWhiteValueChekerIF attributeWhiteValueChecker) throws IllegalArgumentException, WhiteParserException {
 		if (null == attributeName) {

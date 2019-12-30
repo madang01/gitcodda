@@ -5,6 +5,11 @@ import kr.pe.codda.weblib.summernote.AttributeWhiteValueChekerIF;
 import kr.pe.codda.weblib.summernote.SummerNoteConfiguration;
 import kr.pe.codda.weblib.summernote.SummerNoteConfigurationManger;
 
+/**
+ * span tag 의 속성 style 의 값에 대한 허락 받은 값 여부 검사기
+ * @author Won Jonghoon
+ *
+ */
 public class SpanTagStyleAttrWhiteValueChecker implements AttributeWhiteValueChekerIF {
 	// Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
 	

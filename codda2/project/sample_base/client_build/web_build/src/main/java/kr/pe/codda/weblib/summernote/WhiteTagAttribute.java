@@ -18,9 +18,9 @@ public class WhiteTagAttribute {
 	 * 
 	 * @param tagName 속성이 속한 태그 이름
 	 * @param attributeName 속성 이름
-	 * @param attributeWhiteValueChecker 속성 값에 대한 XSS 공격 검사기
-	 * @throws IllegalArgumentException 태그 이름 이나 속성 이름 혹은  '속성 값에 대한 XSS 공격 검사기' 가 null 인 경우 던지는 예외
-	 * @throws WhiteParserException '속성 값에 대한 XSS 공격 검사기' 태그와 속성값이 불일치 할 경우 던지는 예외
+	 * @param attributeWhiteValueChecker 허락되지 않은 속성 값 검사기
+	 * @throws IllegalArgumentException 태그 이름 이나 속성 이름 혹은  '허락되지 않은 속성 값 검사기' 가 null 인 경우 던지는 예외
+	 * @throws WhiteParserException '허락되지 않은 속성 값 검사기' 의 태그와 속성값이 불일치 할 경우 던지는 예외
 	 */
 	public WhiteTagAttribute(String tagName, String attributeName, AttributeWhiteValueChekerIF attributeWhiteValueChecker) throws IllegalArgumentException, WhiteParserException {
 		if (null == tagName) {
@@ -65,7 +65,7 @@ public class WhiteTagAttribute {
 	}
 	
 	/**
-	 * '속성 값에 대한 XSS 공격 검사기' 태그와 속성값이 불일치 할 경우 예외를 던진다
+	 * '허락되지 않은 속성 값 검사기' 태그와 속성값이 불일치 할 경우 예외를 던진다
 	 * 
 	 * @throws WhiteParserException '속성 값에 대한 XSS 공격 검사기' 태그와 속성값이 불일치 할 경우 던지는 예외
 	 */
