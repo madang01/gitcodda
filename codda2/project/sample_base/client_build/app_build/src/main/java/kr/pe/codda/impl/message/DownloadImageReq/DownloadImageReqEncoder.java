@@ -28,30 +28,30 @@ import kr.pe.codda.common.protocol.SingleItemEncoderIF;
  */
 public final class DownloadImageReqEncoder extends AbstractMessageEncoder {
 	@Override
-	public void encode(AbstractMessage messageObj, SingleItemEncoderIF singleItemEncoder, Object writableMiddleObject) throws Exception {
+	public void encode(AbstractMessage messageObj, SingleItemEncoderIF singleItemEncoder, Object middleObjectToSend) throws Exception {
 		DownloadImageReq downloadImageReq = (DownloadImageReq)messageObj;
-		encodeBody(downloadImageReq, singleItemEncoder, writableMiddleObject);
+		encodeBody(downloadImageReq, singleItemEncoder, middleObjectToSend);
 	}
 
 
-	private void encodeBody(DownloadImageReq downloadImageReq, SingleItemEncoderIF singleItemEncoder, Object middleWritableObject) throws Exception {
+	private void encodeBody(DownloadImageReq downloadImageReq, SingleItemEncoderIF singleItemEncoder, Object middleObjectToSend) throws Exception {
 		java.util.LinkedList<String> pathStack = new java.util.LinkedList<String>();
 		pathStack.push("DownloadImageReq");
 
 
-		singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "yyyyMMdd"
+		singleItemEncoder.putValue(pathStack.peek(), "yyyyMMdd"
 			, kr.pe.codda.common.type.SingleItemType.UB_PASCAL_STRING // itemType
 			, downloadImageReq.getYyyyMMdd() // itemValue
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleWritableObject);
+			, middleObjectToSend);
 
-		singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "daySequence"
+		singleItemEncoder.putValue(pathStack.peek(), "daySequence"
 			, kr.pe.codda.common.type.SingleItemType.UNSIGNED_INTEGER // itemType
 			, downloadImageReq.getDaySequence() // itemValue
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleWritableObject);
+			, middleObjectToSend);
 
 		pathStack.pop();
 	}

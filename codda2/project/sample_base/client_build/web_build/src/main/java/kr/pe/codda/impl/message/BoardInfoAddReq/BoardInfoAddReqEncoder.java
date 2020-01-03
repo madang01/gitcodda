@@ -28,58 +28,58 @@ import kr.pe.codda.common.protocol.SingleItemEncoderIF;
  */
 public final class BoardInfoAddReqEncoder extends AbstractMessageEncoder {
 	@Override
-	public void encode(AbstractMessage messageObj, SingleItemEncoderIF singleItemEncoder, Object writableMiddleObject) throws Exception {
+	public void encode(AbstractMessage messageObj, SingleItemEncoderIF singleItemEncoder, Object middleObjectToSend) throws Exception {
 		BoardInfoAddReq boardInfoAddReq = (BoardInfoAddReq)messageObj;
-		encodeBody(boardInfoAddReq, singleItemEncoder, writableMiddleObject);
+		encodeBody(boardInfoAddReq, singleItemEncoder, middleObjectToSend);
 	}
 
 
-	private void encodeBody(BoardInfoAddReq boardInfoAddReq, SingleItemEncoderIF singleItemEncoder, Object middleWritableObject) throws Exception {
+	private void encodeBody(BoardInfoAddReq boardInfoAddReq, SingleItemEncoderIF singleItemEncoder, Object middleObjectToSend) throws Exception {
 		java.util.LinkedList<String> pathStack = new java.util.LinkedList<String>();
 		pathStack.push("BoardInfoAddReq");
 
 
-		singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "requestedUserID"
+		singleItemEncoder.putValue(pathStack.peek(), "requestedUserID"
 			, kr.pe.codda.common.type.SingleItemType.UB_PASCAL_STRING // itemType
 			, boardInfoAddReq.getRequestedUserID() // itemValue
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleWritableObject);
+			, middleObjectToSend);
 
-		singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "boardName"
+		singleItemEncoder.putValue(pathStack.peek(), "boardName"
 			, kr.pe.codda.common.type.SingleItemType.UB_PASCAL_STRING // itemType
 			, boardInfoAddReq.getBoardName() // itemValue
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleWritableObject);
+			, middleObjectToSend);
 
-		singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "boardListType"
+		singleItemEncoder.putValue(pathStack.peek(), "boardListType"
 			, kr.pe.codda.common.type.SingleItemType.BYTE // itemType
 			, boardInfoAddReq.getBoardListType() // itemValue
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleWritableObject);
+			, middleObjectToSend);
 
-		singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "boardReplyPolicyType"
+		singleItemEncoder.putValue(pathStack.peek(), "boardReplyPolicyType"
 			, kr.pe.codda.common.type.SingleItemType.BYTE // itemType
 			, boardInfoAddReq.getBoardReplyPolicyType() // itemValue
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleWritableObject);
+			, middleObjectToSend);
 
-		singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "boardWritePermissionType"
+		singleItemEncoder.putValue(pathStack.peek(), "boardWritePermissionType"
 			, kr.pe.codda.common.type.SingleItemType.BYTE // itemType
 			, boardInfoAddReq.getBoardWritePermissionType() // itemValue
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleWritableObject);
+			, middleObjectToSend);
 
-		singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "boardReplyPermissionType"
+		singleItemEncoder.putValue(pathStack.peek(), "boardReplyPermissionType"
 			, kr.pe.codda.common.type.SingleItemType.BYTE // itemType
 			, boardInfoAddReq.getBoardReplyPermissionType() // itemValue
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleWritableObject);
+			, middleObjectToSend);
 
 		pathStack.pop();
 	}

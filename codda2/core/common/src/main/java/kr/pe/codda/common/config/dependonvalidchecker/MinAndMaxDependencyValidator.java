@@ -1,3 +1,19 @@
+/*******************************************************************************
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *  
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *  
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *******************************************************************************/
 package kr.pe.codda.common.config.dependonvalidchecker;
 
 import java.util.Comparator;
@@ -9,6 +25,12 @@ import kr.pe.codda.common.config.AbstractNativeValueConverter;
 import kr.pe.codda.common.config.itemidinfo.ItemIDInfo;
 import kr.pe.codda.common.exception.CoddaConfigurationException;
 
+/**
+ * 최소 최대 의존성 검사기
+ * @author Won Jonghoon
+ *
+ * @param <T>
+ */
 public class MinAndMaxDependencyValidator<T extends Number> extends
 		AbstractDependencyValidator {
 
@@ -16,12 +38,20 @@ public class MinAndMaxDependencyValidator<T extends Number> extends
 	private AbstractMinMaxConverter<T> maxConverter = null;
 	private AbstractMinMaxConverter<T> minConverter = null;
 
+	/**
+	 * 생성자
+	 * @param dependentSourceItemInfo 의존 항목 정보
+	 * @param dependentTargetItemInfo 의존 대상 항목 정보
+	 * @param genericTypeClass 제너릭 타입 클래스
+	 * @throws IllegalArgumentException 파라미터 값이 잘못된 경우 던지는 예외
+	 * @throws CoddaConfigurationException 항목의 값 변환기가 {@link AbstractMinMaxConverter} 가 아니면 던지는 예외
+	 */
 	@SuppressWarnings("unchecked")
-	public MinAndMaxDependencyValidator(ItemIDInfo<T> dependentSourceConfigItem,
-			ItemIDInfo<T> dependentTargetConfigItem, 
+	public MinAndMaxDependencyValidator(ItemIDInfo<T> dependentSourceItemInfo,
+			ItemIDInfo<T> dependentTargetItemInfo, 
 			Class<T> genericTypeClass)
 			throws IllegalArgumentException, CoddaConfigurationException {
-		super(dependentSourceConfigItem, dependentTargetConfigItem);
+		super(dependentSourceItemInfo, dependentTargetItemInfo);
 		
 		// Comparator<T> minMaxComparator, 
 		// this.minMaxComparator = minMaxComparator;
@@ -81,7 +111,7 @@ public class MinAndMaxDependencyValidator<T extends Number> extends
 			String errorMessage = new StringBuilder("this class's generic type T[")
 			.append(genericTypeName)
 			.append("] is different from the parameter dependentSourceConfigItem[")
-			.append(dependentSourceConfigItem.getItemID())
+			.append(dependentSourceItemInfo.getItemID())
 			.append("]'s generic type T[")
 			.append(minConverterTypeTName)			
 			.append("]")
@@ -93,7 +123,7 @@ public class MinAndMaxDependencyValidator<T extends Number> extends
 			String errorMessage = new StringBuilder("this class's generic type T[")
 			.append(genericTypeName)
 			.append("] is different from the parameter dependentTargetConfigItem[")
-			.append(dependentTargetConfigItem.getItemID())
+			.append(dependentTargetItemInfo.getItemID())
 			.append("]'s generic type T[")
 			.append(maxConverterTypeTName)			
 			.append("]")
@@ -110,7 +140,7 @@ public class MinAndMaxDependencyValidator<T extends Number> extends
 			/** expected dead code */
 			String errorMessage = new StringBuilder(
 					"fail to cast From the variable dependentSourceItemValueConverter[")
-			.append(dependentSourceConfigItem.getItemID())
+			.append(dependentSourceItemInfo.getItemID())
 			.append("]'s type[")
 			.append(dependentSourceItemValueConverter.getClass().getName())
 			.append("] to GeneralConverterReturningGenericBetweenMinAndMax<T>")
@@ -128,7 +158,7 @@ public class MinAndMaxDependencyValidator<T extends Number> extends
 			/** expected dead code */
 			String errorMessage = new StringBuilder(
 					"fail to cast From the variable dependentTargetItemValueConverter[")
-			.append(dependentTargetConfigItem.getItemID())
+			.append(dependentTargetItemInfo.getItemID())
 			.append("]'s type[")
 			.append(dependentTargetItemValueConverter.getClass().getName())
 			.append("] to GeneralConverterReturningGenericBetweenMinAndMax<T>")

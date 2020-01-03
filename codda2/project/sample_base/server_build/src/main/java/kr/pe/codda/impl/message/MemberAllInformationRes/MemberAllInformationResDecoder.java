@@ -30,90 +30,90 @@ import kr.pe.codda.common.protocol.SingleItemDecoderIF;
 public final class MemberAllInformationResDecoder extends AbstractMessageDecoder {
 
 	@Override
-	protected AbstractMessage decodeBody(SingleItemDecoderIF singleItemDecoder, Object  middleReadableObject) throws BodyFormatException {
+	protected AbstractMessage decodeBody(SingleItemDecoderIF singleItemDecoder, Object receivedMiddleObject) throws BodyFormatException {
 		MemberAllInformationRes memberAllInformationRes = new MemberAllInformationRes();
 		java.util.LinkedList<String> pathStack = new java.util.LinkedList<String>();
 		pathStack.push("MemberAllInformationRes");
 
 		memberAllInformationRes.setNickname((String)
-		singleItemDecoder.getValueFromReadableMiddleObject(pathStack.peek()
+		singleItemDecoder.getValue(pathStack.peek()
 			, "nickname" // itemName
 			, kr.pe.codda.common.type.SingleItemType.SI_PASCAL_STRING // itemType
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleReadableObject));
+			, receivedMiddleObject));
 
 		memberAllInformationRes.setEmail((String)
-		singleItemDecoder.getValueFromReadableMiddleObject(pathStack.peek()
+		singleItemDecoder.getValue(pathStack.peek()
 			, "email" // itemName
 			, kr.pe.codda.common.type.SingleItemType.US_PASCAL_STRING // itemType
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleReadableObject));
+			, receivedMiddleObject));
 
 		memberAllInformationRes.setRole((Byte)
-		singleItemDecoder.getValueFromReadableMiddleObject(pathStack.peek()
+		singleItemDecoder.getValue(pathStack.peek()
 			, "role" // itemName
 			, kr.pe.codda.common.type.SingleItemType.BYTE // itemType
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleReadableObject));
+			, receivedMiddleObject));
 
 		memberAllInformationRes.setState((Byte)
-		singleItemDecoder.getValueFromReadableMiddleObject(pathStack.peek()
+		singleItemDecoder.getValue(pathStack.peek()
 			, "state" // itemName
 			, kr.pe.codda.common.type.SingleItemType.BYTE // itemType
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleReadableObject));
+			, receivedMiddleObject));
 
 		memberAllInformationRes.setPasswordFailedCount((Short)
-		singleItemDecoder.getValueFromReadableMiddleObject(pathStack.peek()
+		singleItemDecoder.getValue(pathStack.peek()
 			, "passwordFailedCount" // itemName
 			, kr.pe.codda.common.type.SingleItemType.UNSIGNED_BYTE // itemType
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleReadableObject));
+			, receivedMiddleObject));
 
 		memberAllInformationRes.setRegisteredDate((java.sql.Timestamp)
-		singleItemDecoder.getValueFromReadableMiddleObject(pathStack.peek()
+		singleItemDecoder.getValue(pathStack.peek()
 			, "registeredDate" // itemName
 			, kr.pe.codda.common.type.SingleItemType.JAVA_SQL_TIMESTAMP // itemType
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleReadableObject));
+			, receivedMiddleObject));
 
 		memberAllInformationRes.setLastNicknameModifiedDate((java.sql.Timestamp)
-		singleItemDecoder.getValueFromReadableMiddleObject(pathStack.peek()
+		singleItemDecoder.getValue(pathStack.peek()
 			, "lastNicknameModifiedDate" // itemName
 			, kr.pe.codda.common.type.SingleItemType.JAVA_SQL_TIMESTAMP // itemType
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleReadableObject));
+			, receivedMiddleObject));
 
 		memberAllInformationRes.setLastEmailModifiedDate((java.sql.Timestamp)
-		singleItemDecoder.getValueFromReadableMiddleObject(pathStack.peek()
+		singleItemDecoder.getValue(pathStack.peek()
 			, "lastEmailModifiedDate" // itemName
 			, kr.pe.codda.common.type.SingleItemType.JAVA_SQL_TIMESTAMP // itemType
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleReadableObject));
+			, receivedMiddleObject));
 
 		memberAllInformationRes.setLastPasswordModifiedDate((java.sql.Timestamp)
-		singleItemDecoder.getValueFromReadableMiddleObject(pathStack.peek()
+		singleItemDecoder.getValue(pathStack.peek()
 			, "lastPasswordModifiedDate" // itemName
 			, kr.pe.codda.common.type.SingleItemType.JAVA_SQL_TIMESTAMP // itemType
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleReadableObject));
+			, receivedMiddleObject));
 
 		memberAllInformationRes.setLastStateModifiedDate((java.sql.Timestamp)
-		singleItemDecoder.getValueFromReadableMiddleObject(pathStack.peek()
+		singleItemDecoder.getValue(pathStack.peek()
 			, "lastStateModifiedDate" // itemName
 			, kr.pe.codda.common.type.SingleItemType.JAVA_SQL_TIMESTAMP // itemType
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleReadableObject));
+			, receivedMiddleObject));
 
 		pathStack.pop();
 

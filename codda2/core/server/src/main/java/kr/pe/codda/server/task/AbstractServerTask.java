@@ -1,73 +1,68 @@
-/*
+/*******************************************************************************
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
- *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *  
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *  
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- */
-
+ *******************************************************************************/
 package kr.pe.codda.server.task;
 
-import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import kr.pe.codda.common.classloader.IOPartDynamicClassNameUtil;
-import kr.pe.codda.common.classloader.MessageEncoderManagerIF;
+import kr.pe.codda.common.classloader.ServerClassLoader;
 import kr.pe.codda.common.etc.CommonStaticFinalVars;
 import kr.pe.codda.common.exception.BodyFormatException;
 import kr.pe.codda.common.exception.DynamicClassCallException;
 import kr.pe.codda.common.exception.ServerTaskException;
 import kr.pe.codda.common.message.AbstractMessage;
 import kr.pe.codda.common.message.codec.AbstractMessageDecoder;
-import kr.pe.codda.common.message.codec.AbstractMessageEncoder;
 import kr.pe.codda.common.protocol.MessageCodecIF;
 import kr.pe.codda.common.protocol.MessageProtocolIF;
-import kr.pe.codda.common.type.SelfExn;
-import kr.pe.codda.common.util.CommonStaticUtil;
+import kr.pe.codda.common.type.ExceptionDelivery;
 import kr.pe.codda.server.AcceptedConnection;
-import kr.pe.codda.server.PersonalLoginManagerIF;
+import kr.pe.codda.server.LoginManagerIF;
 import kr.pe.codda.server.ProjectLoginManagerIF;
 
 /**
  * <pre>
- * 로그인을 요구하지 않는 서버 비지니스 로직 부모 클래스. 
+ * 로그인을 요구하지 않는 서버 비지니스 로직 부모 추상화 클래스. 
  * 메시지는 자신만의 서버 비지니스를 갖는다.
  * 서버 비지니스 로직 클래스 이름 형식은 
  * 접두어 '메시지 식별자' 와 접미어 'ServerTask' 로 구성된다. 
  * 개발자는 이 클래스를 상속 받은 메시지별 비지니스 로직을 개발하며, 
- * 이렇게 개발된 비지니스 로직 모듈은 동적으로 로딩된다.
+ * 이렇게 개발된 비지니스 로직 모듈은 동적으로 로딩된다. 
  * </pre>
  * 
  * @author Won Jonghoon
  * 
  */
-public abstract class AbstractServerTask implements MessageEncoderManagerIF {
+public abstract class AbstractServerTask {
 	// protected Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
 	
-	private ClassLoader taskClassLoader = this.getClass().getClassLoader();
-	// private MessageCodecIF serverInputMessageCodec = null;
-	private AbstractMessageDecoder inputMessageDecoder = null;
-	private HashMap<String, MessageCodecIF> messageID2ServerMessageCodecHash = 
-			new HashMap<String, MessageCodecIF>();
+	private final ServerClassLoader taskClassLoader = (ServerClassLoader)this.getClass().getClassLoader();
+	private final AbstractMessageDecoder inputMessageDecoder;
+	// private HashMap<String, MessageCodecIF> messageID2ServerMessageCodecHash = new HashMap<String, MessageCodecIF>();
 	
 	public AbstractServerTask() throws DynamicClassCallException {
+		
 		String classFullName = this.getClass().getName();
 		int startIndex = classFullName.lastIndexOf(".") + 1;		
 		int endIndex = classFullName.lastIndexOf("ServerTask");
 		
 		String messageID = classFullName.substring(startIndex, endIndex);
 		
-		/** WARNING! junit 에서 inner class 로 mock 객체를 만들어 테스트시 필요하므로 지우지 말것 */
+		
+		/** WARNING! junit 에서 inner class 로 mock 객체를 만들어 테스트시 필요하므로 지우지 말것 */ 
 		int middleIndex = messageID.lastIndexOf("$");		
 		if (middleIndex >= 0) {
 			char[] classNames =  messageID.toCharArray();
@@ -83,11 +78,7 @@ public abstract class AbstractServerTask implements MessageEncoderManagerIF {
 			messageID = classFullName.substring(startIndex, endIndex);
 		}
 		
-		
-		
-		// FIXME!
-		// log.info("className=[{}], messageID=[{}]", classFullName, messageID);
-		
+		/*
 		String messageCodecClassFullName = IOPartDynamicClassNameUtil.getServerMessageCodecClassFullName(messageID);
 		
 		Object retObject = CommonStaticUtil.getNewObjectFromClassloader(taskClassLoader, messageCodecClassFullName);		
@@ -107,9 +98,19 @@ public abstract class AbstractServerTask implements MessageEncoderManagerIF {
 		inputMessageDecoder = serverMessageCodec.getMessageDecoder();		
 		
 		messageID2ServerMessageCodecHash.put(messageID, serverMessageCodec);
+		*/
+		
+		MessageCodecIF messageCodec = taskClassLoader.getServerMessageCodec(messageID);
+		
+		inputMessageDecoder = messageCodec.getMessageDecoder();
 	}
 
+	/*
 	public AbstractMessageEncoder getMessageEncoder(String messageID) throws DynamicClassCallException {
+		if (null == messageID) {
+			throw new IllegalArgumentException("the parameter messageID is null");
+		}
+		
 		MessageCodecIF serverMessageCodec = messageID2ServerMessageCodecHash.get(messageID);
 		if (null == serverMessageCodec) {
 			String serverMessageCodecClassFullName = IOPartDynamicClassNameUtil.getServerMessageCodecClassFullName(messageID);
@@ -133,23 +134,33 @@ public abstract class AbstractServerTask implements MessageEncoderManagerIF {
 		
 		return serverMessageCodec.getMessageEncoder();
 	}	
+	*/
 	
+	/**
+	 * 비지니스 로직을 수행한다. 내부적으로는 {@link #doTask(String, LoginManagerIF, ToLetterCarrier, AbstractMessage)} 를 호출한다.
+	 * @param projectName 프로젝트 이름
+	 * @param fromAcceptedConnection 입력 메시지를 보낸 연결
+	 * @param projectLoginManager 프로젝트 로그인 관리자
+	 * @param mailboxID 메일 박스 식별자
+	 * @param mailID 메일 식별자
+	 * @param messageID 메시지 식별자
+	 * @param receviedMiddleObject 수신한 스트림으로 부터 추출된 중간 객체로 입력 메시지로 변환되는 매개체이다.
+	 * @param messageProtocol 메시지 프로토콜
+	 * @param fromPersonalLoginManager 개별적인 로그인 관리자
+	 * @throws InterruptedException
+	 */
 	public void execute(String projectName,
 			AcceptedConnection fromAcceptedConnection,			
 			ProjectLoginManagerIF projectLoginManager,						
-			int mailboxID, int mailID, String messageID, Object readableMiddleObject,
+			int mailboxID, int mailID, String messageID, Object receviedMiddleObject,
 			MessageProtocolIF messageProtocol,
-			PersonalLoginManagerIF fromPersonalLoginManager) throws InterruptedException {
-
-		/*log.info("classLoader[{}], serverTask[{}], create new messageDecoder", 
-				classLoaderOfSererTask.hashCode(),
-				inputMessageID);*/
+			LoginManagerIF fromPersonalLoginManager) throws InterruptedException {
 		
 		// long startTime = System.nanoTime();
 			
 		AbstractMessage inputMessage = null;
 		try {
-			inputMessage = messageProtocol.O2M(inputMessageDecoder, mailboxID, mailID, messageID, readableMiddleObject);			
+			inputMessage = messageProtocol.O2M(inputMessageDecoder, mailboxID, mailID, messageID, receviedMiddleObject);			
 		} catch (BodyFormatException e) {
 			String errorMessage = new StringBuilder("fail to get a input message from readable middle object[")
 					.append("mailboxID=")
@@ -161,7 +172,7 @@ public abstract class AbstractServerTask implements MessageEncoderManagerIF {
 					.append("]").toString();
 			
 			
-			SelfExn.ErrorType errorType = SelfExn.ErrorType.valueOf(BodyFormatException.class);
+			ExceptionDelivery.ErrorType errorType = ExceptionDelivery.ErrorType.valueOf(BodyFormatException.class);
 			String errorReason = new StringBuilder(errorMessage)
 					.append(", errmsg=").append(e.getMessage()).toString();
 			
@@ -184,7 +195,7 @@ public abstract class AbstractServerTask implements MessageEncoderManagerIF {
 					.append("], errmsg=")
 					.append(e.getMessage()).toString();			
 			
-			SelfExn.ErrorType errorType = SelfExn.ErrorType.valueOf(BodyFormatException.class);
+			ExceptionDelivery.ErrorType errorType = ExceptionDelivery.ErrorType.valueOf(BodyFormatException.class);
 			String errorReason = errorMessage;
 			
 			Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
@@ -197,20 +208,19 @@ public abstract class AbstractServerTask implements MessageEncoderManagerIF {
 			return;
 		}
 		
-// 		PersonalLoginManagerIF fromPersonalLoginManager = fromAcceptedConnection.getPersonalLoginManager();
 		
 		ToLetterCarrier toLetterCarrier = new ToLetterCarrier(fromAcceptedConnection,
 				inputMessage, 
 				projectLoginManager,
 				messageProtocol,
-				this);				
+				taskClassLoader);				
 		
 		try {
 			doTask(projectName, fromPersonalLoginManager, toLetterCarrier, inputMessage);
 		} catch (InterruptedException e) {
 			throw e;
 		} catch (Exception | Error e) {			
-			SelfExn.ErrorType errorType = SelfExn.ErrorType.valueOf(ServerTaskException.class);
+			ExceptionDelivery.ErrorType errorType = ExceptionDelivery.ErrorType.valueOf(ServerTaskException.class);
 			
 			
 			String errorReason = new StringBuilder()
@@ -232,7 +242,7 @@ public abstract class AbstractServerTask implements MessageEncoderManagerIF {
 					errorReason,
 					mailboxID, mailID, messageID, fromAcceptedConnection, messageProtocol);
 			return;
-		} finally {
+		} finally {			
 			/*
 			long endTime = System.nanoTime();
 			String infoMessage = new StringBuilder().append("this server task[")
@@ -248,7 +258,7 @@ public abstract class AbstractServerTask implements MessageEncoderManagerIF {
 	}
 	
 	
-	abstract public void doTask(String projectName, PersonalLoginManagerIF personalLoginManager, ToLetterCarrier toLetterCarrier,
+	abstract public void doTask(String projectName, LoginManagerIF personalLoginManager, ToLetterCarrier toLetterCarrier,
 			AbstractMessage inputMessage) throws Exception;
 	
 	

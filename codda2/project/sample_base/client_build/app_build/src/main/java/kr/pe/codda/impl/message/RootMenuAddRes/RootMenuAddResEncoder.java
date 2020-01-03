@@ -28,30 +28,30 @@ import kr.pe.codda.common.protocol.SingleItemEncoderIF;
  */
 public final class RootMenuAddResEncoder extends AbstractMessageEncoder {
 	@Override
-	public void encode(AbstractMessage messageObj, SingleItemEncoderIF singleItemEncoder, Object writableMiddleObject) throws Exception {
+	public void encode(AbstractMessage messageObj, SingleItemEncoderIF singleItemEncoder, Object middleObjectToSend) throws Exception {
 		RootMenuAddRes rootMenuAddRes = (RootMenuAddRes)messageObj;
-		encodeBody(rootMenuAddRes, singleItemEncoder, writableMiddleObject);
+		encodeBody(rootMenuAddRes, singleItemEncoder, middleObjectToSend);
 	}
 
 
-	private void encodeBody(RootMenuAddRes rootMenuAddRes, SingleItemEncoderIF singleItemEncoder, Object middleWritableObject) throws Exception {
+	private void encodeBody(RootMenuAddRes rootMenuAddRes, SingleItemEncoderIF singleItemEncoder, Object middleObjectToSend) throws Exception {
 		java.util.LinkedList<String> pathStack = new java.util.LinkedList<String>();
 		pathStack.push("RootMenuAddRes");
 
 
-		singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "menuNo"
+		singleItemEncoder.putValue(pathStack.peek(), "menuNo"
 			, kr.pe.codda.common.type.SingleItemType.UNSIGNED_INTEGER // itemType
 			, rootMenuAddRes.getMenuNo() // itemValue
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleWritableObject);
+			, middleObjectToSend);
 
-		singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "orderSeq"
+		singleItemEncoder.putValue(pathStack.peek(), "orderSeq"
 			, kr.pe.codda.common.type.SingleItemType.UNSIGNED_BYTE // itemType
 			, rootMenuAddRes.getOrderSeq() // itemValue
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleWritableObject);
+			, middleObjectToSend);
 
 		pathStack.pop();
 	}

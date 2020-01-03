@@ -28,233 +28,233 @@ import kr.pe.codda.common.protocol.SingleItemEncoderIF;
  */
 public final class AllItemTypeEncoder extends AbstractMessageEncoder {
 	@Override
-	public void encode(AbstractMessage messageObj, SingleItemEncoderIF singleItemEncoder, Object writableMiddleObject) throws Exception {
+	public void encode(AbstractMessage messageObj, SingleItemEncoderIF singleItemEncoder, Object middleObjectToSend) throws Exception {
 		AllItemType allItemType = (AllItemType)messageObj;
-		encodeBody(allItemType, singleItemEncoder, writableMiddleObject);
+		encodeBody(allItemType, singleItemEncoder, middleObjectToSend);
 	}
 
 
-	private void encodeBody(AllItemType allItemType, SingleItemEncoderIF singleItemEncoder, Object middleWritableObject) throws Exception {
+	private void encodeBody(AllItemType allItemType, SingleItemEncoderIF singleItemEncoder, Object middleObjectToSend) throws Exception {
 		java.util.LinkedList<String> pathStack = new java.util.LinkedList<String>();
 		pathStack.push("AllItemType");
 
 
-		singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "byteVar1"
+		singleItemEncoder.putValue(pathStack.peek(), "byteVar1"
 			, kr.pe.codda.common.type.SingleItemType.BYTE // itemType
 			, allItemType.getByteVar1() // itemValue
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleWritableObject);
+			, middleObjectToSend);
 
-		singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "byteVar2"
+		singleItemEncoder.putValue(pathStack.peek(), "byteVar2"
 			, kr.pe.codda.common.type.SingleItemType.BYTE // itemType
 			, allItemType.getByteVar2() // itemValue
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleWritableObject);
+			, middleObjectToSend);
 
-		singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "byteVar3"
+		singleItemEncoder.putValue(pathStack.peek(), "byteVar3"
 			, kr.pe.codda.common.type.SingleItemType.BYTE // itemType
 			, allItemType.getByteVar3() // itemValue
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleWritableObject);
+			, middleObjectToSend);
 
-		singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "unsignedByteVar1"
+		singleItemEncoder.putValue(pathStack.peek(), "unsignedByteVar1"
 			, kr.pe.codda.common.type.SingleItemType.UNSIGNED_BYTE // itemType
 			, allItemType.getUnsignedByteVar1() // itemValue
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleWritableObject);
+			, middleObjectToSend);
 
-		singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "unsignedByteVar2"
+		singleItemEncoder.putValue(pathStack.peek(), "unsignedByteVar2"
 			, kr.pe.codda.common.type.SingleItemType.UNSIGNED_BYTE // itemType
 			, allItemType.getUnsignedByteVar2() // itemValue
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleWritableObject);
+			, middleObjectToSend);
 
-		singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "unsignedByteVar3"
+		singleItemEncoder.putValue(pathStack.peek(), "unsignedByteVar3"
 			, kr.pe.codda.common.type.SingleItemType.UNSIGNED_BYTE // itemType
 			, allItemType.getUnsignedByteVar3() // itemValue
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleWritableObject);
+			, middleObjectToSend);
 
-		singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "shortVar1"
+		singleItemEncoder.putValue(pathStack.peek(), "shortVar1"
 			, kr.pe.codda.common.type.SingleItemType.SHORT // itemType
 			, allItemType.getShortVar1() // itemValue
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleWritableObject);
+			, middleObjectToSend);
 
-		singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "shortVar2"
+		singleItemEncoder.putValue(pathStack.peek(), "shortVar2"
 			, kr.pe.codda.common.type.SingleItemType.SHORT // itemType
 			, allItemType.getShortVar2() // itemValue
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleWritableObject);
+			, middleObjectToSend);
 
-		singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "shortVar3"
+		singleItemEncoder.putValue(pathStack.peek(), "shortVar3"
 			, kr.pe.codda.common.type.SingleItemType.SHORT // itemType
 			, allItemType.getShortVar3() // itemValue
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleWritableObject);
+			, middleObjectToSend);
 
-		singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "unsignedShortVar1"
+		singleItemEncoder.putValue(pathStack.peek(), "unsignedShortVar1"
 			, kr.pe.codda.common.type.SingleItemType.UNSIGNED_SHORT // itemType
 			, allItemType.getUnsignedShortVar1() // itemValue
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleWritableObject);
+			, middleObjectToSend);
 
-		singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "unsignedShortVar2"
+		singleItemEncoder.putValue(pathStack.peek(), "unsignedShortVar2"
 			, kr.pe.codda.common.type.SingleItemType.UNSIGNED_SHORT // itemType
 			, allItemType.getUnsignedShortVar2() // itemValue
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleWritableObject);
+			, middleObjectToSend);
 
-		singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "unsignedShortVar3"
+		singleItemEncoder.putValue(pathStack.peek(), "unsignedShortVar3"
 			, kr.pe.codda.common.type.SingleItemType.UNSIGNED_SHORT // itemType
 			, allItemType.getUnsignedShortVar3() // itemValue
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleWritableObject);
+			, middleObjectToSend);
 
-		singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "intVar1"
+		singleItemEncoder.putValue(pathStack.peek(), "intVar1"
 			, kr.pe.codda.common.type.SingleItemType.INTEGER // itemType
 			, allItemType.getIntVar1() // itemValue
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleWritableObject);
+			, middleObjectToSend);
 
-		singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "intVar2"
+		singleItemEncoder.putValue(pathStack.peek(), "intVar2"
 			, kr.pe.codda.common.type.SingleItemType.INTEGER // itemType
 			, allItemType.getIntVar2() // itemValue
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleWritableObject);
+			, middleObjectToSend);
 
-		singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "intVar3"
+		singleItemEncoder.putValue(pathStack.peek(), "intVar3"
 			, kr.pe.codda.common.type.SingleItemType.INTEGER // itemType
 			, allItemType.getIntVar3() // itemValue
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleWritableObject);
+			, middleObjectToSend);
 
-		singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "unsignedIntVar1"
+		singleItemEncoder.putValue(pathStack.peek(), "unsignedIntVar1"
 			, kr.pe.codda.common.type.SingleItemType.UNSIGNED_INTEGER // itemType
 			, allItemType.getUnsignedIntVar1() // itemValue
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleWritableObject);
+			, middleObjectToSend);
 
-		singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "unsignedIntVar2"
+		singleItemEncoder.putValue(pathStack.peek(), "unsignedIntVar2"
 			, kr.pe.codda.common.type.SingleItemType.UNSIGNED_INTEGER // itemType
 			, allItemType.getUnsignedIntVar2() // itemValue
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleWritableObject);
+			, middleObjectToSend);
 
-		singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "unsignedIntVar3"
+		singleItemEncoder.putValue(pathStack.peek(), "unsignedIntVar3"
 			, kr.pe.codda.common.type.SingleItemType.UNSIGNED_INTEGER // itemType
 			, allItemType.getUnsignedIntVar3() // itemValue
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleWritableObject);
+			, middleObjectToSend);
 
-		singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "longVar1"
+		singleItemEncoder.putValue(pathStack.peek(), "longVar1"
 			, kr.pe.codda.common.type.SingleItemType.LONG // itemType
 			, allItemType.getLongVar1() // itemValue
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleWritableObject);
+			, middleObjectToSend);
 
-		singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "longVar2"
+		singleItemEncoder.putValue(pathStack.peek(), "longVar2"
 			, kr.pe.codda.common.type.SingleItemType.LONG // itemType
 			, allItemType.getLongVar2() // itemValue
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleWritableObject);
+			, middleObjectToSend);
 
-		singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "longVar3"
+		singleItemEncoder.putValue(pathStack.peek(), "longVar3"
 			, kr.pe.codda.common.type.SingleItemType.LONG // itemType
 			, allItemType.getLongVar3() // itemValue
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleWritableObject);
+			, middleObjectToSend);
 
-		singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "strVar1"
+		singleItemEncoder.putValue(pathStack.peek(), "strVar1"
 			, kr.pe.codda.common.type.SingleItemType.UB_PASCAL_STRING // itemType
 			, allItemType.getStrVar1() // itemValue
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleWritableObject);
+			, middleObjectToSend);
 
-		singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "strVar2"
+		singleItemEncoder.putValue(pathStack.peek(), "strVar2"
 			, kr.pe.codda.common.type.SingleItemType.US_PASCAL_STRING // itemType
 			, allItemType.getStrVar2() // itemValue
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleWritableObject);
+			, middleObjectToSend);
 
-		singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "strVar3"
+		singleItemEncoder.putValue(pathStack.peek(), "strVar3"
 			, kr.pe.codda.common.type.SingleItemType.SI_PASCAL_STRING // itemType
 			, allItemType.getStrVar3() // itemValue
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleWritableObject);
+			, middleObjectToSend);
 
-		singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "bytesVar1"
+		singleItemEncoder.putValue(pathStack.peek(), "bytesVar1"
 			, kr.pe.codda.common.type.SingleItemType.FIXED_LENGTH_BYTES // itemType
 			, allItemType.getBytesVar1() // itemValue
 			, 7 // itemSize
 			, null // nativeItemCharset
-			, middleWritableObject);
+			, middleObjectToSend);
 
-		singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "bytesVar2"
+		singleItemEncoder.putValue(pathStack.peek(), "bytesVar2"
 			, kr.pe.codda.common.type.SingleItemType.SI_VARIABLE_LENGTH_BYTES // itemType
 			, allItemType.getBytesVar2() // itemValue
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleWritableObject);
+			, middleObjectToSend);
 
-		singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "sqldate"
+		singleItemEncoder.putValue(pathStack.peek(), "sqldate"
 			, kr.pe.codda.common.type.SingleItemType.JAVA_SQL_DATE // itemType
 			, allItemType.getSqldate() // itemValue
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleWritableObject);
+			, middleObjectToSend);
 
-		singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "sqltimestamp"
+		singleItemEncoder.putValue(pathStack.peek(), "sqltimestamp"
 			, kr.pe.codda.common.type.SingleItemType.JAVA_SQL_TIMESTAMP // itemType
 			, allItemType.getSqltimestamp() // itemValue
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleWritableObject);
+			, middleObjectToSend);
 
-		singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "isFalse"
+		singleItemEncoder.putValue(pathStack.peek(), "isFalse"
 			, kr.pe.codda.common.type.SingleItemType.BOOLEAN // itemType
 			, allItemType.getIsFalse() // itemValue
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleWritableObject);
+			, middleObjectToSend);
 
-		singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "isTrue"
+		singleItemEncoder.putValue(pathStack.peek(), "isTrue"
 			, kr.pe.codda.common.type.SingleItemType.BOOLEAN // itemType
 			, allItemType.getIsTrue() // itemValue
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleWritableObject);
+			, middleObjectToSend);
 
-		singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "cnt"
+		singleItemEncoder.putValue(pathStack.peek(), "cnt"
 			, kr.pe.codda.common.type.SingleItemType.INTEGER // itemType
 			, allItemType.getCnt() // itemValue
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleWritableObject);
+			, middleObjectToSend);
 
 		java.util.List<AllItemType.Member> member$2List = allItemType.getMemberList();
 
@@ -273,27 +273,27 @@ public final class AllItemTypeEncoder extends AbstractMessageEncoder {
 				throw new kr.pe.codda.common.exception.BodyFormatException(errorMessage);
 			}
 
-			Object member$2ArrayMiddleObject = singleItemEncoder.getArrayMiddleObjectFromWritableMiddleObject(pathStack.peek(), "member", member$2ListSize, middleWritableObject);
+			Object member$2ArrayMiddleObject = singleItemEncoder.getArrayMiddleObject(pathStack.peek(), "member", member$2ListSize, middleObjectToSend);
 			for (int i2=0; i2 < member$2ListSize; i2++) {
 				pathStack.push(new StringBuilder(pathStack.peek()).append(".").append("Member").append("[").append(i2).append("]").toString());
-				Object member$2MiddleWritableObject = singleItemEncoder.getWritableMiddleObjectjFromArrayMiddleObject(pathStack.peek(), member$2ArrayMiddleObject, i2);
+				Object member$2MiddleWritableObject = singleItemEncoder.getMiddleObjectFromArrayMiddleObject(pathStack.peek(), member$2ArrayMiddleObject, i2);
 				AllItemType.Member member$2 = member$2List.get(i2);
 
-				singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "memberID"
+				singleItemEncoder.putValue(pathStack.peek(), "memberID"
 					, kr.pe.codda.common.type.SingleItemType.FIXED_LENGTH_STRING // itemType
 					, member$2.getMemberID() // itemValue
 					, 30 // itemSize
 					, null // nativeItemCharset
 					, member$2MiddleWritableObject);
 
-				singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "memberName"
+				singleItemEncoder.putValue(pathStack.peek(), "memberName"
 					, kr.pe.codda.common.type.SingleItemType.FIXED_LENGTH_STRING // itemType
 					, member$2.getMemberName() // itemValue
 					, 30 // itemSize
 					, null // nativeItemCharset
 					, member$2MiddleWritableObject);
 
-				singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "cnt"
+				singleItemEncoder.putValue(pathStack.peek(), "cnt"
 					, kr.pe.codda.common.type.SingleItemType.INTEGER // itemType
 					, member$2.getCnt() // itemValue
 					, -1 // itemSize
@@ -317,27 +317,27 @@ public final class AllItemTypeEncoder extends AbstractMessageEncoder {
 						throw new kr.pe.codda.common.exception.BodyFormatException(errorMessage);
 					}
 
-					Object item$4ArrayMiddleObject = singleItemEncoder.getArrayMiddleObjectFromWritableMiddleObject(pathStack.peek(), "item", item$4ListSize, member$2MiddleWritableObject);
+					Object item$4ArrayMiddleObject = singleItemEncoder.getArrayMiddleObject(pathStack.peek(), "item", item$4ListSize, member$2MiddleWritableObject);
 					for (int i4=0; i4 < item$4ListSize; i4++) {
 						pathStack.push(new StringBuilder(pathStack.peek()).append(".").append("Item").append("[").append(i4).append("]").toString());
-						Object item$4MiddleWritableObject = singleItemEncoder.getWritableMiddleObjectjFromArrayMiddleObject(pathStack.peek(), item$4ArrayMiddleObject, i4);
+						Object item$4MiddleWritableObject = singleItemEncoder.getMiddleObjectFromArrayMiddleObject(pathStack.peek(), item$4ArrayMiddleObject, i4);
 						AllItemType.Member.Item item$4 = item$4List.get(i4);
 
-						singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "itemID"
+						singleItemEncoder.putValue(pathStack.peek(), "itemID"
 							, kr.pe.codda.common.type.SingleItemType.FIXED_LENGTH_STRING // itemType
 							, item$4.getItemID() // itemValue
 							, 30 // itemSize
 							, null // nativeItemCharset
 							, item$4MiddleWritableObject);
 
-						singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "itemName"
+						singleItemEncoder.putValue(pathStack.peek(), "itemName"
 							, kr.pe.codda.common.type.SingleItemType.FIXED_LENGTH_STRING // itemType
 							, item$4.getItemName() // itemValue
 							, 30 // itemSize
 							, null // nativeItemCharset
 							, item$4MiddleWritableObject);
 
-						singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "itemCnt"
+						singleItemEncoder.putValue(pathStack.peek(), "itemCnt"
 							, kr.pe.codda.common.type.SingleItemType.INTEGER // itemType
 							, item$4.getItemCnt() // itemValue
 							, -1 // itemSize
@@ -361,27 +361,27 @@ public final class AllItemTypeEncoder extends AbstractMessageEncoder {
 								throw new kr.pe.codda.common.exception.BodyFormatException(errorMessage);
 							}
 
-							Object subItem$6ArrayMiddleObject = singleItemEncoder.getArrayMiddleObjectFromWritableMiddleObject(pathStack.peek(), "subItem", subItem$6ListSize, item$4MiddleWritableObject);
+							Object subItem$6ArrayMiddleObject = singleItemEncoder.getArrayMiddleObject(pathStack.peek(), "subItem", subItem$6ListSize, item$4MiddleWritableObject);
 							for (int i6=0; i6 < subItem$6ListSize; i6++) {
 								pathStack.push(new StringBuilder(pathStack.peek()).append(".").append("SubItem").append("[").append(i6).append("]").toString());
-								Object subItem$6MiddleWritableObject = singleItemEncoder.getWritableMiddleObjectjFromArrayMiddleObject(pathStack.peek(), subItem$6ArrayMiddleObject, i6);
+								Object subItem$6MiddleWritableObject = singleItemEncoder.getMiddleObjectFromArrayMiddleObject(pathStack.peek(), subItem$6ArrayMiddleObject, i6);
 								AllItemType.Member.Item.SubItem subItem$6 = subItem$6List.get(i6);
 
-								singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "subItemID"
+								singleItemEncoder.putValue(pathStack.peek(), "subItemID"
 									, kr.pe.codda.common.type.SingleItemType.UB_PASCAL_STRING // itemType
 									, subItem$6.getSubItemID() // itemValue
 									, -1 // itemSize
 									, null // nativeItemCharset
 									, subItem$6MiddleWritableObject);
 
-								singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "subItemName"
+								singleItemEncoder.putValue(pathStack.peek(), "subItemName"
 									, kr.pe.codda.common.type.SingleItemType.US_PASCAL_STRING // itemType
 									, subItem$6.getSubItemName() // itemValue
 									, -1 // itemSize
 									, null // nativeItemCharset
 									, subItem$6MiddleWritableObject);
 
-								singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "itemCnt"
+								singleItemEncoder.putValue(pathStack.peek(), "itemCnt"
 									, kr.pe.codda.common.type.SingleItemType.INTEGER // itemType
 									, subItem$6.getItemCnt() // itemValue
 									, -1 // itemSize
@@ -400,12 +400,12 @@ public final class AllItemTypeEncoder extends AbstractMessageEncoder {
 			}
 		}
 
-		singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "longVar4"
+		singleItemEncoder.putValue(pathStack.peek(), "longVar4"
 			, kr.pe.codda.common.type.SingleItemType.LONG // itemType
 			, allItemType.getLongVar4() // itemValue
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleWritableObject);
+			, middleObjectToSend);
 
 		pathStack.pop();
 	}

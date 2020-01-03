@@ -34,8 +34,9 @@ import kr.pe.codda.server.lib.ServerDBUtil;
 
 public abstract class AbstractBoardTest {
 	protected Logger log = LoggerFactory.getLogger("kr.pe.codda");
-	protected static File installedBasePath = null;
-	protected static File installedPath = null;
+	
+	protected final static String installedPathString = "D:\\gitcodda\\codda2";
+	protected final static File installedPath = new File(installedPathString);
 	protected static File wasLibPath = null;
 	protected final static String mainProjectName = "sample_base";
 	
@@ -124,22 +125,6 @@ public abstract class AbstractBoardTest {
 	
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
-		
-		installedBasePath = new File("D:\\gitcodda");
-		
-		if (! installedBasePath.exists()) {
-			fail("the installed path doesn't exist");
-		}
-		
-		if (! installedBasePath.isDirectory()) {
-			fail("the installed path isn't a directory");
-		}
-		
-		String installedPathString = new StringBuilder(installedBasePath.getAbsolutePath())
-		.append(File.separator)
-		.append(CommonStaticFinalVars.ROOT_PROJECT_NAME).toString();
-				
-		installedPath = new File(installedPathString);
 		
 		if (! installedPath.exists()) {
 			fail("the installed path doesn't exist");

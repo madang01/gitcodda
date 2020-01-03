@@ -30,34 +30,34 @@ import kr.pe.codda.common.protocol.SingleItemDecoderIF;
 public final class AccountSearchProcessResDecoder extends AbstractMessageDecoder {
 
 	@Override
-	protected AbstractMessage decodeBody(SingleItemDecoderIF singleItemDecoder, Object  middleReadableObject) throws BodyFormatException {
+	protected AbstractMessage decodeBody(SingleItemDecoderIF singleItemDecoder, Object receivedMiddleObject) throws BodyFormatException {
 		AccountSearchProcessRes accountSearchProcessRes = new AccountSearchProcessRes();
 		java.util.LinkedList<String> pathStack = new java.util.LinkedList<String>();
 		pathStack.push("AccountSearchProcessRes");
 
 		accountSearchProcessRes.setAccountSearchType((Byte)
-		singleItemDecoder.getValueFromReadableMiddleObject(pathStack.peek()
+		singleItemDecoder.getValue(pathStack.peek()
 			, "accountSearchType" // itemName
 			, kr.pe.codda.common.type.SingleItemType.BYTE // itemType
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleReadableObject));
+			, receivedMiddleObject));
 
 		accountSearchProcessRes.setUserID((String)
-		singleItemDecoder.getValueFromReadableMiddleObject(pathStack.peek()
+		singleItemDecoder.getValue(pathStack.peek()
 			, "userID" // itemName
 			, kr.pe.codda.common.type.SingleItemType.UB_PASCAL_STRING // itemType
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleReadableObject));
+			, receivedMiddleObject));
 
 		accountSearchProcessRes.setNickname((String)
-		singleItemDecoder.getValueFromReadableMiddleObject(pathStack.peek()
+		singleItemDecoder.getValue(pathStack.peek()
 			, "nickname" // itemName
 			, kr.pe.codda.common.type.SingleItemType.UB_PASCAL_STRING // itemType
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleReadableObject));
+			, receivedMiddleObject));
 
 		pathStack.pop();
 

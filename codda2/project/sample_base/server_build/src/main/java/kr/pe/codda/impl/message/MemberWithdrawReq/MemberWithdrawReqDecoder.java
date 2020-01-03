@@ -30,50 +30,50 @@ import kr.pe.codda.common.protocol.SingleItemDecoderIF;
 public final class MemberWithdrawReqDecoder extends AbstractMessageDecoder {
 
 	@Override
-	protected AbstractMessage decodeBody(SingleItemDecoderIF singleItemDecoder, Object  middleReadableObject) throws BodyFormatException {
+	protected AbstractMessage decodeBody(SingleItemDecoderIF singleItemDecoder, Object receivedMiddleObject) throws BodyFormatException {
 		MemberWithdrawReq memberWithdrawReq = new MemberWithdrawReq();
 		java.util.LinkedList<String> pathStack = new java.util.LinkedList<String>();
 		pathStack.push("MemberWithdrawReq");
 
 		memberWithdrawReq.setRequestedUserID((String)
-		singleItemDecoder.getValueFromReadableMiddleObject(pathStack.peek()
+		singleItemDecoder.getValue(pathStack.peek()
 			, "requestedUserID" // itemName
 			, kr.pe.codda.common.type.SingleItemType.UB_PASCAL_STRING // itemType
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleReadableObject));
+			, receivedMiddleObject));
 
 		memberWithdrawReq.setIp((String)
-		singleItemDecoder.getValueFromReadableMiddleObject(pathStack.peek()
+		singleItemDecoder.getValue(pathStack.peek()
 			, "ip" // itemName
 			, kr.pe.codda.common.type.SingleItemType.UB_PASCAL_STRING // itemType
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleReadableObject));
+			, receivedMiddleObject));
 
 		memberWithdrawReq.setPwdCipherBase64((String)
-		singleItemDecoder.getValueFromReadableMiddleObject(pathStack.peek()
+		singleItemDecoder.getValue(pathStack.peek()
 			, "pwdCipherBase64" // itemName
 			, kr.pe.codda.common.type.SingleItemType.SI_PASCAL_STRING // itemType
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleReadableObject));
+			, receivedMiddleObject));
 
 		memberWithdrawReq.setSessionKeyBase64((String)
-		singleItemDecoder.getValueFromReadableMiddleObject(pathStack.peek()
+		singleItemDecoder.getValue(pathStack.peek()
 			, "sessionKeyBase64" // itemName
 			, kr.pe.codda.common.type.SingleItemType.SI_PASCAL_STRING // itemType
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleReadableObject));
+			, receivedMiddleObject));
 
 		memberWithdrawReq.setIvBase64((String)
-		singleItemDecoder.getValueFromReadableMiddleObject(pathStack.peek()
+		singleItemDecoder.getValue(pathStack.peek()
 			, "ivBase64" // itemName
 			, kr.pe.codda.common.type.SingleItemType.SI_PASCAL_STRING // itemType
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleReadableObject));
+			, receivedMiddleObject));
 
 		pathStack.pop();
 

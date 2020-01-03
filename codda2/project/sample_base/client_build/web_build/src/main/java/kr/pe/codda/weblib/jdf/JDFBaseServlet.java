@@ -40,6 +40,7 @@ import kr.pe.codda.common.exception.ConnectionPoolException;
 import kr.pe.codda.weblib.common.AccessedUserInformation;
 import kr.pe.codda.weblib.common.WebCommonStaticFinalVars;
 import kr.pe.codda.weblib.exception.WebClientException;
+import kr.pe.codda.weblib.exception.WhiteParserException;
 
 /**
  * <pre>
@@ -384,6 +385,20 @@ public abstract class JDFBaseServlet extends AbstractBaseServlet {
 
 			String userMessage = "서버 접속이 실패하였습니다";
 			printErrorMessagePage(req, res, userMessage, debugMessage);
+		} catch (WhiteParserException e) {
+			String errorMessage = e.getMessage();
+			String debugMessage = null;
+			
+			AccessedUserInformation accessedUserformation = getAccessedUserInformationFromSession(req);
+
+			String logMessage = new StringBuilder().append(errorMessage)
+					.append(", userID=[").append(accessedUserformation.getUserID()).append("], ip=[")
+					.append(req.getRemoteAddr()).append("]").toString();
+
+			log.warning(logMessage);
+
+			printErrorMessagePage(req, res, errorMessage, debugMessage);
+			return;	
 		} catch (WebClientException e) {
 			String errorMessage = e.getErrorMessage();
 			String debugMessage = e.getDebugMessage();

@@ -30,7 +30,7 @@ import kr.pe.codda.impl.message.MessageResultRes.MessageResultRes;
 import kr.pe.codda.impl.message.PersonalActivityHistoryReq.PersonalActivityHistoryReq;
 import kr.pe.codda.impl.message.PersonalActivityHistoryRes.PersonalActivityHistoryRes;
 import kr.pe.codda.jooq.tables.SbBoardHistoryTb;
-import kr.pe.codda.server.PersonalLoginManagerIF;
+import kr.pe.codda.server.LoginManagerIF;
 import kr.pe.codda.server.lib.BoardListType;
 import kr.pe.codda.server.lib.MemberRoleType;
 import kr.pe.codda.server.lib.MemberStateType;
@@ -63,7 +63,7 @@ public class PersonalActivityHistoryReqServerTask extends AbstractServerTask {
 	
 	@Override
 	public void doTask(String projectName, 
-			PersonalLoginManagerIF personalLoginManager, 
+			LoginManagerIF personalLoginManager, 
 			ToLetterCarrier toLetterCarrier,
 			AbstractMessage inputMessage) throws Exception {
 		

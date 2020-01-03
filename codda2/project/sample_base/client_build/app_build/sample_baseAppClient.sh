@@ -4,5 +4,5 @@ java -Xmx2048m -Xms1024m \
 -Dcodda.logPath=/home/madang01/gitmadang/codda/project/sample_base/log/appclient \
 -Dcodda.installedPath=/home/madang01/gitmadang/codda \
 -Dcodda.projectName=sample_base \
--jar dist/CoddaAppClientRun.jar
+-jar dist/CoddaAppClientRun.jar $1
 cd -

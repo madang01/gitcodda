@@ -30,34 +30,34 @@ import kr.pe.codda.common.protocol.SingleItemDecoderIF;
 public final class BoardModifyResDecoder extends AbstractMessageDecoder {
 
 	@Override
-	protected AbstractMessage decodeBody(SingleItemDecoderIF singleItemDecoder, Object  middleReadableObject) throws BodyFormatException {
+	protected AbstractMessage decodeBody(SingleItemDecoderIF singleItemDecoder, Object receivedMiddleObject) throws BodyFormatException {
 		BoardModifyRes boardModifyRes = new BoardModifyRes();
 		java.util.LinkedList<String> pathStack = new java.util.LinkedList<String>();
 		pathStack.push("BoardModifyRes");
 
 		boardModifyRes.setBoardID((Short)
-		singleItemDecoder.getValueFromReadableMiddleObject(pathStack.peek()
+		singleItemDecoder.getValue(pathStack.peek()
 			, "boardID" // itemName
 			, kr.pe.codda.common.type.SingleItemType.UNSIGNED_BYTE // itemType
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleReadableObject));
+			, receivedMiddleObject));
 
 		boardModifyRes.setBoardNo((Long)
-		singleItemDecoder.getValueFromReadableMiddleObject(pathStack.peek()
+		singleItemDecoder.getValue(pathStack.peek()
 			, "boardNo" // itemName
 			, kr.pe.codda.common.type.SingleItemType.UNSIGNED_INTEGER // itemType
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleReadableObject));
+			, receivedMiddleObject));
 
 		boardModifyRes.setDeletedAttachedFileCnt((Integer)
-		singleItemDecoder.getValueFromReadableMiddleObject(pathStack.peek()
+		singleItemDecoder.getValue(pathStack.peek()
 			, "deletedAttachedFileCnt" // itemName
 			, kr.pe.codda.common.type.SingleItemType.INTEGER // itemType
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleReadableObject));
+			, receivedMiddleObject));
 
 		int deletedAttachedFile$2ListSize = boardModifyRes.getDeletedAttachedFileCnt();
 		if (deletedAttachedFile$2ListSize < 0) {
@@ -65,16 +65,16 @@ public final class BoardModifyResDecoder extends AbstractMessageDecoder {
 			throw new kr.pe.codda.common.exception.BodyFormatException(errorMessage);
 		}
 
-		Object deletedAttachedFile$2ArrayMiddleObject = singleItemDecoder.getArrayMiddleObjectFromReadableMiddleObject(pathStack.peek(), "deletedAttachedFile", deletedAttachedFile$2ListSize, middleReadableObject);
+		Object deletedAttachedFile$2ArrayMiddleObject = singleItemDecoder.getArrayMiddleObject(pathStack.peek(), "deletedAttachedFile", deletedAttachedFile$2ListSize, receivedMiddleObject);
 		java.util.List<BoardModifyRes.DeletedAttachedFile> deletedAttachedFile$2List = new java.util.ArrayList<BoardModifyRes.DeletedAttachedFile>();
 		for (int i2=0; i2 < deletedAttachedFile$2ListSize; i2++) {
 			pathStack.push(new StringBuilder(pathStack.peek()).append(".").append("DeletedAttachedFile").append("[").append(i2).append("]").toString());
-			Object deletedAttachedFile$2MiddleWritableObject= singleItemDecoder.getReadableMiddleObjFromArrayMiddleObject(pathStack.peek(), deletedAttachedFile$2ArrayMiddleObject, i2);
+			Object deletedAttachedFile$2MiddleWritableObject= singleItemDecoder.getMiddleObjectFromArrayMiddleObject(pathStack.peek(), deletedAttachedFile$2ArrayMiddleObject, i2);
 			BoardModifyRes.DeletedAttachedFile deletedAttachedFile$2 = new BoardModifyRes.DeletedAttachedFile();
 			deletedAttachedFile$2List.add(deletedAttachedFile$2);
 
 			deletedAttachedFile$2.setAttachedFileSeq((Short)
-			singleItemDecoder.getValueFromReadableMiddleObject(pathStack.peek()
+			singleItemDecoder.getValue(pathStack.peek()
 				, "attachedFileSeq" // itemName
 				, kr.pe.codda.common.type.SingleItemType.UNSIGNED_BYTE // itemType
 				, -1 // itemSize

@@ -30,26 +30,26 @@ import kr.pe.codda.common.protocol.SingleItemDecoderIF;
 public final class MemberAllInformationReqDecoder extends AbstractMessageDecoder {
 
 	@Override
-	protected AbstractMessage decodeBody(SingleItemDecoderIF singleItemDecoder, Object  middleReadableObject) throws BodyFormatException {
+	protected AbstractMessage decodeBody(SingleItemDecoderIF singleItemDecoder, Object receivedMiddleObject) throws BodyFormatException {
 		MemberAllInformationReq memberAllInformationReq = new MemberAllInformationReq();
 		java.util.LinkedList<String> pathStack = new java.util.LinkedList<String>();
 		pathStack.push("MemberAllInformationReq");
 
 		memberAllInformationReq.setRequestedUserID((String)
-		singleItemDecoder.getValueFromReadableMiddleObject(pathStack.peek()
+		singleItemDecoder.getValue(pathStack.peek()
 			, "requestedUserID" // itemName
 			, kr.pe.codda.common.type.SingleItemType.UB_PASCAL_STRING // itemType
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleReadableObject));
+			, receivedMiddleObject));
 
 		memberAllInformationReq.setTargetUserID((String)
-		singleItemDecoder.getValueFromReadableMiddleObject(pathStack.peek()
+		singleItemDecoder.getValue(pathStack.peek()
 			, "targetUserID" // itemName
 			, kr.pe.codda.common.type.SingleItemType.UB_PASCAL_STRING // itemType
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleReadableObject));
+			, receivedMiddleObject));
 
 		pathStack.pop();
 

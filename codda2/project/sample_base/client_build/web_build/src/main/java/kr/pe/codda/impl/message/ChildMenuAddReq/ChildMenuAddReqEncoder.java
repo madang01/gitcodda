@@ -28,44 +28,44 @@ import kr.pe.codda.common.protocol.SingleItemEncoderIF;
  */
 public final class ChildMenuAddReqEncoder extends AbstractMessageEncoder {
 	@Override
-	public void encode(AbstractMessage messageObj, SingleItemEncoderIF singleItemEncoder, Object writableMiddleObject) throws Exception {
+	public void encode(AbstractMessage messageObj, SingleItemEncoderIF singleItemEncoder, Object middleObjectToSend) throws Exception {
 		ChildMenuAddReq childMenuAddReq = (ChildMenuAddReq)messageObj;
-		encodeBody(childMenuAddReq, singleItemEncoder, writableMiddleObject);
+		encodeBody(childMenuAddReq, singleItemEncoder, middleObjectToSend);
 	}
 
 
-	private void encodeBody(ChildMenuAddReq childMenuAddReq, SingleItemEncoderIF singleItemEncoder, Object middleWritableObject) throws Exception {
+	private void encodeBody(ChildMenuAddReq childMenuAddReq, SingleItemEncoderIF singleItemEncoder, Object middleObjectToSend) throws Exception {
 		java.util.LinkedList<String> pathStack = new java.util.LinkedList<String>();
 		pathStack.push("ChildMenuAddReq");
 
 
-		singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "requestedUserID"
+		singleItemEncoder.putValue(pathStack.peek(), "requestedUserID"
 			, kr.pe.codda.common.type.SingleItemType.UB_PASCAL_STRING // itemType
 			, childMenuAddReq.getRequestedUserID() // itemValue
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleWritableObject);
+			, middleObjectToSend);
 
-		singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "parentNo"
+		singleItemEncoder.putValue(pathStack.peek(), "parentNo"
 			, kr.pe.codda.common.type.SingleItemType.UNSIGNED_INTEGER // itemType
 			, childMenuAddReq.getParentNo() // itemValue
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleWritableObject);
+			, middleObjectToSend);
 
-		singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "menuName"
+		singleItemEncoder.putValue(pathStack.peek(), "menuName"
 			, kr.pe.codda.common.type.SingleItemType.UB_PASCAL_STRING // itemType
 			, childMenuAddReq.getMenuName() // itemValue
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleWritableObject);
+			, middleObjectToSend);
 
-		singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "linkURL"
+		singleItemEncoder.putValue(pathStack.peek(), "linkURL"
 			, kr.pe.codda.common.type.SingleItemType.UB_PASCAL_STRING // itemType
 			, childMenuAddReq.getLinkURL() // itemValue
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleWritableObject);
+			, middleObjectToSend);
 
 		pathStack.pop();
 	}

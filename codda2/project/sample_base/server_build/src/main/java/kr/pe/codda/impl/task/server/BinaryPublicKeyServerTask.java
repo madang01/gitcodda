@@ -10,7 +10,7 @@ import kr.pe.codda.common.sessionkey.ServerSessionkeyIF;
 import kr.pe.codda.common.sessionkey.ServerSessionkeyManager;
 import kr.pe.codda.impl.message.BinaryPublicKey.BinaryPublicKey;
 import kr.pe.codda.impl.message.MessageResultRes.MessageResultRes;
-import kr.pe.codda.server.PersonalLoginManagerIF;
+import kr.pe.codda.server.LoginManagerIF;
 import kr.pe.codda.server.task.AbstractServerTask;
 import kr.pe.codda.server.task.ToLetterCarrier;
 
@@ -22,7 +22,7 @@ public class BinaryPublicKeyServerTask extends AbstractServerTask {
 	}
 
 	@Override
-	public void doTask(String projectName, PersonalLoginManagerIF personalLoginManager, ToLetterCarrier toLetterCarrier,
+	public void doTask(String projectName, LoginManagerIF personalLoginManager, ToLetterCarrier toLetterCarrier,
 			AbstractMessage inputMessage) throws Exception {
 		doWork(projectName, toLetterCarrier, (BinaryPublicKey)inputMessage);
 		

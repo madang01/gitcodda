@@ -1,19 +1,20 @@
-/*
+/*******************************************************************************
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
- *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *  
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *  
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- */
+ *******************************************************************************/
+
 package kr.pe.codda.common.protocol.thb;
 
 import java.util.logging.Level;
@@ -46,7 +47,7 @@ public class THBSingleItemEncoder implements SingleItemEncoderIF {
 	
 
 	@Override
-	public void putValueToWritableMiddleObject(String path, String itemName,
+	public void putValue(String path, String itemName,
 			SingleItemType singleItemType, Object nativeItemValue,
 			int itemSize, String nativeItemCharset, Object writableMiddleObject) throws Exception {
 		if (null == path) {
@@ -115,18 +116,18 @@ public class THBSingleItemEncoder implements SingleItemEncoderIF {
 	}
 
 	@Override
-	public Object getWritableMiddleObjectjFromArrayMiddleObject(String path, Object arrayObj, int inx) throws BodyFormatException {
+	public Object getMiddleObjectFromArrayMiddleObject(String path, Object arrayObj, int inx) throws BodyFormatException {
 		return arrayObj;
 	}
 	
 	@Override
-	public Object getArrayMiddleObjectFromWritableMiddleObject(String path, String arrayName,
+	public Object getArrayMiddleObject(String path, String arrayName,
 			int arrayCntValue, Object writableMiddleObject) throws BodyFormatException {
 		return writableMiddleObject;
 	}
 	
 	@Override
-	public Object getGroupMiddleObjectFromWritableMiddleObject(String path, String groupName, Object writableMiddleObject)
+	public Object getGroupMiddleObject(String path, String groupName, Object writableMiddleObject)
 			throws BodyFormatException {
 		return writableMiddleObject;
 	}

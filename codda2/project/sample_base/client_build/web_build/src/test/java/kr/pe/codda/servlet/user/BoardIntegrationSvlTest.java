@@ -62,8 +62,9 @@ import nl.captcha.Captcha;
 
 public class BoardIntegrationSvlTest {
 	private Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
-	private static File installedBasePath = null;
-	private static File installedPath = null;
+	
+	private final static String installedPathString = "D:\\gitcodda\\codda2";
+	private static File installedPath = new File(installedPathString);
 	private static File wasLibPath = null;
 	private final static String mainProjectName = "sample_base";
 
@@ -85,22 +86,6 @@ public class BoardIntegrationSvlTest {
 		rootLogger.setLevel(Level.INFO);
 		rootLogger.addHandler(handler);
 //////////////////////////////////////////////////
-
-		installedBasePath = new File("D:\\gitcodda");
-
-		if (!installedBasePath.exists()) {
-			fail("the installed path doesn't exist");
-		}
-
-		if (!installedBasePath.isDirectory()) {
-			fail("the installed path isn't a directory");
-		}
-
-		String installedPathString = new StringBuilder(installedBasePath.getAbsolutePath()).append(File.separator)
-				.append(CommonStaticFinalVars.ROOT_PROJECT_NAME).toString();
-
-		installedPath = new File(installedPathString);
-
 		if (!installedPath.exists()) {
 			fail("the installed path doesn't exist");
 		}

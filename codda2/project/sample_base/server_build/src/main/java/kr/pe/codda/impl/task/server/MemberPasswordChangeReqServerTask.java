@@ -21,7 +21,7 @@ import kr.pe.codda.common.sessionkey.ServerSymmetricKeyIF;
 import kr.pe.codda.common.util.CommonStaticUtil;
 import kr.pe.codda.impl.message.MemberPasswordChangeReq.MemberPasswordChangeReq;
 import kr.pe.codda.impl.message.MessageResultRes.MessageResultRes;
-import kr.pe.codda.server.PersonalLoginManagerIF;
+import kr.pe.codda.server.LoginManagerIF;
 import kr.pe.codda.server.lib.MemberRoleType;
 import kr.pe.codda.server.lib.MemberStateType;
 import kr.pe.codda.server.lib.PasswordPairOfMemberTable;
@@ -54,7 +54,7 @@ public class MemberPasswordChangeReqServerTask extends AbstractServerTask {
 
 	@Override
 	public void doTask(String projectName, 
-			PersonalLoginManagerIF personalLoginManager, 
+			LoginManagerIF personalLoginManager, 
 			ToLetterCarrier toLetterCarrier,
 			AbstractMessage inputMessage) throws Exception {
 		try {

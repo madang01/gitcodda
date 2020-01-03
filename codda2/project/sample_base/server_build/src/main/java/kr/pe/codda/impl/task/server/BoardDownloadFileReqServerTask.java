@@ -16,7 +16,7 @@ import kr.pe.codda.common.message.AbstractMessage;
 import kr.pe.codda.impl.message.BoardDownloadFileReq.BoardDownloadFileReq;
 import kr.pe.codda.impl.message.BoardDownloadFileRes.BoardDownloadFileRes;
 import kr.pe.codda.impl.message.MessageResultRes.MessageResultRes;
-import kr.pe.codda.server.PersonalLoginManagerIF;
+import kr.pe.codda.server.LoginManagerIF;
 import kr.pe.codda.server.lib.BoardStateType;
 import kr.pe.codda.server.lib.MemberRoleType;
 import kr.pe.codda.server.lib.PermissionType;
@@ -45,7 +45,7 @@ public class BoardDownloadFileReqServerTask extends AbstractServerTask {
 	}
 
 	@Override
-	public void doTask(String projectName, PersonalLoginManagerIF personalLoginManager, ToLetterCarrier toLetterCarrier,
+	public void doTask(String projectName, LoginManagerIF personalLoginManager, ToLetterCarrier toLetterCarrier,
 			AbstractMessage inputMessage) throws Exception {
 		try {
 			AbstractMessage outputMessage = doWork(ServerCommonStaticFinalVars.DEFAULT_DBCP_NAME, (BoardDownloadFileReq) inputMessage);

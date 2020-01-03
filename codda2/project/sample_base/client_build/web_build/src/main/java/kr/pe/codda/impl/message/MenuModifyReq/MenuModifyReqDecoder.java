@@ -30,42 +30,42 @@ import kr.pe.codda.common.protocol.SingleItemDecoderIF;
 public final class MenuModifyReqDecoder extends AbstractMessageDecoder {
 
 	@Override
-	protected AbstractMessage decodeBody(SingleItemDecoderIF singleItemDecoder, Object  middleReadableObject) throws BodyFormatException {
+	protected AbstractMessage decodeBody(SingleItemDecoderIF singleItemDecoder, Object receivedMiddleObject) throws BodyFormatException {
 		MenuModifyReq menuModifyReq = new MenuModifyReq();
 		java.util.LinkedList<String> pathStack = new java.util.LinkedList<String>();
 		pathStack.push("MenuModifyReq");
 
 		menuModifyReq.setRequestedUserID((String)
-		singleItemDecoder.getValueFromReadableMiddleObject(pathStack.peek()
+		singleItemDecoder.getValue(pathStack.peek()
 			, "requestedUserID" // itemName
 			, kr.pe.codda.common.type.SingleItemType.UB_PASCAL_STRING // itemType
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleReadableObject));
+			, receivedMiddleObject));
 
 		menuModifyReq.setMenuNo((Long)
-		singleItemDecoder.getValueFromReadableMiddleObject(pathStack.peek()
+		singleItemDecoder.getValue(pathStack.peek()
 			, "menuNo" // itemName
 			, kr.pe.codda.common.type.SingleItemType.UNSIGNED_INTEGER // itemType
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleReadableObject));
+			, receivedMiddleObject));
 
 		menuModifyReq.setMenuName((String)
-		singleItemDecoder.getValueFromReadableMiddleObject(pathStack.peek()
+		singleItemDecoder.getValue(pathStack.peek()
 			, "menuName" // itemName
 			, kr.pe.codda.common.type.SingleItemType.UB_PASCAL_STRING // itemType
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleReadableObject));
+			, receivedMiddleObject));
 
 		menuModifyReq.setLinkURL((String)
-		singleItemDecoder.getValueFromReadableMiddleObject(pathStack.peek()
+		singleItemDecoder.getValue(pathStack.peek()
 			, "linkURL" // itemName
 			, kr.pe.codda.common.type.SingleItemType.UB_PASCAL_STRING // itemType
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleReadableObject));
+			, receivedMiddleObject));
 
 		pathStack.pop();
 

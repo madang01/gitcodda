@@ -28,23 +28,23 @@ import kr.pe.codda.common.protocol.SingleItemEncoderIF;
  */
 public final class BoardInfoListResEncoder extends AbstractMessageEncoder {
 	@Override
-	public void encode(AbstractMessage messageObj, SingleItemEncoderIF singleItemEncoder, Object writableMiddleObject) throws Exception {
+	public void encode(AbstractMessage messageObj, SingleItemEncoderIF singleItemEncoder, Object middleObjectToSend) throws Exception {
 		BoardInfoListRes boardInfoListRes = (BoardInfoListRes)messageObj;
-		encodeBody(boardInfoListRes, singleItemEncoder, writableMiddleObject);
+		encodeBody(boardInfoListRes, singleItemEncoder, middleObjectToSend);
 	}
 
 
-	private void encodeBody(BoardInfoListRes boardInfoListRes, SingleItemEncoderIF singleItemEncoder, Object middleWritableObject) throws Exception {
+	private void encodeBody(BoardInfoListRes boardInfoListRes, SingleItemEncoderIF singleItemEncoder, Object middleObjectToSend) throws Exception {
 		java.util.LinkedList<String> pathStack = new java.util.LinkedList<String>();
 		pathStack.push("BoardInfoListRes");
 
 
-		singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "cnt"
+		singleItemEncoder.putValue(pathStack.peek(), "cnt"
 			, kr.pe.codda.common.type.SingleItemType.INTEGER // itemType
 			, boardInfoListRes.getCnt() // itemValue
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleWritableObject);
+			, middleObjectToSend);
 
 		java.util.List<BoardInfoListRes.BoardInfo> boardInfo$2List = boardInfoListRes.getBoardInfoList();
 
@@ -63,69 +63,69 @@ public final class BoardInfoListResEncoder extends AbstractMessageEncoder {
 				throw new kr.pe.codda.common.exception.BodyFormatException(errorMessage);
 			}
 
-			Object boardInfo$2ArrayMiddleObject = singleItemEncoder.getArrayMiddleObjectFromWritableMiddleObject(pathStack.peek(), "boardInfo", boardInfo$2ListSize, middleWritableObject);
+			Object boardInfo$2ArrayMiddleObject = singleItemEncoder.getArrayMiddleObject(pathStack.peek(), "boardInfo", boardInfo$2ListSize, middleObjectToSend);
 			for (int i2=0; i2 < boardInfo$2ListSize; i2++) {
 				pathStack.push(new StringBuilder(pathStack.peek()).append(".").append("BoardInfo").append("[").append(i2).append("]").toString());
-				Object boardInfo$2MiddleWritableObject = singleItemEncoder.getWritableMiddleObjectjFromArrayMiddleObject(pathStack.peek(), boardInfo$2ArrayMiddleObject, i2);
+				Object boardInfo$2MiddleWritableObject = singleItemEncoder.getMiddleObjectFromArrayMiddleObject(pathStack.peek(), boardInfo$2ArrayMiddleObject, i2);
 				BoardInfoListRes.BoardInfo boardInfo$2 = boardInfo$2List.get(i2);
 
-				singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "boardID"
+				singleItemEncoder.putValue(pathStack.peek(), "boardID"
 					, kr.pe.codda.common.type.SingleItemType.UNSIGNED_BYTE // itemType
 					, boardInfo$2.getBoardID() // itemValue
 					, -1 // itemSize
 					, null // nativeItemCharset
 					, boardInfo$2MiddleWritableObject);
 
-				singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "boardName"
+				singleItemEncoder.putValue(pathStack.peek(), "boardName"
 					, kr.pe.codda.common.type.SingleItemType.UB_PASCAL_STRING // itemType
 					, boardInfo$2.getBoardName() // itemValue
 					, -1 // itemSize
 					, null // nativeItemCharset
 					, boardInfo$2MiddleWritableObject);
 
-				singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "boardListType"
+				singleItemEncoder.putValue(pathStack.peek(), "boardListType"
 					, kr.pe.codda.common.type.SingleItemType.BYTE // itemType
 					, boardInfo$2.getBoardListType() // itemValue
 					, -1 // itemSize
 					, null // nativeItemCharset
 					, boardInfo$2MiddleWritableObject);
 
-				singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "boardReplyPolicyType"
+				singleItemEncoder.putValue(pathStack.peek(), "boardReplyPolicyType"
 					, kr.pe.codda.common.type.SingleItemType.BYTE // itemType
 					, boardInfo$2.getBoardReplyPolicyType() // itemValue
 					, -1 // itemSize
 					, null // nativeItemCharset
 					, boardInfo$2MiddleWritableObject);
 
-				singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "boardWritePermissionType"
+				singleItemEncoder.putValue(pathStack.peek(), "boardWritePermissionType"
 					, kr.pe.codda.common.type.SingleItemType.BYTE // itemType
 					, boardInfo$2.getBoardWritePermissionType() // itemValue
 					, -1 // itemSize
 					, null // nativeItemCharset
 					, boardInfo$2MiddleWritableObject);
 
-				singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "boardReplyPermissionType"
+				singleItemEncoder.putValue(pathStack.peek(), "boardReplyPermissionType"
 					, kr.pe.codda.common.type.SingleItemType.BYTE // itemType
 					, boardInfo$2.getBoardReplyPermissionType() // itemValue
 					, -1 // itemSize
 					, null // nativeItemCharset
 					, boardInfo$2MiddleWritableObject);
 
-				singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "cnt"
+				singleItemEncoder.putValue(pathStack.peek(), "cnt"
 					, kr.pe.codda.common.type.SingleItemType.LONG // itemType
 					, boardInfo$2.getCnt() // itemValue
 					, -1 // itemSize
 					, null // nativeItemCharset
 					, boardInfo$2MiddleWritableObject);
 
-				singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "total"
+				singleItemEncoder.putValue(pathStack.peek(), "total"
 					, kr.pe.codda.common.type.SingleItemType.LONG // itemType
 					, boardInfo$2.getTotal() // itemValue
 					, -1 // itemSize
 					, null // nativeItemCharset
 					, boardInfo$2MiddleWritableObject);
 
-				singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "nextBoardNo"
+				singleItemEncoder.putValue(pathStack.peek(), "nextBoardNo"
 					, kr.pe.codda.common.type.SingleItemType.UNSIGNED_INTEGER // itemType
 					, boardInfo$2.getNextBoardNo() // itemValue
 					, -1 // itemSize

@@ -28,37 +28,37 @@ import kr.pe.codda.common.protocol.SingleItemEncoderIF;
  */
 public final class MemberUnBlockReqEncoder extends AbstractMessageEncoder {
 	@Override
-	public void encode(AbstractMessage messageObj, SingleItemEncoderIF singleItemEncoder, Object writableMiddleObject) throws Exception {
+	public void encode(AbstractMessage messageObj, SingleItemEncoderIF singleItemEncoder, Object middleObjectToSend) throws Exception {
 		MemberUnBlockReq memberUnBlockReq = (MemberUnBlockReq)messageObj;
-		encodeBody(memberUnBlockReq, singleItemEncoder, writableMiddleObject);
+		encodeBody(memberUnBlockReq, singleItemEncoder, middleObjectToSend);
 	}
 
 
-	private void encodeBody(MemberUnBlockReq memberUnBlockReq, SingleItemEncoderIF singleItemEncoder, Object middleWritableObject) throws Exception {
+	private void encodeBody(MemberUnBlockReq memberUnBlockReq, SingleItemEncoderIF singleItemEncoder, Object middleObjectToSend) throws Exception {
 		java.util.LinkedList<String> pathStack = new java.util.LinkedList<String>();
 		pathStack.push("MemberUnBlockReq");
 
 
-		singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "requestedUserID"
+		singleItemEncoder.putValue(pathStack.peek(), "requestedUserID"
 			, kr.pe.codda.common.type.SingleItemType.UB_PASCAL_STRING // itemType
 			, memberUnBlockReq.getRequestedUserID() // itemValue
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleWritableObject);
+			, middleObjectToSend);
 
-		singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "ip"
+		singleItemEncoder.putValue(pathStack.peek(), "ip"
 			, kr.pe.codda.common.type.SingleItemType.UB_PASCAL_STRING // itemType
 			, memberUnBlockReq.getIp() // itemValue
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleWritableObject);
+			, middleObjectToSend);
 
-		singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "targetUserID"
+		singleItemEncoder.putValue(pathStack.peek(), "targetUserID"
 			, kr.pe.codda.common.type.SingleItemType.UB_PASCAL_STRING // itemType
 			, memberUnBlockReq.getTargetUserID() // itemValue
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleWritableObject);
+			, middleObjectToSend);
 
 		pathStack.pop();
 	}

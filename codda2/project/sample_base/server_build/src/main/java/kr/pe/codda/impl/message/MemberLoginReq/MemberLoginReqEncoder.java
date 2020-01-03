@@ -28,51 +28,51 @@ import kr.pe.codda.common.protocol.SingleItemEncoderIF;
  */
 public final class MemberLoginReqEncoder extends AbstractMessageEncoder {
 	@Override
-	public void encode(AbstractMessage messageObj, SingleItemEncoderIF singleItemEncoder, Object writableMiddleObject) throws Exception {
+	public void encode(AbstractMessage messageObj, SingleItemEncoderIF singleItemEncoder, Object middleObjectToSend) throws Exception {
 		MemberLoginReq memberLoginReq = (MemberLoginReq)messageObj;
-		encodeBody(memberLoginReq, singleItemEncoder, writableMiddleObject);
+		encodeBody(memberLoginReq, singleItemEncoder, middleObjectToSend);
 	}
 
 
-	private void encodeBody(MemberLoginReq memberLoginReq, SingleItemEncoderIF singleItemEncoder, Object middleWritableObject) throws Exception {
+	private void encodeBody(MemberLoginReq memberLoginReq, SingleItemEncoderIF singleItemEncoder, Object middleObjectToSend) throws Exception {
 		java.util.LinkedList<String> pathStack = new java.util.LinkedList<String>();
 		pathStack.push("MemberLoginReq");
 
 
-		singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "idCipherBase64"
+		singleItemEncoder.putValue(pathStack.peek(), "idCipherBase64"
 			, kr.pe.codda.common.type.SingleItemType.SI_PASCAL_STRING // itemType
 			, memberLoginReq.getIdCipherBase64() // itemValue
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleWritableObject);
+			, middleObjectToSend);
 
-		singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "pwdCipherBase64"
+		singleItemEncoder.putValue(pathStack.peek(), "pwdCipherBase64"
 			, kr.pe.codda.common.type.SingleItemType.SI_PASCAL_STRING // itemType
 			, memberLoginReq.getPwdCipherBase64() // itemValue
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleWritableObject);
+			, middleObjectToSend);
 
-		singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "sessionKeyBase64"
+		singleItemEncoder.putValue(pathStack.peek(), "sessionKeyBase64"
 			, kr.pe.codda.common.type.SingleItemType.SI_PASCAL_STRING // itemType
 			, memberLoginReq.getSessionKeyBase64() // itemValue
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleWritableObject);
+			, middleObjectToSend);
 
-		singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "ivBase64"
+		singleItemEncoder.putValue(pathStack.peek(), "ivBase64"
 			, kr.pe.codda.common.type.SingleItemType.SI_PASCAL_STRING // itemType
 			, memberLoginReq.getIvBase64() // itemValue
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleWritableObject);
+			, middleObjectToSend);
 
-		singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "ip"
+		singleItemEncoder.putValue(pathStack.peek(), "ip"
 			, kr.pe.codda.common.type.SingleItemType.UB_PASCAL_STRING // itemType
 			, memberLoginReq.getIp() // itemValue
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleWritableObject);
+			, middleObjectToSend);
 
 		pathStack.pop();
 	}

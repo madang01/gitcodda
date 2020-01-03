@@ -28,30 +28,30 @@ import kr.pe.codda.common.protocol.SingleItemEncoderIF;
  */
 public final class BoardInfoDeleteReqEncoder extends AbstractMessageEncoder {
 	@Override
-	public void encode(AbstractMessage messageObj, SingleItemEncoderIF singleItemEncoder, Object writableMiddleObject) throws Exception {
+	public void encode(AbstractMessage messageObj, SingleItemEncoderIF singleItemEncoder, Object middleObjectToSend) throws Exception {
 		BoardInfoDeleteReq boardInfoDeleteReq = (BoardInfoDeleteReq)messageObj;
-		encodeBody(boardInfoDeleteReq, singleItemEncoder, writableMiddleObject);
+		encodeBody(boardInfoDeleteReq, singleItemEncoder, middleObjectToSend);
 	}
 
 
-	private void encodeBody(BoardInfoDeleteReq boardInfoDeleteReq, SingleItemEncoderIF singleItemEncoder, Object middleWritableObject) throws Exception {
+	private void encodeBody(BoardInfoDeleteReq boardInfoDeleteReq, SingleItemEncoderIF singleItemEncoder, Object middleObjectToSend) throws Exception {
 		java.util.LinkedList<String> pathStack = new java.util.LinkedList<String>();
 		pathStack.push("BoardInfoDeleteReq");
 
 
-		singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "requestedUserID"
+		singleItemEncoder.putValue(pathStack.peek(), "requestedUserID"
 			, kr.pe.codda.common.type.SingleItemType.UB_PASCAL_STRING // itemType
 			, boardInfoDeleteReq.getRequestedUserID() // itemValue
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleWritableObject);
+			, middleObjectToSend);
 
-		singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "boardID"
+		singleItemEncoder.putValue(pathStack.peek(), "boardID"
 			, kr.pe.codda.common.type.SingleItemType.UNSIGNED_BYTE // itemType
 			, boardInfoDeleteReq.getBoardID() // itemValue
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleWritableObject);
+			, middleObjectToSend);
 
 		pathStack.pop();
 	}

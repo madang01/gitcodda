@@ -30,42 +30,42 @@ import kr.pe.codda.common.protocol.SingleItemDecoderIF;
 public final class PersonalActivityHistoryReqDecoder extends AbstractMessageDecoder {
 
 	@Override
-	protected AbstractMessage decodeBody(SingleItemDecoderIF singleItemDecoder, Object  middleReadableObject) throws BodyFormatException {
+	protected AbstractMessage decodeBody(SingleItemDecoderIF singleItemDecoder, Object receivedMiddleObject) throws BodyFormatException {
 		PersonalActivityHistoryReq personalActivityHistoryReq = new PersonalActivityHistoryReq();
 		java.util.LinkedList<String> pathStack = new java.util.LinkedList<String>();
 		pathStack.push("PersonalActivityHistoryReq");
 
 		personalActivityHistoryReq.setRequestedUserID((String)
-		singleItemDecoder.getValueFromReadableMiddleObject(pathStack.peek()
+		singleItemDecoder.getValue(pathStack.peek()
 			, "requestedUserID" // itemName
 			, kr.pe.codda.common.type.SingleItemType.UB_PASCAL_STRING // itemType
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleReadableObject));
+			, receivedMiddleObject));
 
 		personalActivityHistoryReq.setTargetUserID((String)
-		singleItemDecoder.getValueFromReadableMiddleObject(pathStack.peek()
+		singleItemDecoder.getValue(pathStack.peek()
 			, "targetUserID" // itemName
 			, kr.pe.codda.common.type.SingleItemType.UB_PASCAL_STRING // itemType
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleReadableObject));
+			, receivedMiddleObject));
 
 		personalActivityHistoryReq.setPageNo((Integer)
-		singleItemDecoder.getValueFromReadableMiddleObject(pathStack.peek()
+		singleItemDecoder.getValue(pathStack.peek()
 			, "pageNo" // itemName
 			, kr.pe.codda.common.type.SingleItemType.INTEGER // itemType
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleReadableObject));
+			, receivedMiddleObject));
 
 		personalActivityHistoryReq.setPageSize((Integer)
-		singleItemDecoder.getValueFromReadableMiddleObject(pathStack.peek()
+		singleItemDecoder.getValue(pathStack.peek()
 			, "pageSize" // itemName
 			, kr.pe.codda.common.type.SingleItemType.UNSIGNED_SHORT // itemType
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleReadableObject));
+			, receivedMiddleObject));
 
 		pathStack.pop();
 

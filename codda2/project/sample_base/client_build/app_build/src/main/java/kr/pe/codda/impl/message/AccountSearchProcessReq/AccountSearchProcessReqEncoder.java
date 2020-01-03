@@ -28,65 +28,65 @@ import kr.pe.codda.common.protocol.SingleItemEncoderIF;
  */
 public final class AccountSearchProcessReqEncoder extends AbstractMessageEncoder {
 	@Override
-	public void encode(AbstractMessage messageObj, SingleItemEncoderIF singleItemEncoder, Object writableMiddleObject) throws Exception {
+	public void encode(AbstractMessage messageObj, SingleItemEncoderIF singleItemEncoder, Object middleObjectToSend) throws Exception {
 		AccountSearchProcessReq accountSearchProcessReq = (AccountSearchProcessReq)messageObj;
-		encodeBody(accountSearchProcessReq, singleItemEncoder, writableMiddleObject);
+		encodeBody(accountSearchProcessReq, singleItemEncoder, middleObjectToSend);
 	}
 
 
-	private void encodeBody(AccountSearchProcessReq accountSearchProcessReq, SingleItemEncoderIF singleItemEncoder, Object middleWritableObject) throws Exception {
+	private void encodeBody(AccountSearchProcessReq accountSearchProcessReq, SingleItemEncoderIF singleItemEncoder, Object middleObjectToSend) throws Exception {
 		java.util.LinkedList<String> pathStack = new java.util.LinkedList<String>();
 		pathStack.push("AccountSearchProcessReq");
 
 
-		singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "accountSearchType"
+		singleItemEncoder.putValue(pathStack.peek(), "accountSearchType"
 			, kr.pe.codda.common.type.SingleItemType.BYTE // itemType
 			, accountSearchProcessReq.getAccountSearchType() // itemValue
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleWritableObject);
+			, middleObjectToSend);
 
-		singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "emailCipherBase64"
+		singleItemEncoder.putValue(pathStack.peek(), "emailCipherBase64"
 			, kr.pe.codda.common.type.SingleItemType.US_PASCAL_STRING // itemType
 			, accountSearchProcessReq.getEmailCipherBase64() // itemValue
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleWritableObject);
+			, middleObjectToSend);
 
-		singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "secretAuthenticationValueCipherBase64"
+		singleItemEncoder.putValue(pathStack.peek(), "secretAuthenticationValueCipherBase64"
 			, kr.pe.codda.common.type.SingleItemType.UB_PASCAL_STRING // itemType
 			, accountSearchProcessReq.getSecretAuthenticationValueCipherBase64() // itemValue
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleWritableObject);
+			, middleObjectToSend);
 
-		singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "newPwdCipherBase64"
+		singleItemEncoder.putValue(pathStack.peek(), "newPwdCipherBase64"
 			, kr.pe.codda.common.type.SingleItemType.SI_PASCAL_STRING // itemType
 			, accountSearchProcessReq.getNewPwdCipherBase64() // itemValue
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleWritableObject);
+			, middleObjectToSend);
 
-		singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "sessionKeyBase64"
+		singleItemEncoder.putValue(pathStack.peek(), "sessionKeyBase64"
 			, kr.pe.codda.common.type.SingleItemType.SI_PASCAL_STRING // itemType
 			, accountSearchProcessReq.getSessionKeyBase64() // itemValue
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleWritableObject);
+			, middleObjectToSend);
 
-		singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "ivBase64"
+		singleItemEncoder.putValue(pathStack.peek(), "ivBase64"
 			, kr.pe.codda.common.type.SingleItemType.SI_PASCAL_STRING // itemType
 			, accountSearchProcessReq.getIvBase64() // itemValue
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleWritableObject);
+			, middleObjectToSend);
 
-		singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "ip"
+		singleItemEncoder.putValue(pathStack.peek(), "ip"
 			, kr.pe.codda.common.type.SingleItemType.UB_PASCAL_STRING // itemType
 			, accountSearchProcessReq.getIp() // itemValue
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleWritableObject);
+			, middleObjectToSend);
 
 		pathStack.pop();
 	}

@@ -450,7 +450,7 @@ public class BoardWriteProcessSvl extends AbstractMultipartServlet implements Im
 		AccessedUserInformation accessedUserformation = getAccessedUserInformationFromSession(req);
 		
 		
-		String newContents = BoardContentsWhiteParserMananger.getInstance().checkXssAttack(this, paramContents);
+		String newContents = BoardContentsWhiteParserMananger.getInstance().checkWhiteValue(this, paramContents);
 		
 
 		BoardWriteReq boardWriteReq = new BoardWriteReq();

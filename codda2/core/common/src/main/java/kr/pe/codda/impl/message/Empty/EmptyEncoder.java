@@ -28,12 +28,12 @@ import kr.pe.codda.common.protocol.SingleItemEncoderIF;
  */
 public final class EmptyEncoder extends AbstractMessageEncoder {
 	@Override
-	public void encode(AbstractMessage messageObj, SingleItemEncoderIF singleItemEncoder, Object writableMiddleObject) throws Exception {
+	public void encode(AbstractMessage messageObj, SingleItemEncoderIF singleItemEncoder, Object middleObjectToSend) throws Exception {
 		Empty empty = (Empty)messageObj;
-		encodeBody(empty, singleItemEncoder, writableMiddleObject);
+		encodeBody(empty, singleItemEncoder, middleObjectToSend);
 	}
 
 
-	private void encodeBody(Empty empty, SingleItemEncoderIF singleItemEncoder, Object middleWritableObject) throws Exception {
+	private void encodeBody(Empty empty, SingleItemEncoderIF singleItemEncoder, Object middleObjectToSend) throws Exception {
 	}
 }

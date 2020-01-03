@@ -28,72 +28,72 @@ import kr.pe.codda.common.protocol.SingleItemEncoderIF;
  */
 public final class BoardReplyReqEncoder extends AbstractMessageEncoder {
 	@Override
-	public void encode(AbstractMessage messageObj, SingleItemEncoderIF singleItemEncoder, Object writableMiddleObject) throws Exception {
+	public void encode(AbstractMessage messageObj, SingleItemEncoderIF singleItemEncoder, Object middleObjectToSend) throws Exception {
 		BoardReplyReq boardReplyReq = (BoardReplyReq)messageObj;
-		encodeBody(boardReplyReq, singleItemEncoder, writableMiddleObject);
+		encodeBody(boardReplyReq, singleItemEncoder, middleObjectToSend);
 	}
 
 
-	private void encodeBody(BoardReplyReq boardReplyReq, SingleItemEncoderIF singleItemEncoder, Object middleWritableObject) throws Exception {
+	private void encodeBody(BoardReplyReq boardReplyReq, SingleItemEncoderIF singleItemEncoder, Object middleObjectToSend) throws Exception {
 		java.util.LinkedList<String> pathStack = new java.util.LinkedList<String>();
 		pathStack.push("BoardReplyReq");
 
 
-		singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "requestedUserID"
+		singleItemEncoder.putValue(pathStack.peek(), "requestedUserID"
 			, kr.pe.codda.common.type.SingleItemType.UB_PASCAL_STRING // itemType
 			, boardReplyReq.getRequestedUserID() // itemValue
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleWritableObject);
+			, middleObjectToSend);
 
-		singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "ip"
+		singleItemEncoder.putValue(pathStack.peek(), "ip"
 			, kr.pe.codda.common.type.SingleItemType.UB_PASCAL_STRING // itemType
 			, boardReplyReq.getIp() // itemValue
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleWritableObject);
+			, middleObjectToSend);
 
-		singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "boardID"
+		singleItemEncoder.putValue(pathStack.peek(), "boardID"
 			, kr.pe.codda.common.type.SingleItemType.UNSIGNED_BYTE // itemType
 			, boardReplyReq.getBoardID() // itemValue
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleWritableObject);
+			, middleObjectToSend);
 
-		singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "parentBoardNo"
+		singleItemEncoder.putValue(pathStack.peek(), "parentBoardNo"
 			, kr.pe.codda.common.type.SingleItemType.UNSIGNED_INTEGER // itemType
 			, boardReplyReq.getParentBoardNo() // itemValue
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleWritableObject);
+			, middleObjectToSend);
 
-		singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "pwdHashBase64"
+		singleItemEncoder.putValue(pathStack.peek(), "pwdHashBase64"
 			, kr.pe.codda.common.type.SingleItemType.UB_PASCAL_STRING // itemType
 			, boardReplyReq.getPwdHashBase64() // itemValue
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleWritableObject);
+			, middleObjectToSend);
 
-		singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "subject"
+		singleItemEncoder.putValue(pathStack.peek(), "subject"
 			, kr.pe.codda.common.type.SingleItemType.US_PASCAL_STRING // itemType
 			, boardReplyReq.getSubject() // itemValue
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleWritableObject);
+			, middleObjectToSend);
 
-		singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "contents"
+		singleItemEncoder.putValue(pathStack.peek(), "contents"
 			, kr.pe.codda.common.type.SingleItemType.SI_PASCAL_STRING // itemType
 			, boardReplyReq.getContents() // itemValue
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleWritableObject);
+			, middleObjectToSend);
 
-		singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "newAttachedFileCnt"
+		singleItemEncoder.putValue(pathStack.peek(), "newAttachedFileCnt"
 			, kr.pe.codda.common.type.SingleItemType.UNSIGNED_BYTE // itemType
 			, boardReplyReq.getNewAttachedFileCnt() // itemValue
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleWritableObject);
+			, middleObjectToSend);
 
 		java.util.List<BoardReplyReq.NewAttachedFile> newAttachedFile$2List = boardReplyReq.getNewAttachedFileList();
 
@@ -112,20 +112,20 @@ public final class BoardReplyReqEncoder extends AbstractMessageEncoder {
 				throw new kr.pe.codda.common.exception.BodyFormatException(errorMessage);
 			}
 
-			Object newAttachedFile$2ArrayMiddleObject = singleItemEncoder.getArrayMiddleObjectFromWritableMiddleObject(pathStack.peek(), "newAttachedFile", newAttachedFile$2ListSize, middleWritableObject);
+			Object newAttachedFile$2ArrayMiddleObject = singleItemEncoder.getArrayMiddleObject(pathStack.peek(), "newAttachedFile", newAttachedFile$2ListSize, middleObjectToSend);
 			for (int i2=0; i2 < newAttachedFile$2ListSize; i2++) {
 				pathStack.push(new StringBuilder(pathStack.peek()).append(".").append("NewAttachedFile").append("[").append(i2).append("]").toString());
-				Object newAttachedFile$2MiddleWritableObject = singleItemEncoder.getWritableMiddleObjectjFromArrayMiddleObject(pathStack.peek(), newAttachedFile$2ArrayMiddleObject, i2);
+				Object newAttachedFile$2MiddleWritableObject = singleItemEncoder.getMiddleObjectFromArrayMiddleObject(pathStack.peek(), newAttachedFile$2ArrayMiddleObject, i2);
 				BoardReplyReq.NewAttachedFile newAttachedFile$2 = newAttachedFile$2List.get(i2);
 
-				singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "attachedFileName"
+				singleItemEncoder.putValue(pathStack.peek(), "attachedFileName"
 					, kr.pe.codda.common.type.SingleItemType.US_PASCAL_STRING // itemType
 					, newAttachedFile$2.getAttachedFileName() // itemValue
 					, -1 // itemSize
 					, null // nativeItemCharset
 					, newAttachedFile$2MiddleWritableObject);
 
-				singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "attachedFileSize"
+				singleItemEncoder.putValue(pathStack.peek(), "attachedFileSize"
 					, kr.pe.codda.common.type.SingleItemType.LONG // itemType
 					, newAttachedFile$2.getAttachedFileSize() // itemValue
 					, -1 // itemSize

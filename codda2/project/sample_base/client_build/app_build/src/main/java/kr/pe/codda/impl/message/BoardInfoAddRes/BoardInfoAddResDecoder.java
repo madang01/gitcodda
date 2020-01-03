@@ -30,18 +30,18 @@ import kr.pe.codda.common.protocol.SingleItemDecoderIF;
 public final class BoardInfoAddResDecoder extends AbstractMessageDecoder {
 
 	@Override
-	protected AbstractMessage decodeBody(SingleItemDecoderIF singleItemDecoder, Object  middleReadableObject) throws BodyFormatException {
+	protected AbstractMessage decodeBody(SingleItemDecoderIF singleItemDecoder, Object receivedMiddleObject) throws BodyFormatException {
 		BoardInfoAddRes boardInfoAddRes = new BoardInfoAddRes();
 		java.util.LinkedList<String> pathStack = new java.util.LinkedList<String>();
 		pathStack.push("BoardInfoAddRes");
 
 		boardInfoAddRes.setBoardID((Short)
-		singleItemDecoder.getValueFromReadableMiddleObject(pathStack.peek()
+		singleItemDecoder.getValue(pathStack.peek()
 			, "boardID" // itemName
 			, kr.pe.codda.common.type.SingleItemType.UNSIGNED_BYTE // itemType
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleReadableObject));
+			, receivedMiddleObject));
 
 		pathStack.pop();
 

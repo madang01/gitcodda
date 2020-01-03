@@ -28,30 +28,30 @@ import kr.pe.codda.common.protocol.SingleItemEncoderIF;
  */
 public final class UploadImageReqEncoder extends AbstractMessageEncoder {
 	@Override
-	public void encode(AbstractMessage messageObj, SingleItemEncoderIF singleItemEncoder, Object writableMiddleObject) throws Exception {
+	public void encode(AbstractMessage messageObj, SingleItemEncoderIF singleItemEncoder, Object middleObjectToSend) throws Exception {
 		UploadImageReq uploadImageReq = (UploadImageReq)messageObj;
-		encodeBody(uploadImageReq, singleItemEncoder, writableMiddleObject);
+		encodeBody(uploadImageReq, singleItemEncoder, middleObjectToSend);
 	}
 
 
-	private void encodeBody(UploadImageReq uploadImageReq, SingleItemEncoderIF singleItemEncoder, Object middleWritableObject) throws Exception {
+	private void encodeBody(UploadImageReq uploadImageReq, SingleItemEncoderIF singleItemEncoder, Object middleObjectToSend) throws Exception {
 		java.util.LinkedList<String> pathStack = new java.util.LinkedList<String>();
 		pathStack.push("UploadImageReq");
 
 
-		singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "imageFileName"
+		singleItemEncoder.putValue(pathStack.peek(), "imageFileName"
 			, kr.pe.codda.common.type.SingleItemType.UB_PASCAL_STRING // itemType
 			, uploadImageReq.getImageFileName() // itemValue
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleWritableObject);
+			, middleObjectToSend);
 
-		singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "fileSize"
+		singleItemEncoder.putValue(pathStack.peek(), "fileSize"
 			, kr.pe.codda.common.type.SingleItemType.LONG // itemType
 			, uploadImageReq.getFileSize() // itemValue
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleWritableObject);
+			, middleObjectToSend);
 
 		pathStack.pop();
 	}

@@ -28,86 +28,86 @@ import kr.pe.codda.common.protocol.SingleItemEncoderIF;
  */
 public final class MemberInformationResEncoder extends AbstractMessageEncoder {
 	@Override
-	public void encode(AbstractMessage messageObj, SingleItemEncoderIF singleItemEncoder, Object writableMiddleObject) throws Exception {
+	public void encode(AbstractMessage messageObj, SingleItemEncoderIF singleItemEncoder, Object middleObjectToSend) throws Exception {
 		MemberInformationRes memberInformationRes = (MemberInformationRes)messageObj;
-		encodeBody(memberInformationRes, singleItemEncoder, writableMiddleObject);
+		encodeBody(memberInformationRes, singleItemEncoder, middleObjectToSend);
 	}
 
 
-	private void encodeBody(MemberInformationRes memberInformationRes, SingleItemEncoderIF singleItemEncoder, Object middleWritableObject) throws Exception {
+	private void encodeBody(MemberInformationRes memberInformationRes, SingleItemEncoderIF singleItemEncoder, Object middleObjectToSend) throws Exception {
 		java.util.LinkedList<String> pathStack = new java.util.LinkedList<String>();
 		pathStack.push("MemberInformationRes");
 
 
-		singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "targetUserID"
+		singleItemEncoder.putValue(pathStack.peek(), "targetUserID"
 			, kr.pe.codda.common.type.SingleItemType.UB_PASCAL_STRING // itemType
 			, memberInformationRes.getTargetUserID() // itemValue
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleWritableObject);
+			, middleObjectToSend);
 
-		singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "nickname"
+		singleItemEncoder.putValue(pathStack.peek(), "nickname"
 			, kr.pe.codda.common.type.SingleItemType.UB_PASCAL_STRING // itemType
 			, memberInformationRes.getNickname() // itemValue
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleWritableObject);
+			, middleObjectToSend);
 
-		singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "email"
+		singleItemEncoder.putValue(pathStack.peek(), "email"
 			, kr.pe.codda.common.type.SingleItemType.US_PASCAL_STRING // itemType
 			, memberInformationRes.getEmail() // itemValue
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleWritableObject);
+			, middleObjectToSend);
 
-		singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "role"
+		singleItemEncoder.putValue(pathStack.peek(), "role"
 			, kr.pe.codda.common.type.SingleItemType.BYTE // itemType
 			, memberInformationRes.getRole() // itemValue
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleWritableObject);
+			, middleObjectToSend);
 
-		singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "state"
+		singleItemEncoder.putValue(pathStack.peek(), "state"
 			, kr.pe.codda.common.type.SingleItemType.BYTE // itemType
 			, memberInformationRes.getState() // itemValue
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleWritableObject);
+			, middleObjectToSend);
 
-		singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "registeredDate"
+		singleItemEncoder.putValue(pathStack.peek(), "registeredDate"
 			, kr.pe.codda.common.type.SingleItemType.JAVA_SQL_TIMESTAMP // itemType
 			, memberInformationRes.getRegisteredDate() // itemValue
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleWritableObject);
+			, middleObjectToSend);
 
-		singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "lastNicknameModifiedDate"
+		singleItemEncoder.putValue(pathStack.peek(), "lastNicknameModifiedDate"
 			, kr.pe.codda.common.type.SingleItemType.JAVA_SQL_TIMESTAMP // itemType
 			, memberInformationRes.getLastNicknameModifiedDate() // itemValue
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleWritableObject);
+			, middleObjectToSend);
 
-		singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "lastEmailModifiedDate"
+		singleItemEncoder.putValue(pathStack.peek(), "lastEmailModifiedDate"
 			, kr.pe.codda.common.type.SingleItemType.JAVA_SQL_TIMESTAMP // itemType
 			, memberInformationRes.getLastEmailModifiedDate() // itemValue
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleWritableObject);
+			, middleObjectToSend);
 
-		singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "lastPasswordModifiedDate"
+		singleItemEncoder.putValue(pathStack.peek(), "lastPasswordModifiedDate"
 			, kr.pe.codda.common.type.SingleItemType.JAVA_SQL_TIMESTAMP // itemType
 			, memberInformationRes.getLastPasswordModifiedDate() // itemValue
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleWritableObject);
+			, middleObjectToSend);
 
-		singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "lastStateModifiedDate"
+		singleItemEncoder.putValue(pathStack.peek(), "lastStateModifiedDate"
 			, kr.pe.codda.common.type.SingleItemType.JAVA_SQL_TIMESTAMP // itemType
 			, memberInformationRes.getLastStateModifiedDate() // itemValue
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleWritableObject);
+			, middleObjectToSend);
 
 		pathStack.pop();
 	}

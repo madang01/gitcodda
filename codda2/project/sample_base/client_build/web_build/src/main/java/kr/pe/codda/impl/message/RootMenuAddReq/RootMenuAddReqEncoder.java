@@ -28,37 +28,37 @@ import kr.pe.codda.common.protocol.SingleItemEncoderIF;
  */
 public final class RootMenuAddReqEncoder extends AbstractMessageEncoder {
 	@Override
-	public void encode(AbstractMessage messageObj, SingleItemEncoderIF singleItemEncoder, Object writableMiddleObject) throws Exception {
+	public void encode(AbstractMessage messageObj, SingleItemEncoderIF singleItemEncoder, Object middleObjectToSend) throws Exception {
 		RootMenuAddReq rootMenuAddReq = (RootMenuAddReq)messageObj;
-		encodeBody(rootMenuAddReq, singleItemEncoder, writableMiddleObject);
+		encodeBody(rootMenuAddReq, singleItemEncoder, middleObjectToSend);
 	}
 
 
-	private void encodeBody(RootMenuAddReq rootMenuAddReq, SingleItemEncoderIF singleItemEncoder, Object middleWritableObject) throws Exception {
+	private void encodeBody(RootMenuAddReq rootMenuAddReq, SingleItemEncoderIF singleItemEncoder, Object middleObjectToSend) throws Exception {
 		java.util.LinkedList<String> pathStack = new java.util.LinkedList<String>();
 		pathStack.push("RootMenuAddReq");
 
 
-		singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "requestedUserID"
+		singleItemEncoder.putValue(pathStack.peek(), "requestedUserID"
 			, kr.pe.codda.common.type.SingleItemType.UB_PASCAL_STRING // itemType
 			, rootMenuAddReq.getRequestedUserID() // itemValue
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleWritableObject);
+			, middleObjectToSend);
 
-		singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "menuName"
+		singleItemEncoder.putValue(pathStack.peek(), "menuName"
 			, kr.pe.codda.common.type.SingleItemType.UB_PASCAL_STRING // itemType
 			, rootMenuAddReq.getMenuName() // itemValue
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleWritableObject);
+			, middleObjectToSend);
 
-		singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "linkURL"
+		singleItemEncoder.putValue(pathStack.peek(), "linkURL"
 			, kr.pe.codda.common.type.SingleItemType.UB_PASCAL_STRING // itemType
 			, rootMenuAddReq.getLinkURL() // itemValue
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleWritableObject);
+			, middleObjectToSend);
 
 		pathStack.pop();
 	}

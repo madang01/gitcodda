@@ -34,49 +34,49 @@ public final class TreeSiteMenuResEncoder extends AbstractMessageEncoder {
 	}
 	
 	private void encodeBody(TreeSiteMenuRes.Menu menu, java.util.LinkedList<String> pathStack, SingleItemEncoderIF singleItemEncoder, Object menuMiddleWritableObject) throws Exception {
-		singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "menuNo"
+		singleItemEncoder.putValue(pathStack.peek(), "menuNo"
 				, kr.pe.codda.common.type.SingleItemType.UNSIGNED_INTEGER // itemType
 				, menu.getMenuNo() // itemValue
 				, -1 // itemSize
 				, null // nativeItemCharset
 				, menuMiddleWritableObject);
 
-			singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "parentNo"
+			singleItemEncoder.putValue(pathStack.peek(), "parentNo"
 				, kr.pe.codda.common.type.SingleItemType.UNSIGNED_INTEGER // itemType
 				, menu.getParentNo() // itemValue
 				, -1 // itemSize
 				, null // nativeItemCharset
 				, menuMiddleWritableObject);
 
-			singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "depth"
+			singleItemEncoder.putValue(pathStack.peek(), "depth"
 				, kr.pe.codda.common.type.SingleItemType.UNSIGNED_BYTE // itemType
 				, menu.getDepth() // itemValue
 				, -1 // itemSize
 				, null // nativeItemCharset
 				, menuMiddleWritableObject);
 
-			singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "orderSeq"
+			singleItemEncoder.putValue(pathStack.peek(), "orderSeq"
 				, kr.pe.codda.common.type.SingleItemType.UNSIGNED_BYTE // itemType
 				, menu.getOrderSeq() // itemValue
 				, -1 // itemSize
 				, null // nativeItemCharset
 				, menuMiddleWritableObject);
 
-			singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "menuName"
+			singleItemEncoder.putValue(pathStack.peek(), "menuName"
 				, kr.pe.codda.common.type.SingleItemType.UB_PASCAL_STRING // itemType
 				, menu.getMenuName() // itemValue
 				, -1 // itemSize
 				, null // nativeItemCharset
 				, menuMiddleWritableObject);
 
-			singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "linkURL"
+			singleItemEncoder.putValue(pathStack.peek(), "linkURL"
 				, kr.pe.codda.common.type.SingleItemType.UB_PASCAL_STRING // itemType
 				, menu.getLinkURL() // itemValue
 				, -1 // itemSize
 				, null // nativeItemCharset
 				, menuMiddleWritableObject);
 
-			singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "childMenuListSize"
+			singleItemEncoder.putValue(pathStack.peek(), "childMenuListSize"
 				, kr.pe.codda.common.type.SingleItemType.INTEGER // itemType
 				, menu.getChildMenuListSize() // itemValue
 				, -1 // itemSize
@@ -100,10 +100,10 @@ public final class TreeSiteMenuResEncoder extends AbstractMessageEncoder {
 					throw new kr.pe.codda.common.exception.BodyFormatException(errorMessage);
 				}
 				
-				Object childMenuArrayMiddleObject = singleItemEncoder.getArrayMiddleObjectFromWritableMiddleObject(pathStack.peek(), "menu", childMenuListSize, menuMiddleWritableObject);
+				Object childMenuArrayMiddleObject = singleItemEncoder.getArrayMiddleObject(pathStack.peek(), "menu", childMenuListSize, menuMiddleWritableObject);
 				for (int i=0; i < childMenuListSize; i++) {
 					pathStack.push(new StringBuilder(pathStack.peek()).append(".").append("ChildMenu").append("[").append(i).append("]").toString());
-					Object childMenuMiddleWritableObject = singleItemEncoder.getWritableMiddleObjectjFromArrayMiddleObject(pathStack.peek(), childMenuArrayMiddleObject, i);
+					Object childMenuMiddleWritableObject = singleItemEncoder.getMiddleObjectFromArrayMiddleObject(pathStack.peek(), childMenuArrayMiddleObject, i);
 					TreeSiteMenuRes.Menu childMenu = childMenuList.get(i);
 
 					encodeBody(childMenu, pathStack, singleItemEncoder, childMenuMiddleWritableObject);
@@ -118,7 +118,7 @@ public final class TreeSiteMenuResEncoder extends AbstractMessageEncoder {
 		pathStack.push("TreeSiteMenuRes");
 
 
-		singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "rootMenuListSize"
+		singleItemEncoder.putValue(pathStack.peek(), "rootMenuListSize"
 			, kr.pe.codda.common.type.SingleItemType.INTEGER // itemType
 			, treeSiteMenuRes.getRootMenuListSize() // itemValue
 			, -1 // itemSize
@@ -142,10 +142,10 @@ public final class TreeSiteMenuResEncoder extends AbstractMessageEncoder {
 				throw new kr.pe.codda.common.exception.BodyFormatException(errorMessage);
 			}
 
-			Object rootMenuArrayMiddleObject = singleItemEncoder.getArrayMiddleObjectFromWritableMiddleObject(pathStack.peek(), "menu", rootMenuListSize, middleWritableObject);
+			Object rootMenuArrayMiddleObject = singleItemEncoder.getArrayMiddleObject(pathStack.peek(), "menu", rootMenuListSize, middleWritableObject);
 			for (int i=0; i < rootMenuListSize; i++) {
 				pathStack.push(new StringBuilder(pathStack.peek()).append(".").append("RootMenu").append("[").append(i).append("]").toString());
-				Object rootMenuMiddleWritableObject = singleItemEncoder.getWritableMiddleObjectjFromArrayMiddleObject(pathStack.peek(), rootMenuArrayMiddleObject, i);
+				Object rootMenuMiddleWritableObject = singleItemEncoder.getMiddleObjectFromArrayMiddleObject(pathStack.peek(), rootMenuArrayMiddleObject, i);
 				TreeSiteMenuRes.Menu rootMenu = rootMenuList.get(i);
 
 				encodeBody(rootMenu, pathStack, singleItemEncoder, rootMenuMiddleWritableObject);

@@ -5,11 +5,11 @@ public abstract class ServerCommonStaticFinalVars {
 	public static int WEBSITE_ATTACHED_FILE_MAX_COUNT = 2;
 		
 	/** sample_base 프로젝트의 DB 스키마, SB_DB ===> sample_base_database */
-	public static final String DEFAULT_DBCP_NAME = "SB_DB";
+	public static final String DEFAULT_DBCP_NAME = "sb_db";
 	/** 일반적인 테스트용 sample_base 프로젝트의 DB 스키마, general_test_sample_base_database  */
-	public static final String GENERAL_TEST_DBCP_NAME = "GT_SB_DB";
+	public static final String GENERAL_TEST_DBCP_NAME = "gt_sb_db";
 	/** 부하 테스트용 sample_base 프로젝트의 DB 스키마, load_test_sample_base_database */
-	public static final String LOAD_TEST_DBCP_NAME = "LT_SB_DB";
+	public static final String LOAD_TEST_DBCP_NAME = "lt_sb_db";
 	
 	/** 패스워드 최소 문자수 */
 	public static final int MIN_NUMBER_OF_PASSWRORD_CHARRACTERS = 8;

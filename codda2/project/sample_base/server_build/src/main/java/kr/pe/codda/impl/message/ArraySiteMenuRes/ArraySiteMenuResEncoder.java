@@ -28,23 +28,23 @@ import kr.pe.codda.common.protocol.SingleItemEncoderIF;
  */
 public final class ArraySiteMenuResEncoder extends AbstractMessageEncoder {
 	@Override
-	public void encode(AbstractMessage messageObj, SingleItemEncoderIF singleItemEncoder, Object writableMiddleObject) throws Exception {
+	public void encode(AbstractMessage messageObj, SingleItemEncoderIF singleItemEncoder, Object middleObjectToSend) throws Exception {
 		ArraySiteMenuRes arraySiteMenuRes = (ArraySiteMenuRes)messageObj;
-		encodeBody(arraySiteMenuRes, singleItemEncoder, writableMiddleObject);
+		encodeBody(arraySiteMenuRes, singleItemEncoder, middleObjectToSend);
 	}
 
 
-	private void encodeBody(ArraySiteMenuRes arraySiteMenuRes, SingleItemEncoderIF singleItemEncoder, Object middleWritableObject) throws Exception {
+	private void encodeBody(ArraySiteMenuRes arraySiteMenuRes, SingleItemEncoderIF singleItemEncoder, Object middleObjectToSend) throws Exception {
 		java.util.LinkedList<String> pathStack = new java.util.LinkedList<String>();
 		pathStack.push("ArraySiteMenuRes");
 
 
-		singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "cnt"
+		singleItemEncoder.putValue(pathStack.peek(), "cnt"
 			, kr.pe.codda.common.type.SingleItemType.INTEGER // itemType
 			, arraySiteMenuRes.getCnt() // itemValue
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleWritableObject);
+			, middleObjectToSend);
 
 		java.util.List<ArraySiteMenuRes.Menu> menu$2List = arraySiteMenuRes.getMenuList();
 
@@ -63,48 +63,48 @@ public final class ArraySiteMenuResEncoder extends AbstractMessageEncoder {
 				throw new kr.pe.codda.common.exception.BodyFormatException(errorMessage);
 			}
 
-			Object menu$2ArrayMiddleObject = singleItemEncoder.getArrayMiddleObjectFromWritableMiddleObject(pathStack.peek(), "menu", menu$2ListSize, middleWritableObject);
+			Object menu$2ArrayMiddleObject = singleItemEncoder.getArrayMiddleObject(pathStack.peek(), "menu", menu$2ListSize, middleObjectToSend);
 			for (int i2=0; i2 < menu$2ListSize; i2++) {
 				pathStack.push(new StringBuilder(pathStack.peek()).append(".").append("Menu").append("[").append(i2).append("]").toString());
-				Object menu$2MiddleWritableObject = singleItemEncoder.getWritableMiddleObjectjFromArrayMiddleObject(pathStack.peek(), menu$2ArrayMiddleObject, i2);
+				Object menu$2MiddleWritableObject = singleItemEncoder.getMiddleObjectFromArrayMiddleObject(pathStack.peek(), menu$2ArrayMiddleObject, i2);
 				ArraySiteMenuRes.Menu menu$2 = menu$2List.get(i2);
 
-				singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "menuNo"
+				singleItemEncoder.putValue(pathStack.peek(), "menuNo"
 					, kr.pe.codda.common.type.SingleItemType.UNSIGNED_INTEGER // itemType
 					, menu$2.getMenuNo() // itemValue
 					, -1 // itemSize
 					, null // nativeItemCharset
 					, menu$2MiddleWritableObject);
 
-				singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "parentNo"
+				singleItemEncoder.putValue(pathStack.peek(), "parentNo"
 					, kr.pe.codda.common.type.SingleItemType.UNSIGNED_INTEGER // itemType
 					, menu$2.getParentNo() // itemValue
 					, -1 // itemSize
 					, null // nativeItemCharset
 					, menu$2MiddleWritableObject);
 
-				singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "depth"
+				singleItemEncoder.putValue(pathStack.peek(), "depth"
 					, kr.pe.codda.common.type.SingleItemType.UNSIGNED_BYTE // itemType
 					, menu$2.getDepth() // itemValue
 					, -1 // itemSize
 					, null // nativeItemCharset
 					, menu$2MiddleWritableObject);
 
-				singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "orderSeq"
+				singleItemEncoder.putValue(pathStack.peek(), "orderSeq"
 					, kr.pe.codda.common.type.SingleItemType.UNSIGNED_BYTE // itemType
 					, menu$2.getOrderSeq() // itemValue
 					, -1 // itemSize
 					, null // nativeItemCharset
 					, menu$2MiddleWritableObject);
 
-				singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "menuName"
+				singleItemEncoder.putValue(pathStack.peek(), "menuName"
 					, kr.pe.codda.common.type.SingleItemType.UB_PASCAL_STRING // itemType
 					, menu$2.getMenuName() // itemValue
 					, -1 // itemSize
 					, null // nativeItemCharset
 					, menu$2MiddleWritableObject);
 
-				singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "linkURL"
+				singleItemEncoder.putValue(pathStack.peek(), "linkURL"
 					, kr.pe.codda.common.type.SingleItemType.UB_PASCAL_STRING // itemType
 					, menu$2.getLinkURL() // itemValue
 					, -1 // itemSize

@@ -30,74 +30,74 @@ import kr.pe.codda.common.protocol.SingleItemDecoderIF;
 public final class BoardListResDecoder extends AbstractMessageDecoder {
 
 	@Override
-	protected AbstractMessage decodeBody(SingleItemDecoderIF singleItemDecoder, Object  middleReadableObject) throws BodyFormatException {
+	protected AbstractMessage decodeBody(SingleItemDecoderIF singleItemDecoder, Object receivedMiddleObject) throws BodyFormatException {
 		BoardListRes boardListRes = new BoardListRes();
 		java.util.LinkedList<String> pathStack = new java.util.LinkedList<String>();
 		pathStack.push("BoardListRes");
 
 		boardListRes.setBoardID((Short)
-		singleItemDecoder.getValueFromReadableMiddleObject(pathStack.peek()
+		singleItemDecoder.getValue(pathStack.peek()
 			, "boardID" // itemName
 			, kr.pe.codda.common.type.SingleItemType.UNSIGNED_BYTE // itemType
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleReadableObject));
+			, receivedMiddleObject));
 
 		boardListRes.setBoardName((String)
-		singleItemDecoder.getValueFromReadableMiddleObject(pathStack.peek()
+		singleItemDecoder.getValue(pathStack.peek()
 			, "boardName" // itemName
 			, kr.pe.codda.common.type.SingleItemType.UB_PASCAL_STRING // itemType
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleReadableObject));
+			, receivedMiddleObject));
 
 		boardListRes.setBoardListType((Byte)
-		singleItemDecoder.getValueFromReadableMiddleObject(pathStack.peek()
+		singleItemDecoder.getValue(pathStack.peek()
 			, "boardListType" // itemName
 			, kr.pe.codda.common.type.SingleItemType.BYTE // itemType
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleReadableObject));
+			, receivedMiddleObject));
 
 		boardListRes.setBoardWritePermissionType((Byte)
-		singleItemDecoder.getValueFromReadableMiddleObject(pathStack.peek()
+		singleItemDecoder.getValue(pathStack.peek()
 			, "boardWritePermissionType" // itemName
 			, kr.pe.codda.common.type.SingleItemType.BYTE // itemType
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleReadableObject));
+			, receivedMiddleObject));
 
 		boardListRes.setPageNo((Integer)
-		singleItemDecoder.getValueFromReadableMiddleObject(pathStack.peek()
+		singleItemDecoder.getValue(pathStack.peek()
 			, "pageNo" // itemName
 			, kr.pe.codda.common.type.SingleItemType.UNSIGNED_SHORT // itemType
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleReadableObject));
+			, receivedMiddleObject));
 
 		boardListRes.setPageSize((Integer)
-		singleItemDecoder.getValueFromReadableMiddleObject(pathStack.peek()
+		singleItemDecoder.getValue(pathStack.peek()
 			, "pageSize" // itemName
 			, kr.pe.codda.common.type.SingleItemType.UNSIGNED_SHORT // itemType
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleReadableObject));
+			, receivedMiddleObject));
 
 		boardListRes.setTotal((Long)
-		singleItemDecoder.getValueFromReadableMiddleObject(pathStack.peek()
+		singleItemDecoder.getValue(pathStack.peek()
 			, "total" // itemName
 			, kr.pe.codda.common.type.SingleItemType.UNSIGNED_INTEGER // itemType
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleReadableObject));
+			, receivedMiddleObject));
 
 		boardListRes.setCnt((Integer)
-		singleItemDecoder.getValueFromReadableMiddleObject(pathStack.peek()
+		singleItemDecoder.getValue(pathStack.peek()
 			, "cnt" // itemName
 			, kr.pe.codda.common.type.SingleItemType.INTEGER // itemType
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleReadableObject));
+			, receivedMiddleObject));
 
 		int board$2ListSize = boardListRes.getCnt();
 		if (board$2ListSize < 0) {
@@ -105,16 +105,16 @@ public final class BoardListResDecoder extends AbstractMessageDecoder {
 			throw new kr.pe.codda.common.exception.BodyFormatException(errorMessage);
 		}
 
-		Object board$2ArrayMiddleObject = singleItemDecoder.getArrayMiddleObjectFromReadableMiddleObject(pathStack.peek(), "board", board$2ListSize, middleReadableObject);
+		Object board$2ArrayMiddleObject = singleItemDecoder.getArrayMiddleObject(pathStack.peek(), "board", board$2ListSize, receivedMiddleObject);
 		java.util.List<BoardListRes.Board> board$2List = new java.util.ArrayList<BoardListRes.Board>();
 		for (int i2=0; i2 < board$2ListSize; i2++) {
 			pathStack.push(new StringBuilder(pathStack.peek()).append(".").append("Board").append("[").append(i2).append("]").toString());
-			Object board$2MiddleWritableObject= singleItemDecoder.getReadableMiddleObjFromArrayMiddleObject(pathStack.peek(), board$2ArrayMiddleObject, i2);
+			Object board$2MiddleWritableObject= singleItemDecoder.getMiddleObjectFromArrayMiddleObject(pathStack.peek(), board$2ArrayMiddleObject, i2);
 			BoardListRes.Board board$2 = new BoardListRes.Board();
 			board$2List.add(board$2);
 
 			board$2.setBoardNo((Long)
-			singleItemDecoder.getValueFromReadableMiddleObject(pathStack.peek()
+			singleItemDecoder.getValue(pathStack.peek()
 				, "boardNo" // itemName
 				, kr.pe.codda.common.type.SingleItemType.UNSIGNED_INTEGER // itemType
 				, -1 // itemSize
@@ -122,7 +122,7 @@ public final class BoardListResDecoder extends AbstractMessageDecoder {
 				, board$2MiddleWritableObject));
 
 			board$2.setGroupNo((Long)
-			singleItemDecoder.getValueFromReadableMiddleObject(pathStack.peek()
+			singleItemDecoder.getValue(pathStack.peek()
 				, "groupNo" // itemName
 				, kr.pe.codda.common.type.SingleItemType.UNSIGNED_INTEGER // itemType
 				, -1 // itemSize
@@ -130,7 +130,7 @@ public final class BoardListResDecoder extends AbstractMessageDecoder {
 				, board$2MiddleWritableObject));
 
 			board$2.setGroupSeq((Integer)
-			singleItemDecoder.getValueFromReadableMiddleObject(pathStack.peek()
+			singleItemDecoder.getValue(pathStack.peek()
 				, "groupSeq" // itemName
 				, kr.pe.codda.common.type.SingleItemType.UNSIGNED_SHORT // itemType
 				, -1 // itemSize
@@ -138,7 +138,7 @@ public final class BoardListResDecoder extends AbstractMessageDecoder {
 				, board$2MiddleWritableObject));
 
 			board$2.setParentNo((Long)
-			singleItemDecoder.getValueFromReadableMiddleObject(pathStack.peek()
+			singleItemDecoder.getValue(pathStack.peek()
 				, "parentNo" // itemName
 				, kr.pe.codda.common.type.SingleItemType.UNSIGNED_INTEGER // itemType
 				, -1 // itemSize
@@ -146,7 +146,7 @@ public final class BoardListResDecoder extends AbstractMessageDecoder {
 				, board$2MiddleWritableObject));
 
 			board$2.setDepth((Short)
-			singleItemDecoder.getValueFromReadableMiddleObject(pathStack.peek()
+			singleItemDecoder.getValue(pathStack.peek()
 				, "depth" // itemName
 				, kr.pe.codda.common.type.SingleItemType.UNSIGNED_BYTE // itemType
 				, -1 // itemSize
@@ -154,7 +154,7 @@ public final class BoardListResDecoder extends AbstractMessageDecoder {
 				, board$2MiddleWritableObject));
 
 			board$2.setWriterID((String)
-			singleItemDecoder.getValueFromReadableMiddleObject(pathStack.peek()
+			singleItemDecoder.getValue(pathStack.peek()
 				, "writerID" // itemName
 				, kr.pe.codda.common.type.SingleItemType.UB_PASCAL_STRING // itemType
 				, -1 // itemSize
@@ -162,7 +162,7 @@ public final class BoardListResDecoder extends AbstractMessageDecoder {
 				, board$2MiddleWritableObject));
 
 			board$2.setWriterNickname((String)
-			singleItemDecoder.getValueFromReadableMiddleObject(pathStack.peek()
+			singleItemDecoder.getValue(pathStack.peek()
 				, "writerNickname" // itemName
 				, kr.pe.codda.common.type.SingleItemType.UB_PASCAL_STRING // itemType
 				, -1 // itemSize
@@ -170,7 +170,7 @@ public final class BoardListResDecoder extends AbstractMessageDecoder {
 				, board$2MiddleWritableObject));
 
 			board$2.setViewCount((Integer)
-			singleItemDecoder.getValueFromReadableMiddleObject(pathStack.peek()
+			singleItemDecoder.getValue(pathStack.peek()
 				, "viewCount" // itemName
 				, kr.pe.codda.common.type.SingleItemType.INTEGER // itemType
 				, -1 // itemSize
@@ -178,7 +178,7 @@ public final class BoardListResDecoder extends AbstractMessageDecoder {
 				, board$2MiddleWritableObject));
 
 			board$2.setBoardSate((Byte)
-			singleItemDecoder.getValueFromReadableMiddleObject(pathStack.peek()
+			singleItemDecoder.getValue(pathStack.peek()
 				, "boardSate" // itemName
 				, kr.pe.codda.common.type.SingleItemType.BYTE // itemType
 				, -1 // itemSize
@@ -186,7 +186,7 @@ public final class BoardListResDecoder extends AbstractMessageDecoder {
 				, board$2MiddleWritableObject));
 
 			board$2.setRegisteredDate((java.sql.Timestamp)
-			singleItemDecoder.getValueFromReadableMiddleObject(pathStack.peek()
+			singleItemDecoder.getValue(pathStack.peek()
 				, "registeredDate" // itemName
 				, kr.pe.codda.common.type.SingleItemType.JAVA_SQL_TIMESTAMP // itemType
 				, -1 // itemSize
@@ -194,7 +194,7 @@ public final class BoardListResDecoder extends AbstractMessageDecoder {
 				, board$2MiddleWritableObject));
 
 			board$2.setVotes((Integer)
-			singleItemDecoder.getValueFromReadableMiddleObject(pathStack.peek()
+			singleItemDecoder.getValue(pathStack.peek()
 				, "votes" // itemName
 				, kr.pe.codda.common.type.SingleItemType.INTEGER // itemType
 				, -1 // itemSize
@@ -202,7 +202,7 @@ public final class BoardListResDecoder extends AbstractMessageDecoder {
 				, board$2MiddleWritableObject));
 
 			board$2.setSubject((String)
-			singleItemDecoder.getValueFromReadableMiddleObject(pathStack.peek()
+			singleItemDecoder.getValue(pathStack.peek()
 				, "subject" // itemName
 				, kr.pe.codda.common.type.SingleItemType.UB_PASCAL_STRING // itemType
 				, -1 // itemSize
@@ -210,7 +210,7 @@ public final class BoardListResDecoder extends AbstractMessageDecoder {
 				, board$2MiddleWritableObject));
 
 			board$2.setLastModifiedDate((java.sql.Timestamp)
-			singleItemDecoder.getValueFromReadableMiddleObject(pathStack.peek()
+			singleItemDecoder.getValue(pathStack.peek()
 				, "lastModifiedDate" // itemName
 				, kr.pe.codda.common.type.SingleItemType.JAVA_SQL_TIMESTAMP // itemType
 				, -1 // itemSize

@@ -30,58 +30,58 @@ import kr.pe.codda.common.protocol.SingleItemDecoderIF;
 public final class BoardChangeHistoryResDecoder extends AbstractMessageDecoder {
 
 	@Override
-	protected AbstractMessage decodeBody(SingleItemDecoderIF singleItemDecoder, Object  middleReadableObject) throws BodyFormatException {
+	protected AbstractMessage decodeBody(SingleItemDecoderIF singleItemDecoder, Object receivedMiddleObject) throws BodyFormatException {
 		BoardChangeHistoryRes boardChangeHistoryRes = new BoardChangeHistoryRes();
 		java.util.LinkedList<String> pathStack = new java.util.LinkedList<String>();
 		pathStack.push("BoardChangeHistoryRes");
 
 		boardChangeHistoryRes.setBoardID((Short)
-		singleItemDecoder.getValueFromReadableMiddleObject(pathStack.peek()
+		singleItemDecoder.getValue(pathStack.peek()
 			, "boardID" // itemName
 			, kr.pe.codda.common.type.SingleItemType.UNSIGNED_BYTE // itemType
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleReadableObject));
+			, receivedMiddleObject));
 
 		boardChangeHistoryRes.setBoardNo((Long)
-		singleItemDecoder.getValueFromReadableMiddleObject(pathStack.peek()
+		singleItemDecoder.getValue(pathStack.peek()
 			, "boardNo" // itemName
 			, kr.pe.codda.common.type.SingleItemType.UNSIGNED_INTEGER // itemType
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleReadableObject));
+			, receivedMiddleObject));
 
 		boardChangeHistoryRes.setBoardListType((Byte)
-		singleItemDecoder.getValueFromReadableMiddleObject(pathStack.peek()
+		singleItemDecoder.getValue(pathStack.peek()
 			, "boardListType" // itemName
 			, kr.pe.codda.common.type.SingleItemType.BYTE // itemType
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleReadableObject));
+			, receivedMiddleObject));
 
 		boardChangeHistoryRes.setParentNo((Long)
-		singleItemDecoder.getValueFromReadableMiddleObject(pathStack.peek()
+		singleItemDecoder.getValue(pathStack.peek()
 			, "parentNo" // itemName
 			, kr.pe.codda.common.type.SingleItemType.UNSIGNED_INTEGER // itemType
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleReadableObject));
+			, receivedMiddleObject));
 
 		boardChangeHistoryRes.setGroupNo((Long)
-		singleItemDecoder.getValueFromReadableMiddleObject(pathStack.peek()
+		singleItemDecoder.getValue(pathStack.peek()
 			, "groupNo" // itemName
 			, kr.pe.codda.common.type.SingleItemType.UNSIGNED_INTEGER // itemType
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleReadableObject));
+			, receivedMiddleObject));
 
 		boardChangeHistoryRes.setBoardChangeHistoryCnt((Integer)
-		singleItemDecoder.getValueFromReadableMiddleObject(pathStack.peek()
+		singleItemDecoder.getValue(pathStack.peek()
 			, "boardChangeHistoryCnt" // itemName
 			, kr.pe.codda.common.type.SingleItemType.INTEGER // itemType
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleReadableObject));
+			, receivedMiddleObject));
 
 		int boardChangeHistory$2ListSize = boardChangeHistoryRes.getBoardChangeHistoryCnt();
 		if (boardChangeHistory$2ListSize < 0) {
@@ -89,16 +89,16 @@ public final class BoardChangeHistoryResDecoder extends AbstractMessageDecoder {
 			throw new kr.pe.codda.common.exception.BodyFormatException(errorMessage);
 		}
 
-		Object boardChangeHistory$2ArrayMiddleObject = singleItemDecoder.getArrayMiddleObjectFromReadableMiddleObject(pathStack.peek(), "boardChangeHistory", boardChangeHistory$2ListSize, middleReadableObject);
+		Object boardChangeHistory$2ArrayMiddleObject = singleItemDecoder.getArrayMiddleObject(pathStack.peek(), "boardChangeHistory", boardChangeHistory$2ListSize, receivedMiddleObject);
 		java.util.List<BoardChangeHistoryRes.BoardChangeHistory> boardChangeHistory$2List = new java.util.ArrayList<BoardChangeHistoryRes.BoardChangeHistory>();
 		for (int i2=0; i2 < boardChangeHistory$2ListSize; i2++) {
 			pathStack.push(new StringBuilder(pathStack.peek()).append(".").append("BoardChangeHistory").append("[").append(i2).append("]").toString());
-			Object boardChangeHistory$2MiddleWritableObject= singleItemDecoder.getReadableMiddleObjFromArrayMiddleObject(pathStack.peek(), boardChangeHistory$2ArrayMiddleObject, i2);
+			Object boardChangeHistory$2MiddleWritableObject= singleItemDecoder.getMiddleObjectFromArrayMiddleObject(pathStack.peek(), boardChangeHistory$2ArrayMiddleObject, i2);
 			BoardChangeHistoryRes.BoardChangeHistory boardChangeHistory$2 = new BoardChangeHistoryRes.BoardChangeHistory();
 			boardChangeHistory$2List.add(boardChangeHistory$2);
 
 			boardChangeHistory$2.setHistorySeq((Short)
-			singleItemDecoder.getValueFromReadableMiddleObject(pathStack.peek()
+			singleItemDecoder.getValue(pathStack.peek()
 				, "historySeq" // itemName
 				, kr.pe.codda.common.type.SingleItemType.UNSIGNED_BYTE // itemType
 				, -1 // itemSize
@@ -106,7 +106,7 @@ public final class BoardChangeHistoryResDecoder extends AbstractMessageDecoder {
 				, boardChangeHistory$2MiddleWritableObject));
 
 			boardChangeHistory$2.setSubject((String)
-			singleItemDecoder.getValueFromReadableMiddleObject(pathStack.peek()
+			singleItemDecoder.getValue(pathStack.peek()
 				, "subject" // itemName
 				, kr.pe.codda.common.type.SingleItemType.US_PASCAL_STRING // itemType
 				, -1 // itemSize
@@ -114,7 +114,7 @@ public final class BoardChangeHistoryResDecoder extends AbstractMessageDecoder {
 				, boardChangeHistory$2MiddleWritableObject));
 
 			boardChangeHistory$2.setContents((String)
-			singleItemDecoder.getValueFromReadableMiddleObject(pathStack.peek()
+			singleItemDecoder.getValue(pathStack.peek()
 				, "contents" // itemName
 				, kr.pe.codda.common.type.SingleItemType.SI_PASCAL_STRING // itemType
 				, -1 // itemSize
@@ -122,7 +122,7 @@ public final class BoardChangeHistoryResDecoder extends AbstractMessageDecoder {
 				, boardChangeHistory$2MiddleWritableObject));
 
 			boardChangeHistory$2.setWriterID((String)
-			singleItemDecoder.getValueFromReadableMiddleObject(pathStack.peek()
+			singleItemDecoder.getValue(pathStack.peek()
 				, "writerID" // itemName
 				, kr.pe.codda.common.type.SingleItemType.UB_PASCAL_STRING // itemType
 				, -1 // itemSize
@@ -130,7 +130,7 @@ public final class BoardChangeHistoryResDecoder extends AbstractMessageDecoder {
 				, boardChangeHistory$2MiddleWritableObject));
 
 			boardChangeHistory$2.setWriterNickname((String)
-			singleItemDecoder.getValueFromReadableMiddleObject(pathStack.peek()
+			singleItemDecoder.getValue(pathStack.peek()
 				, "writerNickname" // itemName
 				, kr.pe.codda.common.type.SingleItemType.UB_PASCAL_STRING // itemType
 				, -1 // itemSize
@@ -138,7 +138,7 @@ public final class BoardChangeHistoryResDecoder extends AbstractMessageDecoder {
 				, boardChangeHistory$2MiddleWritableObject));
 
 			boardChangeHistory$2.setRegisteredDate((java.sql.Timestamp)
-			singleItemDecoder.getValueFromReadableMiddleObject(pathStack.peek()
+			singleItemDecoder.getValue(pathStack.peek()
 				, "registeredDate" // itemName
 				, kr.pe.codda.common.type.SingleItemType.JAVA_SQL_TIMESTAMP // itemType
 				, -1 // itemSize

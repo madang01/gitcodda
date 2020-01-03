@@ -33,7 +33,7 @@ import kr.pe.codda.impl.message.BoardDetailRes.BoardDetailRes;
 import kr.pe.codda.impl.message.MessageResultRes.MessageResultRes;
 import kr.pe.codda.jooq.tables.SbBoardHistoryTb;
 import kr.pe.codda.jooq.tables.SbBoardTb;
-import kr.pe.codda.server.PersonalLoginManagerIF;
+import kr.pe.codda.server.LoginManagerIF;
 import kr.pe.codda.server.lib.BoardListType;
 import kr.pe.codda.server.lib.BoardStateType;
 import kr.pe.codda.server.lib.MemberRoleType;
@@ -63,7 +63,7 @@ public class BoardDetailReqServerTask extends AbstractServerTask {
 	}
 
 	@Override
-	public void doTask(String projectName, PersonalLoginManagerIF personalLoginManager, ToLetterCarrier toLetterCarrier,
+	public void doTask(String projectName, LoginManagerIF personalLoginManager, ToLetterCarrier toLetterCarrier,
 			AbstractMessage inputMessage) throws Exception {
 		try {
 			AbstractMessage outputMessage = doWork(ServerCommonStaticFinalVars.DEFAULT_DBCP_NAME,

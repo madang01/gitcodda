@@ -28,44 +28,44 @@ import kr.pe.codda.common.protocol.SingleItemEncoderIF;
  */
 public final class PersonalActivityHistoryReqEncoder extends AbstractMessageEncoder {
 	@Override
-	public void encode(AbstractMessage messageObj, SingleItemEncoderIF singleItemEncoder, Object writableMiddleObject) throws Exception {
+	public void encode(AbstractMessage messageObj, SingleItemEncoderIF singleItemEncoder, Object middleObjectToSend) throws Exception {
 		PersonalActivityHistoryReq personalActivityHistoryReq = (PersonalActivityHistoryReq)messageObj;
-		encodeBody(personalActivityHistoryReq, singleItemEncoder, writableMiddleObject);
+		encodeBody(personalActivityHistoryReq, singleItemEncoder, middleObjectToSend);
 	}
 
 
-	private void encodeBody(PersonalActivityHistoryReq personalActivityHistoryReq, SingleItemEncoderIF singleItemEncoder, Object middleWritableObject) throws Exception {
+	private void encodeBody(PersonalActivityHistoryReq personalActivityHistoryReq, SingleItemEncoderIF singleItemEncoder, Object middleObjectToSend) throws Exception {
 		java.util.LinkedList<String> pathStack = new java.util.LinkedList<String>();
 		pathStack.push("PersonalActivityHistoryReq");
 
 
-		singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "requestedUserID"
+		singleItemEncoder.putValue(pathStack.peek(), "requestedUserID"
 			, kr.pe.codda.common.type.SingleItemType.UB_PASCAL_STRING // itemType
 			, personalActivityHistoryReq.getRequestedUserID() // itemValue
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleWritableObject);
+			, middleObjectToSend);
 
-		singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "targetUserID"
+		singleItemEncoder.putValue(pathStack.peek(), "targetUserID"
 			, kr.pe.codda.common.type.SingleItemType.UB_PASCAL_STRING // itemType
 			, personalActivityHistoryReq.getTargetUserID() // itemValue
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleWritableObject);
+			, middleObjectToSend);
 
-		singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "pageNo"
+		singleItemEncoder.putValue(pathStack.peek(), "pageNo"
 			, kr.pe.codda.common.type.SingleItemType.INTEGER // itemType
 			, personalActivityHistoryReq.getPageNo() // itemValue
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleWritableObject);
+			, middleObjectToSend);
 
-		singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "pageSize"
+		singleItemEncoder.putValue(pathStack.peek(), "pageSize"
 			, kr.pe.codda.common.type.SingleItemType.UNSIGNED_SHORT // itemType
 			, personalActivityHistoryReq.getPageSize() // itemValue
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleWritableObject);
+			, middleObjectToSend);
 
 		pathStack.pop();
 	}

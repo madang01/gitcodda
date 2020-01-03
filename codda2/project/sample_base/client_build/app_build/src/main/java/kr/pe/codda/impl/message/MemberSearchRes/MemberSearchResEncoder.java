@@ -28,72 +28,72 @@ import kr.pe.codda.common.protocol.SingleItemEncoderIF;
  */
 public final class MemberSearchResEncoder extends AbstractMessageEncoder {
 	@Override
-	public void encode(AbstractMessage messageObj, SingleItemEncoderIF singleItemEncoder, Object writableMiddleObject) throws Exception {
+	public void encode(AbstractMessage messageObj, SingleItemEncoderIF singleItemEncoder, Object middleObjectToSend) throws Exception {
 		MemberSearchRes memberSearchRes = (MemberSearchRes)messageObj;
-		encodeBody(memberSearchRes, singleItemEncoder, writableMiddleObject);
+		encodeBody(memberSearchRes, singleItemEncoder, middleObjectToSend);
 	}
 
 
-	private void encodeBody(MemberSearchRes memberSearchRes, SingleItemEncoderIF singleItemEncoder, Object middleWritableObject) throws Exception {
+	private void encodeBody(MemberSearchRes memberSearchRes, SingleItemEncoderIF singleItemEncoder, Object middleObjectToSend) throws Exception {
 		java.util.LinkedList<String> pathStack = new java.util.LinkedList<String>();
 		pathStack.push("MemberSearchRes");
 
 
-		singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "memberState"
+		singleItemEncoder.putValue(pathStack.peek(), "memberState"
 			, kr.pe.codda.common.type.SingleItemType.BYTE // itemType
 			, memberSearchRes.getMemberState() // itemValue
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleWritableObject);
+			, middleObjectToSend);
 
-		singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "searchID"
+		singleItemEncoder.putValue(pathStack.peek(), "searchID"
 			, kr.pe.codda.common.type.SingleItemType.UB_PASCAL_STRING // itemType
 			, memberSearchRes.getSearchID() // itemValue
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleWritableObject);
+			, middleObjectToSend);
 
-		singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "fromDateString"
+		singleItemEncoder.putValue(pathStack.peek(), "fromDateString"
 			, kr.pe.codda.common.type.SingleItemType.UB_PASCAL_STRING // itemType
 			, memberSearchRes.getFromDateString() // itemValue
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleWritableObject);
+			, middleObjectToSend);
 
-		singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "toDateString"
+		singleItemEncoder.putValue(pathStack.peek(), "toDateString"
 			, kr.pe.codda.common.type.SingleItemType.UB_PASCAL_STRING // itemType
 			, memberSearchRes.getToDateString() // itemValue
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleWritableObject);
+			, middleObjectToSend);
 
-		singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "pageNo"
+		singleItemEncoder.putValue(pathStack.peek(), "pageNo"
 			, kr.pe.codda.common.type.SingleItemType.INTEGER // itemType
 			, memberSearchRes.getPageNo() // itemValue
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleWritableObject);
+			, middleObjectToSend);
 
-		singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "pageSize"
+		singleItemEncoder.putValue(pathStack.peek(), "pageSize"
 			, kr.pe.codda.common.type.SingleItemType.UNSIGNED_SHORT // itemType
 			, memberSearchRes.getPageSize() // itemValue
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleWritableObject);
+			, middleObjectToSend);
 
-		singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "isNextPage"
+		singleItemEncoder.putValue(pathStack.peek(), "isNextPage"
 			, kr.pe.codda.common.type.SingleItemType.BOOLEAN // itemType
 			, memberSearchRes.getIsNextPage() // itemValue
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleWritableObject);
+			, middleObjectToSend);
 
-		singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "cnt"
+		singleItemEncoder.putValue(pathStack.peek(), "cnt"
 			, kr.pe.codda.common.type.SingleItemType.INTEGER // itemType
 			, memberSearchRes.getCnt() // itemValue
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleWritableObject);
+			, middleObjectToSend);
 
 		java.util.List<MemberSearchRes.Member> member$2List = memberSearchRes.getMemberList();
 
@@ -112,62 +112,62 @@ public final class MemberSearchResEncoder extends AbstractMessageEncoder {
 				throw new kr.pe.codda.common.exception.BodyFormatException(errorMessage);
 			}
 
-			Object member$2ArrayMiddleObject = singleItemEncoder.getArrayMiddleObjectFromWritableMiddleObject(pathStack.peek(), "member", member$2ListSize, middleWritableObject);
+			Object member$2ArrayMiddleObject = singleItemEncoder.getArrayMiddleObject(pathStack.peek(), "member", member$2ListSize, middleObjectToSend);
 			for (int i2=0; i2 < member$2ListSize; i2++) {
 				pathStack.push(new StringBuilder(pathStack.peek()).append(".").append("Member").append("[").append(i2).append("]").toString());
-				Object member$2MiddleWritableObject = singleItemEncoder.getWritableMiddleObjectjFromArrayMiddleObject(pathStack.peek(), member$2ArrayMiddleObject, i2);
+				Object member$2MiddleWritableObject = singleItemEncoder.getMiddleObjectFromArrayMiddleObject(pathStack.peek(), member$2ArrayMiddleObject, i2);
 				MemberSearchRes.Member member$2 = member$2List.get(i2);
 
-				singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "userID"
+				singleItemEncoder.putValue(pathStack.peek(), "userID"
 					, kr.pe.codda.common.type.SingleItemType.UB_PASCAL_STRING // itemType
 					, member$2.getUserID() // itemValue
 					, -1 // itemSize
 					, null // nativeItemCharset
 					, member$2MiddleWritableObject);
 
-				singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "nickname"
+				singleItemEncoder.putValue(pathStack.peek(), "nickname"
 					, kr.pe.codda.common.type.SingleItemType.UB_PASCAL_STRING // itemType
 					, member$2.getNickname() // itemValue
 					, -1 // itemSize
 					, null // nativeItemCharset
 					, member$2MiddleWritableObject);
 
-				singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "passwordFailCount"
+				singleItemEncoder.putValue(pathStack.peek(), "passwordFailCount"
 					, kr.pe.codda.common.type.SingleItemType.UNSIGNED_BYTE // itemType
 					, member$2.getPasswordFailCount() // itemValue
 					, -1 // itemSize
 					, null // nativeItemCharset
 					, member$2MiddleWritableObject);
 
-				singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "registeredDate"
+				singleItemEncoder.putValue(pathStack.peek(), "registeredDate"
 					, kr.pe.codda.common.type.SingleItemType.JAVA_SQL_TIMESTAMP // itemType
 					, member$2.getRegisteredDate() // itemValue
 					, -1 // itemSize
 					, null // nativeItemCharset
 					, member$2MiddleWritableObject);
 
-				singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "lastNicknameModifiedDate"
+				singleItemEncoder.putValue(pathStack.peek(), "lastNicknameModifiedDate"
 					, kr.pe.codda.common.type.SingleItemType.JAVA_SQL_TIMESTAMP // itemType
 					, member$2.getLastNicknameModifiedDate() // itemValue
 					, -1 // itemSize
 					, null // nativeItemCharset
 					, member$2MiddleWritableObject);
 
-				singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "lastEmailModifiedDate"
+				singleItemEncoder.putValue(pathStack.peek(), "lastEmailModifiedDate"
 					, kr.pe.codda.common.type.SingleItemType.JAVA_SQL_TIMESTAMP // itemType
 					, member$2.getLastEmailModifiedDate() // itemValue
 					, -1 // itemSize
 					, null // nativeItemCharset
 					, member$2MiddleWritableObject);
 
-				singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "lastPasswordModifiedDate"
+				singleItemEncoder.putValue(pathStack.peek(), "lastPasswordModifiedDate"
 					, kr.pe.codda.common.type.SingleItemType.JAVA_SQL_TIMESTAMP // itemType
 					, member$2.getLastPasswordModifiedDate() // itemValue
 					, -1 // itemSize
 					, null // nativeItemCharset
 					, member$2MiddleWritableObject);
 
-				singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "lastStateModifiedDate"
+				singleItemEncoder.putValue(pathStack.peek(), "lastStateModifiedDate"
 					, kr.pe.codda.common.type.SingleItemType.JAVA_SQL_TIMESTAMP // itemType
 					, member$2.getLastStateModifiedDate() // itemValue
 					, -1 // itemSize

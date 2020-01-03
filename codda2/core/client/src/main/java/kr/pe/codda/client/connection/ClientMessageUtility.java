@@ -1,3 +1,20 @@
+/*******************************************************************************
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *  
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *  
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *******************************************************************************/
+
 package kr.pe.codda.client.connection;
 
 import java.util.logging.Level;
@@ -10,26 +27,32 @@ import kr.pe.codda.common.exception.DynamicClassCallException;
 import kr.pe.codda.common.message.AbstractMessage;
 import kr.pe.codda.common.message.codec.AbstractMessageDecoder;
 import kr.pe.codda.common.protocol.MessageProtocolIF;
-import kr.pe.codda.common.type.SelfExn;
-import kr.pe.codda.impl.message.SelfExnRes.SelfExnRes;
+import kr.pe.codda.common.type.ExceptionDelivery;
+import kr.pe.codda.impl.message.ExceptionDeliveryRes.ExceptionDeliveryRes;
 
 public abstract class ClientMessageUtility {
 
 	/**
-	 * 변수 'readableMiddleObject' 를 디코딩하여 출력 메시지를 반환한다. 단 동적 호출 클래스 호출이 실패하였거나 디코딩 실패시 SelfExnRes 을 반환한다.
+	 * <pre>
+	 * 지정한 '수신한 중간 객체'로 부터 변환된 
+	 * 지정한 메일 박스 식별자와 메일 식별자 그리고 메시지 식별자를 갖는 출력 메시지를 반환한다.
+	 * 이때 '수신한 중간 객체'의 자원 해제가 반듯이 이루어 지도록 보장한다.  
+	 * 단 출력 메시지를 반환 과정에서 에러 발생시 
+	 * 예를 들면 동적 호출 클래스 호출이 한다든지 하면 {@link ExceptionDeliveryRes} 을 반환한다.
+	 * </pre>
 	 * 
-	 * @param messageCodecManger
-	 * @param messageProtocol
-	 * @param mailboxID
-	 * @param mailID
-	 * @param messageID
-	 * @param readableMiddleObject
-	 * @return
+	 * @param messageCodecManger 메시지 코덱 관리자
+	 * @param messageProtocol 메시지 프로토콜
+	 * @param mailboxID 메일 박스 식별자
+	 * @param mailID 메일 식별자
+	 * @param messageID 메시지 식별자
+	 * @param receviedMiddleObject 입력 스트림에서 메시지 변환용으로 추출된 '수신한 중간 객체'    
+	 * @return 지정한 '수신한 중간 객체'로 부터 변환된 지정한 메일 박스 식별자와 메일 식별자 그리고 메시지 식별자를 갖는 출력 메시지
 	 */
 	public static AbstractMessage buildOutputMessage(String title,
 			MessageDecoderMangerIF messageCodecManger, 
 			MessageProtocolIF messageProtocol,
-			int mailboxID, int mailID, String messageID, Object readableMiddleObject) {
+			int mailboxID, int mailID, String messageID, Object receviedMiddleObject) {
 		
 		try {
 			AbstractMessageDecoder messageDecoder = null;		
@@ -52,11 +75,11 @@ public abstract class ClientMessageUtility {
 				log.warning(errorMessage);
 					
 				
-				SelfExnRes selfExnRes = new SelfExnRes();
+				ExceptionDeliveryRes selfExnRes = new ExceptionDeliveryRes();
 				selfExnRes.setMailboxID(mailboxID);
 				selfExnRes.setMailID(mailID);
-				selfExnRes.setErrorPlace(SelfExn.ErrorPlace.CLIENT);
-				selfExnRes.setErrorType(SelfExn.ErrorType.valueOf(DynamicClassCallException.class));
+				selfExnRes.setErrorPlace(ExceptionDelivery.ErrorPlace.CLIENT);
+				selfExnRes.setErrorType(ExceptionDelivery.ErrorType.valueOf(DynamicClassCallException.class));
 			
 				selfExnRes.setErrorMessageID(messageID);
 				selfExnRes.setErrorReason(errorMessage);
@@ -79,11 +102,11 @@ public abstract class ClientMessageUtility {
 				Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
 				log.log(Level.WARNING, errorMessage, e);
 				
-				SelfExnRes selfExnRes = new SelfExnRes();
+				ExceptionDeliveryRes selfExnRes = new ExceptionDeliveryRes();
 				selfExnRes.setMailboxID(mailboxID);
 				selfExnRes.setMailID(mailID);
-				selfExnRes.setErrorPlace(SelfExn.ErrorPlace.CLIENT);
-				selfExnRes.setErrorType(SelfExn.ErrorType.valueOf(DynamicClassCallException.class));
+				selfExnRes.setErrorPlace(ExceptionDelivery.ErrorPlace.CLIENT);
+				selfExnRes.setErrorType(ExceptionDelivery.ErrorType.valueOf(DynamicClassCallException.class));
 			
 				selfExnRes.setErrorMessageID(messageID);
 				selfExnRes.setErrorReason(errorMessage);
@@ -93,7 +116,7 @@ public abstract class ClientMessageUtility {
 
 			AbstractMessage outputMessage = null;
 			try {
-				outputMessage = messageProtocol.O2M(messageDecoder, mailboxID, mailID, messageID, readableMiddleObject);
+				outputMessage = messageProtocol.O2M(messageDecoder, mailboxID, mailID, messageID, receviedMiddleObject);
 				outputMessage.setMailboxID(mailboxID);
 				outputMessage.setMailID(mailID);
 			} catch (BodyFormatException e) {
@@ -114,11 +137,11 @@ public abstract class ClientMessageUtility {
 				Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
 				log.warning(errorMessage);		
 				
-				SelfExnRes selfExnRes = new SelfExnRes();
+				ExceptionDeliveryRes selfExnRes = new ExceptionDeliveryRes();
 				selfExnRes.setMailboxID(mailboxID);
 				selfExnRes.setMailID(mailID);
-				selfExnRes.setErrorPlace(SelfExn.ErrorPlace.CLIENT);
-				selfExnRes.setErrorType(SelfExn.ErrorType.valueOf(BodyFormatException.class));
+				selfExnRes.setErrorPlace(ExceptionDelivery.ErrorPlace.CLIENT);
+				selfExnRes.setErrorType(ExceptionDelivery.ErrorType.valueOf(BodyFormatException.class));
 			
 				selfExnRes.setErrorMessageID(messageID);
 				selfExnRes.setErrorReason(errorMessage);
@@ -142,11 +165,11 @@ public abstract class ClientMessageUtility {
 				Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
 				log.log(Level.WARNING, errorMessage, e);
 				
-				SelfExnRes selfExnRes = new SelfExnRes();
+				ExceptionDeliveryRes selfExnRes = new ExceptionDeliveryRes();
 				selfExnRes.setMailboxID(mailboxID);
 				selfExnRes.setMailID(mailID);
-				selfExnRes.setErrorPlace(SelfExn.ErrorPlace.CLIENT);
-				selfExnRes.setErrorType(SelfExn.ErrorType.valueOf(BodyFormatException.class));
+				selfExnRes.setErrorPlace(ExceptionDelivery.ErrorPlace.CLIENT);
+				selfExnRes.setErrorType(ExceptionDelivery.ErrorType.valueOf(BodyFormatException.class));
 			
 				selfExnRes.setErrorMessageID(messageID);
 				selfExnRes.setErrorReason(errorMessage);
@@ -156,7 +179,7 @@ public abstract class ClientMessageUtility {
 
 			return outputMessage;
 		} finally {
-			messageProtocol.closeReadableMiddleObject(mailboxID, mailID, messageID, readableMiddleObject);
+			messageProtocol.closeReadableMiddleObject(mailboxID, mailID, messageID, receviedMiddleObject);
 		}	
 	}
 	/*

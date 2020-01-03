@@ -28,23 +28,23 @@ import kr.pe.codda.common.protocol.SingleItemEncoderIF;
  */
 public final class BoardInfoAddResEncoder extends AbstractMessageEncoder {
 	@Override
-	public void encode(AbstractMessage messageObj, SingleItemEncoderIF singleItemEncoder, Object writableMiddleObject) throws Exception {
+	public void encode(AbstractMessage messageObj, SingleItemEncoderIF singleItemEncoder, Object middleObjectToSend) throws Exception {
 		BoardInfoAddRes boardInfoAddRes = (BoardInfoAddRes)messageObj;
-		encodeBody(boardInfoAddRes, singleItemEncoder, writableMiddleObject);
+		encodeBody(boardInfoAddRes, singleItemEncoder, middleObjectToSend);
 	}
 
 
-	private void encodeBody(BoardInfoAddRes boardInfoAddRes, SingleItemEncoderIF singleItemEncoder, Object middleWritableObject) throws Exception {
+	private void encodeBody(BoardInfoAddRes boardInfoAddRes, SingleItemEncoderIF singleItemEncoder, Object middleObjectToSend) throws Exception {
 		java.util.LinkedList<String> pathStack = new java.util.LinkedList<String>();
 		pathStack.push("BoardInfoAddRes");
 
 
-		singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "boardID"
+		singleItemEncoder.putValue(pathStack.peek(), "boardID"
 			, kr.pe.codda.common.type.SingleItemType.UNSIGNED_BYTE // itemType
 			, boardInfoAddRes.getBoardID() // itemValue
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleWritableObject);
+			, middleObjectToSend);
 
 		pathStack.pop();
 	}

@@ -28,37 +28,37 @@ import kr.pe.codda.common.protocol.SingleItemEncoderIF;
  */
 public final class BoardModifyResEncoder extends AbstractMessageEncoder {
 	@Override
-	public void encode(AbstractMessage messageObj, SingleItemEncoderIF singleItemEncoder, Object writableMiddleObject) throws Exception {
+	public void encode(AbstractMessage messageObj, SingleItemEncoderIF singleItemEncoder, Object middleObjectToSend) throws Exception {
 		BoardModifyRes boardModifyRes = (BoardModifyRes)messageObj;
-		encodeBody(boardModifyRes, singleItemEncoder, writableMiddleObject);
+		encodeBody(boardModifyRes, singleItemEncoder, middleObjectToSend);
 	}
 
 
-	private void encodeBody(BoardModifyRes boardModifyRes, SingleItemEncoderIF singleItemEncoder, Object middleWritableObject) throws Exception {
+	private void encodeBody(BoardModifyRes boardModifyRes, SingleItemEncoderIF singleItemEncoder, Object middleObjectToSend) throws Exception {
 		java.util.LinkedList<String> pathStack = new java.util.LinkedList<String>();
 		pathStack.push("BoardModifyRes");
 
 
-		singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "boardID"
+		singleItemEncoder.putValue(pathStack.peek(), "boardID"
 			, kr.pe.codda.common.type.SingleItemType.UNSIGNED_BYTE // itemType
 			, boardModifyRes.getBoardID() // itemValue
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleWritableObject);
+			, middleObjectToSend);
 
-		singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "boardNo"
+		singleItemEncoder.putValue(pathStack.peek(), "boardNo"
 			, kr.pe.codda.common.type.SingleItemType.UNSIGNED_INTEGER // itemType
 			, boardModifyRes.getBoardNo() // itemValue
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleWritableObject);
+			, middleObjectToSend);
 
-		singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "deletedAttachedFileCnt"
+		singleItemEncoder.putValue(pathStack.peek(), "deletedAttachedFileCnt"
 			, kr.pe.codda.common.type.SingleItemType.INTEGER // itemType
 			, boardModifyRes.getDeletedAttachedFileCnt() // itemValue
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleWritableObject);
+			, middleObjectToSend);
 
 		java.util.List<BoardModifyRes.DeletedAttachedFile> deletedAttachedFile$2List = boardModifyRes.getDeletedAttachedFileList();
 
@@ -77,13 +77,13 @@ public final class BoardModifyResEncoder extends AbstractMessageEncoder {
 				throw new kr.pe.codda.common.exception.BodyFormatException(errorMessage);
 			}
 
-			Object deletedAttachedFile$2ArrayMiddleObject = singleItemEncoder.getArrayMiddleObjectFromWritableMiddleObject(pathStack.peek(), "deletedAttachedFile", deletedAttachedFile$2ListSize, middleWritableObject);
+			Object deletedAttachedFile$2ArrayMiddleObject = singleItemEncoder.getArrayMiddleObject(pathStack.peek(), "deletedAttachedFile", deletedAttachedFile$2ListSize, middleObjectToSend);
 			for (int i2=0; i2 < deletedAttachedFile$2ListSize; i2++) {
 				pathStack.push(new StringBuilder(pathStack.peek()).append(".").append("DeletedAttachedFile").append("[").append(i2).append("]").toString());
-				Object deletedAttachedFile$2MiddleWritableObject = singleItemEncoder.getWritableMiddleObjectjFromArrayMiddleObject(pathStack.peek(), deletedAttachedFile$2ArrayMiddleObject, i2);
+				Object deletedAttachedFile$2MiddleWritableObject = singleItemEncoder.getMiddleObjectFromArrayMiddleObject(pathStack.peek(), deletedAttachedFile$2ArrayMiddleObject, i2);
 				BoardModifyRes.DeletedAttachedFile deletedAttachedFile$2 = deletedAttachedFile$2List.get(i2);
 
-				singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "attachedFileSeq"
+				singleItemEncoder.putValue(pathStack.peek(), "attachedFileSeq"
 					, kr.pe.codda.common.type.SingleItemType.UNSIGNED_BYTE // itemType
 					, deletedAttachedFile$2.getAttachedFileSeq() // itemValue
 					, -1 // itemSize

@@ -30,7 +30,7 @@ import kr.pe.codda.common.protocol.SingleItemDecoderIF;
 public final class JavaGarbageCollectionReqDecoder extends AbstractMessageDecoder {
 
 	@Override
-	protected AbstractMessage decodeBody(SingleItemDecoderIF singleItemDecoder, Object  middleReadableObject) throws BodyFormatException {
+	protected AbstractMessage decodeBody(SingleItemDecoderIF singleItemDecoder, Object receivedMiddleObject) throws BodyFormatException {
 		JavaGarbageCollectionReq javaGarbageCollectionReq = new JavaGarbageCollectionReq();
 
 		return javaGarbageCollectionReq;

@@ -1,19 +1,19 @@
-/*
+/*******************************************************************************
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
- *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *  
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *  
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- */
+ *******************************************************************************/
 package kr.pe.codda.common.message.builder.info;
 
 import java.nio.charset.Charset;
@@ -25,7 +25,7 @@ import java.util.logging.Logger;
 import kr.pe.codda.common.etc.CommonStaticFinalVars;
 import kr.pe.codda.common.exception.UnknownItemTypeException;
 import kr.pe.codda.common.type.ItemInfoType;
-import kr.pe.codda.common.type.SelfExn;
+import kr.pe.codda.common.type.ExceptionDelivery;
 import kr.pe.codda.common.type.SingleItemType;
 import kr.pe.codda.common.util.CommonStaticUtil;
 
@@ -107,13 +107,13 @@ public class SingleItemInfo extends AbstractItemInfo {
 		
 		
 		switch(itemType) {
-			case SELFEXN_ERROR_PLACE : {
-				makeSourceBuilderInformationOfSelfExnErrorPlace(itemName,
+			case EXCEPTION_DELIVERY_ERROR_PLACE : {
+				makeSourceBuilderInformationOfExcepionDeliveryErrorPlace(itemName,
 						nativeItemDefaultValue, nativeItemSize, nativeItemCharset);
 				break;
 			}
-			case SELFEXN_ERROR_TYPE : {
-				makeSourceBuilderInformationOfSelfExnErrorType(itemName,
+			case EXCEPTION_DELIVERY_ERROR_TYPE : {
+				makeSourceBuilderInformationOfExcepionDeliveryErrorType(itemName,
 						nativeItemDefaultValue, nativeItemSize, nativeItemCharset);
 				break;
 			}
@@ -243,18 +243,28 @@ public class SingleItemInfo extends AbstractItemInfo {
 		this.nativeItemCharset = nativeItemCharset;
 	}
 	
+	/**
+	 * @return 항목 타입
+	 */
 	public SingleItemType getItemType() {
 		return itemType;
 	}
 
+	
 	public String getFirstUpperItemName() {
 		return firstUpperItemName;
 	}
 
+	/**
+	 * @return 항목 타입에 대응하는 자바 타입
+	 */
 	public String getJavaLangTypeOfItemType() {
 		return javaLangTypeOfItemType;
 	}
 
+	/**
+	 * @return 항목 타입에 대응하는 자바 클래스 캐스팅 문자열 
+	 */
 	public String getJavaLangClassCastingTypeOfItemType() {
 		return JavaLangClassCastingTypeOfItemType;
 	}
@@ -302,15 +312,7 @@ public class SingleItemInfo extends AbstractItemInfo {
 	public String getNatvieItemSize() {
 		return nativeItemSize;
 	}
-
-	/**
-	 * 디폴트 값을 반환한다.
-	 * 
-	 * @return 디폴트 값
-	 */
-	/*public String getNativeItemDefaultValue() {
-		return nativeItemDefaultValue;
-	}*/
+	
 
 	/**
 	 * @return IO 소스 생성기에서 변수 선언부에 쓰일 문자열로 표현된 디폴트 값
@@ -332,6 +334,11 @@ public class SingleItemInfo extends AbstractItemInfo {
 
 	/******************* AbstractItemInfo end ***********************/
 
+	/**
+	 * 항목 이름의 유효성을 검사한다, 참고 : XML 태그 이름 규칙을 따르며 대소문자 구별없이 xml 로 시작되어서는 안된다.
+	 * @param itemName
+	 * @throws IllegalArgumentException
+	 */
 	private void checkParmItemName(String itemName)
 			throws IllegalArgumentException {
 		if (null == itemName) {
@@ -392,64 +399,72 @@ public class SingleItemInfo extends AbstractItemInfo {
 		}
 	}
 	
-	private void makeSourceBuilderInformationOfSelfExnErrorPlace(
+	/**
+	 * 
+	 * @param itemName
+	 * @param nativeItemDefaultValue
+	 * @param nativeItemSize
+	 * @param nativeItemCharset
+	 * @throws IllegalArgumentException
+	 */
+	private void makeSourceBuilderInformationOfExcepionDeliveryErrorPlace(
 			String itemName, String nativeItemDefaultValue, String nativeItemSize,
 			String nativeItemCharset) throws IllegalArgumentException {
 		if (null != nativeItemDefaultValue) {
 			String errorMessage = new StringBuilder(
-					"this 'selfexn error place' type single item[").append(itemName)
+					"this 'ExceptionDelivery error place' type single item[").append(itemName)
 					.append("] doesn't support attribute 'defaultValue'").toString();
 			throw new IllegalArgumentException(errorMessage);
 		}	
 
 		if (null != nativeItemSize) {
 			String errorMessage = new StringBuilder(
-					"this 'selfexn error place' type single item[").append(itemName)
+					"this 'ExceptionDelivery error place' type single item[").append(itemName)
 					.append("] doesn't support attribute 'size'").toString();
 			throw new IllegalArgumentException(errorMessage);
 		}
 
 		if (null != nativeItemCharset) {
 			String errorMessage = new StringBuilder(
-					"this 'selfexn error place' type single item[").append(itemName)
+					"this 'ExceptionDelivery error place' type single item[").append(itemName)
 					.append("] doesn't support attribute 'charset'").toString();
 			throw new IllegalArgumentException(errorMessage);
 		}
 
 		this.itemSize = -1;
 		this.defaultValueForVariableDeclarationPart = null;
-		this.javaLangTypeOfItemType = SelfExn.ErrorPlace.class.getName().replace("$", ".");
+		this.javaLangTypeOfItemType = ExceptionDelivery.ErrorPlace.class.getName().replace("$", ".");
 		this.JavaLangClassCastingTypeOfItemType = javaLangTypeOfItemType;
 	}
 
 	
-	private void makeSourceBuilderInformationOfSelfExnErrorType(
+	private void makeSourceBuilderInformationOfExcepionDeliveryErrorType(
 			String itemName, String nativeItemDefaultValue, String nativeItemSize,
 			String nativeItemCharset) throws IllegalArgumentException {
 		if (null != nativeItemDefaultValue) {
 			String errorMessage = new StringBuilder(
-					"this 'selfexn error place' type single item[").append(itemName)
+					"this 'ExceptionDelivery error place' type single item[").append(itemName)
 					.append("] doesn't support attribute 'defaultValue'").toString();
 			throw new IllegalArgumentException(errorMessage);
 		}	
 
 		if (null != nativeItemSize) {
 			String errorMessage = new StringBuilder(
-					"this 'selfexn error place' type single item[").append(itemName)
+					"this 'ExceptionDelivery error place' type single item[").append(itemName)
 					.append("] doesn't support attribute 'size'").toString();
 			throw new IllegalArgumentException(errorMessage);
 		}
 
 		if (null != nativeItemCharset) {
 			String errorMessage = new StringBuilder(
-					"this 'selfexn error place' type single item[").append(itemName)
+					"this 'ExceptionDelivery error place' type single item[").append(itemName)
 					.append("] doesn't support attribute 'charset'").toString();
 			throw new IllegalArgumentException(errorMessage);
 		}
 
 		this.itemSize = -1;
 		this.defaultValueForVariableDeclarationPart = null;
-		this.javaLangTypeOfItemType = SelfExn.ErrorType.class.getName().replace("$", ".");
+		this.javaLangTypeOfItemType = ExceptionDelivery.ErrorType.class.getName().replace("$", ".");
 		this.JavaLangClassCastingTypeOfItemType = javaLangTypeOfItemType;
 	}
 	

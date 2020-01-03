@@ -25,7 +25,7 @@ import kr.pe.codda.common.util.CommonStaticUtil;
 import kr.pe.codda.impl.message.AccountSearchProcessReq.AccountSearchProcessReq;
 import kr.pe.codda.impl.message.AccountSearchProcessRes.AccountSearchProcessRes;
 import kr.pe.codda.impl.message.MessageResultRes.MessageResultRes;
-import kr.pe.codda.server.PersonalLoginManagerIF;
+import kr.pe.codda.server.LoginManagerIF;
 import kr.pe.codda.server.lib.AccountSearchType;
 import kr.pe.codda.server.lib.MemberRoleType;
 import kr.pe.codda.server.lib.PasswordPairOfMemberTable;
@@ -54,7 +54,7 @@ public class AccountSearchProcessReqServerTask extends AbstractServerTask {
 	}
 
 	@Override
-	public void doTask(String projectName, PersonalLoginManagerIF personalLoginManager, ToLetterCarrier toLetterCarrier,
+	public void doTask(String projectName, LoginManagerIF personalLoginManager, ToLetterCarrier toLetterCarrier,
 			AbstractMessage inputMessage) throws Exception {
 		
 		try {

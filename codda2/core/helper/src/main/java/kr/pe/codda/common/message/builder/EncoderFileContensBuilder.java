@@ -99,7 +99,7 @@ public class EncoderFileContensBuilder extends AbstractSourceFileBuildre {
 			SingleItemInfo singleItemInfo) {;
 		contetnsStringBuilder.append(CommonStaticFinalVars.NEWLINE);
 		contetnsStringBuilder.append(CommonStaticUtil.getPrefixWithTabCharacters(depth, 0));
-		contetnsStringBuilder.append("singleItemEncoder.putValueToWritableMiddleObject(");
+		contetnsStringBuilder.append("singleItemEncoder.putValue(");
 		// the Parameter path
 		contetnsStringBuilder.append("pathStack.peek()");
 		contetnsStringBuilder.append(", \"");
@@ -146,7 +146,7 @@ public class EncoderFileContensBuilder extends AbstractSourceFileBuildre {
 		}
 		contetnsStringBuilder.append(" // nativeItemCharset");
 		
-		// the parameter writableMiddleObject
+		// the parameter middleObjectToSend
 		contetnsStringBuilder.append(CommonStaticFinalVars.NEWLINE);
 		contetnsStringBuilder.append(CommonStaticUtil.getPrefixWithTabCharacters(depth, 1));
 		contetnsStringBuilder.append(", ");
@@ -316,7 +316,7 @@ public class EncoderFileContensBuilder extends AbstractSourceFileBuildre {
 
 		/** 이 배열을 위한 중간 객체 가져오기 */
 		// Object memberArrayMiddleObject =
-		// singleItemEncoder.getArrayMiddleObjectFromWritableMiddleObject(allDataTypeInObjSingleItemPath,
+		// singleItemEncoder.getArrayMiddleObject(allDataTypeInObjSingleItemPath,
 		// "member", memberList.length, middleWritableObject);
 		contetnsStringBuilder.append(CommonStaticFinalVars.NEWLINE);
 		contetnsStringBuilder.append(CommonStaticUtil.getPrefixWithTabCharacters(depth, 1));
@@ -326,7 +326,7 @@ public class EncoderFileContensBuilder extends AbstractSourceFileBuildre {
 		 * contetnsStringBuilder.append("MiddleWriteArray");
 		 */
 		contetnsStringBuilder.append(getArrayMiddleObjVarName(depth, arrayInfo.getItemName()));
-		contetnsStringBuilder.append(" = singleItemEncoder.getArrayMiddleObjectFromWritableMiddleObject(");		
+		contetnsStringBuilder.append(" = singleItemEncoder.getArrayMiddleObject(");		
 		// the parameter path
 		contetnsStringBuilder.append("pathStack.peek()");
 		contetnsStringBuilder.append(", ");
@@ -337,7 +337,7 @@ public class EncoderFileContensBuilder extends AbstractSourceFileBuildre {
 		// the parameter arrayCntValue
 		contetnsStringBuilder.append(getArrayListSizeVarObjName(depth, arrayInfo.getItemName()));
 		contetnsStringBuilder.append(", ");
-		// the parameter writableMiddleObject
+		// the parameter middleObjectToSend
 		contetnsStringBuilder.append(middleObjVarName);
 		contetnsStringBuilder.append(");");
 
@@ -369,7 +369,7 @@ public class EncoderFileContensBuilder extends AbstractSourceFileBuildre {
 		contetnsStringBuilder.append(CommonStaticUtil.getPrefixWithTabCharacters(depth, 2));
 		contetnsStringBuilder.append("Object ");
 		contetnsStringBuilder.append(getElementObjVarNameOfArrayMiddleObject(depth, arrayInfo.getItemName()));
-		contetnsStringBuilder.append(" = singleItemEncoder.getWritableMiddleObjectjFromArrayMiddleObject(");	
+		contetnsStringBuilder.append(" = singleItemEncoder.getMiddleObjectFromArrayMiddleObject(");	
 		// the parameter path
 		contetnsStringBuilder.append("pathStack.peek(), ");
 		// the parameter arrayObj
@@ -507,14 +507,14 @@ public class EncoderFileContensBuilder extends AbstractSourceFileBuildre {
 		contetnsStringBuilder.append(CommonStaticUtil.getPrefixWithTabCharacters(depth, 0));
 		contetnsStringBuilder.append("Object ");
 		contetnsStringBuilder.append(getGroupMiddleObjVarName(depth, groupInfo.getItemName()));
-		contetnsStringBuilder.append(" = singleItemEncoder.getGroupMiddleObjectFromWritableMiddleObject(");
+		contetnsStringBuilder.append(" = singleItemEncoder.getGroupMiddleObject(");
 		// the parameter path
 		contetnsStringBuilder.append("pathStack.peek(), ");
 		// the parameter groupName
 		contetnsStringBuilder.append("\"");
 		contetnsStringBuilder.append(groupInfo.getItemName());
 		contetnsStringBuilder.append("\", ");
-		// the parameter writableMiddleObject
+		// the parameter middleObjectToSend
 		contetnsStringBuilder.append(middleObjVarName);
 		contetnsStringBuilder.append(");");
 		
@@ -593,13 +593,14 @@ public class EncoderFileContensBuilder extends AbstractSourceFileBuildre {
 	}
 
 	
-	public void addEncodeMethodPart(StringBuilder contetnsStringBuilder, String messageID, String firstLowerMessageID) {
+	public void addEncodeMethodPart(StringBuilder contetnsStringBuilder, String messageID, String firstLowerMessageID, String middleObjVarName) {
 		final int depth = 1;
 		
 		contetnsStringBuilder.append(CommonStaticFinalVars.NEWLINE);
 		contetnsStringBuilder.append(CommonStaticUtil.getPrefixWithTabCharacters(depth, 0));
-		contetnsStringBuilder.append(
-				"public void encode(AbstractMessage messageObj, SingleItemEncoderIF singleItemEncoder, Object writableMiddleObject) throws Exception {");
+		contetnsStringBuilder.append("public void encode(AbstractMessage messageObj, SingleItemEncoderIF singleItemEncoder, Object ");
+		contetnsStringBuilder.append(middleObjVarName);
+		contetnsStringBuilder.append(") throws Exception {");
 
 		contetnsStringBuilder.append(CommonStaticFinalVars.NEWLINE);
 		contetnsStringBuilder.append(CommonStaticUtil.getPrefixWithTabCharacters(depth, 1));
@@ -613,7 +614,9 @@ public class EncoderFileContensBuilder extends AbstractSourceFileBuildre {
 		contetnsStringBuilder.append(CommonStaticUtil.getPrefixWithTabCharacters(depth, 1));
 		contetnsStringBuilder.append("encodeBody(");
 		contetnsStringBuilder.append(firstLowerMessageID);
-		contetnsStringBuilder.append(", singleItemEncoder, writableMiddleObject);");
+		contetnsStringBuilder.append(", singleItemEncoder, ");
+		contetnsStringBuilder.append(middleObjVarName);
+		contetnsStringBuilder.append(");");
 		// }
 		contetnsStringBuilder.append(CommonStaticFinalVars.NEWLINE);
 		contetnsStringBuilder.append(CommonStaticUtil.getPrefixWithTabCharacters(depth, 0));
@@ -666,7 +669,7 @@ public class EncoderFileContensBuilder extends AbstractSourceFileBuildre {
 	public String buildStringOfFileContents(String author,
 			MessageInfo messageInfo) {
 
-		final String middleObjVarName = "middleWritableObject";
+		final String middleObjVarName = "middleObjectToSend";
 		final int depth = 0;
 
 		String messageID = messageInfo.getMessageID();
@@ -699,7 +702,7 @@ public class EncoderFileContensBuilder extends AbstractSourceFileBuildre {
 		contetnsStringBuilder.append(CommonStaticUtil.getPrefixWithTabCharacters(depth, 1));
 		contetnsStringBuilder.append("@Override");
 		// encode(AbstractMessage, SingleItemEncoderIF, Object) 메소드 파트 문자열
-		addEncodeMethodPart(contetnsStringBuilder, messageID, firstLowerMessageID);
+		addEncodeMethodPart(contetnsStringBuilder, messageID, firstLowerMessageID, middleObjVarName);
 
 		contetnsStringBuilder.append(CommonStaticFinalVars.NEWLINE);
 		contetnsStringBuilder.append(CommonStaticFinalVars.NEWLINE);

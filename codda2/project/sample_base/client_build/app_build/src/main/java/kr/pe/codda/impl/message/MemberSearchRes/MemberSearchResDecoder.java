@@ -30,74 +30,74 @@ import kr.pe.codda.common.protocol.SingleItemDecoderIF;
 public final class MemberSearchResDecoder extends AbstractMessageDecoder {
 
 	@Override
-	protected AbstractMessage decodeBody(SingleItemDecoderIF singleItemDecoder, Object  middleReadableObject) throws BodyFormatException {
+	protected AbstractMessage decodeBody(SingleItemDecoderIF singleItemDecoder, Object receivedMiddleObject) throws BodyFormatException {
 		MemberSearchRes memberSearchRes = new MemberSearchRes();
 		java.util.LinkedList<String> pathStack = new java.util.LinkedList<String>();
 		pathStack.push("MemberSearchRes");
 
 		memberSearchRes.setMemberState((Byte)
-		singleItemDecoder.getValueFromReadableMiddleObject(pathStack.peek()
+		singleItemDecoder.getValue(pathStack.peek()
 			, "memberState" // itemName
 			, kr.pe.codda.common.type.SingleItemType.BYTE // itemType
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleReadableObject));
+			, receivedMiddleObject));
 
 		memberSearchRes.setSearchID((String)
-		singleItemDecoder.getValueFromReadableMiddleObject(pathStack.peek()
+		singleItemDecoder.getValue(pathStack.peek()
 			, "searchID" // itemName
 			, kr.pe.codda.common.type.SingleItemType.UB_PASCAL_STRING // itemType
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleReadableObject));
+			, receivedMiddleObject));
 
 		memberSearchRes.setFromDateString((String)
-		singleItemDecoder.getValueFromReadableMiddleObject(pathStack.peek()
+		singleItemDecoder.getValue(pathStack.peek()
 			, "fromDateString" // itemName
 			, kr.pe.codda.common.type.SingleItemType.UB_PASCAL_STRING // itemType
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleReadableObject));
+			, receivedMiddleObject));
 
 		memberSearchRes.setToDateString((String)
-		singleItemDecoder.getValueFromReadableMiddleObject(pathStack.peek()
+		singleItemDecoder.getValue(pathStack.peek()
 			, "toDateString" // itemName
 			, kr.pe.codda.common.type.SingleItemType.UB_PASCAL_STRING // itemType
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleReadableObject));
+			, receivedMiddleObject));
 
 		memberSearchRes.setPageNo((Integer)
-		singleItemDecoder.getValueFromReadableMiddleObject(pathStack.peek()
+		singleItemDecoder.getValue(pathStack.peek()
 			, "pageNo" // itemName
 			, kr.pe.codda.common.type.SingleItemType.INTEGER // itemType
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleReadableObject));
+			, receivedMiddleObject));
 
 		memberSearchRes.setPageSize((Integer)
-		singleItemDecoder.getValueFromReadableMiddleObject(pathStack.peek()
+		singleItemDecoder.getValue(pathStack.peek()
 			, "pageSize" // itemName
 			, kr.pe.codda.common.type.SingleItemType.UNSIGNED_SHORT // itemType
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleReadableObject));
+			, receivedMiddleObject));
 
 		memberSearchRes.setIsNextPage((java.lang.Boolean)
-		singleItemDecoder.getValueFromReadableMiddleObject(pathStack.peek()
+		singleItemDecoder.getValue(pathStack.peek()
 			, "isNextPage" // itemName
 			, kr.pe.codda.common.type.SingleItemType.BOOLEAN // itemType
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleReadableObject));
+			, receivedMiddleObject));
 
 		memberSearchRes.setCnt((Integer)
-		singleItemDecoder.getValueFromReadableMiddleObject(pathStack.peek()
+		singleItemDecoder.getValue(pathStack.peek()
 			, "cnt" // itemName
 			, kr.pe.codda.common.type.SingleItemType.INTEGER // itemType
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleReadableObject));
+			, receivedMiddleObject));
 
 		int member$2ListSize = memberSearchRes.getCnt();
 		if (member$2ListSize < 0) {
@@ -105,16 +105,16 @@ public final class MemberSearchResDecoder extends AbstractMessageDecoder {
 			throw new kr.pe.codda.common.exception.BodyFormatException(errorMessage);
 		}
 
-		Object member$2ArrayMiddleObject = singleItemDecoder.getArrayMiddleObjectFromReadableMiddleObject(pathStack.peek(), "member", member$2ListSize, middleReadableObject);
+		Object member$2ArrayMiddleObject = singleItemDecoder.getArrayMiddleObject(pathStack.peek(), "member", member$2ListSize, receivedMiddleObject);
 		java.util.List<MemberSearchRes.Member> member$2List = new java.util.ArrayList<MemberSearchRes.Member>();
 		for (int i2=0; i2 < member$2ListSize; i2++) {
 			pathStack.push(new StringBuilder(pathStack.peek()).append(".").append("Member").append("[").append(i2).append("]").toString());
-			Object member$2MiddleWritableObject= singleItemDecoder.getReadableMiddleObjFromArrayMiddleObject(pathStack.peek(), member$2ArrayMiddleObject, i2);
+			Object member$2MiddleWritableObject= singleItemDecoder.getMiddleObjectFromArrayMiddleObject(pathStack.peek(), member$2ArrayMiddleObject, i2);
 			MemberSearchRes.Member member$2 = new MemberSearchRes.Member();
 			member$2List.add(member$2);
 
 			member$2.setUserID((String)
-			singleItemDecoder.getValueFromReadableMiddleObject(pathStack.peek()
+			singleItemDecoder.getValue(pathStack.peek()
 				, "userID" // itemName
 				, kr.pe.codda.common.type.SingleItemType.UB_PASCAL_STRING // itemType
 				, -1 // itemSize
@@ -122,7 +122,7 @@ public final class MemberSearchResDecoder extends AbstractMessageDecoder {
 				, member$2MiddleWritableObject));
 
 			member$2.setNickname((String)
-			singleItemDecoder.getValueFromReadableMiddleObject(pathStack.peek()
+			singleItemDecoder.getValue(pathStack.peek()
 				, "nickname" // itemName
 				, kr.pe.codda.common.type.SingleItemType.UB_PASCAL_STRING // itemType
 				, -1 // itemSize
@@ -130,7 +130,7 @@ public final class MemberSearchResDecoder extends AbstractMessageDecoder {
 				, member$2MiddleWritableObject));
 
 			member$2.setPasswordFailCount((Short)
-			singleItemDecoder.getValueFromReadableMiddleObject(pathStack.peek()
+			singleItemDecoder.getValue(pathStack.peek()
 				, "passwordFailCount" // itemName
 				, kr.pe.codda.common.type.SingleItemType.UNSIGNED_BYTE // itemType
 				, -1 // itemSize
@@ -138,7 +138,7 @@ public final class MemberSearchResDecoder extends AbstractMessageDecoder {
 				, member$2MiddleWritableObject));
 
 			member$2.setRegisteredDate((java.sql.Timestamp)
-			singleItemDecoder.getValueFromReadableMiddleObject(pathStack.peek()
+			singleItemDecoder.getValue(pathStack.peek()
 				, "registeredDate" // itemName
 				, kr.pe.codda.common.type.SingleItemType.JAVA_SQL_TIMESTAMP // itemType
 				, -1 // itemSize
@@ -146,7 +146,7 @@ public final class MemberSearchResDecoder extends AbstractMessageDecoder {
 				, member$2MiddleWritableObject));
 
 			member$2.setLastNicknameModifiedDate((java.sql.Timestamp)
-			singleItemDecoder.getValueFromReadableMiddleObject(pathStack.peek()
+			singleItemDecoder.getValue(pathStack.peek()
 				, "lastNicknameModifiedDate" // itemName
 				, kr.pe.codda.common.type.SingleItemType.JAVA_SQL_TIMESTAMP // itemType
 				, -1 // itemSize
@@ -154,7 +154,7 @@ public final class MemberSearchResDecoder extends AbstractMessageDecoder {
 				, member$2MiddleWritableObject));
 
 			member$2.setLastEmailModifiedDate((java.sql.Timestamp)
-			singleItemDecoder.getValueFromReadableMiddleObject(pathStack.peek()
+			singleItemDecoder.getValue(pathStack.peek()
 				, "lastEmailModifiedDate" // itemName
 				, kr.pe.codda.common.type.SingleItemType.JAVA_SQL_TIMESTAMP // itemType
 				, -1 // itemSize
@@ -162,7 +162,7 @@ public final class MemberSearchResDecoder extends AbstractMessageDecoder {
 				, member$2MiddleWritableObject));
 
 			member$2.setLastPasswordModifiedDate((java.sql.Timestamp)
-			singleItemDecoder.getValueFromReadableMiddleObject(pathStack.peek()
+			singleItemDecoder.getValue(pathStack.peek()
 				, "lastPasswordModifiedDate" // itemName
 				, kr.pe.codda.common.type.SingleItemType.JAVA_SQL_TIMESTAMP // itemType
 				, -1 // itemSize
@@ -170,7 +170,7 @@ public final class MemberSearchResDecoder extends AbstractMessageDecoder {
 				, member$2MiddleWritableObject));
 
 			member$2.setLastStateModifiedDate((java.sql.Timestamp)
-			singleItemDecoder.getValueFromReadableMiddleObject(pathStack.peek()
+			singleItemDecoder.getValue(pathStack.peek()
 				, "lastStateModifiedDate" // itemName
 				, kr.pe.codda.common.type.SingleItemType.JAVA_SQL_TIMESTAMP // itemType
 				, -1 // itemSize

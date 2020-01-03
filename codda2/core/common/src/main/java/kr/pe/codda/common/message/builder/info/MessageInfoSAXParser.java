@@ -1,19 +1,19 @@
-/*
+/*******************************************************************************
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
- *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *  
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *  
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- */
+ *******************************************************************************/
 
 package kr.pe.codda.common.message.builder.info;
 
@@ -45,7 +45,7 @@ import kr.pe.codda.common.type.MessageTransferDirectionType;
 
 /**
  * XML로 작성된 메시지 정보 파일을 SAX 파싱하여 메시지 정보를 작성하는 클래스.<br/>
- * XML로 작성된 메시지 정보 파일의 구조를 정의하는 XSD 파일과 연계하여 신놀이 메시지 구조 적합성을 검증한다.
+ * XML로 작성된 메시지 정보 파일의 구조를 정의하는 XSD 파일과 연계하여 메시지 구조 적합성을 검증한다.
  * 
  * @author Won Jonghoon
  * 
@@ -77,11 +77,9 @@ public class MessageInfoSAXParser extends DefaultHandler {
 	private Stack<OrderedItemSet> itemSetStack = new Stack<OrderedItemSet>();
 	/** this member variables is initialized in parse(File) end */
 
-
 	/**
 	 * 생성자
-	 * 
-	 * @param isFileNameCheck 파일명의 메시지 식별자와 파일 내용의 메시지 식별자 구별 여부
+	 * @throws SAXException 에러 발생시 던지는 예외
 	 */
 	public MessageInfoSAXParser() throws SAXException {
 		saxParser = getNewInstanceOfSAXParser();
@@ -132,8 +130,6 @@ public class MessageInfoSAXParser extends DefaultHandler {
 
 		if (startTag.equals("singleitem")) {
 			OrderedItemSet workingItemSet = itemSetStack.peek();
-			
-			
 
 			String itemName = attributes.getValue("name");
 			if (null == itemName) {

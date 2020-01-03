@@ -28,37 +28,37 @@ import kr.pe.codda.common.protocol.SingleItemEncoderIF;
  */
 public final class MemberLoginResEncoder extends AbstractMessageEncoder {
 	@Override
-	public void encode(AbstractMessage messageObj, SingleItemEncoderIF singleItemEncoder, Object writableMiddleObject) throws Exception {
+	public void encode(AbstractMessage messageObj, SingleItemEncoderIF singleItemEncoder, Object middleObjectToSend) throws Exception {
 		MemberLoginRes memberLoginRes = (MemberLoginRes)messageObj;
-		encodeBody(memberLoginRes, singleItemEncoder, writableMiddleObject);
+		encodeBody(memberLoginRes, singleItemEncoder, middleObjectToSend);
 	}
 
 
-	private void encodeBody(MemberLoginRes memberLoginRes, SingleItemEncoderIF singleItemEncoder, Object middleWritableObject) throws Exception {
+	private void encodeBody(MemberLoginRes memberLoginRes, SingleItemEncoderIF singleItemEncoder, Object middleObjectToSend) throws Exception {
 		java.util.LinkedList<String> pathStack = new java.util.LinkedList<String>();
 		pathStack.push("MemberLoginRes");
 
 
-		singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "userID"
+		singleItemEncoder.putValue(pathStack.peek(), "userID"
 			, kr.pe.codda.common.type.SingleItemType.UB_PASCAL_STRING // itemType
 			, memberLoginRes.getUserID() // itemValue
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleWritableObject);
+			, middleObjectToSend);
 
-		singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "userName"
+		singleItemEncoder.putValue(pathStack.peek(), "userName"
 			, kr.pe.codda.common.type.SingleItemType.UB_PASCAL_STRING // itemType
 			, memberLoginRes.getUserName() // itemValue
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleWritableObject);
+			, middleObjectToSend);
 
-		singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "memberRole"
+		singleItemEncoder.putValue(pathStack.peek(), "memberRole"
 			, kr.pe.codda.common.type.SingleItemType.BYTE // itemType
 			, memberLoginRes.getMemberRole() // itemValue
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleWritableObject);
+			, middleObjectToSend);
 
 		pathStack.pop();
 	}

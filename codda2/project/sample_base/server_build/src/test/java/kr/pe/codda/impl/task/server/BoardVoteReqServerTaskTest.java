@@ -8,13 +8,13 @@ import org.mockito.Mockito;
 import junitlib.AbstractBoardTest;
 import kr.pe.codda.common.exception.DynamicClassCallException;
 import kr.pe.codda.impl.message.BoardVoteReq.BoardVoteReq;
-import kr.pe.codda.server.PersonalLoginManagerIF;
+import kr.pe.codda.server.LoginManagerIF;
 import kr.pe.codda.server.task.ToLetterCarrier;
 
 public class BoardVoteReqServerTaskTest extends AbstractBoardTest {	
 	@Test
 	public void testDoTask() {
-		PersonalLoginManagerIF personalLoginManagerMock = Mockito.mock(PersonalLoginManagerIF.class);				
+		LoginManagerIF personalLoginManagerMock = Mockito.mock(LoginManagerIF.class);				
 		ToLetterCarrier toLetterCarrierMock = Mockito.mock(ToLetterCarrier.class);
 		
 		final short boardID = 3;

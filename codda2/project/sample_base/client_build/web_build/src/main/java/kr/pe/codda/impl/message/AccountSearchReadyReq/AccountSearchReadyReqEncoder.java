@@ -28,37 +28,37 @@ import kr.pe.codda.common.protocol.SingleItemEncoderIF;
  */
 public final class AccountSearchReadyReqEncoder extends AbstractMessageEncoder {
 	@Override
-	public void encode(AbstractMessage messageObj, SingleItemEncoderIF singleItemEncoder, Object writableMiddleObject) throws Exception {
+	public void encode(AbstractMessage messageObj, SingleItemEncoderIF singleItemEncoder, Object middleObjectToSend) throws Exception {
 		AccountSearchReadyReq accountSearchReadyReq = (AccountSearchReadyReq)messageObj;
-		encodeBody(accountSearchReadyReq, singleItemEncoder, writableMiddleObject);
+		encodeBody(accountSearchReadyReq, singleItemEncoder, middleObjectToSend);
 	}
 
 
-	private void encodeBody(AccountSearchReadyReq accountSearchReadyReq, SingleItemEncoderIF singleItemEncoder, Object middleWritableObject) throws Exception {
+	private void encodeBody(AccountSearchReadyReq accountSearchReadyReq, SingleItemEncoderIF singleItemEncoder, Object middleObjectToSend) throws Exception {
 		java.util.LinkedList<String> pathStack = new java.util.LinkedList<String>();
 		pathStack.push("AccountSearchReadyReq");
 
 
-		singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "accountSearchType"
+		singleItemEncoder.putValue(pathStack.peek(), "accountSearchType"
 			, kr.pe.codda.common.type.SingleItemType.BYTE // itemType
 			, accountSearchReadyReq.getAccountSearchType() // itemValue
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleWritableObject);
+			, middleObjectToSend);
 
-		singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "email"
+		singleItemEncoder.putValue(pathStack.peek(), "email"
 			, kr.pe.codda.common.type.SingleItemType.US_PASCAL_STRING // itemType
 			, accountSearchReadyReq.getEmail() // itemValue
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleWritableObject);
+			, middleObjectToSend);
 
-		singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "ip"
+		singleItemEncoder.putValue(pathStack.peek(), "ip"
 			, kr.pe.codda.common.type.SingleItemType.UB_PASCAL_STRING // itemType
 			, accountSearchReadyReq.getIp() // itemValue
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleWritableObject);
+			, middleObjectToSend);
 
 		pathStack.pop();
 	}

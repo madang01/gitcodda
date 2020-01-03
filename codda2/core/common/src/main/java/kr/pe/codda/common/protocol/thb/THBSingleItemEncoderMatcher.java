@@ -1,3 +1,19 @@
+/*******************************************************************************
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *  
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *  
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *******************************************************************************/
 package kr.pe.codda.common.protocol.thb;
 
 import java.nio.BufferOverflowException;
@@ -11,7 +27,7 @@ import java.util.logging.Logger;
 import kr.pe.codda.common.etc.CommonStaticFinalVars;
 import kr.pe.codda.common.exception.NoMoreDataPacketBufferException;
 import kr.pe.codda.common.io.StreamBuffer;
-import kr.pe.codda.common.type.SelfExn;
+import kr.pe.codda.common.type.ExceptionDelivery;
 import kr.pe.codda.common.type.SingleItemType;
 
 public class THBSingleItemEncoderMatcher implements THBSingleItemEncoderMatcherIF {
@@ -87,14 +103,14 @@ public class THBSingleItemEncoderMatcher implements THBSingleItemEncoderMatcherI
 		public void putValue(int itemTypeID, String itemName, Object nativeItemValue, int itemSize,
 				String nativeItemCharset, StreamBuffer binaryOutputStream)
 				throws BufferOverflowException, BufferOverflowException, NoMoreDataPacketBufferException {			
-			SelfExn.ErrorPlace itemValue = (SelfExn.ErrorPlace) nativeItemValue;
+			ExceptionDelivery.ErrorPlace itemValue = (ExceptionDelivery.ErrorPlace) nativeItemValue;
 
 			writeItemID(itemTypeID, binaryOutputStream);
 			binaryOutputStream.putByte(itemValue.getErrorPlaceByte());
 		}
 		
 		public SingleItemType getSingleItemType() {
-			return SingleItemType.SELFEXN_ERROR_PLACE;
+			return SingleItemType.EXCEPTION_DELIVERY_ERROR_PLACE;
 		}
 	}
 	
@@ -103,14 +119,14 @@ public class THBSingleItemEncoderMatcher implements THBSingleItemEncoderMatcherI
 		public void putValue(int itemTypeID, String itemName, Object nativeItemValue, int itemSize,
 				String nativeItemCharset, StreamBuffer binaryOutputStream)
 				throws BufferOverflowException, BufferOverflowException, NoMoreDataPacketBufferException {			
-			SelfExn.ErrorType itemValue = (SelfExn.ErrorType) nativeItemValue;
+			ExceptionDelivery.ErrorType itemValue = (ExceptionDelivery.ErrorType) nativeItemValue;
 
 			writeItemID(itemTypeID, binaryOutputStream);
 			binaryOutputStream.putByte(itemValue.getErrorTypeByte());
 		}
 		
 		public SingleItemType getSingleItemType() {
-			return SingleItemType.SELFEXN_ERROR_TYPE;
+			return SingleItemType.EXCEPTION_DELIVERY_ERROR_TYPE;
 		}
 	}
 

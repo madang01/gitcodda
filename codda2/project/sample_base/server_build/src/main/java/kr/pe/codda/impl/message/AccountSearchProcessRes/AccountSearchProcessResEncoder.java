@@ -28,37 +28,37 @@ import kr.pe.codda.common.protocol.SingleItemEncoderIF;
  */
 public final class AccountSearchProcessResEncoder extends AbstractMessageEncoder {
 	@Override
-	public void encode(AbstractMessage messageObj, SingleItemEncoderIF singleItemEncoder, Object writableMiddleObject) throws Exception {
+	public void encode(AbstractMessage messageObj, SingleItemEncoderIF singleItemEncoder, Object middleObjectToSend) throws Exception {
 		AccountSearchProcessRes accountSearchProcessRes = (AccountSearchProcessRes)messageObj;
-		encodeBody(accountSearchProcessRes, singleItemEncoder, writableMiddleObject);
+		encodeBody(accountSearchProcessRes, singleItemEncoder, middleObjectToSend);
 	}
 
 
-	private void encodeBody(AccountSearchProcessRes accountSearchProcessRes, SingleItemEncoderIF singleItemEncoder, Object middleWritableObject) throws Exception {
+	private void encodeBody(AccountSearchProcessRes accountSearchProcessRes, SingleItemEncoderIF singleItemEncoder, Object middleObjectToSend) throws Exception {
 		java.util.LinkedList<String> pathStack = new java.util.LinkedList<String>();
 		pathStack.push("AccountSearchProcessRes");
 
 
-		singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "accountSearchType"
+		singleItemEncoder.putValue(pathStack.peek(), "accountSearchType"
 			, kr.pe.codda.common.type.SingleItemType.BYTE // itemType
 			, accountSearchProcessRes.getAccountSearchType() // itemValue
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleWritableObject);
+			, middleObjectToSend);
 
-		singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "userID"
+		singleItemEncoder.putValue(pathStack.peek(), "userID"
 			, kr.pe.codda.common.type.SingleItemType.UB_PASCAL_STRING // itemType
 			, accountSearchProcessRes.getUserID() // itemValue
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleWritableObject);
+			, middleObjectToSend);
 
-		singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "nickname"
+		singleItemEncoder.putValue(pathStack.peek(), "nickname"
 			, kr.pe.codda.common.type.SingleItemType.UB_PASCAL_STRING // itemType
 			, accountSearchProcessRes.getNickname() // itemValue
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleWritableObject);
+			, middleObjectToSend);
 
 		pathStack.pop();
 	}

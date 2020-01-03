@@ -91,24 +91,7 @@ public class BoardModifyProcessSvl extends AbstractMultipartServlet implements I
 
 	@Override
 	protected void performTask(HttpServletRequest req, HttpServletResponse res) throws Exception {
-		BoardModifyRes boardModifyRes = null;
-		try {
-			boardModifyRes = doWork(req, res);
-		} catch (WebClientException e) {
-			String errorMessage = e.getErrorMessage();
-			String debugMessage = e.getDebugMessage();
-
-			AccessedUserInformation accessedUserformation = getAccessedUserInformationFromSession(req);
-
-			String logMessage = new StringBuilder().append((null == debugMessage) ? errorMessage : debugMessage)
-					.append(", userID=[").append(accessedUserformation.getUserID()).append("], ip=[")
-					.append(req.getRemoteAddr()).append("]").toString();
-
-			log.warning(logMessage);
-
-			printErrorMessagePage(req, res, errorMessage, debugMessage);
-			return;
-		}
+		BoardModifyRes boardModifyRes = doWork(req, res);
 
 		req.setAttribute("boardModifyRes", boardModifyRes);
 
@@ -535,7 +518,7 @@ public class BoardModifyProcessSvl extends AbstractMultipartServlet implements I
 
 		AccessedUserInformation accessedUserformation = getAccessedUserInformationFromSession(req);		
 
-		String newContents = BoardContentsWhiteParserMananger.getInstance().checkXssAttack(this, paramContents);
+		String newContents = BoardContentsWhiteParserMananger.getInstance().checkWhiteValue(this, paramContents);
 
 		BoardModifyReq boardModifyReq = new BoardModifyReq();
 		boardModifyReq.setRequestedUserID(accessedUserformation.getUserID());

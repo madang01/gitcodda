@@ -1,20 +1,19 @@
-/*
+/*******************************************************************************
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
- *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *  
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *  
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- */
-
+ *******************************************************************************/
 package kr.pe.codda.common.etc;
 
 //import java.util.logging.Level;
@@ -61,8 +60,7 @@ public class CharsetUtil {
 	/** 
 	 * <pre>
 	 * 주의사항) CharsetDecoder Not Thread Safe
-	 * 참고) 신놀이 프레임 워크에서 네트워크에서 메시지 교환시 
-	 * 문자열을 다룰때 문자셋 인코딩/디코딩시하는 중에 에러 발생시 
+	 * 참고) 네트워크에서 메시지 교환시 문자열을 다룰때 문자셋 인코딩/디코딩시하는 중에 에러 발생시 
 	 * 기본으로 설정된 문자로 대치를 해서 처리를 한다. 
 	 * 이는 메시지안에 포함된 문자열 항목에 다소 문제가 있어도 메시지를 받게 하기 위함이다.
 	 * 자바에서 문자셋을 다룰때 2가지 에러 상황에 대해서 사용자가 에러에 대한 동작을 지시 할 수 있다. 
@@ -85,8 +83,7 @@ public class CharsetUtil {
 	/**
 	 * <pre>
 	 * 주의사항) CharsetEncoder Not Thread Safe
-	 * 참고) 신놀이 프레임 워크에서 네트워크에서 메시지 교환시 
-	 * 문자열을 다룰때 문자셋 인코딩/디코딩시하는 중에 에러 발생시 
+	 * 참고) 네트워크에서 메시지 교환시 문자열을 다룰때 문자셋 인코딩/디코딩시하는 중에 에러 발생시 
 	 * 기본으로 설정된 문자로 대치를 해서 처리를 한다. 
 	 * 이는 메시지안에 포함된 문자열 항목에 다소 문제가 있어도 메시지를 받게 하기 위함이다.
 	 * 자바에서 문자셋을 다룰때 2가지 에러 상황에 대해서 사용자가 에러에 대한 동작을 지시 할 수 있다. 

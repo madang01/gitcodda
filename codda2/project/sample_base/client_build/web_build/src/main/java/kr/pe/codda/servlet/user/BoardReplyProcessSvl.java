@@ -67,29 +67,7 @@ public class BoardReplyProcessSvl extends AbstractMultipartServlet implements Im
 	protected void performTask(HttpServletRequest req, HttpServletResponse res)
 			throws Exception {
 
-		BoardReplyRes boardReplyRes = null;
-
-		try {
-			boardReplyRes = doWork(req, res);
-		} catch (WebClientException e) {
-			String errorMessage = e.getErrorMessage();
-			String debugMessage = e.getDebugMessage();
-			
-			AccessedUserInformation accessedUserformation = getAccessedUserInformationFromSession(req);
-
-			String logMessage = new StringBuilder()
-					.append((null == debugMessage) ? errorMessage : debugMessage)
-					.append(", userID=[")
-					.append(accessedUserformation.getUserID())
-					.append("], ip=[")
-					.append(req.getRemoteAddr())
-					.append("]").toString();
-
-			log.warning(logMessage);
-
-			printErrorMessagePage(req, res, errorMessage, debugMessage);
-			return;
-		}
+		BoardReplyRes boardReplyRes = doWork(req, res);
 
 		req.setAttribute("boardReplyRes", boardReplyRes);
 
@@ -493,7 +471,7 @@ public class BoardReplyProcessSvl extends AbstractMultipartServlet implements Im
 		AnyProjectConnectionPoolIF mainProjectConnectionPool = ConnectionPoolManager
 				.getInstance().getMainProjectConnectionPool();
 		
-		String newContents = BoardContentsWhiteParserMananger.getInstance().checkXssAttack(this, paramContents);
+		String newContents = BoardContentsWhiteParserMananger.getInstance().checkWhiteValue(this, paramContents);
 		
 		BoardReplyReq boardReplyReq = new BoardReplyReq();
 		boardReplyReq.setRequestedUserID(accessedUserformation.getUserID());

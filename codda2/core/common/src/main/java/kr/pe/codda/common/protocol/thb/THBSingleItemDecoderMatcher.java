@@ -1,3 +1,19 @@
+/*******************************************************************************
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *  
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *  
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *******************************************************************************/
 package kr.pe.codda.common.protocol.thb;
 
 import java.nio.charset.Charset;
@@ -9,7 +25,7 @@ import java.util.logging.Logger;
 import kr.pe.codda.common.etc.CommonStaticFinalVars;
 import kr.pe.codda.common.exception.BodyFormatException;
 import kr.pe.codda.common.io.StreamBuffer;
-import kr.pe.codda.common.type.SelfExn;
+import kr.pe.codda.common.type.ExceptionDelivery;
 import kr.pe.codda.common.type.SingleItemType;
 
 public class THBSingleItemDecoderMatcher implements THBSingleItemDecoderMatcherIF {
@@ -20,7 +36,7 @@ public class THBSingleItemDecoderMatcher implements THBSingleItemDecoderMatcherI
 	private CodingErrorAction streamCodingErrorActionOnUnmappableCharacter = null;
 	
 	private final AbstractTHBSingleItemDecoder[] thbSingleItemDecoderList = new AbstractTHBSingleItemDecoder[] { 
-			new THBSelfExnErrorPlaceSingleItemDecoder(), new THBSelfExnErrorTypeSingleItemDecoder(),
+			new THBExceptionDeliveryErrorPlaceSingleItemDecoder(), new THBExceptionDeliveryErrorTypeSingleItemDecoder(),
 			new THBByteSingleItemDecoder(), new THBUnsignedByteSingleItemDecoder(), 
 			new THBShortSingleItemDecoder(), new THBUnsignedShortSingleItemDecoder(),
 			new THBIntSingleItemDecoder(), new THBUnsignedIntSingleItemDecoder(), 
@@ -79,7 +95,7 @@ public class THBSingleItemDecoderMatcher implements THBSingleItemDecoderMatcherI
 		}
 	}
 
-	private final class THBSelfExnErrorPlaceSingleItemDecoder extends AbstractTHBSingleItemDecoder {
+	private final class THBExceptionDeliveryErrorPlaceSingleItemDecoder extends AbstractTHBSingleItemDecoder {
 		@Override
 		public Object getValue(int itemTypeID, String itemName, int itemSize,
 				String nativeItemCharset, StreamBuffer binaryInputStream)
@@ -87,16 +103,16 @@ public class THBSingleItemDecoderMatcher implements THBSingleItemDecoderMatcherI
 			
 			throwExceptionIfItemTypeIsDifferent(itemTypeID, itemName, binaryInputStream);
 			
-			return SelfExn.ErrorPlace.valueOf(binaryInputStream.getByte());
+			return ExceptionDelivery.ErrorPlace.valueOf(binaryInputStream.getByte());
 		}	
 		
 		public SingleItemType getSingleItemType() {
-			return SingleItemType.SELFEXN_ERROR_PLACE;
+			return SingleItemType.EXCEPTION_DELIVERY_ERROR_PLACE;
 		}
 	}	
 	
 	
-	private final class THBSelfExnErrorTypeSingleItemDecoder extends AbstractTHBSingleItemDecoder {
+	private final class THBExceptionDeliveryErrorTypeSingleItemDecoder extends AbstractTHBSingleItemDecoder {
 		@Override
 		public Object getValue(int itemTypeID, String itemName, int itemSize,
 				String nativeItemCharset, StreamBuffer binaryInputStream)
@@ -104,11 +120,11 @@ public class THBSingleItemDecoderMatcher implements THBSingleItemDecoderMatcherI
 			
 			throwExceptionIfItemTypeIsDifferent(itemTypeID, itemName, binaryInputStream);
 			
-			return SelfExn.ErrorType.valueOf(binaryInputStream.getByte());
+			return ExceptionDelivery.ErrorType.valueOf(binaryInputStream.getByte());
 		}	
 		
 		public SingleItemType getSingleItemType() {
-			return SingleItemType.SELFEXN_ERROR_TYPE;
+			return SingleItemType.EXCEPTION_DELIVERY_ERROR_TYPE;
 		}
 	}
 	

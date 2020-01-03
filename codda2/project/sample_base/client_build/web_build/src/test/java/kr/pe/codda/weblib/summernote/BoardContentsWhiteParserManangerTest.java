@@ -22,25 +22,13 @@ import kr.pe.codda.weblib.exception.WhiteParserException;
 public class BoardContentsWhiteParserManangerTest {
 	private Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
 
-	private static File installedBasePath = null;
+	private final static String installedPathString = "D:\\gitcodda\\codda2";
 	private static File installedPath = null;
 	private static File wasLibPath = null;
 	private final static String mainProjectName = "sample_base";
 
 	@BeforeClass
-	public static void setUpBeforeClass() throws Exception {
-		installedBasePath = new File("D:\\gitcodda");
-
-		if (!installedBasePath.exists()) {
-			fail("the installed path doesn't exist");
-		}
-
-		if (!installedBasePath.isDirectory()) {
-			fail("the installed path isn't a directory");
-		}
-
-		String installedPathString = new StringBuilder(installedBasePath.getAbsolutePath()).append(File.separator)
-				.append(CommonStaticFinalVars.ROOT_PROJECT_NAME).toString();
+	public static void setUpBeforeClass() throws Exception {		
 
 		installedPath = new File(installedPathString);
 
@@ -123,7 +111,7 @@ public class BoardContentsWhiteParserManangerTest {
 		}
 
 		try {
-			String newContents = BoardContentsWhiteParserMananger.getInstance().checkXssAttack(new NewImgTagSrcAttributeValueGetter(), unsafe);
+			String newContents = BoardContentsWhiteParserMananger.getInstance().checkWhiteValue(new NewImgTagSrcAttributeValueGetter(), unsafe);
 
 			// assertEquals(unsafe, newContents);
 			log.info(newContents);
@@ -150,7 +138,7 @@ public class BoardContentsWhiteParserManangerTest {
 		
 		try {
 			String newContents = BoardContentsWhiteParserMananger
-					.getInstance().checkXssAttack(new NewImgTagSrcAttributeValueGetter(), unsafe);
+					.getInstance().checkWhiteValue(new NewImgTagSrcAttributeValueGetter(), unsafe);
 
 			log.info(newContents);
 		} catch (Exception e) {
@@ -181,7 +169,7 @@ public class BoardContentsWhiteParserManangerTest {
 		
 		try {
 			String newContents = BoardContentsWhiteParserMananger
-					.getInstance().checkXssAttack(new NewImgTagSrcAttributeValueGetter(), unsafe);
+					.getInstance().checkWhiteValue(new NewImgTagSrcAttributeValueGetter(), unsafe);
 
 			log.info(newContents);
 		} catch (Exception e) {
@@ -191,5 +179,32 @@ public class BoardContentsWhiteParserManangerTest {
 		}
 		
 	}
+	
+	@Test
+	public void test_a태그target_ok() {
+		String unsafe = "<h3>안녕하세요.&nbsp; 코다 커뮤니티 방문을 환영합니다.</h3><p><br></p><h3>코다는 RPC 서버를 기반으로하는 개발 프레임워크입니다.</h3><h3>이곳 사이트의 도메인은 현재 코다의 전신인 구 신놀이를 개발할때 사용한 도메인입니다.</h3><h3>지금은 코다 베타 테스트를 위한 사용하고 있고&nbsp;</h3><h3>같이할 멤버를 모아서 베타 테스트가 끝내서&nbsp;<a href=\"http://www.codda.org\" target=\"_blank\">www.codda.org</a> 로 인사를 드리겠습니다.</h3><h3>같이할 멤버 분들은 k9200544@hanmail.net 으로 연락 주시기 바랍니다.</h3><h3>그리고 베타 테스트및 howto 문서를 만들기 위해서 서버가 수시로 멈출 수 있으니 이점 양해해 주시기 바랍니다.</h3>";
+		
+		class NewImgTagSrcAttributeValueGetter implements ImageFileURLGetterIF {
+
+			@Override
+			public String getImageFileURL(BoardImageFileInformation boardImageFileInformation)
+					throws WhiteParserException {
+				return "/servlet/DownloadImage?yyyyMMdd=20191229&amp;daySequence=19";
+			}
+		}
+		
+		try {
+			String newContents = BoardContentsWhiteParserMananger
+					.getInstance().checkWhiteValue(new NewImgTagSrcAttributeValueGetter(), unsafe);
+
+			assertEquals(unsafe, newContents);
+		} catch (Exception e) {
+			log.log(Level.WARNING, "error", e);
+
+			fail("XSS 검사 실패, errmsg=" + e.getMessage());
+		}
+	}
+	
+	// <h3>안녕하세요.&nbsp; 코다 커뮤니티 방문을 환영합니다.</h3><p><br></p><h3>코다는 RPC 서버를 기반으로하는 개발 프레임워크입니다.</h3><h3>이곳 사이트의 도메인은 현재 코다의 전신인 구 신놀이를 개발할때 사용한 도메인입니다.</h3><h3>지금은 코다 베타 테스트를 위한 사용하고 있고&nbsp;</h3><h3>같이할 멤버를 모아서 베타 테스트가 끝내서&nbsp;<a href="http://www.codda.org" target="_blank">www.codda.org</a> 로 인사를 드리겠습니다.</h3><h3>같이할 멤버 분들은 k9200544@hanmail.net 으로 연락 주시기 바랍니다.</h3><h3>그리고 베타 테스트및 howto 문서를 만들기 위해서 서버가 수시로 멈출 수 있으니 이점 양해해 주시기 바랍니다.</h3>
 
 }

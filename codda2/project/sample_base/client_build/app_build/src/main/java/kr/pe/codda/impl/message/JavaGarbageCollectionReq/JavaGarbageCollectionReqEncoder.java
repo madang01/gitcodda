@@ -28,12 +28,12 @@ import kr.pe.codda.common.protocol.SingleItemEncoderIF;
  */
 public final class JavaGarbageCollectionReqEncoder extends AbstractMessageEncoder {
 	@Override
-	public void encode(AbstractMessage messageObj, SingleItemEncoderIF singleItemEncoder, Object writableMiddleObject) throws Exception {
+	public void encode(AbstractMessage messageObj, SingleItemEncoderIF singleItemEncoder, Object middleObjectToSend) throws Exception {
 		JavaGarbageCollectionReq javaGarbageCollectionReq = (JavaGarbageCollectionReq)messageObj;
-		encodeBody(javaGarbageCollectionReq, singleItemEncoder, writableMiddleObject);
+		encodeBody(javaGarbageCollectionReq, singleItemEncoder, middleObjectToSend);
 	}
 
 
-	private void encodeBody(JavaGarbageCollectionReq javaGarbageCollectionReq, SingleItemEncoderIF singleItemEncoder, Object middleWritableObject) throws Exception {
+	private void encodeBody(JavaGarbageCollectionReq javaGarbageCollectionReq, SingleItemEncoderIF singleItemEncoder, Object middleObjectToSend) throws Exception {
 	}
 }

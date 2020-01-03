@@ -18,7 +18,7 @@ import kr.pe.codda.common.message.AbstractMessage;
 import kr.pe.codda.impl.message.BoardInfoListReq.BoardInfoListReq;
 import kr.pe.codda.impl.message.BoardInfoListRes.BoardInfoListRes;
 import kr.pe.codda.impl.message.MessageResultRes.MessageResultRes;
-import kr.pe.codda.server.PersonalLoginManagerIF;
+import kr.pe.codda.server.LoginManagerIF;
 import kr.pe.codda.server.lib.PermissionType;
 import kr.pe.codda.server.lib.ServerCommonStaticFinalVars;
 import kr.pe.codda.server.lib.ServerDBUtil;
@@ -45,7 +45,7 @@ public class BoardInfoListReqServerTask extends AbstractServerTask {
 	}
 
 	@Override
-	public void doTask(String projectName, PersonalLoginManagerIF personalLoginManager, ToLetterCarrier toLetterCarrier,
+	public void doTask(String projectName, LoginManagerIF personalLoginManager, ToLetterCarrier toLetterCarrier,
 			AbstractMessage inputMessage) throws Exception {
 		try {
 			AbstractMessage outputMessage = doWork(ServerCommonStaticFinalVars.DEFAULT_DBCP_NAME,

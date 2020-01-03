@@ -3,6 +3,7 @@ package kr.pe.codda.weblib.summernote;
 import kr.pe.codda.weblib.exception.WhiteParserException;
 import kr.pe.codda.weblib.summernote.whitevaluechecker.ATagHrefAttrWhiteValueChecker;
 import kr.pe.codda.weblib.summernote.whitevaluechecker.ATagRelAttrWhiteValueChecker;
+import kr.pe.codda.weblib.summernote.whitevaluechecker.ATagTargetAttrValueChecker;
 import kr.pe.codda.weblib.summernote.whitevaluechecker.ImgTagClassAttrWhiteValueChecker;
 import kr.pe.codda.weblib.summernote.whitevaluechecker.ImgTagDataFileNameAttrWhiteValueChecker;
 import kr.pe.codda.weblib.summernote.whitevaluechecker.ImgTagSrcAtrrWhiteValueChecker;
@@ -20,6 +21,7 @@ public class SampleBaseUserSiteWhiteList extends WhiteList {
 		
 		addAttribute("a", "href", new ATagHrefAttrWhiteValueChecker());		
 		addAttribute("a", "rel", new ATagRelAttrWhiteValueChecker());
+		addAttribute("a", "target", new ATagTargetAttrValueChecker());
 		addAttribute("span", "style", new SpanTagStyleAttrWhiteValueChecker());
 		addAttribute("p", "style", new PTagStyleValueXSSAttackChecker());
 		addAttribute("table", "class", new TableTagClassAttrWhiteValueChecker());

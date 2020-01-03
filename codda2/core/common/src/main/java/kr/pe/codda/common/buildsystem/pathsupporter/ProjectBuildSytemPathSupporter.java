@@ -1,3 +1,20 @@
+/*******************************************************************************
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *  
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *  
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *******************************************************************************/
+
 package kr.pe.codda.common.buildsystem.pathsupporter;
 
 import java.io.File;
@@ -5,8 +22,18 @@ import java.io.File;
 import kr.pe.codda.common.etc.CommonStaticFinalVars;
 import kr.pe.codda.common.type.LogType;
 
+/**
+ * 프로젝트 경로 관련 추상화 클래스, 단 응용 클라이언트, 웹 클라이언트, 웹 루트, 서버 관련 경로는 담당 추상화 클래스가 담당한다. 
+ * 
+ * @author Won Jonghoon
+ *
+ */
 public abstract class ProjectBuildSytemPathSupporter {
-	/** [project base path] : [installed path]/project */
+	 
+	/**
+	 * @param installedPathString 설치 경로
+	 * @return project base path => [installed path]/project
+	 */
 	public static String getProjectBasePathString(
 			String installedPathString) {
 		if (null == installedPathString) {
@@ -25,7 +52,13 @@ public abstract class ProjectBuildSytemPathSupporter {
 		return strBuilder.toString();
 	}
 	
-	/** [project path] : [project base path]/[main project name]  */
+	/**   */
+	/**
+	 * 
+	 * @param installedPathString 설치 경로
+	 * @param mainProjectName 메인 프로젝트 이름
+	 * @return [project path] => [project base path]/[main project name]
+	 */
 	public static String getProjectPathString(String installedPathString,  String mainProjectName) {
 		if (null == mainProjectName) {
 			throw new IllegalArgumentException(
@@ -45,7 +78,13 @@ public abstract class ProjectBuildSytemPathSupporter {
 		return strBuilder.toString();
 	}
 	
-	/** log path : [project path]/log/[log type name] */
+	
+	/** 
+	 * @param installedPathString 설치 경로
+	 * @param mainProjectName 메인 프로젝트 이름
+	 * @param logType 로그 종류, 참고 : {@link LogType}
+	 * @return log path => [project path]/log/[log type name]
+	 */
 	public static String getProjectLogPathString(String installedPathString, String mainProjectName, LogType logType) {		
 		if (null == logType) {
 			throw new IllegalArgumentException(
@@ -62,7 +101,11 @@ public abstract class ProjectBuildSytemPathSupporter {
 		return strBuilder.toString();
 	}
 
-	/** project config path : [proejct path]/config */
+	/**
+	 * @param installedPathString 설치 경로
+	 * @param mainProjectName 메인 프로젝트 이름
+	 * @return project config path => [proejct path]/config
+	 */
 	public static String getProjectConfigDirectoryPathString(String installedPathString, String mainProjectName) {
 		StringBuilder strBuilder = new StringBuilder(getProjectPathString(installedPathString, mainProjectName));
 		strBuilder.append(File.separator);
@@ -70,7 +113,12 @@ public abstract class ProjectBuildSytemPathSupporter {
 		return strBuilder.toString();
 	}
 
-	/** project config file path : [project config path]/[project config short file name] */
+	
+	/**
+	 * @param installedPathString 설치 경로
+	 * @param mainProjectName 메인 프로젝트 이름
+	 * @return project config file path => [project config path]/[project config short file name]
+	 */
 	public static String getProejctConfigFilePathString(String installedPathString, String mainProjectName) {
 		StringBuilder strBuilder = new StringBuilder(
 				getProjectConfigDirectoryPathString(installedPathString, mainProjectName));
@@ -78,8 +126,12 @@ public abstract class ProjectBuildSytemPathSupporter {
 		strBuilder.append(CommonStaticFinalVars.CONFIG_FILE_NAME);
 		return strBuilder.toString();
 	}
-
-	/** project resources path : [project path]/resources */
+	
+	/**
+	 * @param installedPathString 설치 경로
+	 * @param mainProjectName 메인 프로젝트 이름
+	 * @return project resources path => [project path]/resources
+	 */
 	public static String getProjectResourcesDirectoryPathString(String installedPathString, String mainProjectName) {
 		StringBuilder strBuilder = new StringBuilder(
 				getProjectPathString(installedPathString, mainProjectName));
@@ -89,6 +141,11 @@ public abstract class ProjectBuildSytemPathSupporter {
 	}
 	
 	
+	/**
+	 * @param installedPathString 설치 경로
+	 * @param mainProjectName 메인 프로젝트 이름
+	 * @return project email properties file => [project path]/resources/email.properties
+	 */
 	public static String getProjectEmailPropertiesFilePathString(String installedPathString, String mainProjectName) {
 		StringBuilder strBuilder = new StringBuilder(
 				getProjectResourcesDirectoryPathString(installedPathString, mainProjectName));
@@ -99,8 +156,11 @@ public abstract class ProjectBuildSytemPathSupporter {
 	}
 	
 	
-	
-	/** logback config file path : [project resources path]/[logack log short file name] */
+	/**
+	 * @param installedPathString 설치 경로
+	 * @param mainProjectName 메인 프로젝트 이름
+	 * @return logback config file path => [project resources path]/[logack log short file name] 
+	 */
 	public static String getProjectLogbackConfigFilePathString(String installedPathString, String mainProjectName) {
 		StringBuilder strBuilder = new StringBuilder(getProjectResourcesDirectoryPathString(installedPathString, mainProjectName));
 		strBuilder.append(File.separator);
@@ -108,7 +168,12 @@ public abstract class ProjectBuildSytemPathSupporter {
 		return strBuilder.toString();
 	}
 	
-	/** DBCP configuration file path : [project path]/resources/dbcp/dbcp.[dbcp name].properties  */
+	/**
+	 * @param installedPathString 설치 경로
+	 * @param mainProjectName 메인 프로젝트 이름
+	 * @param dbcpName
+	 * @return DBCP configuration file path => [project path]/resources/dbcp/dbcp.[dbcp name].properties
+	 */
 	public static String getProjectDBCPConfigFilePathString(String installedPathString, String mainProjectName,
 			 String dbcpName) {
 		StringBuilder strBuilder = new StringBuilder(getProjectResourcesDirectoryPathString(installedPathString, mainProjectName));
@@ -121,8 +186,12 @@ public abstract class ProjectBuildSytemPathSupporter {
 
 		return strBuilder.toString();
 	}
-
-	/** message info path : [project path]/resources/message_info */
+	
+	/**
+	 * @param installedPathString 설치 경로
+	 * @param mainProjectName 메인 프로젝트 이름
+	 * @return message info path => [project path]/resources/message_info
+	 */
 	public static String getProjectMessageInfoDirectoryPathString(String installedPathString, String mainProjectName) {
 		StringBuilder strBuilder = new StringBuilder(getProjectResourcesDirectoryPathString(installedPathString, mainProjectName))
 				.append(File.separator)
@@ -130,9 +199,12 @@ public abstract class ProjectBuildSytemPathSupporter {
 		return strBuilder.toString();
 	}
 	
-	
-
-	/** message info path : [project path]/resources/message_info/[message id].xml */
+	/**
+	 * @param installedPathString 설치 경로
+	 * @param mainProjectName 메인 프로젝트 이름
+	 * @param messageID 메시지 식별자
+	 * @return message info path => [project path]/resources/message_info/[message id].xml
+	 */
 	public static String getProjectMessageInfoFilePathString(String installedPathString, String mainProjectName, String messageID) {
 		StringBuilder strBuilder = new StringBuilder(getProjectMessageInfoDirectoryPathString(installedPathString, mainProjectName))
 				.append(File.separator)
@@ -140,9 +212,12 @@ public abstract class ProjectBuildSytemPathSupporter {
 				.append(".xml");
 		return strBuilder.toString();
 	}
-	
-
-	/** RSA keypair path : [project path]/resources/rsa_keypair */
+		
+	/**
+	 * @param installedPathString 설치 경로
+	 * @param mainProjectName 메인 프로젝트 이름
+	 * @return RSA keypair path => [project path]/resources/rsa_keypair
+	 */
 	public static String getSessionKeyRSAKeypairPathString(String installedPathString, String mainProjectName) {
 		StringBuilder strBuilder = new StringBuilder(getProjectResourcesDirectoryPathString(installedPathString, mainProjectName));
 		strBuilder.append(File.separator);
@@ -150,7 +225,11 @@ public abstract class ProjectBuildSytemPathSupporter {
 		return strBuilder.toString();
 	}
 	
-	/** RSA Publickey file : [RSA keypair path]/[publickey short file name] */
+	/**
+	 * @param installedPathString 설치 경로
+	 * @param mainProjectName 메인 프로젝트 이름
+	 * @return RSA Publickey file => [RSA keypair path]/[publickey short file name]
+	 */
 	public static String getSessionKeyRSAPublickeyFilePathString(String installedPathString, String mainProjectName) {
 		StringBuilder strBuilder = new StringBuilder(getSessionKeyRSAKeypairPathString(installedPathString, mainProjectName));
 		strBuilder.append(File.separator);
@@ -158,7 +237,11 @@ public abstract class ProjectBuildSytemPathSupporter {
 		return strBuilder.toString();
 	}
 	
-	/** RSA Publickey file : [RSA keypair path]/[privatekey short file name] */
+	/**
+	 * @param installedPathString 설치 경로
+	 * @param mainProjectName 메인 프로젝트 이름
+	 * @return RSA Publickey file => [RSA keypair path]/[privatekey short file name]
+	 */
 	public static String getSessionKeyRSAPrivatekeyFilePathString(String installedPathString, String mainProjectName) {
 		StringBuilder strBuilder = new StringBuilder(getSessionKeyRSAKeypairPathString(installedPathString, mainProjectName));
 		strBuilder.append(File.separator);
@@ -166,7 +249,11 @@ public abstract class ProjectBuildSytemPathSupporter {
 		return strBuilder.toString();
 	}
 	
-	/**  db initialization path : [project path]/resources/db_initialization  */
+	/**
+	 * @param installedPathString 설치 경로
+	 * @param mainProjectName 메인 프로젝트 이름
+	 * @return db initialization path => [project path]/resources/db_initialization
+	 */
 	public static String getDBInitializationDirecotryPathString(String installedPathString, String mainProjectName) {
 		StringBuilder strBuilder = new StringBuilder(getProjectResourcesDirectoryPathString(installedPathString, mainProjectName))
 				.append(File.separator)
@@ -174,7 +261,12 @@ public abstract class ProjectBuildSytemPathSupporter {
 		return strBuilder.toString();
 	}
 	
-	/** client build base path : [project path]/client_build */
+
+	/**
+	 * @param installedPathString 설치 경로
+	 * @param mainProjectName 메인 프로젝트 이름
+	 * @return client build base path => [project path]/client_build
+	 */
 	public static String getClientBuildBasePathString(String installedPathString, String mainProjectName) {
 		StringBuilder strBuilder = new StringBuilder(getProjectPathString(installedPathString, mainProjectName));
 		strBuilder.append(File.separator);
@@ -183,7 +275,10 @@ public abstract class ProjectBuildSytemPathSupporter {
 		return strBuilder.toString();
 	}
 	
-	/** [java main source directory relative path] : src[separator]main[separator]java */
+	/**
+	 * @param separator 구별자
+	 * @return src[separator]main[separator]java
+	 */
 	public static String getJavaMainSourceDirectoryRelativePath(String separator) {
 		StringBuilder relativePathStringBuilder = new StringBuilder("src")
 			.append(separator).append("main")
@@ -191,7 +286,11 @@ public abstract class ProjectBuildSytemPathSupporter {
 		return relativePathStringBuilder.toString();
 	}
 	
-	/** [java test source directory relative path] : src[separator]main[separator]java */
+	
+	/**
+	 * @param separator 구별자
+	 * @return src[separator]main[separator]test
+	 */
 	public static String getJavaTestSourceDirectoryRelativePath(String separator) {
 		StringBuilder relativePathStringBuilder = new StringBuilder("src")
 			.append(separator).append("main")
@@ -200,12 +299,14 @@ public abstract class ProjectBuildSytemPathSupporter {
 		return relativePathStringBuilder.toString();
 	}
 	
-	
+	/**
+	 * @param separator 구별자
+	 * @return src[separator]main[separator]java[separator]+ {@link CommonStaticFinalVars#BASE_PACKAGE_NAME} 에서 패키지 구별자 '.' 문자를 [separator]로 치환한 문자열
+	 */
 	public static String getJavaSourceBaseDirectoryRelativePath(String separator) {
 		StringBuilder relativePathStringBuilder = new StringBuilder(getJavaMainSourceDirectoryRelativePath(separator))
 			.append(separator);
 		
-		// kr.pe.codda.message package to relative path
 		for (char ch : CommonStaticFinalVars.BASE_PACKAGE_NAME.toCharArray()) {
 			if (ch == '.') {
 				relativePathStringBuilder.append(separator);
@@ -218,7 +319,10 @@ public abstract class ProjectBuildSytemPathSupporter {
 	}
 	
 	
-	/** [message io source directory relative path] : [java main source directory relative path][separator] */
+	/**
+	 * @param separator 구별자
+	 * @return src[separator]main[separator]java[separator]+ {@link CommonStaticFinalVars#BASE_MESSAGE_CLASS_FULL_NAME} 에서 패키지 구별자 '.' 문자를 [separator]로 치환한 문자열
+	 */
 	public static String getMessageIOSourceBaseDirectoryRelativePath(String separator) {
 		StringBuilder relativePathStringBuilder = new StringBuilder(getJavaMainSourceDirectoryRelativePath(separator))
 			.append(separator);
@@ -235,6 +339,10 @@ public abstract class ProjectBuildSytemPathSupporter {
 		return relativePathStringBuilder.toString();
 	}
 	
+	/**
+	 * @param separator 구별자
+	 * @return src[separator]main[separator]java[separator]+ {@link CommonStaticFinalVars#BASE_SERVER_TASK_CLASS_FULL_NAME} 에서 패키지 구별자 '.' 문자를 [separator]로 치환한 문자열
+	 */
 	public static String getServerTaskDirectoryRelativePath(String separator) {
 		StringBuilder relativePathStringBuilder = new StringBuilder(getJavaMainSourceDirectoryRelativePath(separator))
 			.append(separator);

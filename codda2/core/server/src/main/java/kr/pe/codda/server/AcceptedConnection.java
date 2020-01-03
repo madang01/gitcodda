@@ -1,19 +1,19 @@
-/*
+/*******************************************************************************
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
- *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *  
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *  
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- */
+ *******************************************************************************/
 
 package kr.pe.codda.server;
 
@@ -33,7 +33,7 @@ import kr.pe.codda.common.io.StreamBuffer;
 import kr.pe.codda.common.io.WrapBufferPoolIF;
 import kr.pe.codda.common.protocol.MessageProtocolIF;
 import kr.pe.codda.common.protocol.ReceivedMessageForwarderIF;
-import kr.pe.codda.common.type.SelfExn;
+import kr.pe.codda.common.type.ExceptionDelivery;
 import kr.pe.codda.server.classloader.ServerTaskMangerIF;
 import kr.pe.codda.server.task.AbstractServerTask;
 import kr.pe.codda.server.task.ToLetterCarrier;
@@ -44,7 +44,7 @@ import kr.pe.codda.server.task.ToLetterCarrier;
  * @author Won Jonghoon
  * 
  */
-public class AcceptedConnection implements ServerIOEventHandlerIF, ReceivedMessageForwarderIF, PersonalLoginManagerIF {
+public class AcceptedConnection implements ServerIOEventHandlerIF, ReceivedMessageForwarderIF, LoginManagerIF {
 	private Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
 
 	private final SelectionKey personalSelectionKey;
@@ -63,7 +63,7 @@ public class AcceptedConnection implements ServerIOEventHandlerIF, ReceivedMessa
 	private final ServerOutgoingStreamIF outgoingStream;
 
 	private ProjectLoginManagerIF projectLoginManager = null;
-	private String personalLoginID = null;
+	private String loginID = null;
 
 	/** 최종 읽기를 수행한 시간. 초기값은 클라이언트(=SocketChannel) 생성시간이다 */
 	private java.util.Date finalReadTime = null;
@@ -258,7 +258,7 @@ public class AcceptedConnection implements ServerIOEventHandlerIF, ReceivedMessa
 			
 			outputMessageStreamBuffer.releaseAllWrapBuffers();
 			return;
-		}		
+		}
 	}
 
 	@Override
@@ -274,7 +274,7 @@ public class AcceptedConnection implements ServerIOEventHandlerIF, ReceivedMessa
 			// ProtocolUtil.closeReadableMiddleObject(mailboxID, mailID, messageID, readableMiddleObject);
 			messageProtocol.closeReadableMiddleObject(mailboxID, mailID, messageID, readableMiddleObject);
 
-			SelfExn.ErrorType errorType = SelfExn.ErrorType.valueOf(DynamicClassCallException.class);
+			ExceptionDelivery.ErrorType errorType = ExceptionDelivery.ErrorType.valueOf(DynamicClassCallException.class);
 			String errorReason = e.getMessage();
 			ToLetterCarrier.putInputErrorMessageToOutputMessageQueue(errorType, errorReason, mailboxID, mailID,
 					messageID, this, messageProtocol);
@@ -287,7 +287,7 @@ public class AcceptedConnection implements ServerIOEventHandlerIF, ReceivedMessa
 
 			messageProtocol.closeReadableMiddleObject(mailboxID, mailID, messageID, readableMiddleObject);
 
-			SelfExn.ErrorType errorType = SelfExn.ErrorType.valueOf(DynamicClassCallException.class);
+			ExceptionDelivery.ErrorType errorType = ExceptionDelivery.ErrorType.valueOf(DynamicClassCallException.class);
 			String errorReason = "fail to get a input message server task::" + e.getMessage();
 			ToLetterCarrier.putInputErrorMessageToOutputMessageQueue(errorType, errorReason, mailboxID, mailID,
 					messageID, this, messageProtocol);
@@ -302,7 +302,7 @@ public class AcceptedConnection implements ServerIOEventHandlerIF, ReceivedMessa
 		} catch (Exception | Error e) {
 			log.log(Level.WARNING, "unknwon error::fail to execute a input message server task", e);
 
-			SelfExn.ErrorType errorType = SelfExn.ErrorType.valueOf(ServerTaskException.class);
+			ExceptionDelivery.ErrorType errorType = ExceptionDelivery.ErrorType.valueOf(ServerTaskException.class);
 			String errorReason = "fail to execute a input message server task::" + e.getMessage();
 			ToLetterCarrier.putInputErrorMessageToOutputMessageQueue(errorType, errorReason, mailboxID, mailID,
 					messageID, this, messageProtocol);
@@ -312,11 +312,12 @@ public class AcceptedConnection implements ServerIOEventHandlerIF, ReceivedMessa
 
 	@Override
 	public boolean isLogin() {
-		if (null == personalLoginID) {
+		if (null == loginID) {
 			return false;
 		}
 
-		boolean isConnected = acceptedSocketChannel.isConnected();
+		boolean isConnected = 
+				acceptedSocketChannel.isConnected();
 
 		return isConnected;
 	}
@@ -326,13 +327,13 @@ public class AcceptedConnection implements ServerIOEventHandlerIF, ReceivedMessa
 		if (null == loginID) {
 			throw new IllegalArgumentException("the parameter loginID is null");
 		}
-		this.personalLoginID = loginID;
+		this.loginID = loginID;
 		projectLoginManager.registerloginUser(personalSelectionKey, loginID);
 	}
 
 	@Override
 	public String getLoginID() {
-		return personalLoginID;
+		return loginID;
 	}
 
 	public String toSimpleInfomation() {
@@ -364,7 +365,7 @@ public class AcceptedConnection implements ServerIOEventHandlerIF, ReceivedMessa
 
 	/** 로그 아웃시 할당 받은 자원을 해제한다. */
 	private void releaseLoginUserResource() {
-		if (null != personalLoginID) {
+		if (null != loginID) {
 			projectLoginManager.removeLoginUser(personalSelectionKey);			
 		}
 	}

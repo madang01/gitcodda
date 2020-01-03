@@ -28,65 +28,65 @@ import kr.pe.codda.common.protocol.SingleItemEncoderIF;
  */
 public final class MemberSearchReqEncoder extends AbstractMessageEncoder {
 	@Override
-	public void encode(AbstractMessage messageObj, SingleItemEncoderIF singleItemEncoder, Object writableMiddleObject) throws Exception {
+	public void encode(AbstractMessage messageObj, SingleItemEncoderIF singleItemEncoder, Object middleObjectToSend) throws Exception {
 		MemberSearchReq memberSearchReq = (MemberSearchReq)messageObj;
-		encodeBody(memberSearchReq, singleItemEncoder, writableMiddleObject);
+		encodeBody(memberSearchReq, singleItemEncoder, middleObjectToSend);
 	}
 
 
-	private void encodeBody(MemberSearchReq memberSearchReq, SingleItemEncoderIF singleItemEncoder, Object middleWritableObject) throws Exception {
+	private void encodeBody(MemberSearchReq memberSearchReq, SingleItemEncoderIF singleItemEncoder, Object middleObjectToSend) throws Exception {
 		java.util.LinkedList<String> pathStack = new java.util.LinkedList<String>();
 		pathStack.push("MemberSearchReq");
 
 
-		singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "requestedUserID"
+		singleItemEncoder.putValue(pathStack.peek(), "requestedUserID"
 			, kr.pe.codda.common.type.SingleItemType.UB_PASCAL_STRING // itemType
 			, memberSearchReq.getRequestedUserID() // itemValue
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleWritableObject);
+			, middleObjectToSend);
 
-		singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "memberState"
+		singleItemEncoder.putValue(pathStack.peek(), "memberState"
 			, kr.pe.codda.common.type.SingleItemType.BYTE // itemType
 			, memberSearchReq.getMemberState() // itemValue
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleWritableObject);
+			, middleObjectToSend);
 
-		singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "searchID"
+		singleItemEncoder.putValue(pathStack.peek(), "searchID"
 			, kr.pe.codda.common.type.SingleItemType.UB_PASCAL_STRING // itemType
 			, memberSearchReq.getSearchID() // itemValue
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleWritableObject);
+			, middleObjectToSend);
 
-		singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "fromDateString"
+		singleItemEncoder.putValue(pathStack.peek(), "fromDateString"
 			, kr.pe.codda.common.type.SingleItemType.UB_PASCAL_STRING // itemType
 			, memberSearchReq.getFromDateString() // itemValue
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleWritableObject);
+			, middleObjectToSend);
 
-		singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "toDateString"
+		singleItemEncoder.putValue(pathStack.peek(), "toDateString"
 			, kr.pe.codda.common.type.SingleItemType.UB_PASCAL_STRING // itemType
 			, memberSearchReq.getToDateString() // itemValue
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleWritableObject);
+			, middleObjectToSend);
 
-		singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "pageNo"
+		singleItemEncoder.putValue(pathStack.peek(), "pageNo"
 			, kr.pe.codda.common.type.SingleItemType.INTEGER // itemType
 			, memberSearchReq.getPageNo() // itemValue
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleWritableObject);
+			, middleObjectToSend);
 
-		singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "pageSize"
+		singleItemEncoder.putValue(pathStack.peek(), "pageSize"
 			, kr.pe.codda.common.type.SingleItemType.UNSIGNED_SHORT // itemType
 			, memberSearchReq.getPageSize() // itemValue
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleWritableObject);
+			, middleObjectToSend);
 
 		pathStack.pop();
 	}

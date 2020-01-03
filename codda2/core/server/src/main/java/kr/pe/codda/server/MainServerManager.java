@@ -1,20 +1,19 @@
-/*
+/*******************************************************************************
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
- *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *  
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *  
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- */
-
+ *******************************************************************************/
 package kr.pe.codda.server;
 
 import java.util.HashMap;
@@ -121,7 +120,7 @@ public final class MainServerManager {
 	public AnyProjectServer getSubProjectServer(String subProjectName) throws IllegalStateException {
 		AnyProjectServer subProjectServer =  subProjectServerHash.get(subProjectName);
 		if (null == subProjectServer) {
-			String errorMessage = new StringBuilder("신놀이 프레임 워크 환경설정 파일에 찾고자 하는 서버 프로젝트[")
+			String errorMessage = new StringBuilder("환경설정 파일에서 찾고자 하는 서버 프로젝트[")
 					.append(subProjectName).append("] 가 존재하지 않습니다.").toString();
 			log.severe(errorMessage);
 			throw new IllegalStateException(errorMessage);
@@ -130,9 +129,13 @@ public final class MainServerManager {
 		return subProjectServer;
 	}
 	
+	/**
+	 * @return 메인 프로젝트 서버
+	 * @throws IllegalStateException 환경 설정 파일을 읽어와서 '메인 프로젝트 서버' 생성 실패했을 경우 던지는 예외
+	 */
 	public AnyProjectServer getMainProjectServer() throws IllegalStateException {
 		if (null == mainProjectServer) {
-			String errorMessage = "신놀이 프레임 워크 환경설정 파일에 찾고자 하는 메인 프로젝트가 존재하지 않습니다";
+			String errorMessage = "환경설정 파일에서 찾고자 하는 메인 프로젝트가 존재하지 않습니다";
 			log.severe(errorMessage);
 			throw new IllegalStateException(errorMessage);
 		}
@@ -140,8 +143,17 @@ public final class MainServerManager {
 		return mainProjectServer;
 	}
 	
+	/**
+	 * 서버 상태 모니터링 쓰레드
+	 * @author Won Jonghoon
+	 *
+	 */
 	private class ServerProjectMonitor extends Thread {		
 		private long serverMonitorTimeInterval;
+		/**
+		 * 생성자
+		 * @param serverMonitorTimeInterval 서버 모니터링 간격
+		 */
 		public ServerProjectMonitor(long serverMonitorTimeInterval) {
 			this.serverMonitorTimeInterval = serverMonitorTimeInterval;
 		}
@@ -165,6 +177,9 @@ public final class MainServerManager {
 		}
 	}
 	
+	/**
+	 * @return 서버 모니터링 정보
+	 */
 	public String getServerState() {
 		StringBuilder pollStateStringBuilder = new StringBuilder();
 		pollStateStringBuilder.append("main projectName[");

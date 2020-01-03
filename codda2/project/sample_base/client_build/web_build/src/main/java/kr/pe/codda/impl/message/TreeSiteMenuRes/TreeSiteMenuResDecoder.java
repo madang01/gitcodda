@@ -33,7 +33,7 @@ public final class TreeSiteMenuResDecoder extends AbstractMessageDecoder {
 		// TreeSiteMenuRes.Menu menu = new TreeSiteMenuRes.Menu();
 		
 		menu.setMenuNo((Long)
-				singleItemDecoder.getValueFromReadableMiddleObject(pathStack.peek()
+				singleItemDecoder.getValue(pathStack.peek()
 					, "menuNo" // itemName
 					, kr.pe.codda.common.type.SingleItemType.UNSIGNED_INTEGER // itemType
 					, -1 // itemSize
@@ -41,7 +41,7 @@ public final class TreeSiteMenuResDecoder extends AbstractMessageDecoder {
 					, menuMiddleReadableObject));
 
 		menu.setParentNo((Long)
-				singleItemDecoder.getValueFromReadableMiddleObject(pathStack.peek()
+				singleItemDecoder.getValue(pathStack.peek()
 					, "parentNo" // itemName
 					, kr.pe.codda.common.type.SingleItemType.UNSIGNED_INTEGER // itemType
 					, -1 // itemSize
@@ -49,7 +49,7 @@ public final class TreeSiteMenuResDecoder extends AbstractMessageDecoder {
 					, menuMiddleReadableObject));
 
 		menu.setDepth((Short)
-				singleItemDecoder.getValueFromReadableMiddleObject(pathStack.peek()
+				singleItemDecoder.getValue(pathStack.peek()
 					, "depth" // itemName
 					, kr.pe.codda.common.type.SingleItemType.UNSIGNED_BYTE // itemType
 					, -1 // itemSize
@@ -57,7 +57,7 @@ public final class TreeSiteMenuResDecoder extends AbstractMessageDecoder {
 					, menuMiddleReadableObject));
 
 		menu.setOrderSeq((Short)
-				singleItemDecoder.getValueFromReadableMiddleObject(pathStack.peek()
+				singleItemDecoder.getValue(pathStack.peek()
 					, "orderSeq" // itemName
 					, kr.pe.codda.common.type.SingleItemType.UNSIGNED_BYTE // itemType
 					, -1 // itemSize
@@ -65,7 +65,7 @@ public final class TreeSiteMenuResDecoder extends AbstractMessageDecoder {
 					, menuMiddleReadableObject));
 
 		menu.setMenuName((String)
-				singleItemDecoder.getValueFromReadableMiddleObject(pathStack.peek()
+				singleItemDecoder.getValue(pathStack.peek()
 					, "menuName" // itemName
 					, kr.pe.codda.common.type.SingleItemType.UB_PASCAL_STRING // itemType
 					, -1 // itemSize
@@ -73,7 +73,7 @@ public final class TreeSiteMenuResDecoder extends AbstractMessageDecoder {
 					, menuMiddleReadableObject));
 
 		menu.setLinkURL((String)
-				singleItemDecoder.getValueFromReadableMiddleObject(pathStack.peek()
+				singleItemDecoder.getValue(pathStack.peek()
 					, "linkURL" // itemName
 					, kr.pe.codda.common.type.SingleItemType.UB_PASCAL_STRING // itemType
 					, -1 // itemSize
@@ -81,7 +81,7 @@ public final class TreeSiteMenuResDecoder extends AbstractMessageDecoder {
 					, menuMiddleReadableObject));
 
 		menu.setChildMenuListSize((Integer)
-				singleItemDecoder.getValueFromReadableMiddleObject(pathStack.peek()
+				singleItemDecoder.getValue(pathStack.peek()
 					, "childMenuListSize" // itemName
 					, kr.pe.codda.common.type.SingleItemType.INTEGER // itemType
 					, -1 // itemSize
@@ -89,11 +89,11 @@ public final class TreeSiteMenuResDecoder extends AbstractMessageDecoder {
 					, menuMiddleReadableObject));
 		
 		int childMenuListSize = menu.getChildMenuListSize();
-		Object childMenuArrayMiddleObject = singleItemDecoder.getArrayMiddleObjectFromReadableMiddleObject(pathStack.peek(), "menu", childMenuListSize, menuMiddleReadableObject);
+		Object childMenuArrayMiddleObject = singleItemDecoder.getArrayMiddleObject(pathStack.peek(), "menu", childMenuListSize, menuMiddleReadableObject);
 		java.util.List<TreeSiteMenuRes.Menu> childMenuList = new java.util.ArrayList<TreeSiteMenuRes.Menu>();
 		for (int i=0; i < childMenuListSize; i++) {
 			pathStack.push(new StringBuilder(pathStack.peek()).append(".").append("ChildMenu").append("[").append(i).append("]").toString());
-			Object childMenuMiddleWritableObject= singleItemDecoder.getReadableMiddleObjFromArrayMiddleObject(pathStack.peek(), childMenuArrayMiddleObject, i);
+			Object childMenuMiddleWritableObject= singleItemDecoder.getMiddleObjectFromArrayMiddleObject(pathStack.peek(), childMenuArrayMiddleObject, i);
 			TreeSiteMenuRes.Menu childMenu = decodeBody(new TreeSiteMenuRes.Menu(), pathStack, singleItemDecoder,  childMenuMiddleWritableObject);
 			childMenuList.add(childMenu);			
 
@@ -112,7 +112,7 @@ public final class TreeSiteMenuResDecoder extends AbstractMessageDecoder {
 		pathStack.push("TreeSiteMenuRes");
 
 		treeSiteMenuRes.setRootMenuListSize((Integer)
-		singleItemDecoder.getValueFromReadableMiddleObject(pathStack.peek()
+		singleItemDecoder.getValue(pathStack.peek()
 			, "rootMenuListSize" // itemName
 			, kr.pe.codda.common.type.SingleItemType.INTEGER // itemType
 			, -1 // itemSize
@@ -120,11 +120,11 @@ public final class TreeSiteMenuResDecoder extends AbstractMessageDecoder {
 			, middleReadableObject));
 
 		int rootMenuListSize = treeSiteMenuRes.getRootMenuListSize();
-		Object rootMenuArrayMiddleObject = singleItemDecoder.getArrayMiddleObjectFromReadableMiddleObject(pathStack.peek(), "menu", rootMenuListSize, middleReadableObject);
+		Object rootMenuArrayMiddleObject = singleItemDecoder.getArrayMiddleObject(pathStack.peek(), "menu", rootMenuListSize, middleReadableObject);
 		java.util.List<TreeSiteMenuRes.Menu> rootMenuList = new java.util.ArrayList<TreeSiteMenuRes.Menu>();
 		for (int i=0; i < rootMenuListSize; i++) {
 			pathStack.push(new StringBuilder(pathStack.peek()).append(".").append("RootMenu").append("[").append(i).append("]").toString());
-			Object rootMenuMiddleWritableObject= singleItemDecoder.getReadableMiddleObjFromArrayMiddleObject(pathStack.peek(), rootMenuArrayMiddleObject, i);
+			Object rootMenuMiddleWritableObject= singleItemDecoder.getMiddleObjectFromArrayMiddleObject(pathStack.peek(), rootMenuArrayMiddleObject, i);
 			TreeSiteMenuRes.Menu rootMenu = decodeBody(new TreeSiteMenuRes.Menu(), pathStack, singleItemDecoder,  rootMenuMiddleWritableObject);
 			rootMenuList.add(rootMenu);			
 

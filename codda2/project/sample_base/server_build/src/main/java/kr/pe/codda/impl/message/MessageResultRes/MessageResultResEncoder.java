@@ -28,37 +28,37 @@ import kr.pe.codda.common.protocol.SingleItemEncoderIF;
  */
 public final class MessageResultResEncoder extends AbstractMessageEncoder {
 	@Override
-	public void encode(AbstractMessage messageObj, SingleItemEncoderIF singleItemEncoder, Object writableMiddleObject) throws Exception {
+	public void encode(AbstractMessage messageObj, SingleItemEncoderIF singleItemEncoder, Object middleObjectToSend) throws Exception {
 		MessageResultRes messageResultRes = (MessageResultRes)messageObj;
-		encodeBody(messageResultRes, singleItemEncoder, writableMiddleObject);
+		encodeBody(messageResultRes, singleItemEncoder, middleObjectToSend);
 	}
 
 
-	private void encodeBody(MessageResultRes messageResultRes, SingleItemEncoderIF singleItemEncoder, Object middleWritableObject) throws Exception {
+	private void encodeBody(MessageResultRes messageResultRes, SingleItemEncoderIF singleItemEncoder, Object middleObjectToSend) throws Exception {
 		java.util.LinkedList<String> pathStack = new java.util.LinkedList<String>();
 		pathStack.push("MessageResultRes");
 
 
-		singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "taskMessageID"
+		singleItemEncoder.putValue(pathStack.peek(), "taskMessageID"
 			, kr.pe.codda.common.type.SingleItemType.UB_PASCAL_STRING // itemType
 			, messageResultRes.getTaskMessageID() // itemValue
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleWritableObject);
+			, middleObjectToSend);
 
-		singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "isSuccess"
+		singleItemEncoder.putValue(pathStack.peek(), "isSuccess"
 			, kr.pe.codda.common.type.SingleItemType.BOOLEAN // itemType
 			, messageResultRes.getIsSuccess() // itemValue
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleWritableObject);
+			, middleObjectToSend);
 
-		singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "resultMessage"
+		singleItemEncoder.putValue(pathStack.peek(), "resultMessage"
 			, kr.pe.codda.common.type.SingleItemType.UB_PASCAL_STRING // itemType
 			, messageResultRes.getResultMessage() // itemValue
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleWritableObject);
+			, middleObjectToSend);
 
 		pathStack.pop();
 	}

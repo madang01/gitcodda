@@ -1,3 +1,20 @@
+/*******************************************************************************
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *  
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *  
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *******************************************************************************/
+
 package kr.pe.codda.common.protocol.thb;
 
 import static org.junit.Assert.assertEquals;
@@ -31,11 +48,11 @@ import kr.pe.codda.common.message.codec.AbstractMessageDecoder;
 import kr.pe.codda.common.protocol.MessageCodecIF;
 import kr.pe.codda.common.protocol.MessageProtocolIF;
 import kr.pe.codda.common.protocol.ReceivedMessageForwarderIF;
-import kr.pe.codda.common.type.SelfExn;
+import kr.pe.codda.common.type.ExceptionDelivery;
 import kr.pe.codda.common.util.CommonStaticUtil;
 import kr.pe.codda.common.util.JDKLoggerCustomFormatter;
-import kr.pe.codda.impl.message.SelfExnRes.SelfExnRes;
-import kr.pe.codda.impl.message.SelfExnRes.SelfExnResEncoder;
+import kr.pe.codda.impl.message.ExceptionDeliveryRes.ExceptionDeliveryRes;
+import kr.pe.codda.impl.message.ExceptionDeliveryRes.ExceptionDeliveryResEncoder;
 
 public class THBMessageProtocolTest {
 
@@ -93,7 +110,7 @@ public class THBMessageProtocolTest {
 		THBMessageProtocol thbMessageProtocol = new THBMessageProtocol(dataPacketBufferMaxCntPerMessage, streamCharsetFamily,
 				wrapBufferPool);
 
-		SelfExnResEncoder selfExnEncoder = new SelfExnResEncoder();
+		ExceptionDeliveryResEncoder selfExnEncoder = new ExceptionDeliveryResEncoder();
 
 		// log.info("1");
 		long beforeTime = 0;
@@ -170,11 +187,11 @@ public class THBMessageProtocolTest {
 					Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
 					log.log(Level.WARNING, errorMessage);
 
-					SelfExnRes selfExnRes = new SelfExnRes();
+					ExceptionDeliveryRes selfExnRes = new ExceptionDeliveryRes();
 					selfExnRes.setMailboxID(mailboxID);
 					selfExnRes.setMailID(mailID);
-					selfExnRes.setErrorPlace(SelfExn.ErrorPlace.CLIENT);
-					selfExnRes.setErrorType(SelfExn.ErrorType.valueOf(DynamicClassCallException.class));
+					selfExnRes.setErrorPlace(ExceptionDelivery.ErrorPlace.CLIENT);
+					selfExnRes.setErrorType(ExceptionDelivery.ErrorType.valueOf(DynamicClassCallException.class));
 
 					selfExnRes.setErrorMessageID(messageID);
 					selfExnRes.setErrorReason(errorMessage);
@@ -191,11 +208,11 @@ public class THBMessageProtocolTest {
 					Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
 					log.log(Level.WARNING, errorMessage);
 
-					SelfExnRes selfExnRes = new SelfExnRes();
+					ExceptionDeliveryRes selfExnRes = new ExceptionDeliveryRes();
 					selfExnRes.setMailboxID(mailboxID);
 					selfExnRes.setMailID(mailID);
-					selfExnRes.setErrorPlace(SelfExn.ErrorPlace.CLIENT);
-					selfExnRes.setErrorType(SelfExn.ErrorType.valueOf(BodyFormatException.class));
+					selfExnRes.setErrorPlace(ExceptionDelivery.ErrorPlace.CLIENT);
+					selfExnRes.setErrorType(ExceptionDelivery.ErrorType.valueOf(BodyFormatException.class));
 
 					selfExnRes.setErrorMessageID(messageID);
 					selfExnRes.setErrorReason(errorMessage);
@@ -211,11 +228,11 @@ public class THBMessageProtocolTest {
 					Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
 					log.log(Level.WARNING, errorMessage);
 
-					SelfExnRes selfExnRes = new SelfExnRes();
+					ExceptionDeliveryRes selfExnRes = new ExceptionDeliveryRes();
 					selfExnRes.setMailboxID(mailboxID);
 					selfExnRes.setMailID(mailID);
-					selfExnRes.setErrorPlace(SelfExn.ErrorPlace.CLIENT);
-					selfExnRes.setErrorType(SelfExn.ErrorType.valueOf(DynamicClassCallException.class));
+					selfExnRes.setErrorPlace(ExceptionDelivery.ErrorPlace.CLIENT);
+					selfExnRes.setErrorType(ExceptionDelivery.ErrorType.valueOf(DynamicClassCallException.class));
 
 					selfExnRes.setErrorMessageID(messageID);
 					selfExnRes.setErrorReason(errorMessage);
@@ -237,14 +254,14 @@ public class THBMessageProtocolTest {
 			testStringBuilder.append("한글");
 		}
 
-		SelfExnRes expectedSelfExnRes = new SelfExnRes();
-		expectedSelfExnRes.setErrorPlace(SelfExn.ErrorPlace.SERVER);
-		expectedSelfExnRes.setErrorType(SelfExn.ErrorType.BodyFormatException);
-		expectedSelfExnRes.setErrorMessageID("Echo");
-		expectedSelfExnRes.setErrorReason(testStringBuilder.toString());
+		ExceptionDeliveryRes expectedThrowExceptionRes = new ExceptionDeliveryRes();
+		expectedThrowExceptionRes.setErrorPlace(ExceptionDelivery.ErrorPlace.SERVER);
+		expectedThrowExceptionRes.setErrorType(ExceptionDelivery.ErrorType.BodyFormatException);
+		expectedThrowExceptionRes.setErrorMessageID("Echo");
+		expectedThrowExceptionRes.setErrorReason(testStringBuilder.toString());
 
-		expectedSelfExnRes.setMailboxID(1);
-		expectedSelfExnRes.setMailID(3);
+		expectedThrowExceptionRes.setMailboxID(1);
+		expectedThrowExceptionRes.setMailID(3);
 
 		beforeTime = System.nanoTime();
 
@@ -254,7 +271,7 @@ public class THBMessageProtocolTest {
 			IncomingStream isr = new IncomingStream(streamCharsetFamily, dataPacketBufferMaxCntPerMessage, 
 					wrapBufferPool);
 			try {
-				thbMessageProtocol.M2S(expectedSelfExnRes, selfExnEncoder, isr);
+				thbMessageProtocol.M2S(expectedThrowExceptionRes, selfExnEncoder, isr);
 			} catch (Exception e) {
 				String errorMessage = "error::" + e.getMessage();
 				log.log(Level.WARNING, "" + e.getMessage(), e);
@@ -281,13 +298,13 @@ public class THBMessageProtocolTest {
 			try {
 				AbstractMessage resObj = receivedMessageForwarder.getReceivedMessage();
 
-				if (!(resObj instanceof SelfExnRes)) {
-					fail("resObj is not a instance of SelfExnRes class");
+				if (!(resObj instanceof ExceptionDeliveryRes)) {
+					fail("resObj is not a instance of ThrowExceptionRes class");
 				}
 
-				SelfExnRes acutalSelfExnRes = (SelfExnRes) resObj;
+				ExceptionDeliveryRes acutalThrowExceptionRes = (ExceptionDeliveryRes) resObj;
 
-				assertEquals("SelfExn 입력과 출력 메시지 비교", expectedSelfExnRes.toString(), acutalSelfExnRes.toString());
+				assertEquals("SelfExn 입력과 출력 메시지 비교", expectedThrowExceptionRes.toString(), acutalThrowExceptionRes.toString());
 			} catch (Exception e) {
 				String errorMessage = "error::" + e.getMessage();
 				log.log(Level.WARNING, "" + e.getMessage(), e);

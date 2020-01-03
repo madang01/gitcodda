@@ -25,7 +25,7 @@ import kr.pe.codda.common.message.AbstractMessage;
 import kr.pe.codda.impl.message.BoardReplyReq.BoardReplyReq;
 import kr.pe.codda.impl.message.BoardReplyRes.BoardReplyRes;
 import kr.pe.codda.impl.message.MessageResultRes.MessageResultRes;
-import kr.pe.codda.server.PersonalLoginManagerIF;
+import kr.pe.codda.server.LoginManagerIF;
 import kr.pe.codda.server.lib.BoardListType;
 import kr.pe.codda.server.lib.BoardReplyPolicyType;
 import kr.pe.codda.server.lib.BoardStateType;
@@ -57,7 +57,7 @@ public class BoardReplyReqServerTask extends AbstractServerTask {
 	}
 
 	@Override
-	public void doTask(String projectName, PersonalLoginManagerIF personalLoginManager, ToLetterCarrier toLetterCarrier,
+	public void doTask(String projectName, LoginManagerIF personalLoginManager, ToLetterCarrier toLetterCarrier,
 			AbstractMessage inputMessage) throws Exception {
 
 		try {

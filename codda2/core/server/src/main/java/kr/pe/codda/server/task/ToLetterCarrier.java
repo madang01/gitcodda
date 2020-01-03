@@ -1,19 +1,19 @@
-/*
+/*******************************************************************************
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
- *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *  
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *  
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- */
+ *******************************************************************************/
 
 package kr.pe.codda.server.task;
 
@@ -31,8 +31,8 @@ import kr.pe.codda.common.io.StreamBuffer;
 import kr.pe.codda.common.message.AbstractMessage;
 import kr.pe.codda.common.message.codec.AbstractMessageEncoder;
 import kr.pe.codda.common.protocol.MessageProtocolIF;
-import kr.pe.codda.common.type.SelfExn;
-import kr.pe.codda.impl.message.SelfExnRes.SelfExnRes;
+import kr.pe.codda.common.type.ExceptionDelivery;
+import kr.pe.codda.impl.message.ExceptionDeliveryRes.ExceptionDeliveryRes;
 import kr.pe.codda.server.AcceptedConnection;
 import kr.pe.codda.server.ProjectLoginManagerIF;
 
@@ -47,12 +47,19 @@ public class ToLetterCarrier {
 	private AcceptedConnection fromAcceptedConnection = null;
 	private AbstractMessage inputMessage;
 	private ProjectLoginManagerIF projectLoginManager = null;
-	
-	private AbstractMessage syncOutputMessage = null;
-	
 	private MessageProtocolIF messageProtocol = null;
 	private MessageEncoderManagerIF messageCodecManager = null;
 	
+	private boolean isAddedSyncOuputMessage = false;
+	
+	/**
+	 * 생서자
+	 * @param fromAcceptedConnection 입력 메시지를 보낸 연결 객체
+	 * @param inputMessage 입력 메시지
+	 * @param projectLoginManager 프로젝트별 로그인 관리자
+	 * @param messageProtocol  메시지 프로토콜
+	 * @param messageCodecManager 
+	 */
 	public ToLetterCarrier(AcceptedConnection fromAcceptedConnection,
 			AbstractMessage inputMessage,
 			ProjectLoginManagerIF projectLoginManager,
@@ -65,16 +72,16 @@ public class ToLetterCarrier {
 		this.messageCodecManager = messageCodecManager;
 	}
 
-	private static SelfExnRes buildSelfExn(int mailboxIDOfSelfExn, 
+	private static ExceptionDeliveryRes buildSelfExn(int mailboxIDOfSelfExn, 
 			int mailIDOfSelfExn, 
 			String errorMessageID,
-			SelfExn.ErrorType errorType, 
+			ExceptionDelivery.ErrorType errorType, 
 			String errorReason) {
 		
-		SelfExnRes selfExnRes = new SelfExnRes();
+		ExceptionDeliveryRes selfExnRes = new ExceptionDeliveryRes();
 		selfExnRes.setMailboxID(mailboxIDOfSelfExn);
 		selfExnRes.setMailID(mailIDOfSelfExn);
-		selfExnRes.setErrorPlace(SelfExn.ErrorPlace.SERVER);
+		selfExnRes.setErrorPlace(ExceptionDelivery.ErrorPlace.SERVER);
 		selfExnRes.setErrorType(errorType);
 	
 		selfExnRes.setErrorMessageID(errorMessageID);
@@ -97,7 +104,7 @@ public class ToLetterCarrier {
 			String errorMessage = new StringBuilder("fail to get a output message encoder::").append(e.getMessage()).toString();
 			
 			log.log(Level.WARNING, errorMessage);
-			SelfExn.ErrorType errorType = SelfExn.ErrorType.valueOf(DynamicClassCallException.class);
+			ExceptionDelivery.ErrorType errorType = ExceptionDelivery.ErrorType.valueOf(DynamicClassCallException.class);
 			String errorReason = e.getMessage();
 			doAddOutputErrorMessage(toAcceptedConnection, errorType, errorReason, outputMessage, messageProtocol);
 			return;
@@ -105,7 +112,7 @@ public class ToLetterCarrier {
 			String errorMessage = new StringBuilder("unknown error::fail to get a output message encoder::").append(e.getMessage()).toString();
 			
 			log.log(Level.WARNING, errorMessage, e);			
-			SelfExn.ErrorType errorType = SelfExn.ErrorType.valueOf(DynamicClassCallException.class);
+			ExceptionDelivery.ErrorType errorType = ExceptionDelivery.ErrorType.valueOf(DynamicClassCallException.class);
 			String errorReason = errorMessage;
 			doAddOutputErrorMessage(toAcceptedConnection, errorType, errorReason, outputMessage, messageProtocol);
 			return;
@@ -129,7 +136,7 @@ public class ToLetterCarrier {
 					.append(outputMessage.getMessageID())
 					.append("]::").append(e.getMessage()).toString();
 			
-			SelfExn.ErrorType errorType = SelfExn.ErrorType.valueOf(NoMoreDataPacketBufferException.class);
+			ExceptionDelivery.ErrorType errorType = ExceptionDelivery.ErrorType.valueOf(NoMoreDataPacketBufferException.class);
 			String errorReason = errorMessage;
 			
 			log.log(Level.WARNING, errorReason);
@@ -143,7 +150,7 @@ public class ToLetterCarrier {
 					.append(outputMessage.getMessageID())
 					.append("]::").append(e.getMessage()).toString();
 			
-			SelfExn.ErrorType errorType = SelfExn.ErrorType.valueOf(BodyFormatException.class);
+			ExceptionDelivery.ErrorType errorType = ExceptionDelivery.ErrorType.valueOf(BodyFormatException.class);
 			String errorReason = errorMessage;
 			
 			log.log(Level.WARNING, errorReason);
@@ -157,7 +164,7 @@ public class ToLetterCarrier {
 					.append(outputMessage.getMessageID())
 					.append("]::").append(e.getMessage()).toString();
 			
-			SelfExn.ErrorType errorType = SelfExn.ErrorType.valueOf(BodyFormatException.class);
+			ExceptionDelivery.ErrorType errorType = ExceptionDelivery.ErrorType.valueOf(BodyFormatException.class);
 			String errorReason = errorMessage;
 			
 			
@@ -172,11 +179,11 @@ public class ToLetterCarrier {
 	}
 
 	private void doAddOutputErrorMessage(AcceptedConnection toAcceptedConnection,
-			SelfExn.ErrorType errorType, 
+			ExceptionDelivery.ErrorType errorType, 
 			String errorReason,
 			AbstractMessage outputMessage,			
 			MessageProtocolIF messageProtocol) throws InterruptedException {
-		SelfExnRes selfExnRes = buildSelfExn( 
+		ExceptionDeliveryRes selfExnRes = buildSelfExn( 
 				outputMessage.getMailboxID(),
 				outputMessage.getMailID(),
 				outputMessage.getMessageID(),
@@ -185,7 +192,7 @@ public class ToLetterCarrier {
 		
 		StreamBuffer selfExnResStreamBuffer = messageProtocol.createNewMessageStreamBuffer();
 		try {
-			messageProtocol.M2S(selfExnRes, CommonStaticFinalVars.SELFEXN_ENCODER, selfExnResStreamBuffer);
+			messageProtocol.M2S(selfExnRes, CommonStaticFinalVars.EXCEPTIONDELIVERY_ENCODER, selfExnResStreamBuffer);
 			
 			selfExnResStreamBuffer.flip();
 			
@@ -194,7 +201,7 @@ public class ToLetterCarrier {
 			selfExnResStreamBuffer.releaseAllWrapBuffers();
 			
 			String errorMessage = new StringBuilder()
-					.append("fail to build a output stream of the output message SelfExnRes[")
+					.append("fail to build a output stream of the output message ThrowExceptionRes[")
 					.append(selfExnRes.toString())
 					.append("] to send to to-client[")
 					.append(toAcceptedConnection.toSimpleInfomation())
@@ -203,10 +210,7 @@ public class ToLetterCarrier {
 			log.log(Level.WARNING, errorMessage, e);
 			return;
 		}
-		
-	}
-
-	
+	}	
 	
 	public void addBypassOutputMessage(AbstractMessage bypassOutputMessage) throws InterruptedException {		
 		if (inputMessage.getMailboxID() == CommonStaticFinalVars.CLIENT_ASYN_MAILBOX_ID) {
@@ -224,11 +228,11 @@ public class ToLetterCarrier {
 			throw new IllegalArgumentException("the synchronous output message can't be added becase the inputMessage is a asynchronous message");
 		}
 		
-		if (null != this.syncOutputMessage) {
+		if (isAddedSyncOuputMessage) {
 			throw new IllegalArgumentException("the synchronous output message can't be added becase another synchronous message is already registered in the toLetter list");	
 		}
 		
-		this.syncOutputMessage =  syncOutputMessage;
+		isAddedSyncOuputMessage = true;
 		
 		syncOutputMessage.setMailboxID(inputMessage.getMailboxID());
 		syncOutputMessage.setMailID(inputMessage.getMailID());
@@ -284,7 +288,7 @@ public class ToLetterCarrier {
 		doAddOutputMessage(loignUserAcceptedConnection, asynOutputMessage, messageProtocol);
 	}
 	
-	public static void putInputErrorMessageToOutputMessageQueue(SelfExn.ErrorType errorType,
+	public static void putInputErrorMessageToOutputMessageQueue(ExceptionDelivery.ErrorType errorType,
 			String errorReason,			
 			int mailboxID, int mailID, String messageID,
 			AcceptedConnection fromAcceptedConnection,
@@ -308,7 +312,7 @@ public class ToLetterCarrier {
 		}
 		
 		
-		SelfExnRes selfExnRes = buildSelfExn(mailboxID, 
+		ExceptionDeliveryRes selfExnRes = buildSelfExn(mailboxID, 
 				mailID, 
 				messageID, 
 				errorType,
@@ -316,7 +320,7 @@ public class ToLetterCarrier {
 
 		StreamBuffer selfExnResStreamBuffer = messageProtocol.createNewMessageStreamBuffer();
 		try {
-			messageProtocol.M2S(selfExnRes, CommonStaticFinalVars.SELFEXN_ENCODER, selfExnResStreamBuffer);
+			messageProtocol.M2S(selfExnRes, CommonStaticFinalVars.EXCEPTIONDELIVERY_ENCODER, selfExnResStreamBuffer);
 			
 			selfExnResStreamBuffer.flip();
 		
@@ -326,7 +330,7 @@ public class ToLetterCarrier {
 			
 			Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
 			String errorMessage = new StringBuilder()
-					.append("fail to build a output stream of the output message SelfExnRes[")
+					.append("fail to build a output stream of the output message ThrowExceptionRes[")
 					.append(selfExnRes.toString())
 					.append("] to send to from-client[")
 					.append(fromAcceptedConnection.toSimpleInfomation())
@@ -335,7 +339,5 @@ public class ToLetterCarrier {
 			log.log(Level.WARNING, errorMessage, e);
 			return;
 		}
-		
-		
 	}	
 }

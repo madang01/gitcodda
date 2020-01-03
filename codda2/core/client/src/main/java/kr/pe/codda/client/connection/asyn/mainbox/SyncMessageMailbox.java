@@ -1,19 +1,20 @@
-/*
+/*******************************************************************************
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
- *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *  
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *  
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- */
+ *******************************************************************************/
+
 package kr.pe.codda.client.connection.asyn.mainbox;
 
 import java.io.IOException;
@@ -105,15 +106,15 @@ public final class SyncMessageMailbox {
 	}
 	
 
-	public void putSyncOutputMessage(int fromMailboxID, int fromMailID, String messageID, Object readableMiddleObject)
+	public void putSyncOutputMessage(int fromMailboxID, int fromMailID, String messageID, Object receviedMiddleObject)
 			throws InterruptedException {
-		if (null == readableMiddleObject) {
-			throw new IllegalArgumentException("the parameter readableMiddleObject is null");
+		if (null == receviedMiddleObject) {
+			throw new IllegalArgumentException("the parameter receviedMiddleObject is null");
 		}
 		
 		synchronized (monitor) {
 			if (mailboxID != fromMailboxID) {
-				AbstractMessage outputMessage = ClientMessageUtility.buildOutputMessage("discarded", messageCodecManger, messageProtocol, fromMailboxID, fromMailID, messageID, readableMiddleObject);
+				AbstractMessage outputMessage = ClientMessageUtility.buildOutputMessage("discarded", messageCodecManger, messageProtocol, fromMailboxID, fromMailID, messageID, receviedMiddleObject);
 				
 				String warnMessage = new StringBuilder()
 						.append("drop the received letter[")
@@ -126,7 +127,7 @@ public final class SyncMessageMailbox {
 			}
 			
 			if (mailID != fromMailID) {
-				AbstractMessage outputMessage = ClientMessageUtility.buildOutputMessage("discarded", messageCodecManger, messageProtocol, fromMailboxID, fromMailID, messageID, readableMiddleObject);
+				AbstractMessage outputMessage = ClientMessageUtility.buildOutputMessage("discarded", messageCodecManger, messageProtocol, fromMailboxID, fromMailID, messageID, receviedMiddleObject);
 				
 				String warnMessage = new StringBuilder()
 						.append("drop the received letter[")
@@ -137,13 +138,27 @@ public final class SyncMessageMailbox {
 				
 				log.warning(warnMessage);
 
-				// readableMiddleObjectWrapper.closeReadableMiddleObject();
 				return;
 			}			
 			
-			// outputMessageReadableMiddleObjectWrapper = readableMiddleObjectWrapper;
+			if (null != this.receviedReadableMiddleObject) {
+				/** 서버단에서 메일 식별자가 같은 동기과 메시지를 연속하여 2번 보내지 않도록 안정 장치가 있지만 혹시 동일 메시지 식별자로 동기 메시지가 2번이상 도착했을 경우 이전에 받은 메시지를 버리고 이전 받은 메시를 버리고 마지막으로 받은 메시지를 취한다 */
+				AbstractMessage prevOutputMessage = ClientMessageUtility.buildOutputMessage("discarded", messageCodecManger, messageProtocol, fromMailboxID, fromMailID, this.receviedMessageID, this.receviedReadableMiddleObject);
+				
+				String warnMessage = new StringBuilder()
+						.append("drop the previous received letter[")
+						.append(prevOutputMessage.toString())
+						.append("] because it's mail id is different form this mailbox's mail id[")
+						.append(mailID)
+						.append("]").toString();
+				
+				log.severe(warnMessage);
+
+				return;
+			}
+			
 			this.receviedMessageID = messageID;
-			this.receviedReadableMiddleObject = readableMiddleObject;
+			this.receviedReadableMiddleObject = receviedMiddleObject;
 			monitor.notify();
 		}
 	}

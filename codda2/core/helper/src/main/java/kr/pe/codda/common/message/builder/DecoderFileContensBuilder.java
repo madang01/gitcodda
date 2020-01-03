@@ -92,10 +92,10 @@ public class DecoderFileContensBuilder extends AbstractSourceFileBuildre {
 		contetnsStringBuilder.append(singleItemInfo.getJavaLangClassCastingTypeOfItemType());
 		contetnsStringBuilder.append(")");
 		
-		// singleItemDecoder.getValueFromReadableMiddleObject(sigleItemPath0
+		// singleItemDecoder.getValue(sigleItemPath0
 		contetnsStringBuilder.append(CommonStaticFinalVars.NEWLINE);
 		contetnsStringBuilder.append(CommonStaticUtil.getPrefixWithTabCharacters(depth, 0));
-		contetnsStringBuilder.append("singleItemDecoder.getValueFromReadableMiddleObject(pathStack.peek()");		
+		contetnsStringBuilder.append("singleItemDecoder.getValue(pathStack.peek()");		
 		
 		// , "byteVar1" // itemName
 		contetnsStringBuilder.append(CommonStaticFinalVars.NEWLINE);
@@ -207,13 +207,13 @@ public class DecoderFileContensBuilder extends AbstractSourceFileBuildre {
 		addArraySizeCheckPart(contetnsStringBuilder, depth, varvarNameOfSetOwner, arrayInfo);
 		contetnsStringBuilder.append(CommonStaticFinalVars.NEWLINE);
 		
-		// Object memberMiddleReadArray = singleItemDecoder.getArrayObjFromMiddleReadObj(sigleItemPath0, "member", memberListSize, middleReadableObject);
+		// Object memberMiddleReadArray = singleItemDecoder.getArrayMiddleObject(sigleItemPath0, "member", memberListSize, middleReadableObject);
 		contetnsStringBuilder.append(CommonStaticFinalVars.NEWLINE);
 		contetnsStringBuilder.append(CommonStaticUtil.getPrefixWithTabCharacters(depth, 0));
 		contetnsStringBuilder.append("Object ");
 		contetnsStringBuilder.append(getArrayMiddleObjVarName(depth, arrayInfo.getItemName()));
 		
-		contetnsStringBuilder.append(" = singleItemDecoder.getArrayMiddleObjectFromReadableMiddleObject(");
+		contetnsStringBuilder.append(" = singleItemDecoder.getArrayMiddleObject(");
 		// the parameter path
 		contetnsStringBuilder.append("pathStack.peek()");
 		contetnsStringBuilder.append(", ");
@@ -225,7 +225,7 @@ public class DecoderFileContensBuilder extends AbstractSourceFileBuildre {
 		// the parameter arrayCntValue		
 		contetnsStringBuilder.append(getArrayListSizeVarObjName(depth, arrayInfo.getItemName()));				
 		contetnsStringBuilder.append(", ");
-		// the parameter readableMiddleObject
+		// the parameter receivedMiddleObject
 		contetnsStringBuilder.append(middleObjVarName);
 		contetnsStringBuilder.append(");");
 		
@@ -263,12 +263,12 @@ public class DecoderFileContensBuilder extends AbstractSourceFileBuildre {
 				.append(getCountVarName(depth))
 				.append(").append(\"]\").toString());");
 		
-		// Object memberMiddleReadObj = singleItemDecoder.getMiddleReadObjFromArrayObj(sigleItemPath1, memberMiddleReadArray, i);
+		// Object memberMiddleReadObj = singleItemDecoder.getMiddleObjectFromArrayMiddleObject(sigleItemPath1, memberMiddleReadArray, i);
 		contetnsStringBuilder.append(CommonStaticFinalVars.NEWLINE);
 		contetnsStringBuilder.append(CommonStaticUtil.getPrefixWithTabCharacters(depth, 1));
 		contetnsStringBuilder.append("Object ");
 		contetnsStringBuilder.append(getElementObjVarNameOfArrayMiddleObject(depth, arrayInfo.getItemName()));
-		contetnsStringBuilder.append("= singleItemDecoder.getReadableMiddleObjFromArrayMiddleObject(pathStack.peek()");		
+		contetnsStringBuilder.append("= singleItemDecoder.getMiddleObjectFromArrayMiddleObject(pathStack.peek()");		
 		contetnsStringBuilder.append(", ");
 		contetnsStringBuilder.append(getArrayMiddleObjVarName(depth, arrayInfo.getItemName()));
 		contetnsStringBuilder.append(", ");
@@ -340,7 +340,7 @@ public class DecoderFileContensBuilder extends AbstractSourceFileBuildre {
 		contetnsStringBuilder.append(CommonStaticUtil.getPrefixWithTabCharacters(depth, 0));
 		contetnsStringBuilder.append("Object ");
 		contetnsStringBuilder.append(getGroupMiddleObjVarName(depth, groupInfo.getItemName()));		
-		contetnsStringBuilder.append(" = singleItemDecoder.getGroupMiddleObjectFromReadableMiddleObject(");
+		contetnsStringBuilder.append(" = singleItemDecoder.getGroupMiddleObject(");
 		// the parameter path
 		contetnsStringBuilder.append("pathStack.peek()");
 		contetnsStringBuilder.append(", ");
@@ -349,7 +349,7 @@ public class DecoderFileContensBuilder extends AbstractSourceFileBuildre {
 		contetnsStringBuilder.append(groupInfo.getItemName());		
 		contetnsStringBuilder.append("\"");
 		contetnsStringBuilder.append(", ");		
-		// the parameter readableMiddleObject
+		// the parameter receivedMiddleObject
 		contetnsStringBuilder.append(middleObjVarName);
 		contetnsStringBuilder.append(");");
 		
@@ -441,7 +441,7 @@ public class DecoderFileContensBuilder extends AbstractSourceFileBuildre {
 	public String buildStringOfFileContents(String author,
 			MessageInfo messageInfo) {
 		
-		final String middleObjVarName = "middleReadableObject";
+		final String middleObjVarName = "receivedMiddleObject";
 		final int depth = 0;
 
 		String messageID = messageInfo.getMessageID();
@@ -479,7 +479,9 @@ public class DecoderFileContensBuilder extends AbstractSourceFileBuildre {
 		contetnsStringBuilder.append("@Override");
 		contetnsStringBuilder.append(CommonStaticFinalVars.NEWLINE);
 		contetnsStringBuilder.append(CommonStaticUtil.getPrefixWithTabCharacters(depth, 1));
-		contetnsStringBuilder.append("protected AbstractMessage decodeBody(SingleItemDecoderIF singleItemDecoder, Object  middleReadableObject) throws BodyFormatException {");
+		contetnsStringBuilder.append("protected AbstractMessage decodeBody(SingleItemDecoderIF singleItemDecoder, Object ");
+		contetnsStringBuilder.append(middleObjVarName);
+		contetnsStringBuilder.append(") throws BodyFormatException {");
 		
 		// AllDataType allDataType = new AllDataType();
 		contetnsStringBuilder.append(CommonStaticFinalVars.NEWLINE);

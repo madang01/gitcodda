@@ -28,30 +28,30 @@ import kr.pe.codda.common.protocol.SingleItemEncoderIF;
  */
 public final class EchoEncoder extends AbstractMessageEncoder {
 	@Override
-	public void encode(AbstractMessage messageObj, SingleItemEncoderIF singleItemEncoder, Object writableMiddleObject) throws Exception {
+	public void encode(AbstractMessage messageObj, SingleItemEncoderIF singleItemEncoder, Object middleObjectToSend) throws Exception {
 		Echo echo = (Echo)messageObj;
-		encodeBody(echo, singleItemEncoder, writableMiddleObject);
+		encodeBody(echo, singleItemEncoder, middleObjectToSend);
 	}
 
 
-	private void encodeBody(Echo echo, SingleItemEncoderIF singleItemEncoder, Object middleWritableObject) throws Exception {
+	private void encodeBody(Echo echo, SingleItemEncoderIF singleItemEncoder, Object middleObjectToSend) throws Exception {
 		java.util.LinkedList<String> pathStack = new java.util.LinkedList<String>();
 		pathStack.push("Echo");
 
 
-		singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "randomInt"
+		singleItemEncoder.putValue(pathStack.peek(), "randomInt"
 			, kr.pe.codda.common.type.SingleItemType.INTEGER // itemType
 			, echo.getRandomInt() // itemValue
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleWritableObject);
+			, middleObjectToSend);
 
-		singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "startTime"
+		singleItemEncoder.putValue(pathStack.peek(), "startTime"
 			, kr.pe.codda.common.type.SingleItemType.LONG // itemType
 			, echo.getStartTime() // itemValue
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleWritableObject);
+			, middleObjectToSend);
 
 		pathStack.pop();
 	}

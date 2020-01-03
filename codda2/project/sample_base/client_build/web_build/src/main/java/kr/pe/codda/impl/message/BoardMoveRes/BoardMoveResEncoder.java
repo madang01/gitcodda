@@ -28,44 +28,44 @@ import kr.pe.codda.common.protocol.SingleItemEncoderIF;
  */
 public final class BoardMoveResEncoder extends AbstractMessageEncoder {
 	@Override
-	public void encode(AbstractMessage messageObj, SingleItemEncoderIF singleItemEncoder, Object writableMiddleObject) throws Exception {
+	public void encode(AbstractMessage messageObj, SingleItemEncoderIF singleItemEncoder, Object middleObjectToSend) throws Exception {
 		BoardMoveRes boardMoveRes = (BoardMoveRes)messageObj;
-		encodeBody(boardMoveRes, singleItemEncoder, writableMiddleObject);
+		encodeBody(boardMoveRes, singleItemEncoder, middleObjectToSend);
 	}
 
 
-	private void encodeBody(BoardMoveRes boardMoveRes, SingleItemEncoderIF singleItemEncoder, Object middleWritableObject) throws Exception {
+	private void encodeBody(BoardMoveRes boardMoveRes, SingleItemEncoderIF singleItemEncoder, Object middleObjectToSend) throws Exception {
 		java.util.LinkedList<String> pathStack = new java.util.LinkedList<String>();
 		pathStack.push("BoardMoveRes");
 
 
-		singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "sourceBoardID"
+		singleItemEncoder.putValue(pathStack.peek(), "sourceBoardID"
 			, kr.pe.codda.common.type.SingleItemType.UNSIGNED_BYTE // itemType
 			, boardMoveRes.getSourceBoardID() // itemValue
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleWritableObject);
+			, middleObjectToSend);
 
-		singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "sourceBoardNo"
+		singleItemEncoder.putValue(pathStack.peek(), "sourceBoardNo"
 			, kr.pe.codda.common.type.SingleItemType.UNSIGNED_INTEGER // itemType
 			, boardMoveRes.getSourceBoardNo() // itemValue
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleWritableObject);
+			, middleObjectToSend);
 
-		singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "targetBoardID"
+		singleItemEncoder.putValue(pathStack.peek(), "targetBoardID"
 			, kr.pe.codda.common.type.SingleItemType.UNSIGNED_BYTE // itemType
 			, boardMoveRes.getTargetBoardID() // itemValue
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleWritableObject);
+			, middleObjectToSend);
 
-		singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "cnt"
+		singleItemEncoder.putValue(pathStack.peek(), "cnt"
 			, kr.pe.codda.common.type.SingleItemType.INTEGER // itemType
 			, boardMoveRes.getCnt() // itemValue
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleWritableObject);
+			, middleObjectToSend);
 
 		java.util.List<BoardMoveRes.BoardMoveInfo> boardMoveInfo$2List = boardMoveRes.getBoardMoveInfoList();
 
@@ -84,27 +84,27 @@ public final class BoardMoveResEncoder extends AbstractMessageEncoder {
 				throw new kr.pe.codda.common.exception.BodyFormatException(errorMessage);
 			}
 
-			Object boardMoveInfo$2ArrayMiddleObject = singleItemEncoder.getArrayMiddleObjectFromWritableMiddleObject(pathStack.peek(), "boardMoveInfo", boardMoveInfo$2ListSize, middleWritableObject);
+			Object boardMoveInfo$2ArrayMiddleObject = singleItemEncoder.getArrayMiddleObject(pathStack.peek(), "boardMoveInfo", boardMoveInfo$2ListSize, middleObjectToSend);
 			for (int i2=0; i2 < boardMoveInfo$2ListSize; i2++) {
 				pathStack.push(new StringBuilder(pathStack.peek()).append(".").append("BoardMoveInfo").append("[").append(i2).append("]").toString());
-				Object boardMoveInfo$2MiddleWritableObject = singleItemEncoder.getWritableMiddleObjectjFromArrayMiddleObject(pathStack.peek(), boardMoveInfo$2ArrayMiddleObject, i2);
+				Object boardMoveInfo$2MiddleWritableObject = singleItemEncoder.getMiddleObjectFromArrayMiddleObject(pathStack.peek(), boardMoveInfo$2ArrayMiddleObject, i2);
 				BoardMoveRes.BoardMoveInfo boardMoveInfo$2 = boardMoveInfo$2List.get(i2);
 
-				singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "fromBoardNo"
+				singleItemEncoder.putValue(pathStack.peek(), "fromBoardNo"
 					, kr.pe.codda.common.type.SingleItemType.UNSIGNED_INTEGER // itemType
 					, boardMoveInfo$2.getFromBoardNo() // itemValue
 					, -1 // itemSize
 					, null // nativeItemCharset
 					, boardMoveInfo$2MiddleWritableObject);
 
-				singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "toBoardNo"
+				singleItemEncoder.putValue(pathStack.peek(), "toBoardNo"
 					, kr.pe.codda.common.type.SingleItemType.UNSIGNED_INTEGER // itemType
 					, boardMoveInfo$2.getToBoardNo() // itemValue
 					, -1 // itemSize
 					, null // nativeItemCharset
 					, boardMoveInfo$2MiddleWritableObject);
 
-				singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "attachedFileCnt"
+				singleItemEncoder.putValue(pathStack.peek(), "attachedFileCnt"
 					, kr.pe.codda.common.type.SingleItemType.INTEGER // itemType
 					, boardMoveInfo$2.getAttachedFileCnt() // itemValue
 					, -1 // itemSize
@@ -128,13 +128,13 @@ public final class BoardMoveResEncoder extends AbstractMessageEncoder {
 						throw new kr.pe.codda.common.exception.BodyFormatException(errorMessage);
 					}
 
-					Object attachedFile$4ArrayMiddleObject = singleItemEncoder.getArrayMiddleObjectFromWritableMiddleObject(pathStack.peek(), "attachedFile", attachedFile$4ListSize, boardMoveInfo$2MiddleWritableObject);
+					Object attachedFile$4ArrayMiddleObject = singleItemEncoder.getArrayMiddleObject(pathStack.peek(), "attachedFile", attachedFile$4ListSize, boardMoveInfo$2MiddleWritableObject);
 					for (int i4=0; i4 < attachedFile$4ListSize; i4++) {
 						pathStack.push(new StringBuilder(pathStack.peek()).append(".").append("AttachedFile").append("[").append(i4).append("]").toString());
-						Object attachedFile$4MiddleWritableObject = singleItemEncoder.getWritableMiddleObjectjFromArrayMiddleObject(pathStack.peek(), attachedFile$4ArrayMiddleObject, i4);
+						Object attachedFile$4MiddleWritableObject = singleItemEncoder.getMiddleObjectFromArrayMiddleObject(pathStack.peek(), attachedFile$4ArrayMiddleObject, i4);
 						BoardMoveRes.BoardMoveInfo.AttachedFile attachedFile$4 = attachedFile$4List.get(i4);
 
-						singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "attachedFileSeq"
+						singleItemEncoder.putValue(pathStack.peek(), "attachedFileSeq"
 							, kr.pe.codda.common.type.SingleItemType.UNSIGNED_BYTE // itemType
 							, attachedFile$4.getAttachedFileSeq() // itemValue
 							, -1 // itemSize

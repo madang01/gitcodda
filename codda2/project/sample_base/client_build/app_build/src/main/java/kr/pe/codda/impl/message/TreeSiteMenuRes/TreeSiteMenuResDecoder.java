@@ -36,7 +36,7 @@ public final class TreeSiteMenuResDecoder extends AbstractMessageDecoder {
 		pathStack.push("TreeSiteMenuRes");
 
 		treeSiteMenuRes.setCnt((Integer)
-		singleItemDecoder.getValueFromReadableMiddleObject(pathStack.peek()
+		singleItemDecoder.getValue(pathStack.peek()
 			, "cnt" // itemName
 			, kr.pe.codda.common.type.SingleItemType.INTEGER // itemType
 			, -1 // itemSize
@@ -44,16 +44,16 @@ public final class TreeSiteMenuResDecoder extends AbstractMessageDecoder {
 			, middleReadableObject));
 
 		int menu$2ListSize = treeSiteMenuRes.getCnt();
-		Object menu$2ArrayMiddleObject = singleItemDecoder.getArrayMiddleObjectFromReadableMiddleObject(pathStack.peek(), "menu", menu$2ListSize, middleReadableObject);
+		Object menu$2ArrayMiddleObject = singleItemDecoder.getArrayMiddleObject(pathStack.peek(), "menu", menu$2ListSize, middleReadableObject);
 		java.util.List<TreeSiteMenuRes.Menu> menu$2List = new java.util.ArrayList<TreeSiteMenuRes.Menu>();
 		for (int i2=0; i2 < menu$2ListSize; i2++) {
 			pathStack.push(new StringBuilder(pathStack.peek()).append(".").append("Menu").append("[").append(i2).append("]").toString());
-			Object menu$2MiddleWritableObject= singleItemDecoder.getReadableMiddleObjFromArrayMiddleObject(pathStack.peek(), menu$2ArrayMiddleObject, i2);
+			Object menu$2MiddleWritableObject= singleItemDecoder.getMiddleObjectFromArrayMiddleObject(pathStack.peek(), menu$2ArrayMiddleObject, i2);
 			TreeSiteMenuRes.Menu menu$2 = new TreeSiteMenuRes.Menu();
 			menu$2List.add(menu$2);
 
 			menu$2.setMenuNo((Long)
-			singleItemDecoder.getValueFromReadableMiddleObject(pathStack.peek()
+			singleItemDecoder.getValue(pathStack.peek()
 				, "menuNo" // itemName
 				, kr.pe.codda.common.type.SingleItemType.UNSIGNED_INTEGER // itemType
 				, -1 // itemSize
@@ -61,7 +61,7 @@ public final class TreeSiteMenuResDecoder extends AbstractMessageDecoder {
 				, menu$2MiddleWritableObject));
 
 			menu$2.setParentNo((Long)
-			singleItemDecoder.getValueFromReadableMiddleObject(pathStack.peek()
+			singleItemDecoder.getValue(pathStack.peek()
 				, "parentNo" // itemName
 				, kr.pe.codda.common.type.SingleItemType.UNSIGNED_INTEGER // itemType
 				, -1 // itemSize
@@ -69,7 +69,7 @@ public final class TreeSiteMenuResDecoder extends AbstractMessageDecoder {
 				, menu$2MiddleWritableObject));
 
 			menu$2.setDepth((Short)
-			singleItemDecoder.getValueFromReadableMiddleObject(pathStack.peek()
+			singleItemDecoder.getValue(pathStack.peek()
 				, "depth" // itemName
 				, kr.pe.codda.common.type.SingleItemType.UNSIGNED_BYTE // itemType
 				, -1 // itemSize
@@ -77,7 +77,7 @@ public final class TreeSiteMenuResDecoder extends AbstractMessageDecoder {
 				, menu$2MiddleWritableObject));
 
 			menu$2.setOrderSeq((Short)
-			singleItemDecoder.getValueFromReadableMiddleObject(pathStack.peek()
+			singleItemDecoder.getValue(pathStack.peek()
 				, "orderSeq" // itemName
 				, kr.pe.codda.common.type.SingleItemType.UNSIGNED_BYTE // itemType
 				, -1 // itemSize
@@ -85,7 +85,7 @@ public final class TreeSiteMenuResDecoder extends AbstractMessageDecoder {
 				, menu$2MiddleWritableObject));
 
 			menu$2.setMenuName((String)
-			singleItemDecoder.getValueFromReadableMiddleObject(pathStack.peek()
+			singleItemDecoder.getValue(pathStack.peek()
 				, "menuName" // itemName
 				, kr.pe.codda.common.type.SingleItemType.UB_PASCAL_STRING // itemType
 				, -1 // itemSize
@@ -93,7 +93,7 @@ public final class TreeSiteMenuResDecoder extends AbstractMessageDecoder {
 				, menu$2MiddleWritableObject));
 
 			menu$2.setLinkURL((String)
-			singleItemDecoder.getValueFromReadableMiddleObject(pathStack.peek()
+			singleItemDecoder.getValue(pathStack.peek()
 				, "linkURL" // itemName
 				, kr.pe.codda.common.type.SingleItemType.UB_PASCAL_STRING // itemType
 				, -1 // itemSize
@@ -101,7 +101,7 @@ public final class TreeSiteMenuResDecoder extends AbstractMessageDecoder {
 				, menu$2MiddleWritableObject));
 
 			menu$2.setCnt((Integer)
-			singleItemDecoder.getValueFromReadableMiddleObject(pathStack.peek()
+			singleItemDecoder.getValue(pathStack.peek()
 				, "cnt" // itemName
 				, kr.pe.codda.common.type.SingleItemType.INTEGER // itemType
 				, -1 // itemSize

@@ -28,58 +28,58 @@ import kr.pe.codda.common.protocol.SingleItemEncoderIF;
  */
 public final class BoardUploadFileResEncoder extends AbstractMessageEncoder {
 	@Override
-	public void encode(AbstractMessage messageObj, SingleItemEncoderIF singleItemEncoder, Object writableMiddleObject) throws Exception {
+	public void encode(AbstractMessage messageObj, SingleItemEncoderIF singleItemEncoder, Object middleObjectToSend) throws Exception {
 		BoardUploadFileRes boardUploadFileRes = (BoardUploadFileRes)messageObj;
-		encodeBody(boardUploadFileRes, singleItemEncoder, writableMiddleObject);
+		encodeBody(boardUploadFileRes, singleItemEncoder, middleObjectToSend);
 	}
 
 
-	private void encodeBody(BoardUploadFileRes boardUploadFileRes, SingleItemEncoderIF singleItemEncoder, Object middleWritableObject) throws Exception {
+	private void encodeBody(BoardUploadFileRes boardUploadFileRes, SingleItemEncoderIF singleItemEncoder, Object middleObjectToSend) throws Exception {
 		java.util.LinkedList<String> pathStack = new java.util.LinkedList<String>();
 		pathStack.push("BoardUploadFileRes");
 
 
-		singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "attachId"
+		singleItemEncoder.putValue(pathStack.peek(), "attachId"
 			, kr.pe.codda.common.type.SingleItemType.UNSIGNED_INTEGER // itemType
 			, boardUploadFileRes.getAttachId() // itemValue
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleWritableObject);
+			, middleObjectToSend);
 
-		singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "ownerId"
+		singleItemEncoder.putValue(pathStack.peek(), "ownerId"
 			, kr.pe.codda.common.type.SingleItemType.UB_PASCAL_STRING // itemType
 			, boardUploadFileRes.getOwnerId() // itemValue
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleWritableObject);
+			, middleObjectToSend);
 
-		singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "ip"
+		singleItemEncoder.putValue(pathStack.peek(), "ip"
 			, kr.pe.codda.common.type.SingleItemType.UB_PASCAL_STRING // itemType
 			, boardUploadFileRes.getIp() // itemValue
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleWritableObject);
+			, middleObjectToSend);
 
-		singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "registerDate"
+		singleItemEncoder.putValue(pathStack.peek(), "registerDate"
 			, kr.pe.codda.common.type.SingleItemType.JAVA_SQL_TIMESTAMP // itemType
 			, boardUploadFileRes.getRegisterDate() // itemValue
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleWritableObject);
+			, middleObjectToSend);
 
-		singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "modifiedDate"
+		singleItemEncoder.putValue(pathStack.peek(), "modifiedDate"
 			, kr.pe.codda.common.type.SingleItemType.JAVA_SQL_TIMESTAMP // itemType
 			, boardUploadFileRes.getModifiedDate() // itemValue
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleWritableObject);
+			, middleObjectToSend);
 
-		singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "attachedFileCnt"
+		singleItemEncoder.putValue(pathStack.peek(), "attachedFileCnt"
 			, kr.pe.codda.common.type.SingleItemType.INTEGER // itemType
 			, boardUploadFileRes.getAttachedFileCnt() // itemValue
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleWritableObject);
+			, middleObjectToSend);
 
 		java.util.List<BoardUploadFileRes.AttachedFile> attachedFile$2List = boardUploadFileRes.getAttachedFileList();
 
@@ -98,27 +98,27 @@ public final class BoardUploadFileResEncoder extends AbstractMessageEncoder {
 				throw new kr.pe.codda.common.exception.BodyFormatException(errorMessage);
 			}
 
-			Object attachedFile$2ArrayMiddleObject = singleItemEncoder.getArrayMiddleObjectFromWritableMiddleObject(pathStack.peek(), "attachedFile", attachedFile$2ListSize, middleWritableObject);
+			Object attachedFile$2ArrayMiddleObject = singleItemEncoder.getArrayMiddleObject(pathStack.peek(), "attachedFile", attachedFile$2ListSize, middleObjectToSend);
 			for (int i2=0; i2 < attachedFile$2ListSize; i2++) {
 				pathStack.push(new StringBuilder(pathStack.peek()).append(".").append("AttachedFile").append("[").append(i2).append("]").toString());
-				Object attachedFile$2MiddleWritableObject = singleItemEncoder.getWritableMiddleObjectjFromArrayMiddleObject(pathStack.peek(), attachedFile$2ArrayMiddleObject, i2);
+				Object attachedFile$2MiddleWritableObject = singleItemEncoder.getMiddleObjectFromArrayMiddleObject(pathStack.peek(), attachedFile$2ArrayMiddleObject, i2);
 				BoardUploadFileRes.AttachedFile attachedFile$2 = attachedFile$2List.get(i2);
 
-				singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "attachSeq"
+				singleItemEncoder.putValue(pathStack.peek(), "attachSeq"
 					, kr.pe.codda.common.type.SingleItemType.UNSIGNED_INTEGER // itemType
 					, attachedFile$2.getAttachSeq() // itemValue
 					, -1 // itemSize
 					, null // nativeItemCharset
 					, attachedFile$2MiddleWritableObject);
 
-				singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "attachedFileName"
+				singleItemEncoder.putValue(pathStack.peek(), "attachedFileName"
 					, kr.pe.codda.common.type.SingleItemType.US_PASCAL_STRING // itemType
 					, attachedFile$2.getAttachedFileName() // itemValue
 					, -1 // itemSize
 					, null // nativeItemCharset
 					, attachedFile$2MiddleWritableObject);
 
-				singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "systemFileName"
+				singleItemEncoder.putValue(pathStack.peek(), "systemFileName"
 					, kr.pe.codda.common.type.SingleItemType.US_PASCAL_STRING // itemType
 					, attachedFile$2.getSystemFileName() // itemValue
 					, -1 // itemSize

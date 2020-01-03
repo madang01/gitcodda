@@ -29,7 +29,7 @@ public class BoardContentsWhiteParser {
 	 * @throws IllegalArgumentException 파라미터 값이 잘못되었을때 던지는 예외
 	 * @throws WhiteParserException 처리중 에러가 발생할 경우 혹은 허락되지 않은 내용이 포함되었을 경우 던지는 예외
 	 */
-	public String checkXssAttack(ImageFileURLGetterIF imageFileURLGetter, String contents) throws IllegalArgumentException, WhiteParserException {
+	public String checkWhiteValue(ImageFileURLGetterIF imageFileURLGetter, String contents) throws IllegalArgumentException, WhiteParserException {
 		if (null == imageFileURLGetter) {
 			throw new IllegalArgumentException("the parameter imageFileURLGetter is null");
 		}

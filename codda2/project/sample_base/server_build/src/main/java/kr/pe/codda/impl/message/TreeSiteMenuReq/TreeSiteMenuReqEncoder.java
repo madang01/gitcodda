@@ -35,7 +35,7 @@ public final class TreeSiteMenuReqEncoder extends AbstractMessageEncoder {
 
 
 	private void encodeBody(TreeSiteMenuReq treeSiteMenuReq, SingleItemEncoderIF singleItemEncoder, Object middleWritableObject) throws Exception {		
-		singleItemEncoder.putValueToWritableMiddleObject("TreeSiteMenuReq", "requestedUserID"
+		singleItemEncoder.putValue("TreeSiteMenuReq", "requestedUserID"
 			, kr.pe.codda.common.type.SingleItemType.UB_PASCAL_STRING // itemType
 			, treeSiteMenuReq.getRequestedUserID() // itemValue
 			, -1 // itemSize

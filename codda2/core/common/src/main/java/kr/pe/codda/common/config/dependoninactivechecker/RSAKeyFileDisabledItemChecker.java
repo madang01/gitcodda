@@ -1,3 +1,20 @@
+/*******************************************************************************
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *  
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *  
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *******************************************************************************/
+
 package kr.pe.codda.common.config.dependoninactivechecker;
 
 import java.io.File;
@@ -19,10 +36,16 @@ import kr.pe.codda.common.config.nativevalueconverter.SetTypeConverterOfSessionK
  * @author Won Jonghoon
  * 
  */
-
 public class RSAKeyFileDisabledItemChecker extends
 		AbstractDisabledItemChecker {
 
+	/**
+	 * 생성자
+	 * @param disabeldTargetItemIDInfo 비활성화 대상 항목 식별자 정보
+	 * @param dependentItemIDInfo 비활성을 이끄는 항목 정보
+	 * @param disabledConditionStrings 비활성 상태 문자열 배열
+	 * @throws IllegalArgumentException 파라미터 값들이 null 이거나 비활성 상태 문자열 배열의 크기가 0인 경우 혹은 기대한 타입이 아닌 경우 던지는 예외
+	 */
 	public RSAKeyFileDisabledItemChecker(
 			ItemIDInfo<?> disabeldTargetItemIDInfo,
 			ItemIDInfo<?> dependentItemIDInfo, String[] disabledConditionStrings)

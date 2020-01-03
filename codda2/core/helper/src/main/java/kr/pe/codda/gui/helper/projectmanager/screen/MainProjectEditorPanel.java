@@ -44,7 +44,7 @@ import com.jgoodies.forms.layout.FormLayout;
 import kr.pe.codda.common.buildsystem.MainProjectBuildSystemState;
 import kr.pe.codda.common.buildsystem.ProjectBuilder;
 import kr.pe.codda.common.buildsystem.pathsupporter.ProjectBuildSytemPathSupporter;
-import kr.pe.codda.common.config.fileorpathstringgetter.AbstractFileOrPathStringGetter;
+import kr.pe.codda.common.config.fileorpathstringgetter.AbstractFileOrPathStringReturner;
 import kr.pe.codda.common.config.itemidinfo.ItemIDInfo;
 import kr.pe.codda.common.config.itemidinfo.ItemIDInfoManger;
 import kr.pe.codda.common.etc.CommonStaticFinalVars;
@@ -152,7 +152,7 @@ public class MainProjectEditorPanel extends JPanel {
 				String itemDescriptionValue = dbcpPartItemIDInfo.getDescription();
 
 				ItemIDInfo.ViewType itemViewType = dbcpPartItemIDInfo.getViewType();
-				Set<String> itemSet = dbcpPartItemIDInfo.getItemSet();
+				Set<String> itemSet = dbcpPartItemIDInfo.getItemValueSet();
 
 				ItemKeyLabel itemKeyLabel = new ItemKeyLabel(itemKey,
 						dbcpPartItemIDInfo.getDescription());
@@ -199,7 +199,7 @@ public class MainProjectEditorPanel extends JPanel {
 						commonPartItemIDInfo.getDescription());
 
 				ItemIDInfo.ViewType itemViewType = commonPartItemIDInfo.getViewType();
-				Set<String> itemSet = commonPartItemIDInfo.getItemSet();
+				Set<String> itemSet = commonPartItemIDInfo.getItemValueSet();
 
 				ItemValuePanel itemValuePanel = new ItemValuePanel(i, 
 						itemID, prefixOfItemID, 
@@ -248,7 +248,7 @@ public class MainProjectEditorPanel extends JPanel {
 						mainProjectPartItemIDInfo.getDescription());
 
 				ItemIDInfo.ViewType itemViewType = mainProjectPartItemIDInfo.getViewType();
-				Set<String> itemSet = mainProjectPartItemIDInfo.getItemSet();
+				Set<String> itemSet = mainProjectPartItemIDInfo.getItemValueSet();
 
 				ItemValuePanel itemValuePanel = new ItemValuePanel(i, 
 						itemID, prefixOfItemID, itemKey, itemValue, 
@@ -288,7 +288,7 @@ public class MainProjectEditorPanel extends JPanel {
 				String itemDescriptionValue = subProjectPartItemIDInfo.getDescription();
 
 				ItemIDInfo.ViewType itemViewType = subProjectPartItemIDInfo.getViewType();
-				Set<String> itemSet = subProjectPartItemIDInfo.getItemSet();
+				Set<String> itemSet = subProjectPartItemIDInfo.getItemValueSet();
 
 				ItemKeyLabel itemKeyLabel = new ItemKeyLabel(itemKey,
 						subProjectPartItemIDInfo.getDescription());
@@ -754,15 +754,15 @@ public class MainProjectEditorPanel extends JPanel {
 					.getItemDescKey(prefixOfItemID);
 			String itemDescriptionValue = subProjectPartItemIDInfo.getDescription();
 			
-			AbstractFileOrPathStringGetter fileOrPathStringGetter = itemIDInfoManger
-					.getFileOrPathStringGetter(itemID);
-			if (null != fileOrPathStringGetter) {
-				fileOrPathStringGetter
-						.getFileOrPathStringDependingOnInstalledPath(
+			AbstractFileOrPathStringReturner fileOrPathStringReturner = itemIDInfoManger
+					.getFileOrPathStringReturner(itemID);
+			if (null != fileOrPathStringReturner) {
+				fileOrPathStringReturner
+						.getFileOrPathString(
 								installedPathString, mainProjectName);
 			}
 			ItemIDInfo.ViewType itemViewType = subProjectPartItemIDInfo.getViewType();
-			Set<String> itemSet = subProjectPartItemIDInfo.getItemSet();
+			Set<String> itemSet = subProjectPartItemIDInfo.getItemValueSet();
 
 			ItemKeyLabel itemKeyLabel = new ItemKeyLabel(itemKey,
 					subProjectPartItemIDInfo.getDescription());
@@ -925,16 +925,16 @@ public class MainProjectEditorPanel extends JPanel {
 					.getItemDescKey(prefixOfItemID);
 			String itemDescriptionValue = dbcpPartItemIDInfo.getDescription();
 			
-			AbstractFileOrPathStringGetter fileOrPathStringGetter = itemIDInfoManger
-					.getFileOrPathStringGetter(itemID);
-			if (null != fileOrPathStringGetter) {
-				fileOrPathStringGetter
-						.getFileOrPathStringDependingOnInstalledPath(
+			AbstractFileOrPathStringReturner fileOrPathStringReturner = itemIDInfoManger
+					.getFileOrPathStringReturner(itemID);
+			if (null != fileOrPathStringReturner) {
+				fileOrPathStringReturner
+						.getFileOrPathString(
 								installedPathString, mainProjectName, 
 								newDBCPName);
 			}
 			ItemIDInfo.ViewType itemViewType = dbcpPartItemIDInfo.getViewType();
-			Set<String> itemSet = dbcpPartItemIDInfo.getItemSet();
+			Set<String> itemSet = dbcpPartItemIDInfo.getItemValueSet();
 
 			ItemKeyLabel itemKeyLabel = new ItemKeyLabel(itemKey,
 					dbcpPartItemIDInfo.getDescription());

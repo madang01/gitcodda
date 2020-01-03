@@ -1,28 +1,27 @@
-/*
+/*******************************************************************************
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
- *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *  
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *  
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- */
-
+ *******************************************************************************/
 package kr.pe.codda.common.etc;
 
 import java.nio.charset.Charset;
 
-import kr.pe.codda.impl.message.SelfExnRes.SelfExnResClientCodec;
-import kr.pe.codda.impl.message.SelfExnRes.SelfExnResDecoder;
-import kr.pe.codda.impl.message.SelfExnRes.SelfExnResEncoder;
-import kr.pe.codda.impl.message.SelfExnRes.SelfExnResServerCodec;
+import kr.pe.codda.impl.message.ExceptionDeliveryRes.ExceptionDeliveryResClientCodec;
+import kr.pe.codda.impl.message.ExceptionDeliveryRes.ExceptionDeliveryResDecoder;
+import kr.pe.codda.impl.message.ExceptionDeliveryRes.ExceptionDeliveryResEncoder;
+import kr.pe.codda.impl.message.ExceptionDeliveryRes.ExceptionDeliveryResServerCodec;
 
 /**
  * 공통 상수와 환경 변수 미 설정시 디폴트 값을 갖는 클래스
@@ -37,14 +36,15 @@ public abstract class CommonStaticFinalVars {
 	public static final int ZERO_INTEGER = 0;
 	public static final long ZERO_LONG = 0L;	
 	
-	public static final String ROOT_PROJECT_NAME = "codda2";
 	public static final String CORE_LOG_NAME = "kr.pe.codda";
 	
-	public static final SelfExnResEncoder SELFEXN_ENCODER = new SelfExnResEncoder();
-	public static final SelfExnResDecoder SELFEXN_DECODER= new SelfExnResDecoder();
 	
-	public static final SelfExnResClientCodec SELFEXN_CLIENT_CODEC = new SelfExnResClientCodec();
-	public static final SelfExnResServerCodec SELFEXN_SERVER_CODEC= new SelfExnResServerCodec();
+	
+	public static final ExceptionDeliveryResEncoder EXCEPTIONDELIVERY_ENCODER = new ExceptionDeliveryResEncoder();
+	public static final ExceptionDeliveryResDecoder EXCEPTIONDELIVERY_DECODER= new ExceptionDeliveryResDecoder();
+	
+	public static final ExceptionDeliveryResClientCodec EXCEPTIONDELIVERY_CLIENT_CODEC = new ExceptionDeliveryResClientCodec();
+	public static final ExceptionDeliveryResServerCodec EXCEPTIONDELIVERY_SERVER_CODEC= new ExceptionDeliveryResServerCodec();
 	
 	
 	
@@ -55,18 +55,26 @@ public abstract class CommonStaticFinalVars {
 	 * 첫번째 메시지
 	 * 두번째 비지니스 로직이 있으며 비지니스 로직은 서버/클라이언트로 나뉜다.
 	 */
-	public static String BASE_PACKAGE_NAME = "kr.pe.codda";	
+	
+	/** 기본 패키지 이름, ex) kr.pe.codda */
+	public static String BASE_PACKAGE_NAME = "kr.pe.codda";
+	
+	/** 동적 클래스 패키지 이름 */
 	public static String BASE_DYNAMIC_CLASS_FULL_NAME = new StringBuilder(BASE_PACKAGE_NAME).append(".impl").toString();
 	
+	/** 동적 클래스인 메시지 패키지 이름 */
 	public static String BASE_MESSAGE_CLASS_FULL_NAME = new StringBuilder(BASE_DYNAMIC_CLASS_FULL_NAME)
 			.append(".message").toString();
 	
+	/** 기본 타스크 패키지 이름 */
 	public static String BASE_TASK_CLASS_FULL_NAME = new StringBuilder(BASE_DYNAMIC_CLASS_FULL_NAME)
 			.append(".task").toString();
 	
+	/** 서버 타스크 패키지 이름 */
 	public static String BASE_SERVER_TASK_CLASS_FULL_NAME = new StringBuilder(BASE_TASK_CLASS_FULL_NAME)
 			.append(".server").toString();
 	
+	/** 클라이언트 타스크 패키지 이름 */
 	public static String BASE_CLIENT_TASK_CLASS_FULL_NAME = new StringBuilder(BASE_TASK_CLASS_FULL_NAME)
 			.append(".client").toString();
 	/********** 동적 클래스 로딩 대상의 이름 종료 ***************/
@@ -121,7 +129,9 @@ public abstract class CommonStaticFinalVars {
 	
 	/*********** Build System start **********/
 	/** configuration start */
+	/** DBCP 목록 키 */
 	public static final String DBCP_NAME_LIST_KEY_STRING = "dbcp.name_list.value";
+	/** 서브 프로젝트 목록 키 */
 	public static final String SUBPROJECT_NAME_LIST_KEY_STRING = "subproject.name_list.value";	
 	public static final String LOGBACK_LOG_FILE_NAME = "logback.xml";
 	public static final String CONFIG_FILE_NAME = "codda.properties";

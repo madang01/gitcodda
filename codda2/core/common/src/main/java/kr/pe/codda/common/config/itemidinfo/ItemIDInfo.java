@@ -1,3 +1,20 @@
+/*******************************************************************************
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *  
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *  
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *******************************************************************************/
+
 package kr.pe.codda.common.config.itemidinfo;
 
 
@@ -160,6 +177,11 @@ public class ItemIDInfo<T> {
 		this.itemValueConverter = nativeValueConverter;
 	}
 	
+	/**
+	 * 항목 설명하는 키 문자열를 반환한다
+	 * @param prefixOfItemID 항목의 키 접두어 문자열
+	 * @return 항목 설명하는 키 문자열
+	 */
 	public String getItemDescKey(String prefixOfItemID) {
 		if (null == prefixOfItemID) {
 			throw new IllegalArgumentException("the paramter prefixOfItemID is null");
@@ -173,37 +195,52 @@ public class ItemIDInfo<T> {
 		
 	}
 
+	/**
+	 * @return 환경 설정 GUI 프로그램에서 항목의 뷰 종류
+	 */
 	public ViewType getViewType() {
 		return viewType;
 	}
 
+	/**
+	 * @return 항목이 속한 설정 파트
+	 */
 	public ConfigurationPart getConfigurationPart() {
 		return configurationPart;
 	}
 
+	/**
+	 * @return 항목 식별자
+	 */
 	public String getItemID() {
 		return itemID;
 	}
 
+	/**
+	 * @return 디폴트 값
+	 */
 	public String getDefaultValue() {
 		return defaultValue;
 	}
 
+	/**
+	 * @return 항목 값 변환기
+	 */
 	public AbstractNativeValueConverter<T> getItemValueConverter() {
 		return itemValueConverter;
 	}
 
+	/**
+	 * @return 디폴트 값 검사 유무 
+	 */
 	public boolean isDefaultValueCheck() {
 		return isDefaultValueCheck;
 	}
 	
-	/**
-	 * 항목의 값으로 가질수있는 집합을 반환한다. 
-	 * 단 집합이 없으면 즉 집합형 항목이 아니면 널을 반환한다.
-	 * 
-	 * @return
+	/** 
+	 * @return 단일 값 항목의 경우에만 미리 정의한 항목의 값 집합을 반환하며 그외 경우에는 null 을 반환한다.
 	 */
-	public Set<String> getItemSet() {
+	public Set<String> getItemValueSet() {
 		Set<String> itemSet = null;
 		if (viewType.equals(ItemIDInfo.ViewType.SINGLE_SET)) {
 			AbstractSetTypeNativeValueConverter<?> setTypeNativeConvter = 
@@ -213,6 +250,9 @@ public class ItemIDInfo<T> {
 		return itemSet;
 	}
 
+	/**
+	 * @return 항목 설명 문구
+	 */
 	public String getDescription() {
 		StringBuilder descriptBuilder = new StringBuilder(description);
 
