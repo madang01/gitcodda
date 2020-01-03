@@ -17,12 +17,18 @@
 
 package kr.pe.codda.common.type;
 
+/**
+ * 세션키
+ * @author Won Jonghoon
+ *
+ */
 public abstract class SessionKey {
+	/**
+	 * 공개키 쌍이 저장된 장소 타입 {서버, 파일}, 참고로 서버이면 프로그램 내부에서 공개키 쌍을 생성하여 이용한다는것을 말함.   
+	 * @author Won Jonghoon
+	 *
+	 */
 	public enum RSAKeypairSourceType {
 		SERVER, FILE;
 	}
-	
-	/*public enum SymmetricKeyAlgorithmType {
-		AES, DESede, DES;
-	}*/
 }

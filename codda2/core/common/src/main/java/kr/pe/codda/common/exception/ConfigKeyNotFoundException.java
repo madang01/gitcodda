@@ -17,6 +17,11 @@
 
 package kr.pe.codda.common.exception;
 
+/**
+ * 
+ * @author Won Jonghoon
+ *
+ */
 @SuppressWarnings("serial")
 public class ConfigKeyNotFoundException extends Exception {
 	/**

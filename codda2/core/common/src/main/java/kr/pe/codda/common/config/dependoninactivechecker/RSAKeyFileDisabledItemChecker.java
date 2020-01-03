@@ -41,26 +41,26 @@ public class RSAKeyFileDisabledItemChecker extends
 
 	/**
 	 * 생성자
-	 * @param disabeldTargetItemIDInfo 비활성화 대상 항목 식별자 정보
-	 * @param dependentItemIDInfo 비활성을 이끄는 항목 정보
-	 * @param disabledConditionStrings 비활성 상태 문자열 배열
+	 * @param depenetSourceItemIDInfo 비활성화 대상 항목 식별자 정보, '비활성으로 이끄는 항목 정보' 가 비활성 상태를 지정하는 문자열 집합의 값을 가질 경우에 비활성된다.
+	 * @param dependentTargetItemIDInfo 비활성으로 이끄는 항목 정보
+	 * @param disabledConditionStrings '비활성으로 이끄는 항목 정보'의 값으로 이루어진 비활성 상태 문자열 배열
 	 * @throws IllegalArgumentException 파라미터 값들이 null 이거나 비활성 상태 문자열 배열의 크기가 0인 경우 혹은 기대한 타입이 아닌 경우 던지는 예외
 	 */
 	public RSAKeyFileDisabledItemChecker(
-			ItemIDInfo<?> disabeldTargetItemIDInfo,
-			ItemIDInfo<?> dependentItemIDInfo, String[] disabledConditionStrings)
+			ItemIDInfo<?> depenetSourceItemIDInfo,
+			ItemIDInfo<?> dependentTargetItemIDInfo, String[] disabledConditionStrings)
 			throws IllegalArgumentException {
-		super(disabeldTargetItemIDInfo, dependentItemIDInfo,
+		super(depenetSourceItemIDInfo, dependentTargetItemIDInfo,
 				disabledConditionStrings);
 
-		AbstractNativeValueConverter<?> disabledItemValueConverter = disabeldTargetItemIDInfo
+		AbstractNativeValueConverter<?> disabledItemValueConverter = depenetSourceItemIDInfo
 				.getItemValueConverter();
 
 		if (!disabledItemValueConverter.getGenericType().getName().equals(
 				File.class.getName())) {
 			String errorMessage = new StringBuilder(
 					"the parameter disabeldTargetItemIDInfo[")
-					.append(disabeldTargetItemIDInfo.getItemID())
+					.append(depenetSourceItemIDInfo.getItemID())
 					.append("]'s nativeValueConverter generic type[")
 					.append(disabledItemValueConverter
 							.getGenericType().getName())
@@ -68,12 +68,12 @@ public class RSAKeyFileDisabledItemChecker extends
 			throw new IllegalArgumentException(errorMessage);
 		}
 
-		AbstractNativeValueConverter<?> dependentItemValueConverter = dependentItemIDInfo
+		AbstractNativeValueConverter<?> dependentItemValueConverter = dependentTargetItemIDInfo
 				.getItemValueConverter();
 		if (!(dependentItemValueConverter instanceof SetTypeConverterOfSessionKeyRSAKeypairSource)) {
 			String errorMessage = new StringBuilder(
 					"the parameter dependentItemIDInfo[")
-					.append(dependentItemIDInfo.getItemID())
+					.append(dependentTargetItemIDInfo.getItemID())
 					.append("]'s nativeValueConverter[")
 					.append(dependentItemValueConverter.getClass()
 							.getName())

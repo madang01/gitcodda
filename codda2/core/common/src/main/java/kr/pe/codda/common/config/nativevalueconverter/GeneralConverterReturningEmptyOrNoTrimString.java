@@ -20,8 +20,16 @@ package kr.pe.codda.common.config.nativevalueconverter;
 import kr.pe.codda.common.config.AbstractNativeValueConverter;
 import kr.pe.codda.common.util.CommonStaticUtil;
 
+/**
+ * 빈 문자열 혹은 앞뒤로 공백 문자가 없는 문자열만 허용하는 문자열 변환기
+ * @author Won Jonghoon
+ *
+ */
 public class GeneralConverterReturningEmptyOrNoTrimString extends AbstractNativeValueConverter<String> {
 
+	/**
+	 * 생성자
+	 */
 	public GeneralConverterReturningEmptyOrNoTrimString() {
 		super(String.class);
 	}

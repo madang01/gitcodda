@@ -23,11 +23,8 @@ import kr.pe.codda.common.config.itemidinfo.ItemIDDefiner;
 import kr.pe.codda.common.exception.CoddaConfigurationException;
 
 /**
- * Warning! 비활성한 항목의 값은 쓰레기값이므로 
- * 환경 설정 파일을 읽어와서 Value Object 에 저장할때 건너뛰어 초기값인 null 값을 갖게 된다.
- * 따라서 Value Object 에서 값을 넘겨줄때 비활성 항목의 경우 
- * null 검사를 수행하여 ConfigErrorException 을 던져야 한다.
- * 
+ * DBCP 파트 설정 클래스
+ *  
  * @author Won Jonghoon
  *
  */

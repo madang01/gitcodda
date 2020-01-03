@@ -33,8 +33,8 @@ import kr.pe.codda.common.config.fileorpathstringgetter.AbstractFileOrPathString
 import kr.pe.codda.common.config.itemidinfo.ItemIDDefiner;
 import kr.pe.codda.common.config.itemidinfo.ItemIDInfo;
 import kr.pe.codda.common.config.itemidinfo.ItemIDInfoManger;
-import kr.pe.codda.common.config.subset.AllDBCPPartConfiguration;
-import kr.pe.codda.common.config.subset.AllSubProjectPartConfiguration;
+import kr.pe.codda.common.config.subset.DBCPPartConfigurationManager;
+import kr.pe.codda.common.config.subset.SubProjectPartConfigurationManager;
 import kr.pe.codda.common.config.subset.CommonPartConfiguration;
 import kr.pe.codda.common.config.subset.DBCPParConfiguration;
 import kr.pe.codda.common.config.subset.ProjectPartConfiguration;
@@ -45,6 +45,12 @@ import kr.pe.codda.common.util.CommonStaticUtil;
 import kr.pe.codda.common.util.SequencedProperties;
 import kr.pe.codda.common.util.SequencedPropertiesUtil;
 
+/**
+ * 코다 설정, 설정 파일 로드및 저장 관련 기능을 담당함.
+ * 
+ * @author Won Jonghoon
+ *
+ */
 public class CoddaConfiguration {
 	private Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
 
@@ -53,13 +59,22 @@ public class CoddaConfiguration {
 
 	private String configFilePathString = null;
 
-	private AllDBCPPartConfiguration allDBCPPartConfiguration = null;
+	private DBCPPartConfigurationManager dbcpPartConfigurationManger = null;
 	private CommonPartConfiguration commonPartConfiguration = null;
 	private ProjectPartConfiguration mainProjectPartConfiguration = null;
-	private AllSubProjectPartConfiguration allSubProjectPartConfiguration = null;
+	private SubProjectPartConfigurationManager subProjectPartConfigurationManger = null;
 
 	private SequencedProperties configSequencedProperties = null;
 
+	/**
+	 * 생성자
+	 * @param installedPathString 설치 경로
+	 * @param mainProjectName 메인 프로젝트 이름
+	 * @throws IllegalArgumentException 파라미터 값이 잘못되엇을 경우 던지는 예외
+	 * @throws CoddaConfigurationException 설정 파일 내용이 잘못되었을 경우 던지는 예외
+	 * @throws FileNotFoundException 설정 파일이 없는 경우 던지는 예외
+	 * @throws IOException 설정 파일 적재할때 에러 발생시 던지는 예외
+	 */
 	public CoddaConfiguration(String installedPathString, String mainProjectName)
 			throws IllegalArgumentException, CoddaConfigurationException, FileNotFoundException, IOException {
 		if (null == installedPathString) {
@@ -111,13 +126,23 @@ public class CoddaConfiguration {
 		convertConfigSequencedPropertiesToAllPartItemsWithValidation(this.configSequencedProperties);
 	}
 
+	/**
+	 * 멤버 변수 초기화
+	 * @param mainProjectName 메인 프로젝트 이름
+	 */
 	private void initAllPartItems(String mainProjectName) {
-		this.allDBCPPartConfiguration = new AllDBCPPartConfiguration();
+		this.dbcpPartConfigurationManger = new DBCPPartConfigurationManager();
 		this.commonPartConfiguration = new CommonPartConfiguration();
 		this.mainProjectPartConfiguration = new ProjectPartConfiguration(ProjectType.MAIN, mainProjectName);
-		this.allSubProjectPartConfiguration = new AllSubProjectPartConfiguration();
+		this.subProjectPartConfigurationManger = new SubProjectPartConfigurationManager();
 	}
 
+	/**
+	 * 지정한 프로퍼티 내용을 검증하여 해당 내용을 각 파트 설정으로 옮김.
+	 * 
+	 * @param configSequencedProperties 설정 파일 내용이 담긴 프로퍼티
+	 * @throws CoddaConfigurationException 설정 파일 내용이 담긴 프로퍼티가 잘못되어 있다면 던지는 예외
+	 */
 	public void convertConfigSequencedPropertiesToAllPartItemsWithValidation(
 			SequencedProperties configSequencedProperties) throws CoddaConfigurationException {
 		List<String> subProjectNameList = new ArrayList<>();
@@ -257,7 +282,7 @@ public class CoddaConfiguration {
 				}
 
 			}
-			allDBCPPartConfiguration.addDBCPPartValueObject(dbcpPartItems);
+			dbcpPartConfigurationManger.addDBCPParConfiguration(dbcpPartItems);
 		}
 
 		List<ItemIDInfo<?>> commonItemIDInfoList = itemIDInfoManger.getUnmodifiableCommonPartItemIDInfoList();
@@ -379,19 +404,16 @@ public class CoddaConfiguration {
 				}
 			}
 
-			allSubProjectPartConfiguration.addSubProjectPartValueObject(subProjectPartItems);
+			subProjectPartConfigurationManger.addSubProjectPartConfiguration(subProjectPartItems);
 		}
 	}
 
 	/**
 	 * 만약 서버 주소가 다르다면 새로운 서버 주소로 교체후 저장한다.
 	 * 
-	 * @param newServerHost
-	 *            새로운 서버 호스트 주소
-	 * @param newServerPort
-	 *            새로운 서버 포트
-	 * @throws IOException
-	 *             저장시 에러 발생시 던지는 예외
+	 * @param newServerHost 새로운 서버 호스트 주소
+	 * @param newServerPort 새로운 서버 포트
+	 * @throws IOException 저장시 에러 발생시 던지는 예외
 	 */
 	public void changeServerAddressIfDifferent(String newServerHost, int newServerPort) throws IOException {
 		if (null == newServerHost) {
@@ -427,18 +449,35 @@ public class CoddaConfiguration {
 	}
 
 
+	/**
+	 * 설정 파일 정보가 담긴 시퀀스 프로퍼티의 내용을 설정 파일에 덮어 쓴다.
+	 * @throws IOException 입출력 에러 발생시 던지는 예외
+	 */
 	private void overwriteFile() throws IOException {
 		SequencedPropertiesUtil.overwriteSequencedPropertiesFile(configSequencedProperties,
 				getConfigPropertiesTitle(), configFilePathString,
 				CommonStaticFinalVars.SOURCE_FILE_CHARSET);
 	}
 
+	/**
+	 * 수정한 내용을 설정 파일에 덮어 쓴다.
+	 * @throws IOException 입출력 에러 발생시 던지는 예외
+	 * @throws CoddaConfigurationException 설정 파일 내용이 담긴 시퀀스 프로퍼티가 잘못되었다면 던지는 예외
+	 */
 	public void applyModifiedConfigSequencedProperties() throws IOException, CoddaConfigurationException {
 		initAllPartItems(mainProjectName);
 		convertConfigSequencedPropertiesToAllPartItemsWithValidation(configSequencedProperties);
 		overwriteFile();
 	}
 
+	/**
+	 * 지정한 설치 경로와 지정한 메인 프로젝트 이름에 맞도록 설정 파일 내용을 갱신한다.
+	 * 
+	 * @param installedPathString 설치 경로
+	 * @param mainProjectName 메인 프로젝트 이름
+	 * @throws IOException 입출력 에러 발생시 던지는 예외
+	 * @throws CoddaConfigurationException 설정 파일 내용이 담긴 시퀀스 프로퍼티가 잘못되었다면 던지는 예외
+	 */
 	public static void applyInstalledPath(String installedPathString, String mainProjectName)
 			throws IOException, CoddaConfigurationException {
 		String configFilePathString = ProjectBuildSytemPathSupporter
@@ -546,6 +585,12 @@ public class CoddaConfiguration {
 
 	}
 
+	/** 
+	 * @param configFilePathString 설정 파일 경로 문자열
+	 * @param configSequencedProperties 설정 파일이 담긴 시퀀스 프로퍼터 
+	 * @return 파라미터 '설정 파일이 담긴 시퀀스 프로퍼터' 에서 dbcp 이름 목록 값에서 추출한 dbcp 이름 목록
+	 * @throws CoddaConfigurationException 설정 파일 내용이 담긴 시퀀스 프로퍼티에 dbcp 이름 목록이 존재하지 않거나 중복된 dbcp 이름을 가졌다면 던지는 예외
+	 */
 	private static List<String> buildDBCPNameList(String configFilePathString,
 			SequencedProperties configSequencedProperties) throws CoddaConfigurationException {
 		List<String> dbcpNameList = new ArrayList<>();
@@ -584,6 +629,12 @@ public class CoddaConfiguration {
 		return dbcpNameList;
 	}
 
+	/**
+	 * @param configFilePathString 설정 파일 경로 문자열
+	 * @param configSequencedProperties 설정 파일 내용이 담긴 시퀀스 프로퍼티
+	 * @return 파라미터 '설정 파일이 담긴 시퀀스 프로퍼터' 에서 서브 프록젝트 이름 목록 값에서 추출한 서브 프로젝트 이름 목록이 존재하지 않거나 중복된 서브 프로젝트 이름을 가졌다면 던지는 예외
+	 * @throws CoddaConfigurationException
+	 */
 	private static List<String> buildSubProjectNameList(String configFilePathString,
 			SequencedProperties configSequencedProperties) throws CoddaConfigurationException {
 		List<String> subProjectNameList = new ArrayList<>();
@@ -621,38 +672,66 @@ public class CoddaConfiguration {
 		return subProjectNameList;
 	}
 
+	/**
+	 * @return 공통 파트 설정
+	 */
 	public CommonPartConfiguration getCommonPartConfiguration() {
 		return commonPartConfiguration;
 	}
 
+	/**
+	 * @return 메인 프로젝트 파트 설정
+	 */
 	public ProjectPartConfiguration getMainProjectPartConfiguration() {
 		return mainProjectPartConfiguration;
 	}
 
-	public AllSubProjectPartConfiguration getAllSubProjectPartConfiguration() {
-		return allSubProjectPartConfiguration;
+	/**
+	 * @return 서브 프로젝트 파트 설정 관리자
+	 */
+	public SubProjectPartConfigurationManager getSubProjectPartConfigurationManager() {
+		return subProjectPartConfigurationManger;
+	}
+	
+	/**
+	 * @return dbcp 파트 설정 관리자
+	 */
+	public DBCPPartConfigurationManager getDBCPPartConfigurationManager() {
+		return dbcpPartConfigurationManger;
 	}
 
-	public AllDBCPPartConfiguration getAllDBCPPartConfiguration() {
-		return allDBCPPartConfiguration;
-	}
-
+	/**
+	 * @return 메인 프로젝트 이름
+	 */
 	public String getMainProjectName() {
 		return mainProjectName;
 	}
 
+	/**
+	 * @return 설치 경로
+	 */
 	public String getInstalledPathString() {
 		return installedPathString;
 	}
 
+	/** 
+	 * @return 설정 파일 내용이 담긴 시퀀스 프로퍼티
+	 */
 	public SequencedProperties getConfigurationSequencedPropties() {
 		return configSequencedProperties;
 	}
 
+	/**
+	 * @return 설정 파일의 제목
+	 */
 	public String getConfigPropertiesTitle() {
 		return getConfigPropertiesTitle(mainProjectName);
 	}
 
+	/**
+	 * @param mainProjectName 메인 프로젝트 이름
+	 * @return 지정한 '메인 프로젝트 이름' 을 갖는 설정 파일 제목
+	 */
 	public static String getConfigPropertiesTitle(String mainProjectName) {
 		return new StringBuilder("project[").append(mainProjectName).append("]'s config file").toString();
 	}

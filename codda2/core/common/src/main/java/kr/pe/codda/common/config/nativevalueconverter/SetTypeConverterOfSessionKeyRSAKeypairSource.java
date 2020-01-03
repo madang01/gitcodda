@@ -20,9 +20,16 @@ package kr.pe.codda.common.config.nativevalueconverter;
 import kr.pe.codda.common.config.AbstractSetTypeNativeValueConverter;
 import kr.pe.codda.common.type.SessionKey;
 
-public class SetTypeConverterOfSessionKeyRSAKeypairSource 
-extends AbstractSetTypeNativeValueConverter<SessionKey.RSAKeypairSourceType> {
+/**
+ * 지정한 값 집합을 갖는 RAS 키 쌍이 저장된 장소 타입 변환기
+ * @author Won Jonghoon
+ *
+ */
+public class SetTypeConverterOfSessionKeyRSAKeypairSource extends AbstractSetTypeNativeValueConverter<SessionKey.RSAKeypairSourceType> {
 
+	/**
+	 * 생성자
+	 */
 	public SetTypeConverterOfSessionKeyRSAKeypairSource() {
 		super(SessionKey.RSAKeypairSourceType.class);
 	}

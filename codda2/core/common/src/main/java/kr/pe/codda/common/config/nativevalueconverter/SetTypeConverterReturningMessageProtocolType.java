@@ -21,7 +21,7 @@ import kr.pe.codda.common.config.AbstractSetTypeNativeValueConverter;
 import kr.pe.codda.common.type.MessageProtocolType;
 
 /**
- * 메시지 프로토콜 항목 값 유효성 검사기, DHB:교차 md5 헤더+바디, DJSON:길이+존슨문자열, THB:길이+바디
+ * 열거형 {@link MessageProtocolType} 의 원소들로 이루어진 집합을 갖는 MessageProtocolType 타입 값 변환기
  * 
  * @author "Won Jonghoon"
  * 

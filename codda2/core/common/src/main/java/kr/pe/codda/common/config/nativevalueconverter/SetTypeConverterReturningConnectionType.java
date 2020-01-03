@@ -21,8 +21,7 @@ import kr.pe.codda.common.config.AbstractSetTypeNativeValueConverter;
 import kr.pe.codda.common.type.ConnectionType;
 
 /**
- * 소캣 랩퍼 클래스인 연결 종류 항목 값 유효성 검사기, NoShareAsyn:비공유+비동기, ShareAsyn:공유+비동기,
- * NoShareSync:비공유+동기.
+ * 열거형 {@link ConnectionType} 의 원소들로 이루어진 집합을 갖는 ConnectionType 타입 값 변환기
  * 
  * @author "Won Jonghoon"
  * 
@@ -30,6 +29,9 @@ import kr.pe.codda.common.type.ConnectionType;
 public class SetTypeConverterReturningConnectionType extends
 		AbstractSetTypeNativeValueConverter<ConnectionType> {
 
+	/**
+	 * 생성자
+	 */
 	public SetTypeConverterReturningConnectionType() {
 		super(ConnectionType.class);
 	}

@@ -20,25 +20,22 @@ package kr.pe.codda.common.config.nativevalueconverter;
 import kr.pe.codda.common.config.AbstractNativeValueConverter;
 
 /**
- * 파일 송수신 파일 블락 최대 크기 항목의 값 유효성 검사기
+ * 1024 배수로 최소 최대 크기가 정해진 파일 송수신 파일 블락 값 변환기, 단 최대값은 1024 보다 크거나 같아야 한다.
  * 
  * @author "Won Jonghoon"
  * 
  */
 public class GeneralConverterReturningUpDownFileBlockMaxSizeBetweenMinAndMax extends
 		AbstractNativeValueConverter<Integer> {
-	private int min;
-	private int max;
+	private final int min;
+	private final int max;
 
 	/**
-	 * 파일 송수신 파일 블락 최대 크기 항목의 값 유효성 검사기 생성자
+	 * 생성자
 	 * 
-	 * @param min
-	 *            최소값, 주) 1024 배수 검사 없음
-	 * @param max
-	 *            최대값, 주) 1024 배수 검사 없음
-	 * @throws IllegalArgumentException
-	 *             최소값이 최대값 보다 클때 던지는 예외
+	 * @param min 최소값, 주) 1024 배수 검사 없음
+	 * @param max 최대값, 단 최대값은 1024보다 크거나 같아야 한다. 주) 1024 배수 검사 없음
+	 * @throws IllegalArgumentException 최소값이 최대값 보다 클때 던지는 예외
 	 */
 	public GeneralConverterReturningUpDownFileBlockMaxSizeBetweenMinAndMax(int min, int max)
 			throws IllegalArgumentException {
@@ -47,13 +44,7 @@ public class GeneralConverterReturningUpDownFileBlockMaxSizeBetweenMinAndMax ext
 			String errorMessage = new StringBuilder("the parameter min[")
 					.append(min).append("] is less than zero").toString();
 			throw new IllegalArgumentException(errorMessage);
-		}
-		
-		/*if (max < 0) {
-			String errorMessage = new StringBuilder("parameter max[")
-					.append(max).append("] is less than zero").toString();
-			throw new IllegalArgumentException(errorMessage);
-		}*/
+		}		
 		
 		if (max < 1024) {
 			String errorMessage = new StringBuilder("the parameter max[")

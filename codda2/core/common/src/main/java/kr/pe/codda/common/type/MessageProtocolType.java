@@ -17,6 +17,11 @@
 
 package kr.pe.codda.common.type;
 
+/**
+ * 메시지 프로토콜 타입, {'DHB', 'JSON', 'THB' } 로 구성 
+ * @author Won Jonghoon
+ *
+ */
 public enum MessageProtocolType {
 	DHB, DJSON, THB;
 }

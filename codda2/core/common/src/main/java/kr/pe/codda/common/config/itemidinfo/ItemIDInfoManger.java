@@ -679,28 +679,28 @@ public class ItemIDInfoManger {
 		}
 
 		{
-			String disabledTargetItemID = ItemIDDefiner.CommonPartItemIDDefiner.SESSIONKEY_RSA_PRIVATEKEY_FILE_ITEMID;
-			String dependentItemID = ItemIDDefiner.CommonPartItemIDDefiner.SESSIONKEY_RSA_KEYPAIR_SOURCE_ITEMID;
+			String dependentSourceItemID = ItemIDDefiner.CommonPartItemIDDefiner.SESSIONKEY_RSA_PRIVATEKEY_FILE_ITEMID;
+			String dependentTargetItemID = ItemIDDefiner.CommonPartItemIDDefiner.SESSIONKEY_RSA_KEYPAIR_SOURCE_ITEMID;
 
-			ItemIDInfo<?> disbaledTargetItemIDInfo = getItemIDInfo(disabledTargetItemID);
+			ItemIDInfo<?> disbaledTargetItemIDInfo = getItemIDInfo(dependentSourceItemID);
 			if (null == disbaledTargetItemIDInfo) {
 				String errorMessage = new StringBuilder("there is no RSA Public Key File item[")
-						.append(disabledTargetItemID)
+						.append(dependentSourceItemID)
 						.append("] identifier information, the RSA Public Key File item depends on RSA Keypair Source item[")
-						.append(dependentItemID).append("]").toString();
+						.append(dependentTargetItemID).append("]").toString();
 				throw new CoddaConfigurationException(errorMessage);
 			}
 
-			ItemIDInfo<?> dependentItemIDInfo = getItemIDInfo(dependentItemID);
+			ItemIDInfo<?> dependentItemIDInfo = getItemIDInfo(dependentTargetItemID);
 			if (null == dependentItemIDInfo) {
-				String errorMessage = new StringBuilder("there is no RSA Keypair Source item[").append(dependentItemID)
-						.append("] identifier information, the RSA Public Key File item[").append(disabledTargetItemID)
+				String errorMessage = new StringBuilder("there is no RSA Keypair Source item[").append(dependentTargetItemID)
+						.append("] identifier information, the RSA Public Key File item[").append(dependentSourceItemID)
 						.append("] depends on RSA Keypair Source item").toString();
 				// log.error(errorMessage);
 				throw new CoddaConfigurationException(errorMessage);
 			}
 
-			diabledItemCheckerHash.put(disabledTargetItemID, new RSAKeyFileDisabledItemChecker(disbaledTargetItemIDInfo,
+			diabledItemCheckerHash.put(dependentSourceItemID, new RSAKeyFileDisabledItemChecker(disbaledTargetItemIDInfo,
 					dependentItemIDInfo, new String[] { SessionKey.RSAKeypairSourceType.SERVER.toString() }));
 		}
 
@@ -812,7 +812,7 @@ public class ItemIDInfoManger {
 	public boolean isDisabled(String itemID, String prefixOfItemID, Properties sourceProperties) {
 		AbstractDisabledItemChecker disabledItemChecker = diabledItemCheckerHash.get(itemID);		
 		
-		boolean isDisabled = (null == disabledItemChecker) ? false : disabledItemChecker.isDisabled(sourceProperties, prefixOfItemID);
+		boolean isDisabled = (null == disabledItemChecker) ? false : disabledItemChecker.isDisabled(prefixOfItemID, sourceProperties);
 
 		return isDisabled;
 	}

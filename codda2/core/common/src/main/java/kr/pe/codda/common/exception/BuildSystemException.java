@@ -17,6 +17,12 @@
 
 package kr.pe.codda.common.exception;
 
+/**
+ * 프로젝트를 신규로 만들거나 관련 내용 수정할때 에러 발생시 던지는 예외
+ *  
+ * @author Won Jonghoon
+ *
+ */
 @SuppressWarnings("serial")
 public class BuildSystemException extends Exception {
 

@@ -21,11 +21,21 @@ import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
 import java.nio.charset.CharsetEncoder;
 
+/**
+ * 문자셋, 문자셋 디코더 그리고 문자셋 인코더로 구성된 묶음 클래스  
+ * 
+ * @author Won Jonghoon
+ *
+ */
 public class StreamCharsetFamily {
 	private final Charset streamCharset;
 	private final CharsetDecoder streamCharsetDecoder;
 	private final CharsetEncoder streamCharsetEncoder;
 	
+	/**
+	 * 생성자
+	 * @param streamCharset 문자셋
+	 */
 	public StreamCharsetFamily(Charset streamCharset) {
 		if (null == streamCharset) {
 			throw new IllegalArgumentException("the parameter streamCharset is null");
@@ -37,14 +47,23 @@ public class StreamCharsetFamily {
 		streamCharsetEncoder = CharsetUtil.createCharsetEncoder(streamCharset);
 	}
 	
+	/**
+	 * @return 문자셋
+	 */
 	public Charset getCharset() {
 		return streamCharset;
 	}
 	
+	/**
+	 * @return 문자셋 디코더
+	 */
 	public CharsetDecoder getCharsetDecoder() {
 		return streamCharsetDecoder;
 	}
 	
+	/**
+	 * @return 문자셋 인코더
+	 */
 	public CharsetEncoder getCharsetEncoder() {
 		return streamCharsetEncoder;
 	}

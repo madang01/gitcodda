@@ -20,22 +20,27 @@ import kr.pe.codda.common.config.AbstractSetTypeNativeValueConverter;
 import kr.pe.codda.common.util.CommonStaticUtil;
 
 /**
- * jdbc connection url 항목 유효성 검사기  
+ * 빈 문자열 포함하여 앞뒤로 공백 문자가 없도록 허락한 문자열만 허용하는 문자열 변환기  
  * @author "Won Jonghoon"
  *
  */
 public class SetTypeConverterReturningString extends AbstractSetTypeNativeValueConverter<String> {
 	
-	public SetTypeConverterReturningString(String ... parmValueSet) throws IllegalArgumentException {
+	/**
+	 * 생성자
+	 * @param allowedValueSet
+	 * @throws IllegalArgumentException
+	 */
+	public SetTypeConverterReturningString(String ... allowedValueSet) throws IllegalArgumentException {
 		super(String.class);
 		
-		if (parmValueSet.length == 0) {
+		if (allowedValueSet.length == 0) {
 			String errorMessage = "the parameter parmValueSet is empty";
 			throw new IllegalArgumentException(errorMessage);
 		}
 		
-		for (int i=0; i < parmValueSet.length; i++) {
-			String itemValue = parmValueSet[i];
+		for (int i=0; i < allowedValueSet.length; i++) {
+			String itemValue = allowedValueSet[i];
 			if (CommonStaticUtil.hasLeadingOrTailingWhiteSpace(itemValue)) {
 				String errorMessage = new StringBuilder()
 				.append("the parameter parmValueSet[")

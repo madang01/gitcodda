@@ -16,6 +16,11 @@
  *******************************************************************************/
 package kr.pe.codda.common.type;
 
+/**
+ * 연결 종류, {ASYN, SYNC} 로 구성.
+ * @author Won Jonghoon
+ *
+ */
 public enum ConnectionType {
 	ASYN, SYNC;
 }

@@ -21,7 +21,15 @@ import java.io.File;
 
 import kr.pe.codda.common.config.AbstractNativeValueConverter;
 
-public class GeneralConverterReturningPath extends AbstractNativeValueConverter<File> {	
+/**
+ * 시스템에 실제하고 읽기 가능한 경로 변환기
+ * @author Won Jonghoon
+ *
+ */
+public class GeneralConverterReturningPath extends AbstractNativeValueConverter<File> {
+	/**
+	 * 생성자
+	 */
 	public GeneralConverterReturningPath() {
 		super(File.class);
 	}

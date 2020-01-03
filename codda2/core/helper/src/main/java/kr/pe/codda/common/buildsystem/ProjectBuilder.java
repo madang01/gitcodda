@@ -20,8 +20,8 @@ import kr.pe.codda.common.buildsystem.pathsupporter.WebClientBuildSystemPathSupp
 import kr.pe.codda.common.buildsystem.pathsupporter.WebRootBuildSystemPathSupporter;
 import kr.pe.codda.common.config.CoddaConfiguration;
 import kr.pe.codda.common.config.itemidinfo.ItemIDInfoManger;
-import kr.pe.codda.common.config.subset.AllDBCPPartConfiguration;
-import kr.pe.codda.common.config.subset.AllSubProjectPartConfiguration;
+import kr.pe.codda.common.config.subset.DBCPPartConfigurationManager;
+import kr.pe.codda.common.config.subset.SubProjectPartConfigurationManager;
 import kr.pe.codda.common.etc.CommonStaticFinalVars;
 import kr.pe.codda.common.exception.BuildSystemException;
 import kr.pe.codda.common.exception.CoddaConfigurationException;
@@ -263,8 +263,8 @@ public class ProjectBuilder {
 			throw new BuildSystemException(e.getMessage());
 		}
 		
-		AllDBCPPartConfiguration allDBCPPartConfiguration = configuration.getAllDBCPPartConfiguration();
-		AllSubProjectPartConfiguration allSubProjectPartConfiguration = configuration.getAllSubProjectPartConfiguration();
+		DBCPPartConfigurationManager allDBCPPartConfiguration = configuration.getAllDBCPPartConfiguration();
+		SubProjectPartConfigurationManager allSubProjectPartConfiguration = configuration.getAllSubProjectPartConfiguration();
 		
 		dbcpNameList = allDBCPPartConfiguration.getDBCPNameList();
 		subProjectNameList = allSubProjectPartConfiguration.getSubProjectNamelist();	
@@ -1459,8 +1459,7 @@ public class ProjectBuilder {
 
 		ItemIDInfoManger mainProjectItemIDInfo = ItemIDInfoManger.getInstance();
 
-		SequencedProperties newConfigSequencedProperties = mainProjectItemIDInfo
-				.getNewConfigSequencedProperties(installedPathString, mainProjectName);
+		SequencedProperties newConfigSequencedProperties = mainProjectItemIDInfo.createNewConfigSequencedProperties(installedPathString, mainProjectName);
 		
 		try {
 			SequencedPropertiesUtil.createNewSequencedPropertiesFile(newConfigSequencedProperties,

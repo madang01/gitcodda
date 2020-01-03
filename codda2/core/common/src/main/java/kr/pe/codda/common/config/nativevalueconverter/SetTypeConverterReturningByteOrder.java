@@ -21,8 +21,17 @@ import java.nio.ByteOrder;
 
 import kr.pe.codda.common.config.AbstractSetTypeNativeValueConverter;
 
+/**
+ * 빅엔디안 혹은 리틀 엔디안 이라는 지정한 값 집합을 갖는 ByteOrder 타입 값 변환기 
+ * @author Won Jonghoon
+ *
+ */
 public class SetTypeConverterReturningByteOrder extends
 		AbstractSetTypeNativeValueConverter<ByteOrder> {
+	
+	/**
+	 * 생성자
+	 */
 	public SetTypeConverterReturningByteOrder() {
 		super(ByteOrder.class);
 	}

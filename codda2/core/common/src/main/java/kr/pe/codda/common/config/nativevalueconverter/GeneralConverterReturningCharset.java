@@ -22,12 +22,15 @@ import java.nio.charset.Charset;
 import kr.pe.codda.common.config.AbstractNativeValueConverter;
 
 /**
- * 
+ * 문자셋 값 변환기
  * @author Won Jonghoon
  *
  */
 public class GeneralConverterReturningCharset extends AbstractNativeValueConverter<Charset> {
 
+	/**
+	 * 생성자
+	 */
 	public GeneralConverterReturningCharset() {
 		super(Charset.class);
 	}

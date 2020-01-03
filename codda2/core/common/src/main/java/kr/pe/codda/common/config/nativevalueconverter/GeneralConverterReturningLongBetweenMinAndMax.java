@@ -20,7 +20,17 @@ package kr.pe.codda.common.config.nativevalueconverter;
 import kr.pe.codda.common.config.AbstractMinMaxConverter;
 import kr.pe.codda.common.util.ComparableComparator;
 
+/**
+ * 최소 최대 값을 갖는 long 타입 값 변환기
+ * @author Won Jonghoon
+ *
+ */
 public class GeneralConverterReturningLongBetweenMinAndMax extends AbstractMinMaxConverter<Long> {	
+	/**
+	 * 생성자
+	 * @param min 최소
+	 * @param max 최대
+	 */
 	public GeneralConverterReturningLongBetweenMinAndMax(Long min, Long max) {
 		super(min, max, ComparableComparator.<Long>comparableComparator(), Long.class);		
 	}

@@ -21,24 +21,39 @@ import java.util.Set;
 
 
 
-
-
-
+/**
+ * 지정한 값의 집합을 갖는 제너릭 타입의 값 변환기 추상화 클래스
+ * @author Won Jonghoon
+ *
+ * @param <E> 제너릭 타입
+ */
 public abstract class AbstractSetTypeNativeValueConverter<E> extends AbstractNativeValueConverter<E> {
 	protected Set<String> itemValueSet = new HashSet<String>();
-	// protected HashMap<String, E> nativeValueHash = new HashMap<String, E>();
-	
+
+
+	/**
+	 * 생성자
+	 * @param genericTypeClass 제너릭 타입 클래스
+	 */
 	public AbstractSetTypeNativeValueConverter(Class<E> genericTypeClass) {
 		super(genericTypeClass);
 		initItemValueSet();
 	}	
 	
+	/**
+	 * 지정한 값의 집합 초기화 추상화 메소드
+	 */
 	abstract protected void initItemValueSet();
 	
+	/**
+	 * @return 집합 이름 추상화 메소드
+	 */
 	abstract public String getSetName();
 	
 	
-	
+	/**
+	 * @return 지정한 값의 집합
+	 */
 	public Set<String> getItemValueSet() {
 		return itemValueSet;
 	}
@@ -47,6 +62,9 @@ public abstract class AbstractSetTypeNativeValueConverter<E> extends AbstractNat
 		return nativeValueHash;
 	}*/
 
+	/**
+	 * @return 지정한 값의 집합 표현 문자열
+	 */
 	public String getStringFromSet() {		
 		return itemValueSet.toString();
 	}

@@ -21,7 +21,7 @@ import kr.pe.codda.common.config.AbstractNativeValueConverter;
 import kr.pe.codda.common.util.CommonStaticUtil;
 
 /**
- * jdbc connection url 항목 유효성 검사기  
+ * 빈 문자열이 아니고 앞뒤로 공백 문자도 없는 문자열만 허용하는 문자열 변환기  
  * @author "Won Jonghoon"
  *
  */

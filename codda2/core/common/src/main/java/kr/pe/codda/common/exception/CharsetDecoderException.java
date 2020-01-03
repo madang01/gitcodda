@@ -17,6 +17,12 @@
 
 package kr.pe.codda.common.exception;
 
+/**
+ * 데이터를 문자셋에 맞는 문자열로 변환할때 에러 발생시 던지는 예외
+ * 
+ * @author Won Jonghoon
+ *
+ */
 @SuppressWarnings("serial")
 public class CharsetDecoderException extends Exception {
 	

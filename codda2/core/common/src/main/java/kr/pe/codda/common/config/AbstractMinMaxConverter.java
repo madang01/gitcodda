@@ -19,12 +19,25 @@ package kr.pe.codda.common.config;
 
 import java.util.Comparator;
 
+/**
+ * 최소 최대 값 변환기 추상화 클래스
+ * @author Won Jonghoon
+ *
+ * @param <T>
+ */
 public abstract class AbstractMinMaxConverter<T extends Number> extends AbstractNativeValueConverter<T> {
 
 	protected T min;
 	protected T max;
 	private Comparator<T> typeComparator = null;
 
+	/**
+	 * 생성자
+	 * @param min 최소
+	 * @param max 최대
+	 * @param typeComparator 제너릭 타입 값 비교자
+	 * @param genericType 제터릭 타입
+	 */
 	public AbstractMinMaxConverter(T min, T max, Comparator<T> typeComparator, Class<T> genericType) {
 		super(genericType);
 
@@ -58,22 +71,29 @@ public abstract class AbstractMinMaxConverter<T extends Number> extends Abstract
 	 * {@link #valueOf(String)} 에서 호출되는 내부용 메소드로 {@link #valueOf(String)} 에서 최소 최대값
 	 * 제약이라는 공통 부분을 제외한 지정한 타입으로 입력받은 문자열 타입의 항목의 값을 변환하는 기능을 담당한다.
 	 * 
-	 * @param itemValue
-	 *            항목의 값
+	 * @param itemValue 항목의 값
 	 * @return 지정한 타입으로 변환된 입력받은 문자열 타입의 항목의 값
-	 * @throws IllegalArgumentException
-	 *             항목의 값이 잘못되었을 경우 던지는 예외
+	 * @throws IllegalArgumentException 항목의 값이 잘못되었을 경우 던지는 예외
 	 */
 	abstract protected T doValueOf(String itemValue) throws IllegalArgumentException;
 
+	/**
+	 * @return 최소 값
+	 */
 	public T getMin() {
 		return min;
 	}
 
+	/**
+	 * @return 최대 값
+	 */
 	public T getMax() {
 		return max;
 	}
 
+	/**
+	 * @return 제너릭 타입 값 비교자
+	 */
 	public Comparator<T> getTypeComparator() {
 		return typeComparator;
 	}

@@ -21,7 +21,7 @@ import kr.pe.codda.common.config.AbstractMinMaxConverter;
 import kr.pe.codda.common.util.ComparableComparator;
 
 /**
- * 최소 값에서 부터 최대 값까지의 Byte 타입의 값만 허용하는 자바 내부의 값 변환기
+ * 최소 최대 값을 갖는 Byte 타입 값 변환기
  * @author Won Jonghoon
  *
  */

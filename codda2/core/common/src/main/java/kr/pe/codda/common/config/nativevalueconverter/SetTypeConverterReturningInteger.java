@@ -20,22 +20,29 @@ package kr.pe.codda.common.config.nativevalueconverter;
 import kr.pe.codda.common.config.AbstractSetTypeNativeValueConverter;
 
 /**
- * jdbc connection url 항목 유효성 검사기  
+ * 지정한 값들의 집합에 속한 값들만 허용하는 Integer 타입 값 변환기
+ *   
  * @author "Won Jonghoon"
  *
  */
 public class SetTypeConverterReturningInteger extends AbstractSetTypeNativeValueConverter<Integer> {
 	
-	public SetTypeConverterReturningInteger(String ... parmValueSet) throws IllegalArgumentException {
+	/**
+	 * 생성자
+	 * @param allowedIntegerValueSet 허용을 원하는 정수값 가변 변수
+	 * 
+	 * @throws IllegalArgumentException 허용을 원하는 정수값 가변 변수 값을 지정 안했을 경우 혹은 허용을 원하는 정수값 가변 변수에 정수가 아닌 값이 포함된 경우 던지는 예외
+	 */
+	public SetTypeConverterReturningInteger(String ... allowedIntegerValueSet) throws IllegalArgumentException {
 		super(Integer.class);
 		
-		if (parmValueSet.length == 0) {
+		if (allowedIntegerValueSet.length == 0) {
 			String errorMessage = "parameter parmValueSet is empty";
 			throw new IllegalArgumentException(errorMessage);
 		}
 		
 		
-		for (String value : parmValueSet) {			
+		for (String value : allowedIntegerValueSet) {			
 			try {
 				Integer.parseInt(value);
 			} catch(NumberFormatException e) {

@@ -19,6 +19,12 @@ package kr.pe.codda.common.config.nativevalueconverter;
 
 import kr.pe.codda.common.config.AbstractSetTypeNativeValueConverter;
 
+/**
+ * 참과 거짓 이라는 지정한 값 집합을 갖는 boolean 타입 값 변환기 
+ * 
+ * @author Won Jonghoon
+ *
+ */
 public class SetTypeConverterReturningBoolean extends
 		AbstractSetTypeNativeValueConverter<Boolean> {
 	public SetTypeConverterReturningBoolean() {

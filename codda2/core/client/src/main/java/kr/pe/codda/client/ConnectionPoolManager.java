@@ -23,7 +23,7 @@ import java.util.logging.Logger;
 
 import kr.pe.codda.common.config.CoddaConfiguration;
 import kr.pe.codda.common.config.CoddaConfigurationManager;
-import kr.pe.codda.common.config.subset.AllSubProjectPartConfiguration;
+import kr.pe.codda.common.config.subset.SubProjectPartConfigurationManager;
 import kr.pe.codda.common.config.subset.ProjectPartConfiguration;
 import kr.pe.codda.common.etc.CommonStaticFinalVars;
 import kr.pe.codda.common.exception.NoMoreDataPacketBufferException;
@@ -69,8 +69,8 @@ public final class ConnectionPoolManager {
 				.getRunningProjectConfiguration();
 		ProjectPartConfiguration mainProjectPartConfiguration = runningProjectConfiguration
 				.getMainProjectPartConfiguration();
-		AllSubProjectPartConfiguration allSubProjectPart = runningProjectConfiguration
-				.getAllSubProjectPartConfiguration();
+		SubProjectPartConfigurationManager allSubProjectPart = runningProjectConfiguration
+				.getSubProjectPartConfigurationManager();
 
 		mainProjectName = mainProjectPartConfiguration.getProjectName();
 

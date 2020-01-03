@@ -23,7 +23,7 @@ import kr.pe.codda.common.config.itemidinfo.ItemIDInfo;
 import kr.pe.codda.common.etc.CommonStaticFinalVars;
 
 /**
- * 
+ * 의존성 검사기 추상화 클래스
  * @author Won Jonghoon
  * 
  */
@@ -35,10 +35,10 @@ public abstract class AbstractDependencyValidator {
 	/**
 	 * 생성자
 	 * 
-	 * @param dependentSourceItemIDInfo
-	 *            "의존 주체 항목 식별자 정보"
-	 * @param dependentTargetItemIDInfo
-	 * @throws IllegalArgumentException
+	 * @param dependentSourceItemIDInfo '의존 주체 항목 식별자 정보'
+	 * @param dependentTargetItemIDInfo '의존 대상 항목 식별자 정보'
+	 * @throws IllegalArgumentException 파라미터 값이 null 인 경우 던지는 예외 
+	 * 혹은 '의존 대상 항목 식별자 정보' 의 설정 파트가 공통이 아닌 경우 '의존 주체 항목 식별자 정보'와 '의존 대상 항목 식별자 정보' 의 설정 파트가 다른 경우 던지는 예외
 	 */
 	public AbstractDependencyValidator(ItemIDInfo<?> dependentSourceItemIDInfo, ItemIDInfo<?> dependentTargetItemIDInfo)
 			throws IllegalArgumentException {
@@ -61,8 +61,8 @@ public abstract class AbstractDependencyValidator {
 		ItemIDInfo.ConfigurationPart configurationPartOfDependentTargetItemID = dependentTargetItemIDInfo
 				.getConfigurationPart();
 
-		if (!configurationPartOfDependentTargetItemID.equals(ItemIDInfo.ConfigurationPart.COMMON)) {
-			if (!configurationPartOfDependentTargetItemID.equals(configurationPartOfDependentSourceItemID)) {
+		if (! configurationPartOfDependentTargetItemID.equals(ItemIDInfo.ConfigurationPart.COMMON)) {
+			if (! configurationPartOfDependentTargetItemID.equals(configurationPartOfDependentSourceItemID)) {
 				String errorMessage = new StringBuilder("the dependent target item id[")
 						.append(dependentTargetItemIDInfo.getItemID()).append("]'s configuration part[")
 						.append(configurationPartOfDependentTargetItemID).append("] must be one of common part")

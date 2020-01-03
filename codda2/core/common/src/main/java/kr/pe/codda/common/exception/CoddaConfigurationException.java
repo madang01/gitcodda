@@ -18,6 +18,12 @@
 package kr.pe.codda.common.exception;
 
 
+/**
+ * 설정 파일 관련 처리중 에러 발생시 던지는 예외
+ * 
+ * @author Won Jonghoon
+ *
+ */
 @SuppressWarnings("serial")
 public class CoddaConfigurationException extends Exception {
 	public CoddaConfigurationException(String errorMessage) {

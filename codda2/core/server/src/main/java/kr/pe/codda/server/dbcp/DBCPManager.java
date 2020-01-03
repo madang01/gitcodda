@@ -34,7 +34,7 @@ import org.apache.commons.dbcp2.BasicDataSourceFactory;
 
 import kr.pe.codda.common.config.CoddaConfiguration;
 import kr.pe.codda.common.config.CoddaConfigurationManager;
-import kr.pe.codda.common.config.subset.AllDBCPPartConfiguration;
+import kr.pe.codda.common.config.subset.DBCPPartConfigurationManager;
 import kr.pe.codda.common.config.subset.DBCPParConfiguration;
 import kr.pe.codda.common.etc.CommonStaticFinalVars;
 import kr.pe.codda.common.exception.DBCPDataSourceNotFoundException;
@@ -73,7 +73,7 @@ public final class DBCPManager {
 		CoddaConfiguration runningProjectConfiguration = CoddaConfigurationManager.getInstance()
 				.getRunningProjectConfiguration();
 
-		AllDBCPPartConfiguration allDBCPPart = runningProjectConfiguration.getAllDBCPPartConfiguration();
+		DBCPPartConfigurationManager allDBCPPart = runningProjectConfiguration.getDBCPPartConfigurationManager();
 
 		dbcpNameList = allDBCPPart.getDBCPNameList();
 

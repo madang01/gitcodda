@@ -28,7 +28,7 @@ import kr.pe.codda.common.exception.CoddaConfigurationException;
 import kr.pe.codda.common.util.CommonStaticUtil;
 
 /**
- * 환경 변수에 대응하는 값에 접근하기 위한 클래스
+ * 코다 설정 관리자
  * 
  * @author Won Jonghoon
  * 
@@ -178,6 +178,9 @@ public final class CoddaConfigurationManager {
 		}
 	}
 
+	/**
+	 * @return 기동중인 코다 설정
+	 */
 	public CoddaConfiguration getRunningProjectConfiguration() {
 		return runningProjectConfiguration;
 	}

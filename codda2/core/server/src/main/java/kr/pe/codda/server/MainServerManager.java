@@ -25,7 +25,7 @@ import kr.pe.codda.common.buildsystem.pathsupporter.ProjectBuildSytemPathSupport
 import kr.pe.codda.common.buildsystem.pathsupporter.ServerBuildSytemPathSupporter;
 import kr.pe.codda.common.config.CoddaConfiguration;
 import kr.pe.codda.common.config.CoddaConfigurationManager;
-import kr.pe.codda.common.config.subset.AllSubProjectPartConfiguration;
+import kr.pe.codda.common.config.subset.SubProjectPartConfigurationManager;
 import kr.pe.codda.common.config.subset.ProjectPartConfiguration;
 import kr.pe.codda.common.etc.CommonStaticFinalVars;
 import kr.pe.codda.common.exception.CoddaConfigurationException;
@@ -72,7 +72,7 @@ public final class MainServerManager {
 					CoddaConfigurationManager.getInstance()
 					.getRunningProjectConfiguration();
 			ProjectPartConfiguration mainProjectPartConfiguration = runningProjectConfiguration.getMainProjectPartConfiguration();
-			AllSubProjectPartConfiguration allSubProjectPartConfiguration = runningProjectConfiguration.getAllSubProjectPartConfiguration();
+			SubProjectPartConfigurationManager allSubProjectPartConfiguration = runningProjectConfiguration.getSubProjectPartConfigurationManager();
 			
 			installedPathString = runningProjectConfiguration.getInstalledPathString();
 			mainProjectName = mainProjectPartConfiguration.getProjectName();

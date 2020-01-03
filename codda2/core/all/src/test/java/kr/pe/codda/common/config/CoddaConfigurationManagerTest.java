@@ -24,8 +24,8 @@ import java.util.logging.Logger;
 
 import org.junit.Ignore;
 
-import kr.pe.codda.common.config.subset.AllDBCPPartConfiguration;
-import kr.pe.codda.common.config.subset.AllSubProjectPartConfiguration;
+import kr.pe.codda.common.config.subset.DBCPPartConfigurationManager;
+import kr.pe.codda.common.config.subset.SubProjectPartConfigurationManager;
 import kr.pe.codda.common.config.subset.CommonPartConfiguration;
 import kr.pe.codda.common.config.subset.DBCPParConfiguration;
 import kr.pe.codda.common.config.subset.ProjectPartConfiguration;
@@ -41,10 +41,10 @@ public class CoddaConfigurationManagerTest {
 				CoddaConfigurationManager.getInstance()
 				
 				.getRunningProjectConfiguration();
-		AllDBCPPartConfiguration allDBCPPart = runningProjectConfiguration.getAllDBCPPartConfiguration();
+		DBCPPartConfigurationManager allDBCPPart = runningProjectConfiguration.getDBCPPartConfigurationManager();
 		CommonPartConfiguration commonPart = runningProjectConfiguration.getCommonPartConfiguration();
 		ProjectPartConfiguration mainProjectPart = runningProjectConfiguration.getMainProjectPartConfiguration();
-		AllSubProjectPartConfiguration allSubProjectPart = runningProjectConfiguration.getAllSubProjectPartConfiguration();
+		SubProjectPartConfigurationManager allSubProjectPart = runningProjectConfiguration.getSubProjectPartConfigurationManager();
 		
 		
 		List<String> dbcpNameList = allDBCPPart.getDBCPNameList();
