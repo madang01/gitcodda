@@ -10,7 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import kr.pe.codda.common.exception.DynamicClassCallException;
-import kr.pe.codda.common.exception.ServerServiceException;
+import kr.pe.codda.common.exception.ServerTaskException;
 import kr.pe.codda.common.exception.SymmetricException;
 import kr.pe.codda.common.message.AbstractMessage;
 import kr.pe.codda.common.sessionkey.ServerSessionkeyIF;
@@ -54,7 +54,7 @@ public class MemberWithdrawReqServerTask extends AbstractServerTask {
 		try {
 			AbstractMessage outputMessage = doWork(ServerCommonStaticFinalVars.DEFAULT_DBCP_NAME, (MemberWithdrawReq)inputMessage);
 			toLetterCarrier.addSyncOutputMessage(outputMessage);
-		} catch(ServerServiceException e) {
+		} catch(ServerTaskException e) {
 			String errorMessage = e.getMessage();
 			log.warn("errmsg=={}, inObj={}", errorMessage, inputMessage.toString());
 			
@@ -85,17 +85,17 @@ public class MemberWithdrawReqServerTask extends AbstractServerTask {
 		
 		if (null == pwdCipherBase64) {
 			String errorMessage = "비밀번호를 입력해 주세요";
-			throw new ServerServiceException(errorMessage);
+			throw new ServerTaskException(errorMessage);
 		}
 		
 		if (null == sessionKeyBase64) {
 			String errorMessage = "세션키를 입력해 주세요";
-			throw new ServerServiceException(errorMessage);
+			throw new ServerTaskException(errorMessage);
 		}
 
 		if (null == ivBase64) {
 			String errorMessage = "세션키 소금값을 입력해 주세요";
-			throw new ServerServiceException(errorMessage);
+			throw new ServerTaskException(errorMessage);
 		}
 		
 		byte[] pwdCipherBytes = null;
@@ -106,21 +106,21 @@ public class MemberWithdrawReqServerTask extends AbstractServerTask {
 			pwdCipherBytes = CommonStaticUtil.Base64Decoder.decode(pwdCipherBase64);
 		} catch (Exception e) {
 			String errorMessage = "비밀번호 암호문은 베이스64로 인코딩되지 않았습니다";
-			throw new ServerServiceException(errorMessage);
+			throw new ServerTaskException(errorMessage);
 		}
 		
 		try {
 			sessionKeyBytes = CommonStaticUtil.Base64Decoder.decode(sessionKeyBase64);
 		} catch (Exception e) {
 			String errorMessage = "세션키는 베이스64로 인코딩되지 않았습니다";
-			throw new ServerServiceException(errorMessage);
+			throw new ServerTaskException(errorMessage);
 		}
 
 		try {
 			ivBytes = CommonStaticUtil.Base64Decoder.decode(ivBase64);
 		} catch (Exception e) {
 			String errorMessage = "세션키 소금값은 베이스64로 인코딩되지 않았습니다";
-			throw new ServerServiceException(errorMessage);
+			throw new ServerTaskException(errorMessage);
 		}
 		
 		ServerSymmetricKeyIF serverSymmetricKey = null;
@@ -135,7 +135,7 @@ public class MemberWithdrawReqServerTask extends AbstractServerTask {
 			log.warn(debugMessage, e);
 
 			String errorMessage = "대칭키 생성 실패로 멤버 등록이 실패하였습니다. 상세한 이유는 서버 로그를 확인해 주세요.";
-			throw new ServerServiceException(errorMessage);
+			throw new ServerTaskException(errorMessage);
 		} catch (SymmetricException e) {
 			String debugMessage = new StringBuilder().append("알수 없는 이유로 대칭키 생성 실패, ")
 					.append(memberWithdrawReq.toString()).toString();
@@ -143,7 +143,7 @@ public class MemberWithdrawReqServerTask extends AbstractServerTask {
 			log.warn(debugMessage, e);
 
 			String errorMessage = "대칭키 생성 실패로 멤버 등록이 실패하였습니다. 상세한 이유는 서버 로그를 확인해 주세요.";
-			throw new ServerServiceException(errorMessage);
+			throw new ServerTaskException(errorMessage);
 		}
 		
 		
@@ -157,7 +157,7 @@ public class MemberWithdrawReqServerTask extends AbstractServerTask {
 			log.warn(debugMessage, e);
 
 			String errorMessage = "비밀번호 복호화 실패로 멤버 등록이 실패하였습니다. 상세한 이유는 서버 로그를 확인해 주세요.";
-			throw new ServerServiceException(errorMessage);
+			throw new ServerTaskException(errorMessage);
 		} catch (SymmetricException e) {
 			String debugMessage = new StringBuilder().append("알 수 없는 에러로 인한 비밀번호 복호화 실패, ")
 					.append(memberWithdrawReq.toString()).toString();
@@ -165,7 +165,7 @@ public class MemberWithdrawReqServerTask extends AbstractServerTask {
 			log.warn(debugMessage, e);
 
 			String errorMessage = "비밀번호 복호화 실패로 멤버 등록이 실패하였습니다. 상세한 이유는 서버 로그를 확인해 주세요.";
-			throw new ServerServiceException(errorMessage);
+			throw new ServerTaskException(errorMessage);
 		}
 		
 		withdrawMember(dbcpName, log, memberWithdrawReq.getRequestedUserID(), passwordBytes, 
@@ -193,7 +193,7 @@ public class MemberWithdrawReqServerTask extends AbstractServerTask {
 			ValueChecker.checkValidIP(ip);
 		} catch(IllegalArgumentException e) {			
 			String errorMessage = e.getMessage();
-			throw new ServerServiceException(errorMessage);
+			throw new ServerTaskException(errorMessage);
 		}
 		
 		ServerDBUtil.execute(dbcpName, (conn, create) -> {
@@ -219,7 +219,7 @@ public class MemberWithdrawReqServerTask extends AbstractServerTask {
 				String errorMessage = new StringBuilder("회원 탈퇴 요청자[")
 						.append(requestedUserID)
 						.append("]가 회원 테이블에 존재하지 않습니다").toString();				
-				throw new ServerServiceException(errorMessage);
+				throw new ServerTaskException(errorMessage);
 			}
 			
 			byte memberRole = memberRecordOfRequestedUserID.getValue(SB_MEMBER_TB.ROLE);
@@ -244,7 +244,7 @@ public class MemberWithdrawReqServerTask extends AbstractServerTask {
 						.append("]의 멤버 역활 유형[")
 						.append(memberRole)
 						.append("]이 잘못되어있습니다").toString();
-				throw new ServerServiceException(errorMessage);
+				throw new ServerTaskException(errorMessage);
 			}	
 			
 			if (! MemberRoleType.MEMBER.equals(memberRoleType)) {
@@ -258,7 +258,7 @@ public class MemberWithdrawReqServerTask extends AbstractServerTask {
 						.append( "회원 탈퇴 요청자[역활:")
 						.append(memberRoleType.getName())
 						.append("]가 일반 회원이 아닙니다").toString();
-				throw new ServerServiceException(errorMessage);
+				throw new ServerTaskException(errorMessage);
 			}	
 			
 			
@@ -277,7 +277,7 @@ public class MemberWithdrawReqServerTask extends AbstractServerTask {
 						.append("]의 상태[")
 						.append(memberState)
 						.append("]가 잘못 되어 있습니다").toString();
-				throw new ServerServiceException(errorMessage);
+				throw new ServerTaskException(errorMessage);
 			}
 			
 			if (! MemberStateType.OK.equals(memberStateTypeOfRequestedUserID)) {
@@ -292,7 +292,7 @@ public class MemberWithdrawReqServerTask extends AbstractServerTask {
 						.append("]의 상태[")
 						.append(memberStateTypeOfRequestedUserID.getName())
 						.append("]가 정상이 아닙니다").toString();				
-				throw new ServerServiceException(errorMessage);
+				throw new ServerTaskException(errorMessage);
 			}
 			
 			
@@ -306,7 +306,7 @@ public class MemberWithdrawReqServerTask extends AbstractServerTask {
 				String errorMessage = new StringBuilder("최대 비밀번호 실패 횟수[")
 						.append(ServerCommonStaticFinalVars.MAX_COUNT_OF_PASSWORD_FAILURES)
 						.append("] 이상으로 비밀번호가 틀려 탈퇴하실 수 없습니다, 먼저 비밀번호 찾기 혹은 관리자를 통해 비밀번호 최대 실패 횟수를 초기화 하시기 바랍니다").toString();
-				throw new ServerServiceException(errorMessage);
+				throw new ServerTaskException(errorMessage);
 			}
 			
 			byte[] pwdSaltBytes = CommonStaticUtil.Base64Decoder.decode(pwdSaltBase64);			
@@ -327,7 +327,7 @@ public class MemberWithdrawReqServerTask extends AbstractServerTask {
 					}
 					
 					String errorMessage = "비밀 번호 실패 횟수 갱신이 실패하였습니다";
-					throw new ServerServiceException(errorMessage);
+					throw new ServerTaskException(errorMessage);
 				}
 				
 				conn.commit();
@@ -338,7 +338,7 @@ public class MemberWithdrawReqServerTask extends AbstractServerTask {
 				conn.commit();
 				
 				String errorMessage = "비밀 번호가 틀렸습니다";
-				throw new ServerServiceException(errorMessage);
+				throw new ServerTaskException(errorMessage);
 			}
 			
 			Timestamp lastStateModifiedDate = new java.sql.Timestamp(System.currentTimeMillis());

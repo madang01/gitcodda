@@ -10,7 +10,7 @@ import org.junit.Test;
 
 import junitlib.AbstractBoardTest;
 import kr.pe.codda.common.exception.DynamicClassCallException;
-import kr.pe.codda.common.exception.ServerServiceException;
+import kr.pe.codda.common.exception.ServerTaskException;
 import kr.pe.codda.impl.message.BoardBlockReq.BoardBlockReq;
 import kr.pe.codda.impl.message.BoardDeleteReq.BoardDeleteReq;
 import kr.pe.codda.impl.message.BoardDetailReq.BoardDetailReq;
@@ -48,8 +48,8 @@ public class BoardUnBlockReqServerTaskTest extends AbstractBoardTest {
 		try {
 			boardUnBlockReqServerTask.doWork(TEST_DBCP_NAME, boardUnBlockReq);
 	
-			fail("no ServerServiceException");
-		} catch (ServerServiceException e) {
+			fail("no ServerTaskException");
+		} catch (ServerTaskException e) {
 			String errorMessage = e.getMessage();
 	
 			String expectedErrorMessage = "게시글 차단 해제 서비스는 관리자 전용 서비스입니다";
@@ -83,8 +83,8 @@ public class BoardUnBlockReqServerTaskTest extends AbstractBoardTest {
 		try {
 			boardUnBlockReqServerTask.doWork(TEST_DBCP_NAME, boardUnBlockReq);
 	
-			fail("no ServerServiceException");
-		} catch (ServerServiceException e) {
+			fail("no ServerTaskException");
+		} catch (ServerTaskException e) {
 			String errorMessage = e.getMessage();
 	
 			String expectedErrorMessage = "게시글 차단 해제 서비스는 관리자 전용 서비스입니다";
@@ -117,8 +117,8 @@ public class BoardUnBlockReqServerTaskTest extends AbstractBoardTest {
 		try {
 			boardUnBlockReqServerTask.doWork(TEST_DBCP_NAME, boardUnBlockReq);
 
-			fail("no ServerServiceException");
-		} catch (ServerServiceException e) {
+			fail("no ServerTaskException");
+		} catch (ServerTaskException e) {
 			String errorMessage = e.getMessage();
 
 			String expectedErrorMessage = new StringBuilder("입력 받은 게시판 식별자[").append(badBoardID)
@@ -153,8 +153,8 @@ public class BoardUnBlockReqServerTaskTest extends AbstractBoardTest {
 		try {
 			boardUnBlockReqServerTask.doWork(TEST_DBCP_NAME, boardUnBlockReq);
 
-			fail("no ServerServiceException");
-		} catch (ServerServiceException e) {
+			fail("no ServerTaskException");
+		} catch (ServerTaskException e) {
 			String errorMessage = e.getMessage();
 
 			String expectedErrorMessage = new StringBuilder()
@@ -202,7 +202,7 @@ public class BoardUnBlockReqServerTaskTest extends AbstractBoardTest {
 		try {
 			boardWriteRes = boardWriteReqServerTask.doWork(TEST_DBCP_NAME,
 					boardWriteReq);
-		} catch (ServerServiceException e) {
+		} catch (ServerTaskException e) {
 			log.warn(e.getMessage(), e);
 			fail("fail to execuate doTask");
 		} catch (Exception e) {
@@ -226,8 +226,8 @@ public class BoardUnBlockReqServerTaskTest extends AbstractBoardTest {
 		try {
 			boardUnBlockReqServerTask.doWork(TEST_DBCP_NAME, boardUnBlockReq);
 
-			fail("no ServerServiceException");
-		} catch (ServerServiceException e) {
+			fail("no ServerTaskException");
+		} catch (ServerTaskException e) {
 			String errorMessage = e.getMessage();
 
 			String expectedErrorMessage = new StringBuilder().append("차단된 글[")
@@ -421,7 +421,7 @@ public class BoardUnBlockReqServerTaskTest extends AbstractBoardTest {
 			if (!messageResultRes.getIsSuccess()) {
 				fail(messageResultRes.getResultMessage());
 			}
-		} catch (ServerServiceException e) {
+		} catch (ServerTaskException e) {
 			log.warn(e.getMessage(), e);
 			fail("fail to execuate doTask");
 		} catch (Exception e) {
@@ -523,7 +523,7 @@ public class BoardUnBlockReqServerTaskTest extends AbstractBoardTest {
 			boardListRes = boardListReqServerTask.doWork(TEST_DBCP_NAME,
 					boardListReq);
 
-		} catch (ServerServiceException e) {
+		} catch (ServerTaskException e) {
 			log.warn(e.getMessage(), e);
 			fail("fail to execuate doTask");
 		} catch (Exception e) {
@@ -569,7 +569,7 @@ public class BoardUnBlockReqServerTaskTest extends AbstractBoardTest {
 			boardListRes = boardListReqServerTask.doWork(TEST_DBCP_NAME,
 					boardListReq);
 
-		} catch (ServerServiceException e) {
+		} catch (ServerTaskException e) {
 			log.warn(e.getMessage(), e);
 			fail("fail to execuate doTask");
 		} catch (Exception e) {

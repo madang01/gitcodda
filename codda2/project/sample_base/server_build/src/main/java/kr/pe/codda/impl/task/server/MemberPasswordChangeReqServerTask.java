@@ -12,7 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import kr.pe.codda.common.exception.DynamicClassCallException;
-import kr.pe.codda.common.exception.ServerServiceException;
+import kr.pe.codda.common.exception.ServerTaskException;
 import kr.pe.codda.common.exception.SymmetricException;
 import kr.pe.codda.common.message.AbstractMessage;
 import kr.pe.codda.common.sessionkey.ServerSessionkeyIF;
@@ -60,7 +60,7 @@ public class MemberPasswordChangeReqServerTask extends AbstractServerTask {
 		try {
 			AbstractMessage outputMessage = doWork(ServerCommonStaticFinalVars.DEFAULT_DBCP_NAME, (MemberPasswordChangeReq)inputMessage);
 			toLetterCarrier.addSyncOutputMessage(outputMessage);
-		} catch(ServerServiceException e) {
+		} catch(ServerTaskException e) {
 			String errorMessage = e.getMessage();
 			log.warn("errmsg=={}, inObj={}", errorMessage, inputMessage.toString());
 			
@@ -88,7 +88,7 @@ public class MemberPasswordChangeReqServerTask extends AbstractServerTask {
 			ValueChecker.checkValidIP(memberPasswordChangeReq.getIp());
 		} catch (IllegalArgumentException e) {
 			String errorMessage = e.getMessage();
-			throw new ServerServiceException(errorMessage);
+			throw new ServerTaskException(errorMessage);
 		}
 		
 		String oldPwdCipherBase64 = memberPasswordChangeReq.getOldPwdCipherBase64();
@@ -99,22 +99,22 @@ public class MemberPasswordChangeReqServerTask extends AbstractServerTask {
 		
 		if (null == oldPwdCipherBase64) {
 			String errorMessage = "변경전 비밀번호를 입력해 주세요";
-			throw new ServerServiceException(errorMessage);
+			throw new ServerTaskException(errorMessage);
 		}
 		
 		if (null == newPwdCipherBase64) {
 			String errorMessage = "변경후 비밀번호를 입력해 주세요";
-			throw new ServerServiceException(errorMessage);
+			throw new ServerTaskException(errorMessage);
 		}
 		
 		if (null == sessionKeyBase64) {
 			String errorMessage = "세션키를 입력해 주세요";
-			throw new ServerServiceException(errorMessage);
+			throw new ServerTaskException(errorMessage);
 		}
 		
 		if (null == ivBase64) {
 			String errorMessage = "세션키 소금값을 입력해 주세요";
-			throw new ServerServiceException(errorMessage);
+			throw new ServerTaskException(errorMessage);
 		}
 		
 		byte[] oldPwdCipherBytes = null;
@@ -126,27 +126,27 @@ public class MemberPasswordChangeReqServerTask extends AbstractServerTask {
 			oldPwdCipherBytes = CommonStaticUtil.Base64Decoder.decode(oldPwdCipherBase64);
 		} catch(Exception e) {
 			String errorMessage = "변경전 비밀번호 암호문은 베이스64로 인코딩되지 않았습니다";
-			throw new ServerServiceException(errorMessage);
+			throw new ServerTaskException(errorMessage);
 		}
 		
 		try {
 			newPwdCipherBytes = CommonStaticUtil.Base64Decoder.decode(newPwdCipherBase64);
 		} catch(Exception e) {
 			String errorMessage = "비밀번호 암호문은 베이스64로인코딩되지 않았습니다";
-			throw new ServerServiceException(errorMessage);
+			throw new ServerTaskException(errorMessage);
 		}
 		try {
 			sessionKeyBytes = CommonStaticUtil.Base64Decoder.decode(sessionKeyBase64);
 		} catch(Exception e) {
 			String errorMessage = "세션키는 베이스64로 인코딩되지 않았습니다";
-			throw new ServerServiceException(errorMessage);
+			throw new ServerTaskException(errorMessage);
 		}
 		
 		try {
 			ivBytes = CommonStaticUtil.Base64Decoder.decode(ivBase64);
 		} catch(Exception e) {
 			String errorMessage = "세션키 소금값은 베이스64로 인코딩되지 않았습니다";
-			throw new ServerServiceException(errorMessage);
+			throw new ServerTaskException(errorMessage);
 		}
 		
 		ServerSymmetricKeyIF serverSymmetricKey = null;
@@ -158,11 +158,11 @@ public class MemberPasswordChangeReqServerTask extends AbstractServerTask {
 		} catch (IllegalArgumentException e) {
 			String errorMessage = "서버 세션키를 얻는데 실패하였습니다";
 			log.warn(errorMessage, e);
-			throw new ServerServiceException(errorMessage);
+			throw new ServerTaskException(errorMessage);
 		} catch (SymmetricException e) {
 			String errorMessage = "서버 세션키를 얻는데 실패하였습니다";
 			log.warn(errorMessage, e);
-			throw new ServerServiceException(errorMessage);
+			throw new ServerTaskException(errorMessage);
 		}
 		
 		final byte[] oldPasswordBytes;
@@ -172,11 +172,11 @@ public class MemberPasswordChangeReqServerTask extends AbstractServerTask {
 			
 			String errorMessage = "변경전 비밀번호 복호문을 얻는데 실패하였습니다";
 			log.warn(errorMessage, e);
-			throw new ServerServiceException(errorMessage);
+			throw new ServerTaskException(errorMessage);
 		} catch (SymmetricException e) {
 			String errorMessage = "변경전 비밀번호 복호문을 얻는데 실패하였습니다";
 			log.warn(errorMessage, e);
-			throw new ServerServiceException(errorMessage);
+			throw new ServerTaskException(errorMessage);
 		}
 		
 		final byte[] newPasswordBytes;		
@@ -187,11 +187,11 @@ public class MemberPasswordChangeReqServerTask extends AbstractServerTask {
 			
 			String errorMessage = "변경후 비밀번호 복호문을 얻는데 실패하였습니다";
 			log.warn(errorMessage, e);
-			throw new ServerServiceException(errorMessage);
+			throw new ServerTaskException(errorMessage);
 		} catch (SymmetricException e) {
 			String errorMessage = "변경후 비밀번호 복호문을 얻는데 실패하였습니다";
 			log.warn(errorMessage, e);
-			throw new ServerServiceException(errorMessage);
+			throw new ServerTaskException(errorMessage);
 		}
 					
 		try {
@@ -199,7 +199,7 @@ public class MemberPasswordChangeReqServerTask extends AbstractServerTask {
 			ValueChecker.checkValidOldPwd(newPasswordBytes);
 		} catch(IllegalArgumentException e) {
 			String errorMessage = e.getMessage();
-			throw new ServerServiceException(errorMessage);
+			throw new ServerTaskException(errorMessage);
 		}
 		
 		final StringBuilder resultMessageStringBuilder = new StringBuilder();
@@ -227,7 +227,7 @@ public class MemberPasswordChangeReqServerTask extends AbstractServerTask {
 				String errorMessage = new StringBuilder("비밀번호 변경 요청자[")
 						.append(memberPasswordChangeReq.getRequestedUserID())
 						.append("]가 존재하지 않습니다").toString();
-				throw new ServerServiceException(errorMessage);
+				throw new ServerTaskException(errorMessage);
 			}
 			
 			String nickname =  memberRecord.get(SB_MEMBER_TB.NICKNAME);
@@ -255,7 +255,7 @@ public class MemberPasswordChangeReqServerTask extends AbstractServerTask {
 				
 				// log.warn(errorMessage);
 				
-				throw new ServerServiceException(errorMessage);
+				throw new ServerTaskException(errorMessage);
 			}
 			
 			if (MemberRoleType.GUEST.equals(memberRoleType)) {
@@ -267,7 +267,7 @@ public class MemberPasswordChangeReqServerTask extends AbstractServerTask {
 				
 				String errorMessage = "비밀번호 변경은 회원만 가능합니다";
 				
-				throw new ServerServiceException(errorMessage);
+				throw new ServerTaskException(errorMessage);
 			}
 			
 			MemberStateType memberStateType = null;
@@ -285,7 +285,7 @@ public class MemberPasswordChangeReqServerTask extends AbstractServerTask {
 						.append("]의 멤버 상태[")
 						.append(memberState)
 						.append("]가 잘못되었습니다").toString();
-				throw new ServerServiceException(errorMessage);
+				throw new ServerTaskException(errorMessage);
 			}
 			
 			if (! MemberStateType.OK.equals(memberStateType)) {
@@ -300,7 +300,7 @@ public class MemberPasswordChangeReqServerTask extends AbstractServerTask {
 						.append("] 상태[")
 						.append(memberStateType.getName())
 						.append("]가 정상이 아닙니다").toString();
-				throw new ServerServiceException(errorMessage);
+				throw new ServerTaskException(errorMessage);
 			}
 			
 			if (ServerCommonStaticFinalVars.MAX_COUNT_OF_PASSWORD_FAILURES <= pwdFailedCount) {
@@ -313,7 +313,7 @@ public class MemberPasswordChangeReqServerTask extends AbstractServerTask {
 				String errorMessage = new StringBuilder("최대 비밀번호 실패 횟수[")
 						.append(ServerCommonStaticFinalVars.MAX_COUNT_OF_PASSWORD_FAILURES)
 						.append("] 이상으로 비밀번호가 틀렸습니다, 관리자를 통해 비밀번호 초기화를 해 주세요").toString();
-				throw new ServerServiceException(errorMessage);
+				throw new ServerTaskException(errorMessage);
 			}
 			
 			
@@ -335,7 +335,7 @@ public class MemberPasswordChangeReqServerTask extends AbstractServerTask {
 					}
 					
 					String errorMessage = "비밀 번호 실패 횟수 갱신이 실패하였습니다";
-					throw new ServerServiceException(errorMessage);
+					throw new ServerTaskException(errorMessage);
 				}
 				
 				conn.commit();
@@ -346,7 +346,7 @@ public class MemberPasswordChangeReqServerTask extends AbstractServerTask {
 				conn.commit();
 				
 				String errorMessage = "비밀 번호가 틀렸습니다";
-				throw new ServerServiceException(errorMessage);
+				throw new ServerTaskException(errorMessage);
 			}
 			
 			Timestamp lastPwdModifiedDate = new java.sql.Timestamp(System.currentTimeMillis());

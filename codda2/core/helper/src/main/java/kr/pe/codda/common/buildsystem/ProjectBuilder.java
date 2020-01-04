@@ -34,6 +34,12 @@ import kr.pe.codda.common.util.CommonStaticUtil;
 import kr.pe.codda.common.util.SequencedProperties;
 import kr.pe.codda.common.util.SequencedPropertiesUtil;
 
+/**
+ * 프로젝트 빌더
+ * 
+ * @author Won Jonghoon
+ *
+ */
 public class ProjectBuilder {
 	private Logger log = LoggerFactory.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
 	
@@ -263,11 +269,11 @@ public class ProjectBuilder {
 			throw new BuildSystemException(e.getMessage());
 		}
 		
-		DBCPPartConfigurationManager allDBCPPartConfiguration = configuration.getAllDBCPPartConfiguration();
-		SubProjectPartConfigurationManager allSubProjectPartConfiguration = configuration.getAllSubProjectPartConfiguration();
+		DBCPPartConfigurationManager dbcpPartConfigurationManager = configuration.getDBCPPartConfigurationManager();
+		SubProjectPartConfigurationManager subProjectPartConfigurationManager = configuration.getSubProjectPartConfigurationManager();
 		
-		dbcpNameList = allDBCPPartConfiguration.getDBCPNameList();
-		subProjectNameList = allSubProjectPartConfiguration.getSubProjectNamelist();	
+		dbcpNameList = dbcpPartConfigurationManager.getDBCPNameList();
+		subProjectNameList = subProjectPartConfigurationManager.getSubProjectNamelist();	
 				
 		configurationSequencedPropties =
 		configuration.getConfigurationSequencedPropties();

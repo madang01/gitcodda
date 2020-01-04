@@ -16,7 +16,7 @@ import org.junit.Test;
 import junitlib.AbstractBoardTest;
 import kr.pe.codda.common.etc.CommonStaticFinalVars;
 import kr.pe.codda.common.exception.DynamicClassCallException;
-import kr.pe.codda.common.exception.ServerServiceException;
+import kr.pe.codda.common.exception.ServerTaskException;
 import kr.pe.codda.common.util.CommonStaticUtil;
 import kr.pe.codda.impl.message.BoardDetailReq.BoardDetailReq;
 import kr.pe.codda.impl.message.BoardDetailRes.BoardDetailRes;
@@ -71,8 +71,8 @@ public class BoardWriteReqServerTaskTest extends AbstractBoardTest {
 			boardWriteReqServerTask.doWork(TEST_DBCP_NAME,
 					boardWriteReq);
 			
-			fail("no ServerServiceException");
-		} catch (ServerServiceException e) {
+			fail("no ServerTaskException");
+		} catch (ServerTaskException e) {
 			String errorMessage = e.getMessage();
 	
 			String expectedErrorMessage = new StringBuilder("입력 받은 게시판 식별자[").append(badBoardID)
@@ -156,8 +156,8 @@ public class BoardWriteReqServerTaskTest extends AbstractBoardTest {
 			boardWriteReqServerTask.doWork(TEST_DBCP_NAME,
 					boardWriteReq);
 			
-			fail("no ServerServiceException");
-		} catch (ServerServiceException e) {
+			fail("no ServerTaskException");
+		} catch (ServerTaskException e) {
 			String errorMessage = e.getMessage();
 
 			String expectedErrorMessage = "단위테스트용 게시판[4]은 최대 갯수까지 글이 등록되어 더 이상 글을 추가 할 수 없습니다";
@@ -200,8 +200,8 @@ public class BoardWriteReqServerTaskTest extends AbstractBoardTest {
 			boardWriteReqServerTask.doWork(TEST_DBCP_NAME,
 					boardWriteReq);
 			
-			fail("no ServerServiceException");
-		} catch (ServerServiceException e) {
+			fail("no ServerTaskException");
+		} catch (ServerTaskException e) {
 			String errorMessage = e.getMessage();
 
 			String expectedErrorMessage = new StringBuilder("서비스 요청자[").append(requestedUserIDForNoMember).append("]가 회원 테이블에 존재하지 않습니다")
@@ -271,8 +271,8 @@ public class BoardWriteReqServerTaskTest extends AbstractBoardTest {
 			boardWriteReqServerTask.doWork(TEST_DBCP_NAME,
 					boardWriteReq);
 			
-			fail("no ServerServiceException");
-		} catch (ServerServiceException e) {
+			fail("no ServerTaskException");
+		} catch (ServerTaskException e) {
 			String errorMessage = e.getMessage();
 
 			String expectedErrorMessage = "게시판 본문 글 등록 서비스는 관리자 전용 서비스입니다";
@@ -341,8 +341,8 @@ public class BoardWriteReqServerTaskTest extends AbstractBoardTest {
 			boardWriteReqServerTask.doWork(TEST_DBCP_NAME,
 					boardWriteReq);
 			
-			fail("no ServerServiceException");
-		} catch (ServerServiceException e) {
+			fail("no ServerTaskException");
+		} catch (ServerTaskException e) {
 			String errorMessage = e.getMessage();
 
 			String expectedErrorMessage = "게시판 본문 글 등록 서비스는 관리자 전용 서비스입니다";
@@ -526,8 +526,8 @@ public class BoardWriteReqServerTaskTest extends AbstractBoardTest {
 			boardWriteReqServerTask.doWork(TEST_DBCP_NAME,
 					boardWriteReq);
 			
-			fail("no ServerServiceException");
-		} catch (ServerServiceException e) {
+			fail("no ServerTaskException");
+		} catch (ServerTaskException e) {
 			String errorMessage = e.getMessage();
 
 			String expectedErrorMessage = "게시판 본문 글 등록 서비스는 로그인 해야만 이용할 수 있습니다";
@@ -828,8 +828,8 @@ public class BoardWriteReqServerTaskTest extends AbstractBoardTest {
 			boardWriteReqServerTask.doWork(TEST_DBCP_NAME,
 					boardWriteReq);
 			
-			fail("no ServerServiceException");
-		} catch (ServerServiceException e) {
+			fail("no ServerTaskException");
+		} catch (ServerTaskException e) {
 			String errorMessage = e.getMessage();
 
 			String expectedErrorMessage = "손님의 경우 반듯이 게시글에 대한 비밀번호를 입력해야 합니다";
@@ -914,7 +914,7 @@ public class BoardWriteReqServerTaskTest extends AbstractBoardTest {
 		try {
 			boardWriteRes = boardWriteReqServerTask.doWork(TEST_DBCP_NAME,
 					boardWriteReq);
-		} catch (ServerServiceException e) {
+		} catch (ServerTaskException e) {
 			log.warn(e.getMessage(), e);
 			fail("fail to execuate doTask");
 		} catch (Exception e) {
@@ -1181,7 +1181,7 @@ public class BoardWriteReqServerTaskTest extends AbstractBoardTest {
 		try {
 			boardWriteRes = boardWriteReqServerTask.doWork(TEST_DBCP_NAME,
 					boardWriteReq);
-		} catch (ServerServiceException e) {
+		} catch (ServerTaskException e) {
 			log.warn(e.getMessage(), e);
 			fail("fail to execuate doTask");
 		} catch (Exception e) {

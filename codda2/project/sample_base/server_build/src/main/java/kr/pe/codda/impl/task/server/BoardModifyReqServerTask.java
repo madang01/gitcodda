@@ -21,7 +21,7 @@ import org.slf4j.LoggerFactory;
 
 import kr.pe.codda.common.etc.CommonStaticFinalVars;
 import kr.pe.codda.common.exception.DynamicClassCallException;
-import kr.pe.codda.common.exception.ServerServiceException;
+import kr.pe.codda.common.exception.ServerTaskException;
 import kr.pe.codda.common.message.AbstractMessage;
 import kr.pe.codda.impl.message.BoardModifyReq.BoardModifyReq;
 import kr.pe.codda.impl.message.BoardModifyRes.BoardModifyRes;
@@ -64,7 +64,7 @@ public class BoardModifyReqServerTask extends AbstractServerTask {
 			AbstractMessage outputMessage = doWork(ServerCommonStaticFinalVars.DEFAULT_DBCP_NAME,
 					(BoardModifyReq) inputMessage);
 			toLetterCarrier.addSyncOutputMessage(outputMessage);
-		} catch (ServerServiceException e) {
+		} catch (ServerTaskException e) {
 			String errorMessage = e.getMessage();
 			log.warn("errmsg=={}, inObj={}", errorMessage, inputMessage.toString());
 
@@ -96,7 +96,7 @@ public class BoardModifyReqServerTask extends AbstractServerTask {
 			ValueChecker.checkValidAttachedFilCount(boardModifyReq.getOldAttachedFileCnt(), boardModifyReq.getNewAttachedFileCnt());
 		} catch (IllegalArgumentException e) {
 			String errorMessage = e.getMessage();
-			throw new ServerServiceException(errorMessage);
+			throw new ServerTaskException(errorMessage);
 		}
 		
 		HashSet<Short> remainingOldAttachedFileSequeceSet = new HashSet<Short>();
@@ -107,14 +107,14 @@ public class BoardModifyReqServerTask extends AbstractServerTask {
 			if (remainingOldAttachedFileSequeceSet.contains(oldAttachedFileSeq)) {
 				String errorMessage = new StringBuilder().append("보존을 원하는 구 첨부 파일 목록에서 증복된 첨부 파일 시퀀스[")
 						.append(oldAttachedFileSeq).append("]가 존재합니다").toString();
-				throw new ServerServiceException(errorMessage);
+				throw new ServerTaskException(errorMessage);
 			}
 
 			if (oldAttachedFileSeq >= boardModifyReq.getNextAttachedFileSeq()) {
 				String errorMessage = new StringBuilder().append("보존을 원하는 구 첨부 파일 시퀀스[").append(oldAttachedFileSeq)
 						.append("]가 다음 첨부 파일 시퀀스[").append(boardModifyReq.getNextAttachedFileSeq())
 						.append("]보다 크거나 같습니다").toString();
-				throw new ServerServiceException(errorMessage);
+				throw new ServerTaskException(errorMessage);
 			}
 
 			remainingOldAttachedFileSequeceSet.add(oldAttachedFileSeq);
@@ -131,13 +131,13 @@ public class BoardModifyReqServerTask extends AbstractServerTask {
 				} catch (IllegalArgumentException e) {
 					String errorMessage = new StringBuilder().append(i).append("번째 파일 이름 유효성 검사 에러 메시지::")
 							.append(e.getMessage()).toString();
-					throw new ServerServiceException(errorMessage);
+					throw new ServerTaskException(errorMessage);
 				}
 
 				if (newAttachedFile.getAttachedFileSize() <= 0) {
 					String errorMessage = new StringBuilder().append(i).append("번째 파일[")
 							.append(newAttachedFile.getAttachedFileName()).append("] 크기가 0보다 작거나 같습니다").toString();
-					throw new ServerServiceException(errorMessage);
+					throw new ServerTaskException(errorMessage);
 				}
 			}
 		}
@@ -151,7 +151,7 @@ public class BoardModifyReqServerTask extends AbstractServerTask {
 			String errorMessage = new StringBuilder().append("새로운 '다음 첨부 파일 시퀀스 번호'(= 기존 '다음 첨부 파일 시퀀스 번호'[")
 					.append(boardModifyReq.getNextAttachedFileSeq()).append("] + 신규 첨부 파일 갯수[")
 					.append(boardModifyReq.getNewAttachedFileCnt()).append("])가 최대 값(=255)을 초과하였습니다").toString();
-			throw new ServerServiceException(errorMessage);
+			throw new ServerTaskException(errorMessage);
 		}
 
 		ServerDBUtil.execute(dbcpName, (conn, create) -> {
@@ -171,7 +171,7 @@ public class BoardModifyReqServerTask extends AbstractServerTask {
 
 				String errorMessage = new StringBuilder("입력 받은 게시판 식별자[").append(boardID.shortValue())
 						.append("]가 게시판 정보 테이블에 존재하지  않습니다").toString();
-				throw new ServerServiceException(errorMessage);
+				throw new ServerTaskException(errorMessage);
 			}
 
 			byte boardListTypeValue = boardInforRecord.get(SB_BOARD_INFO_TB.LIST_TYPE);
@@ -186,7 +186,7 @@ public class BoardModifyReqServerTask extends AbstractServerTask {
 				}
 
 				String errorMessage = e.getMessage();
-				throw new ServerServiceException(errorMessage);
+				throw new ServerTaskException(errorMessage);
 			}
 			
 			if (BoardListType.TREE.equals(boardListType)) {
@@ -200,7 +200,7 @@ public class BoardModifyReqServerTask extends AbstractServerTask {
 					}
 
 					String errorMessage = e.getMessage();
-					throw new ServerServiceException(errorMessage);
+					throw new ServerTaskException(errorMessage);
 				}
 			}
 			
@@ -222,7 +222,7 @@ public class BoardModifyReqServerTask extends AbstractServerTask {
 					}
 
 					String errorMessage = "해당 게시글의 최초 작성자 정보가 존재 하지 않습니다";
-					throw new ServerServiceException(errorMessage);
+					throw new ServerTaskException(errorMessage);
 				}
 
 				String firstWriterID = firstWriterBoardRecord.getValue(SB_BOARD_HISTORY_TB.REGISTRANT_ID);
@@ -236,7 +236,7 @@ public class BoardModifyReqServerTask extends AbstractServerTask {
 
 					String errorMessage = new StringBuilder("타인[").append(firstWriterID).append("] 게시글은 수정 할 수 없습니다")
 							.toString();
-					throw new ServerServiceException(errorMessage);
+					throw new ServerTaskException(errorMessage);
 				}
 			}			
 
@@ -254,7 +254,7 @@ public class BoardModifyReqServerTask extends AbstractServerTask {
 				}
 
 				String errorMessage = "해당 게시글이 존재 하지 않습니다";
-				throw new ServerServiceException(errorMessage);
+				throw new ServerTaskException(errorMessage);
 			}
 
 			UInteger parenetNo = boardRecord.getValue(SB_BOARD_TB.PARENT_NO);
@@ -273,7 +273,7 @@ public class BoardModifyReqServerTask extends AbstractServerTask {
 					}
 
 					String errorMessage = e.getMessage();
-					throw new ServerServiceException(errorMessage);
+					throw new ServerTaskException(errorMessage);
 				}
 			}
 
@@ -289,7 +289,7 @@ public class BoardModifyReqServerTask extends AbstractServerTask {
 
 				String errorMessage = new StringBuilder("게시글의 DB 상태 값[").append(boardStateValue).append("]이 잘못되었습니다")
 						.toString();
-				throw new ServerServiceException(errorMessage);
+				throw new ServerTaskException(errorMessage);
 			}
 
 			if (!BoardStateType.OK.equals(boardStateType)) {
@@ -312,7 +312,7 @@ public class BoardModifyReqServerTask extends AbstractServerTask {
 							.append("]가 정상이 아닙니다").toString();
 				}
 
-				throw new ServerServiceException(errorMessage);
+				throw new ServerTaskException(errorMessage);
 			}
 
 			if (boardModifyReq.getNextAttachedFileSeq() != nextAttachedFileSeq.shortValue()) {
@@ -326,7 +326,7 @@ public class BoardModifyReqServerTask extends AbstractServerTask {
 						.append(boardModifyReq.getNextAttachedFileSeq()).append("]가 DB 값[")
 						.append(nextAttachedFileSeq.shortValue()).append("]과 다릅니다").toString();
 
-				throw new ServerServiceException(errorMessage);
+				throw new ServerTaskException(errorMessage);
 			}
 			
 			if (MemberRoleType.GUEST.equals(memberRoleTypeOfRequestedUserID)) {
@@ -340,7 +340,7 @@ public class BoardModifyReqServerTask extends AbstractServerTask {
 
 					String errorMessage = "손님으로 작성한 게시글의 비밀번호가 없습니다";
 
-					throw new ServerServiceException(errorMessage);
+					throw new ServerTaskException(errorMessage);
 				}
 			}
 
@@ -356,7 +356,7 @@ public class BoardModifyReqServerTask extends AbstractServerTask {
 					}
 					
 					String errorMessage = "게시글 비밀번호를 입력해 주세요";
-					throw new ServerServiceException(errorMessage);
+					throw new ServerTaskException(errorMessage);
 				}
 
 				if (! dbPwdHashBase64.equals(boardPasswordHashBase64)) {
@@ -367,7 +367,7 @@ public class BoardModifyReqServerTask extends AbstractServerTask {
 					}
 					
 					String errorMessage = "설정한 게시글 비밀 번호와 일치하지 않습니다";
-					throw new ServerServiceException(errorMessage);
+					throw new ServerTaskException(errorMessage);
 				}
 			}
 
@@ -386,7 +386,7 @@ public class BoardModifyReqServerTask extends AbstractServerTask {
 				}
 				
 				String errorMessage = "수정 가능한 최대 횟수(255회)까지 수정하여 더 이상 수정할 수 없습니다";
-				throw new ServerServiceException(errorMessage);
+				throw new ServerTaskException(errorMessage);
 			}
 			
 			UByte newBoardHistorySeq = UByte.valueOf(oldBoardHistorySeq.shortValue()+1);
@@ -407,7 +407,7 @@ public class BoardModifyReqServerTask extends AbstractServerTask {
 					log.warn("fail to rollback");
 				}
 				String errorMessage = "게시판 이력 테이블에 글 내용을 저장하는데 실패하였습니다";
-				throw new ServerServiceException(errorMessage);
+				throw new ServerTaskException(errorMessage);
 			}
 
 			Result<Record1<UByte>> attachFileListRecord = create.select(SB_BOARD_FILELIST_TB.ATTACHED_FILE_SQ)
@@ -426,7 +426,7 @@ public class BoardModifyReqServerTask extends AbstractServerTask {
 					}
 
 					String errorMessage = "구 첨부 파일들이 존재 하지 않는데 보존을 원하는 구 첨부 파일 목록을 요청하셨습니다";
-					throw new ServerServiceException(errorMessage);
+					throw new ServerTaskException(errorMessage);
 				}
 			} else {
 				for (Record attachFileRecord : attachFileListRecord) {
@@ -445,7 +445,7 @@ public class BoardModifyReqServerTask extends AbstractServerTask {
 							.append(remainingOldAttachedFileSequeceSet.toString()).append("]중 실제 구 첨부 파일 목록[=")
 							.append(deletedAttachedFileSequeceSet.toString()).append("]에 존재하지 않는 첨부 파일이 존재합니다")
 							.toString();
-					throw new ServerServiceException(errorMessage);
+					throw new ServerTaskException(errorMessage);
 				}
 
 				deletedAttachedFileSequeceSet.removeAll(remainingOldAttachedFileSequeceSet);
@@ -476,7 +476,7 @@ public class BoardModifyReqServerTask extends AbstractServerTask {
 						String errorMessage = new StringBuilder().append("게시판 ").append(newAttachedFileListIndex)
 								.append(" 번째 첨부 파일을  저장하는데 실패하였습니다").toString();
 
-						throw new ServerServiceException(errorMessage);
+						throw new ServerTaskException(errorMessage);
 					}
 
 					newAttachedFileSeq++;

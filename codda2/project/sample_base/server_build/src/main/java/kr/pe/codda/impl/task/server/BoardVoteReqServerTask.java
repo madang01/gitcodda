@@ -12,7 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import kr.pe.codda.common.exception.DynamicClassCallException;
-import kr.pe.codda.common.exception.ServerServiceException;
+import kr.pe.codda.common.exception.ServerTaskException;
 import kr.pe.codda.common.message.AbstractMessage;
 import kr.pe.codda.impl.message.BoardVoteReq.BoardVoteReq;
 import kr.pe.codda.impl.message.MessageResultRes.MessageResultRes;
@@ -54,7 +54,7 @@ public class BoardVoteReqServerTask extends AbstractServerTask {
 		try {
 			AbstractMessage outputMessage = doWork(ServerCommonStaticFinalVars.DEFAULT_DBCP_NAME, (BoardVoteReq)inputMessage);
 			toLetterCarrier.addSyncOutputMessage(outputMessage);
-		} catch(ServerServiceException e) {
+		} catch(ServerTaskException e) {
 			String errorMessage = e.getMessage();
 			log.warn("errmsg=={}, inObj={}", errorMessage, inputMessage.toString());
 			
@@ -84,7 +84,7 @@ public class BoardVoteReqServerTask extends AbstractServerTask {
 			ValueChecker.checkValidBoardNo(boardVoteReq.getBoardNo());
 		} catch(IllegalArgumentException e) {
 			String errorMessage = e.getMessage();
-			throw new ServerServiceException(errorMessage);
+			throw new ServerTaskException(errorMessage);
 		}		
 		
 		final UByte boardID = UByte.valueOf(boardVoteReq.getBoardID());
@@ -113,7 +113,7 @@ public class BoardVoteReqServerTask extends AbstractServerTask {
 				}
 				
 				String errorMessage = new StringBuilder("해당 게시글의 최초 작성자 정보가 존재 하지 않습니다").toString();
-				throw new ServerServiceException(errorMessage);
+				throw new ServerTaskException(errorMessage);
 			}
 			
 			String firstWriterID = firstWriterBoardRecord.getValue(SB_BOARD_HISTORY_TB.REGISTRANT_ID);
@@ -128,7 +128,7 @@ public class BoardVoteReqServerTask extends AbstractServerTask {
 				String errorMessage = new StringBuilder("자신의 글[")
 						.append(boardNo)
 						.append("]은 본인 스스로 추천할 수 없습니다").toString();
-				throw new ServerServiceException(errorMessage);
+				throw new ServerTaskException(errorMessage);
 			}
 			
 			boolean isVoted = create.fetchExists(create.select()
@@ -145,7 +145,7 @@ public class BoardVoteReqServerTask extends AbstractServerTask {
 				}
 				
 				String errorMessage = "이미 추천을 하셨습니다";
-				throw new ServerServiceException(errorMessage);
+				throw new ServerTaskException(errorMessage);
 			}
 			
 			Timestamp registeredDate = new java.sql.Timestamp(System.currentTimeMillis());
@@ -166,7 +166,7 @@ public class BoardVoteReqServerTask extends AbstractServerTask {
 				}
 				
 				String errorMessage = "해당 글에 대한 추천이 실패하였습니다";
-				throw new ServerServiceException(errorMessage);
+				throw new ServerTaskException(errorMessage);
 			}
 			
 			conn.commit();

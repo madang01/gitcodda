@@ -25,7 +25,7 @@ import org.slf4j.bridge.SLF4JBridgeHandler;
 import kr.pe.codda.common.buildsystem.pathsupporter.CommonBuildSytemPathSupporter;
 import kr.pe.codda.common.buildsystem.pathsupporter.ProjectBuildSytemPathSupporter;
 import kr.pe.codda.common.etc.CommonStaticFinalVars;
-import kr.pe.codda.common.exception.ServerServiceException;
+import kr.pe.codda.common.exception.ServerTaskException;
 import kr.pe.codda.server.lib.BoardListType;
 import kr.pe.codda.server.lib.BoardStateType;
 import kr.pe.codda.server.lib.MemberRoleType;
@@ -171,7 +171,7 @@ public abstract class AbstractBoardTest {
 			try {
 				ServerDBUtil.registerMember(TEST_DBCP_NAME, MemberRoleType.ADMIN, userID, nickname, email,
 						passwordBytes, new java.sql.Timestamp(System.currentTimeMillis()), ip);
-			} catch (ServerServiceException e) {
+			} catch (ServerTaskException e) {
 				String expectedErrorMessage = new StringBuilder("기존 회원과 중복되는 아이디[").append(userID).append("] 입니다")
 						.toString();
 				String actualErrorMessag = e.getMessage();
@@ -197,7 +197,7 @@ public abstract class AbstractBoardTest {
 			try {
 				ServerDBUtil.registerMember(TEST_DBCP_NAME, MemberRoleType.GUEST, userID, nickname, email,
 						passwordBytes, new java.sql.Timestamp(System.currentTimeMillis()), ip);
-			} catch (ServerServiceException e) {
+			} catch (ServerTaskException e) {
 				String expectedErrorMessage = new StringBuilder("기존 회원과 중복되는 아이디[").append(userID).append("] 입니다")
 						.toString();
 				String actualErrorMessag = e.getMessage();
@@ -223,7 +223,7 @@ public abstract class AbstractBoardTest {
 			try {
 				ServerDBUtil.registerMember(TEST_DBCP_NAME, MemberRoleType.MEMBER, userID, nickname, email,
 						passwordBytes, new java.sql.Timestamp(System.currentTimeMillis()), ip);
-			} catch (ServerServiceException e) {
+			} catch (ServerTaskException e) {
 				String expectedErrorMessage = new StringBuilder("기존 회원과 중복되는 아이디[").append(userID).append("] 입니다")
 						.toString();
 				String actualErrorMessag = e.getMessage();
@@ -249,7 +249,7 @@ public abstract class AbstractBoardTest {
 			try {
 				ServerDBUtil.registerMember(TEST_DBCP_NAME, MemberRoleType.MEMBER, userID, nickname, email,
 						passwordBytes, new java.sql.Timestamp(System.currentTimeMillis()), ip);
-			} catch (ServerServiceException e) {
+			} catch (ServerTaskException e) {
 				String expectedErrorMessage = new StringBuilder("기존 회원과 중복되는 아이디[").append(userID).append("] 입니다")
 						.toString();
 				String actualErrorMessag = e.getMessage();

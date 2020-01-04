@@ -5,7 +5,7 @@ import org.slf4j.LoggerFactory;
 
 import kr.pe.codda.common.etc.CommonStaticFinalVars;
 import kr.pe.codda.common.exception.DynamicClassCallException;
-import kr.pe.codda.common.exception.ServerServiceException;
+import kr.pe.codda.common.exception.ServerTaskException;
 import kr.pe.codda.common.exception.SymmetricException;
 import kr.pe.codda.common.message.AbstractMessage;
 import kr.pe.codda.common.sessionkey.ServerSessionkeyIF;
@@ -52,7 +52,7 @@ public class MemberRegisterReqServerTask extends AbstractServerTask {
 		try {
 			AbstractMessage outputMessage = doWork(ServerCommonStaticFinalVars.DEFAULT_DBCP_NAME, (MemberRegisterReq) inputMessage);
 			toLetterCarrier.addSyncOutputMessage(outputMessage);
-		} catch (ServerServiceException e) {
+		} catch (ServerTaskException e) {
 			String errorMessage = e.getMessage();
 			log.warn("errmsg=={}, inObj={}", errorMessage, inputMessage.toString());
 
@@ -83,39 +83,39 @@ public class MemberRegisterReqServerTask extends AbstractServerTask {
 
 		if (null == idCipherBase64) {
 			String errorMessage = "아이디를 입력해 주세요";
-			throw new ServerServiceException(errorMessage);
+			throw new ServerTaskException(errorMessage);
 		}
 
 		if (null == pwdCipherBase64) {
 			String errorMessage = "비밀번호를 입력해 주세요";
-			throw new ServerServiceException(errorMessage);
+			throw new ServerTaskException(errorMessage);
 		}
 
 		if (null == nicknameCipherBase64) {
 			String errorMessage = "별명을 입력해 주세요";
-			throw new ServerServiceException(errorMessage);
+			throw new ServerTaskException(errorMessage);
 		}
 
 		if (null == emailCipherBase64) {
 			String errorMessage = "이메일을 입력해 주세요";
-			throw new ServerServiceException(errorMessage);
+			throw new ServerTaskException(errorMessage);
 		}
 
 
 		if (null == sessionKeyBase64) {
 			String errorMessage = "세션키를 입력해 주세요";
-			throw new ServerServiceException(errorMessage);
+			throw new ServerTaskException(errorMessage);
 		}
 
 		if (null == ivBase64) {
 			String errorMessage = "세션키 소금값을 입력해 주세요";
-			throw new ServerServiceException(errorMessage);
+			throw new ServerTaskException(errorMessage);
 		}
 		
 		/*
 		 * try { ValueChecker.checkValidIP(ip); } catch (IllegalArgumentException e) {
 		 * String errorMessage = e.getMessage(); throw new
-		 * ServerServiceException(errorMessage); }
+		 * ServerTaskException(errorMessage); }
 		 */
 
 		byte[] idCipherBytes = null;
@@ -129,28 +129,28 @@ public class MemberRegisterReqServerTask extends AbstractServerTask {
 			idCipherBytes = CommonStaticUtil.Base64Decoder.decode(idCipherBase64);
 		} catch (Exception e) {
 			String errorMessage = "아이디 암호문은 베이스64로 인코딩되지 않았습니다";
-			throw new ServerServiceException(errorMessage);
+			throw new ServerTaskException(errorMessage);
 		}
 
 		try {
 			pwdCipherBytes = CommonStaticUtil.Base64Decoder.decode(pwdCipherBase64);
 		} catch (Exception e) {
 			String errorMessage = "비밀번호 암호문은 베이스64로 인코딩되지 않았습니다";
-			throw new ServerServiceException(errorMessage);
+			throw new ServerTaskException(errorMessage);
 		}
 
 		try {
 			nicknameCipherBytes = CommonStaticUtil.Base64Decoder.decode(nicknameCipherBase64);
 		} catch (Exception e) {
 			String errorMessage = "별명은 베이스64로 인코딩되지 않았습니다";
-			throw new ServerServiceException(errorMessage);
+			throw new ServerTaskException(errorMessage);
 		}
 
 		try {
 			emailCipherBytes = CommonStaticUtil.Base64Decoder.decode(emailCipherBase64);
 		} catch (Exception e) {
 			String errorMessage = "비밀번호 분실 힌트는 베이스64로 인코딩되지 않았습니다";
-			throw new ServerServiceException(errorMessage);
+			throw new ServerTaskException(errorMessage);
 		}
 
 
@@ -158,14 +158,14 @@ public class MemberRegisterReqServerTask extends AbstractServerTask {
 			sessionKeyBytes = CommonStaticUtil.Base64Decoder.decode(sessionKeyBase64);
 		} catch (Exception e) {
 			String errorMessage = "세션키는 베이스64로 인코딩되지 않았습니다";
-			throw new ServerServiceException(errorMessage);
+			throw new ServerTaskException(errorMessage);
 		}
 
 		try {
 			ivBytes = CommonStaticUtil.Base64Decoder.decode(ivBase64);
 		} catch (Exception e) {
 			String errorMessage = "세션키 소금값은 베이스64로 인코딩되지 않았습니다";
-			throw new ServerServiceException(errorMessage);
+			throw new ServerTaskException(errorMessage);
 		}
 
 		ServerSymmetricKeyIF serverSymmetricKey = null;
@@ -180,7 +180,7 @@ public class MemberRegisterReqServerTask extends AbstractServerTask {
 			log.warn(debugMessage, e);
 
 			String errorMessage = "대칭키 생성 실패로 멤버 등록이 실패하였습니다. 상세한 이유는 서버 로그를 확인해 주세요.";
-			throw new ServerServiceException(errorMessage);
+			throw new ServerTaskException(errorMessage);
 		} catch (SymmetricException e) {
 			String debugMessage = new StringBuilder().append("알수 없는 이유로 대칭키 생성 실패, ")
 					.append(memberRegisterReq.toString()).toString();
@@ -188,7 +188,7 @@ public class MemberRegisterReqServerTask extends AbstractServerTask {
 			log.warn(debugMessage, e);
 
 			String errorMessage = "대칭키 생성 실패로 멤버 등록이 실패하였습니다. 상세한 이유는 서버 로그를 확인해 주세요.";
-			throw new ServerServiceException(errorMessage);
+			throw new ServerTaskException(errorMessage);
 		}
 
 		String userID = null;
@@ -204,7 +204,7 @@ public class MemberRegisterReqServerTask extends AbstractServerTask {
 			log.warn(debugMessage, e);
 
 			String errorMessage = "아이디 복호화 실패로 멤버 등록이 실패하였습니다. 상세한 이유는 서버 로그를 확인해 주세요.";
-			throw new ServerServiceException(errorMessage);
+			throw new ServerTaskException(errorMessage);
 		} catch (SymmetricException e) {
 			String debugMessage = new StringBuilder().append("알 수 없는 에러로 인한 아이디 복호화 실패, ")
 					.append(memberRegisterReq.toString()).toString();
@@ -212,7 +212,7 @@ public class MemberRegisterReqServerTask extends AbstractServerTask {
 			log.warn(debugMessage, e);
 
 			String errorMessage = "아이디 복호화 실패로 멤버 등록이 실패하였습니다. 상세한 이유는 서버 로그를 확인해 주세요.";
-			throw new ServerServiceException(errorMessage);
+			throw new ServerTaskException(errorMessage);
 		}		
 
 		try {
@@ -224,7 +224,7 @@ public class MemberRegisterReqServerTask extends AbstractServerTask {
 			log.warn(debugMessage, e);
 
 			String errorMessage = "별명 복호화 실패로 멤버 등록이 실패하였습니다. 상세한 이유는 서버 로그를 확인해 주세요.";
-			throw new ServerServiceException(errorMessage);
+			throw new ServerTaskException(errorMessage);
 		} catch (SymmetricException e) {
 			String debugMessage = new StringBuilder().append("알 수 없는 에러로 인한 별명 복호화 실패, ")
 					.append(memberRegisterReq.toString()).toString();
@@ -232,7 +232,7 @@ public class MemberRegisterReqServerTask extends AbstractServerTask {
 			log.warn(debugMessage, e);
 
 			String errorMessage = "별명 복호화 실패로 멤버 등록이 실패하였습니다. 상세한 이유는 서버 로그를 확인해 주세요.";
-			throw new ServerServiceException(errorMessage);
+			throw new ServerTaskException(errorMessage);
 		}		
 
 		try {
@@ -244,7 +244,7 @@ public class MemberRegisterReqServerTask extends AbstractServerTask {
 			log.warn(debugMessage, e);
 
 			String errorMessage = "비밀번호 힌트 복호화 실패로 멤버 등록이 실패하였습니다. 상세한 이유는 서버 로그를 확인해 주세요.";
-			throw new ServerServiceException(errorMessage);
+			throw new ServerTaskException(errorMessage);
 		} catch (SymmetricException e) {
 			String debugMessage = new StringBuilder().append("알 수 없는 에러로 인한 비밀번호 힌트 복호화 실패, ")
 					.append(memberRegisterReq.toString()).toString();
@@ -252,7 +252,7 @@ public class MemberRegisterReqServerTask extends AbstractServerTask {
 			log.warn(debugMessage, e);
 
 			String errorMessage = "비밀번호 힌트 복호화 실패로 멤버 등록이 실패하였습니다. 상세한 이유는 서버 로그를 확인해 주세요.";
-			throw new ServerServiceException(errorMessage);
+			throw new ServerTaskException(errorMessage);
 		}
 		
 
@@ -266,7 +266,7 @@ public class MemberRegisterReqServerTask extends AbstractServerTask {
 			log.warn(debugMessage, e);
 
 			String errorMessage = "비밀번호 복호화 실패로 멤버 등록이 실패하였습니다. 상세한 이유는 서버 로그를 확인해 주세요.";
-			throw new ServerServiceException(errorMessage);
+			throw new ServerTaskException(errorMessage);
 		} catch (SymmetricException e) {
 			String debugMessage = new StringBuilder().append("알 수 없는 에러로 인한 비밀번호 복호화 실패, ")
 					.append(memberRegisterReq.toString()).toString();
@@ -274,7 +274,7 @@ public class MemberRegisterReqServerTask extends AbstractServerTask {
 			log.warn(debugMessage, e);
 
 			String errorMessage = "비밀번호 복호화 실패로 멤버 등록이 실패하였습니다. 상세한 이유는 서버 로그를 확인해 주세요.";
-			throw new ServerServiceException(errorMessage);
+			throw new ServerTaskException(errorMessage);
 		}
 
 		ServerDBUtil.registerMember(dbcpName, MemberRoleType.MEMBER, userID, nickname, email, passwordBytes,

@@ -10,7 +10,7 @@ import org.junit.Test;
 
 import junitlib.AbstractBoardTest;
 import kr.pe.codda.common.exception.DynamicClassCallException;
-import kr.pe.codda.common.exception.ServerServiceException;
+import kr.pe.codda.common.exception.ServerTaskException;
 import kr.pe.codda.impl.message.BoardInfoAddReq.BoardInfoAddReq;
 import kr.pe.codda.impl.message.BoardInfoAddRes.BoardInfoAddRes;
 import kr.pe.codda.impl.message.BoardMoveReq.BoardMoveReq;
@@ -55,8 +55,8 @@ public class BoardMoveReqServerTaskTest extends AbstractBoardTest {
 			boardMoveReqServerTask.doWork(
 					TEST_DBCP_NAME, boardMoveReq);
 			
-			fail("no ServerServiceException");
-		} catch (ServerServiceException e) {
+			fail("no ServerTaskException");
+		} catch (ServerTaskException e) {
 			String actualErrorMessage = e.getMessage();
 			
 			String expectedErrorMessage = "동일한 게시판으로 이동할 수 없습니다";
@@ -95,8 +95,8 @@ public class BoardMoveReqServerTaskTest extends AbstractBoardTest {
 			boardMoveReqServerTask.doWork(
 					TEST_DBCP_NAME, boardMoveReq);
 			
-			fail("no ServerServiceException");
-		} catch (ServerServiceException e) {
+			fail("no ServerTaskException");
+		} catch (ServerTaskException e) {
 			String actualErrorMessage = e.getMessage();
 			
 			String expectedErrorMessage = "게시글 이동 서비스는 관리자 전용 서비스입니다";
@@ -136,8 +136,8 @@ public class BoardMoveReqServerTaskTest extends AbstractBoardTest {
 			boardMoveReqServerTask.doWork(
 					TEST_DBCP_NAME, boardMoveReq);
 			
-			fail("no ServerServiceException");
-		} catch (ServerServiceException e) {
+			fail("no ServerTaskException");
+		} catch (ServerTaskException e) {
 			String actualErrorMessage = e.getMessage();
 			
 			String expectedErrorMessage = "게시글 이동 서비스는 관리자 전용 서비스입니다";
@@ -175,8 +175,8 @@ public class BoardMoveReqServerTaskTest extends AbstractBoardTest {
 			boardMoveReqServerTask.doWork(
 					TEST_DBCP_NAME, boardMoveReq);
 			
-			fail("no ServerServiceException");
-		} catch (ServerServiceException e) {
+			fail("no ServerTaskException");
+		} catch (ServerTaskException e) {
 			String actualErrorMessage = e.getMessage();
 			
 			String expectedErrorMessage = new StringBuilder("이동 전 게시판 식별자[").append(sourceBoardID)
@@ -246,8 +246,8 @@ public class BoardMoveReqServerTaskTest extends AbstractBoardTest {
 			boardMoveReqServerTask.doWork(
 					TEST_DBCP_NAME, boardMoveReq);
 			
-			fail("no ServerServiceException");
-		} catch (ServerServiceException e) {
+			fail("no ServerTaskException");
+		} catch (ServerTaskException e) {
 			String actualErrorMessage = e.getMessage();
 			
 			String expectedErrorMessage = new StringBuilder("이동 후 게시판 식별자[").append(targetBoardID)
@@ -317,8 +317,8 @@ public class BoardMoveReqServerTaskTest extends AbstractBoardTest {
 			boardMoveReqServerTask.doWork(
 					TEST_DBCP_NAME, boardMoveReq);
 			
-			fail("no ServerServiceException");
-		} catch (ServerServiceException e) {
+			fail("no ServerTaskException");
+		} catch (ServerTaskException e) {
 			String actualErrorMessage = e.getMessage();
 			
 			String expectedErrorMessage = "이동 하고자 하는 목적지의 게시판 유형이 일치 하지 않아 이동할 수 없습니다";
@@ -357,8 +357,8 @@ public class BoardMoveReqServerTaskTest extends AbstractBoardTest {
 			boardMoveReqServerTask.doWork(
 					TEST_DBCP_NAME, boardMoveReq);
 			
-			fail("no ServerServiceException");
-		} catch (ServerServiceException e) {
+			fail("no ServerTaskException");
+		} catch (ServerTaskException e) {
 			String actualErrorMessage = e.getMessage();
 			
 			String expectedErrorMessage = new StringBuilder()
@@ -463,8 +463,8 @@ public class BoardMoveReqServerTaskTest extends AbstractBoardTest {
 			boardMoveReqServerTask.doWork(
 					TEST_DBCP_NAME, boardMoveReq);
 			
-			fail("no ServerServiceException");
-		} catch (ServerServiceException e) {
+			fail("no ServerTaskException");
+		} catch (ServerTaskException e) {
 			String actualErrorMessage = e.getMessage();
 			
 			String expectedErrorMessage = "이동할 게시글이 그룹의 루트인 본문글이 아닙니다";

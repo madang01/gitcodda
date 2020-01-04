@@ -24,7 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import kr.pe.codda.common.exception.DynamicClassCallException;
-import kr.pe.codda.common.exception.ServerServiceException;
+import kr.pe.codda.common.exception.ServerTaskException;
 import kr.pe.codda.common.message.AbstractMessage;
 import kr.pe.codda.impl.message.BoardListReq.BoardListReq;
 import kr.pe.codda.impl.message.BoardListRes.BoardListRes;
@@ -66,7 +66,7 @@ public class BoardListReqServerTask extends AbstractServerTask {
 			AbstractMessage outputMessage = doWork(ServerCommonStaticFinalVars.DEFAULT_DBCP_NAME,
 					(BoardListReq) inputMessage);
 			toLetterCarrier.addSyncOutputMessage(outputMessage);
-		} catch (ServerServiceException e) {
+		} catch (ServerTaskException e) {
 			String errorMessage = e.getMessage();
 			log.warn("errmsg=={}, inObj={}", errorMessage, inputMessage.toString());
 
@@ -92,7 +92,7 @@ public class BoardListReqServerTask extends AbstractServerTask {
 			ValueChecker.checkValidPageNoAndPageSize(boardListReq.getPageNo(), boardListReq.getPageSize());
 		} catch (IllegalArgumentException e) {
 			String errorMessage = e.getMessage();
-			throw new ServerServiceException(errorMessage);
+			throw new ServerTaskException(errorMessage);
 		}
 		
 		final UByte boardID = UByte.valueOf(boardListReq.getBoardID());		
@@ -122,7 +122,7 @@ public class BoardListReqServerTask extends AbstractServerTask {
 
 				String errorMessage = new StringBuilder("입력 받은 게시판 식별자[").append(boardID.shortValue())
 						.append("]가 게시판 정보 테이블에 존재하지  않습니다").toString();
-				throw new ServerServiceException(errorMessage);
+				throw new ServerTaskException(errorMessage);
 			}
 
 			
@@ -145,7 +145,7 @@ public class BoardListReqServerTask extends AbstractServerTask {
 				}
 
 				String errorMessage = e.getMessage();
-				throw new ServerServiceException(errorMessage);
+				throw new ServerTaskException(errorMessage);
 			}			
 			
 			

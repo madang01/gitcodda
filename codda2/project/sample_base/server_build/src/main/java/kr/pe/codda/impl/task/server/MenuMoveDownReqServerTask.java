@@ -18,7 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import kr.pe.codda.common.exception.DynamicClassCallException;
-import kr.pe.codda.common.exception.ServerServiceException;
+import kr.pe.codda.common.exception.ServerTaskException;
 import kr.pe.codda.common.message.AbstractMessage;
 import kr.pe.codda.impl.message.MenuMoveDownReq.MenuMoveDownReq;
 import kr.pe.codda.impl.message.MessageResultRes.MessageResultRes;
@@ -55,7 +55,7 @@ public class MenuMoveDownReqServerTask extends AbstractServerTask {
 			AbstractMessage outputMessage = doWork(ServerCommonStaticFinalVars.DEFAULT_DBCP_NAME,
 					(MenuMoveDownReq) inputMessage);
 			toLetterCarrier.addSyncOutputMessage(outputMessage);
-		} catch (ServerServiceException e) {
+		} catch (ServerTaskException e) {
 			String errorMessage = e.getMessage();
 			log.warn("errmsg=={}, inObj={}", errorMessage, inputMessage.toString());
 
@@ -81,7 +81,7 @@ public class MenuMoveDownReqServerTask extends AbstractServerTask {
 			ValueChecker.checkValidRequestedUserID(menuMoveDownReq.getRequestedUserID());
 		} catch(IllegalArgumentException e) {
 			String errorMessage = e.getMessage();
-			throw new ServerServiceException(errorMessage);
+			throw new ServerTaskException(errorMessage);
 		}
 
 		final UByte menuSequenceID = SequenceType.MENU.getSequenceID();
@@ -105,7 +105,7 @@ public class MenuMoveDownReqServerTask extends AbstractServerTask {
 					log.warn("fail to rollback");
 				}
 
-				throw new ServerServiceException(errorMessage);
+				throw new ServerTaskException(errorMessage);
 			}
 
 			Record3<UInteger, UByte, UByte> sourceMenuRecord = create
@@ -122,7 +122,7 @@ public class MenuMoveDownReqServerTask extends AbstractServerTask {
 				String errorMessage = new StringBuilder().append("지정한 메뉴[").append(menuMoveDownReq.getMenuNo())
 						.append("]가 존재하지 않습니다").toString();
 
-				throw new ServerServiceException(errorMessage);
+				throw new ServerTaskException(errorMessage);
 			}
 
 			UInteger sourceParetNo = sourceMenuRecord.getValue(SB_SITEMENU_TB.PARENT_NO);
@@ -148,7 +148,7 @@ public class MenuMoveDownReqServerTask extends AbstractServerTask {
 				String errorMessage = new StringBuilder().append("지정한 메뉴[").append(menuMoveDownReq.getMenuNo())
 						.append("]보다 한칸 낮은 메뉴가 다수 존재합니다").toString();
 
-				throw new ServerServiceException(errorMessage);
+				throw new ServerTaskException(errorMessage);
 			}
 
 			if (null == targetMenuRecord) {
@@ -161,7 +161,7 @@ public class MenuMoveDownReqServerTask extends AbstractServerTask {
 				String errorMessage = new StringBuilder().append("지정한 메뉴[").append(menuMoveDownReq.getMenuNo())
 						.append("]보다 한칸 낮은 메뉴가 존재하지 않습니다").toString();
 
-				throw new ServerServiceException(errorMessage);
+				throw new ServerTaskException(errorMessage);
 			}
 
 			UInteger targetMenuNo = targetMenuRecord.getValue(SB_SITEMENU_TB.MENU_NO);
@@ -209,7 +209,7 @@ public class MenuMoveDownReqServerTask extends AbstractServerTask {
 				String errorMessage = new StringBuilder().append("메뉴[").append(menuMoveDownReq.getMenuNo())
 						.append("]의 한칸 위 메뉴[").append(targetMenuNo).append("] 순서를 조정하는데  실패하였습니다").toString();
 
-				throw new ServerServiceException(errorMessage);
+				throw new ServerTaskException(errorMessage);
 			}
 
 			/**
@@ -231,7 +231,7 @@ public class MenuMoveDownReqServerTask extends AbstractServerTask {
 				String errorMessage = new StringBuilder().append("메뉴[").append(menuMoveDownReq.getMenuNo())
 						.append("] 순서를 한칸 위로 조정하는데  실패하였습니다").toString();
 
-				throw new ServerServiceException(errorMessage);
+				throw new ServerTaskException(errorMessage);
 			}
 
 			conn.commit();

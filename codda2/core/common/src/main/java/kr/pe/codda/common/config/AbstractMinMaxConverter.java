@@ -23,7 +23,7 @@ import java.util.Comparator;
  * 최소 최대 값 변환기 추상화 클래스
  * @author Won Jonghoon
  *
- * @param <T>
+ * @param <T> 제너럴 타입
  */
 public abstract class AbstractMinMaxConverter<T extends Number> extends AbstractNativeValueConverter<T> {
 

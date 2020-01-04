@@ -16,6 +16,11 @@
  *******************************************************************************/
 package kr.pe.codda.common.exception;
 
+/**
+ * 로그인 유저가 존재 하지 않을때 던지는 예외
+ * @author Won Jonghoon
+ *
+ */
 @SuppressWarnings("serial")
 public class LoginUserNotFoundException extends Exception {
 

@@ -437,6 +437,13 @@ public abstract class CommonStaticUtil {
 		return stringBuilder.toString();
 	}
 
+	/**
+	 * 파라미터 'contentsStringBuilder' 에 파라미터 'depth' 와  파라미터 'numberOfAdditionalTabs' 의 함 만큼 탭 문자 추가
+	 * 
+	 * @param contentsStringBuilder 내용을 담고 있는 스트링 빌더
+	 * @param depth 기준의 탭 깊이
+	 * @param numberOfAdditionalTabs 기준 대비 상대적 탭 깊이 
+	 */
 	public static void addPrefixWithTabCharacters(StringBuilder contentsStringBuilder, int depth,
 			int numberOfAdditionalTabs) {
 		if (null == contentsStringBuilder) {
@@ -467,7 +474,7 @@ public abstract class CommonStaticUtil {
 	/**
 	 * 낱글자 한글 포함한 한글 여부를 반환한다
 	 * 
-	 * @param c
+	 * @param c 판단 대상 문자
 	 * @return 낱글자 한글 포함한 한글 여부
 	 */
 	public static boolean isHangul(final char c) {
@@ -485,7 +492,7 @@ public abstract class CommonStaticUtil {
 	/**
 	 * 초성 중성 종성이 다 갖추어진'가' 에서 '힣' 까지의 한글 여부를 반환한다
 	 * 
-	 * @param c
+	 * @param c 판단 대상 문자
 	 * @return 초성 중성 종성이 다 갖추어진'가' 에서 '힣' 까지의 한글 여부
 	 */
 	public static boolean isFullHangul(final char c) {
@@ -496,6 +503,10 @@ public abstract class CommonStaticUtil {
 		return isHangul;
 	}
 
+	/**
+	 * @param c 알파멧 소문자와 대문자 여부를 판단하고 싶은 문자
+	 * @return 알파멧 소문자와 대문자 여부
+	 */
 	public static boolean isEnglish(final char c) {
 		boolean isAlphabet = ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z'));
 		
@@ -505,10 +516,10 @@ public abstract class CommonStaticUtil {
 	
 
 	/**
-	 * Punctuation: One of !"#$%&'()*+,-./:;<=>?@[\]^_`{|}~
+	 * Punctuation: One of !"#$%&'()*+,-./:;<=>?@[\]^_`{|}~ 
 	 * 
-	 * @param c
-	 * @return
+	 * @param c 판단 대상 문자
+	 * @return 출력 가능한 특수문자 여부
 	 */
 	public static boolean isPunct(final char c) {
 		boolean isPunct = false;
@@ -528,7 +539,7 @@ public abstract class CommonStaticUtil {
 	/**
 	 * SPACE(0x20) or TAB('\t') 문자 여부를 반환
 	 * 
-	 * @param c
+	 * @param c 판단 대상 문자
 	 * @return SPACE(0x20) or TAB('\t') 문자 여부
 	 */
 	public static boolean isSpaceOrTab(char c) {
@@ -544,7 +555,7 @@ public abstract class CommonStaticUtil {
 	/**
 	 * 개행 문자('\r' or '\n') 여부를 반환
 	 * 
-	 * @param c
+	 * @param c 판단 대상 문자
 	 * @return 개행 문자('\r' or '\n') 여부
 	 */
 	public static boolean isLineSeparator(char c) {

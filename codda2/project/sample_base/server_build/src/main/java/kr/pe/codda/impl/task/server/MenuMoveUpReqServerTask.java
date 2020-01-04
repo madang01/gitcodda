@@ -18,7 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import kr.pe.codda.common.exception.DynamicClassCallException;
-import kr.pe.codda.common.exception.ServerServiceException;
+import kr.pe.codda.common.exception.ServerTaskException;
 import kr.pe.codda.common.message.AbstractMessage;
 import kr.pe.codda.impl.message.MenuMoveUpReq.MenuMoveUpReq;
 import kr.pe.codda.impl.message.MessageResultRes.MessageResultRes;
@@ -54,7 +54,7 @@ public class MenuMoveUpReqServerTask extends AbstractServerTask {
 		try {
 			AbstractMessage outputMessage = doWork(ServerCommonStaticFinalVars.DEFAULT_DBCP_NAME, (MenuMoveUpReq)inputMessage);
 			toLetterCarrier.addSyncOutputMessage(outputMessage);
-		} catch(ServerServiceException e) {
+		} catch(ServerTaskException e) {
 			String errorMessage = e.getMessage();
 			log.warn("errmsg=={}, inObj={}", errorMessage, inputMessage.toString());
 			
@@ -82,7 +82,7 @@ public class MenuMoveUpReqServerTask extends AbstractServerTask {
 			ValueChecker.checkValidRequestedUserID(menuMoveUpReq.getRequestedUserID());
 		} catch(IllegalArgumentException e) {
 			String errorMessage = e.getMessage();
-			throw new ServerServiceException(errorMessage);
+			throw new ServerTaskException(errorMessage);
 		}
 		
 		final UByte menuSequenceID = SequenceType.MENU.getSequenceID();
@@ -115,7 +115,7 @@ public class MenuMoveUpReqServerTask extends AbstractServerTask {
 				
 				
 				
-				throw new ServerServiceException(errorMessage);
+				throw new ServerTaskException(errorMessage);
 			}
 			
 			
@@ -139,7 +139,7 @@ public class MenuMoveUpReqServerTask extends AbstractServerTask {
 						.append(menuMoveUpReq.getMenuNo())
 						.append("]가 존재하지 않습니다").toString();
 				
-				throw new ServerServiceException(errorMessage);
+				throw new ServerTaskException(errorMessage);
 			}
 			
 			UInteger sourceParetNo = sourceMenuRecord.getValue(SB_SITEMENU_TB.PARENT_NO);
@@ -175,7 +175,7 @@ public class MenuMoveUpReqServerTask extends AbstractServerTask {
 						.append(menuMoveUpReq.getMenuNo())
 						.append("]보다 한칸 높은 메뉴가 다수 존재합니다").toString();
 				
-				throw new ServerServiceException(errorMessage);
+				throw new ServerTaskException(errorMessage);
 			}
 					
 			
@@ -192,7 +192,7 @@ public class MenuMoveUpReqServerTask extends AbstractServerTask {
 						.append("]보다 한칸 높은 메뉴가 존재하지 않습니다").toString();
 				
 				
-				throw new ServerServiceException(errorMessage);
+				throw new ServerTaskException(errorMessage);
 			}			
 			
 			UInteger targetMenuNo = targetMenuRecord.getValue(SB_SITEMENU_TB.MENU_NO);
@@ -245,7 +245,7 @@ public class MenuMoveUpReqServerTask extends AbstractServerTask {
 						.append("] 순서를 한칸 위로 조정하는데  실패하였습니다").toString();
 				
 				
-				throw new ServerServiceException(errorMessage);
+				throw new ServerTaskException(errorMessage);
 			}
 			
 			/**
@@ -273,7 +273,7 @@ public class MenuMoveUpReqServerTask extends AbstractServerTask {
 						.append("] 순서를 조정하는데  실패하였습니다").toString();
 				
 				
-				throw new ServerServiceException(errorMessage);
+				throw new ServerTaskException(errorMessage);
 			}			
 			
 			conn.commit();

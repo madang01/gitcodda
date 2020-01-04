@@ -25,7 +25,7 @@ public interface ClientIOEventHandlerIF {
 	 * @param ioEventSelector The selector with which this channel is to be registered
 	 * @param wantedInterestOps The interest set for the resulting key
 	 * @return A key representing the registration of this channel with the given selector
-	 * @throws Exception
+	 * @throws Exception 에러 발생시 던지는 예외
 	 */
 	public SelectionKey register(Selector ioEventSelector, int wantedInterestOps) throws Exception;
 	
@@ -53,6 +53,7 @@ public interface ClientIOEventHandlerIF {
 	/**
 	 * 연결 확립을 마무리한다, 참고) 에러 통제
 	 * @param selectedKey 섹렉터에 등록된 키로 OP_CONNECT 이벤트가 발생된 키이다
+	 * @throws Exception 에러 발생시 던지는 예외
 	 */
 	public void onConnect(SelectionKey selectedKey) throws Exception;
 
@@ -66,13 +67,14 @@ public interface ClientIOEventHandlerIF {
 	 * 
 	 * @param selectedKey 섹렉터에 등록된 키로 OP_READ 이벤트가 발생된 키이다
 	 * @throws InterruptedException 추출된 메시지를 큐에 넣는 과정에서 인터럽트 발생시 발생
-	 * @throws Exception 
+	 * @throws Exception 에러 발생시 던지는 예외
 	 */
 	public void onRead(SelectionKey selectedKey) throws InterruptedException, Exception;
 
 	/**
 	 * 
 	 * @param selectedKey 섹렉터에 등록된 키로 OP_WRITE 이벤트가 발생된 키이다
+	 * @throws Exception 연결 과정에서 발생하는 에러
 	 */
 	public void onWrite(SelectionKey selectedKey) throws Exception;
 	

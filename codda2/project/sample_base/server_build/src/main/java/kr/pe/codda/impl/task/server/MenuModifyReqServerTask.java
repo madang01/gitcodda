@@ -8,7 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import kr.pe.codda.common.exception.DynamicClassCallException;
-import kr.pe.codda.common.exception.ServerServiceException;
+import kr.pe.codda.common.exception.ServerTaskException;
 import kr.pe.codda.common.message.AbstractMessage;
 import kr.pe.codda.impl.message.MenuModifyReq.MenuModifyReq;
 import kr.pe.codda.impl.message.MessageResultRes.MessageResultRes;
@@ -45,7 +45,7 @@ public class MenuModifyReqServerTask extends AbstractServerTask {
 		try {
 			AbstractMessage outputMessage = doWork(ServerCommonStaticFinalVars.DEFAULT_DBCP_NAME, (MenuModifyReq)inputMessage);
 			toLetterCarrier.addSyncOutputMessage(outputMessage);
-		} catch(ServerServiceException e) {
+		} catch(ServerTaskException e) {
 			String errorMessage = e.getMessage();
 			log.warn("errmsg=={}, inObj={}", errorMessage, inputMessage.toString());
 			
@@ -72,7 +72,7 @@ public class MenuModifyReqServerTask extends AbstractServerTask {
 			ValueChecker.checkValidRequestedUserID(menuModifyReq.getRequestedUserID());
 		} catch(IllegalArgumentException e) {
 			String errorMessage = e.getMessage();
-			throw new ServerServiceException(errorMessage);
+			throw new ServerTaskException(errorMessage);
 		}
 		
 		ServerDBUtil.execute(dbcpName, (conn, create) -> {
@@ -95,7 +95,7 @@ public class MenuModifyReqServerTask extends AbstractServerTask {
 						.append("수정할 메뉴[")
 						.append(menuModifyReq.getMenuNo())
 						.append("]가 존재하지 않습니다").toString();
-				throw new ServerServiceException(errorMessage);
+				throw new ServerTaskException(errorMessage);
 			}
 			
 			
@@ -121,7 +121,7 @@ public class MenuModifyReqServerTask extends AbstractServerTask {
 						.append("메뉴[")
 						.append(menuModifyReq.getMenuNo())
 						.append("] 수정이 실패하였습니다").toString();
-				throw new ServerServiceException(errorMessage);
+				throw new ServerTaskException(errorMessage);
 			}
 			
 			conn.commit();	

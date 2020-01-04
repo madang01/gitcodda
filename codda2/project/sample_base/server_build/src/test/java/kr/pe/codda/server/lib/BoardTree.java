@@ -11,7 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import kr.pe.codda.common.exception.DynamicClassCallException;
-import kr.pe.codda.common.exception.ServerServiceException;
+import kr.pe.codda.common.exception.ServerTaskException;
 import kr.pe.codda.impl.message.BoardReplyReq.BoardReplyReq;
 import kr.pe.codda.impl.message.BoardReplyRes.BoardReplyRes;
 import kr.pe.codda.impl.message.BoardWriteReq.BoardWriteReq;
@@ -62,7 +62,7 @@ public class BoardTree {
 		BoardWriteRes boardWriteRes = null;
 		try {
 			boardWriteRes = boardWriteReqServerTask.doWork(workingDBName, boardWriteReq);
-		} catch(ServerServiceException e) {
+		} catch(ServerTaskException e) {
 			log.warn(e.getMessage(), e);
 			fail("fail to execuate doTask");
 		} catch (Exception e) {
@@ -117,7 +117,7 @@ public class BoardTree {
 		try {
 			boardReplyRes = boardReplyReqServerTask.doWork(workingDBName, boardReplyReq);
 			// log.info(boardReplyRes.toString());
-		} catch(ServerServiceException e) {
+		} catch(ServerTaskException e) {
 			log.warn(e.getMessage(), e);
 			fail("fail to execuate doTask");
 		} catch (Exception e) {

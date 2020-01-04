@@ -17,7 +17,7 @@ import ch.qos.logback.classic.Logger;
 import junitlib.AbstractBoardTest;
 import kr.pe.codda.common.etc.CommonStaticFinalVars;
 import kr.pe.codda.common.exception.DynamicClassCallException;
-import kr.pe.codda.common.exception.ServerServiceException;
+import kr.pe.codda.common.exception.ServerTaskException;
 import kr.pe.codda.impl.message.ArraySiteMenuReq.ArraySiteMenuReq;
 import kr.pe.codda.impl.message.ArraySiteMenuRes.ArraySiteMenuRes;
 import kr.pe.codda.impl.message.ChildMenuAddReq.ChildMenuAddReq;
@@ -88,8 +88,8 @@ public class SiteMenuIntegrationTest extends AbstractBoardTest {
 		try {
 			arraySiteMenuReqServerTask.doWork(TEST_DBCP_NAME, arraySiteMenuReq);
 
-			fail("no ServerServiceException");
-		} catch (ServerServiceException e) {
+			fail("no ServerTaskException");
+		} catch (ServerTaskException e) {
 			String errorMessage = e.getMessage();
 
 			String expectedErrorMessage = "배열형 메뉴 조회 서비스는 관리자 전용 서비스입니다";
@@ -121,8 +121,8 @@ public class SiteMenuIntegrationTest extends AbstractBoardTest {
 		try {
 			treeSiteMenuReqServerTask.doWork(TEST_DBCP_NAME, treeSiteMenuReq);
 
-			fail("no ServerServiceException");
-		} catch (ServerServiceException e) {
+			fail("no ServerTaskException");
+		} catch (ServerTaskException e) {
 			String errorMessage = e.getMessage();
 
 			String expectedErrorMessage = "계층형 메뉴 조회 서비스는 관리자 전용 서비스입니다";
@@ -948,8 +948,8 @@ public class SiteMenuIntegrationTest extends AbstractBoardTest {
 		try {
 			rootMenuAddReqServerTask.doWork(TEST_DBCP_NAME, rootMenuAddReq);
 
-			fail("no ServerServiceException");
-		} catch (ServerServiceException e) {
+			fail("no ServerTaskException");
+		} catch (ServerTaskException e) {
 			String expectedMessage = "메뉴 갯수가 최대치(=255)에 도달하여 더 이상 추가할 수 없습니다";
 			log.warn(e.getMessage(), e);
 
@@ -1026,8 +1026,8 @@ public class SiteMenuIntegrationTest extends AbstractBoardTest {
 		try {
 			childMenuAddReqServerTask.doWork(TEST_DBCP_NAME, firstChildMenuAddReq);
 
-			fail("no ServerServiceException");
-		} catch (ServerServiceException e) {
+			fail("no ServerTaskException");
+		} catch (ServerTaskException e) {
 			String expectedMessage = "메뉴 갯수가 최대치(=255)에 도달하여 더 이상 추가할 수 없습니다";
 			log.warn(e.getMessage(), e);
 
@@ -1061,8 +1061,8 @@ public class SiteMenuIntegrationTest extends AbstractBoardTest {
 		try {
 			childMenuAddReqServerTask.doWork(TEST_DBCP_NAME, firstChildMenuAddReq);
 
-			fail("no ServerServiceException");
-		} catch (ServerServiceException e) {
+			fail("no ServerTaskException");
+		} catch (ServerTaskException e) {
 			String expectedMessage = new StringBuilder().append("부모 메뉴[").append(parentMenuNo).append("]가 존재하지 않습니다")
 					.toString();
 			log.warn(e.getMessage(), e);
@@ -1183,8 +1183,8 @@ public class SiteMenuIntegrationTest extends AbstractBoardTest {
 		try {
 			menuDeleteReqServerTask.doWork(TEST_DBCP_NAME, menuDeleteReq);
 
-			fail("no ServerServiceException");
-		} catch (ServerServiceException e) {
+			fail("no ServerTaskException");
+		} catch (ServerTaskException e) {
 			String expectedMessage = new StringBuilder().append("삭제할 메뉴[").append(menuDeleteReq.getMenuNo())
 					.append("]가 존재하지 않습니다").toString();
 
@@ -1254,8 +1254,8 @@ public class SiteMenuIntegrationTest extends AbstractBoardTest {
 		try {
 			messageResultRes = menuDeleteReqServerTask.doWork(TEST_DBCP_NAME, menuDeleteReq);
 
-			fail("no ServerServiceException");
-		} catch (ServerServiceException e) {
+			fail("no ServerTaskException");
+		} catch (ServerTaskException e) {
 			log.info(e.getMessage(), e);
 
 			String expectedErrorMessage = new StringBuilder().append("자식이 있는 메뉴[").append(menuDeleteReq.getMenuNo())

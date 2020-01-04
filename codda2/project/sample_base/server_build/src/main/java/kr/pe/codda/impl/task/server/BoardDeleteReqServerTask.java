@@ -12,7 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import kr.pe.codda.common.exception.DynamicClassCallException;
-import kr.pe.codda.common.exception.ServerServiceException;
+import kr.pe.codda.common.exception.ServerTaskException;
 import kr.pe.codda.common.message.AbstractMessage;
 import kr.pe.codda.impl.message.BoardDeleteReq.BoardDeleteReq;
 import kr.pe.codda.impl.message.MessageResultRes.MessageResultRes;
@@ -58,7 +58,7 @@ public class BoardDeleteReqServerTask extends AbstractServerTask {
 		try {
 			AbstractMessage outputMessage = doWork(ServerCommonStaticFinalVars.DEFAULT_DBCP_NAME, (BoardDeleteReq)inputMessage);
 			toLetterCarrier.addSyncOutputMessage(outputMessage);
-		} catch(ServerServiceException e) {
+		} catch(ServerTaskException e) {
 			String errorMessage = e.getMessage();
 			log.warn("errmsg=={}, inObj={}", errorMessage, inputMessage.toString());
 			
@@ -87,7 +87,7 @@ public class BoardDeleteReqServerTask extends AbstractServerTask {
 			ValueChecker.checkValidIP(boardDeleteReq.getIp());
 		} catch (IllegalArgumentException e) {
 			String errorMessage = e.getMessage();
-			throw new ServerServiceException(errorMessage);
+			throw new ServerTaskException(errorMessage);
 		}		
 		
 		String requestedUserID = boardDeleteReq.getRequestedUserID();
@@ -114,7 +114,7 @@ public class BoardDeleteReqServerTask extends AbstractServerTask {
 
 				String errorMessage = new StringBuilder("입력 받은 게시판 식별자[").append(boardID.shortValue())
 						.append("]가 게시판 정보 테이블에 존재하지  않습니다").toString();
-				throw new ServerServiceException(errorMessage);
+				throw new ServerTaskException(errorMessage);
 			}
 
 			String boardName = boardInforRecord.get(SB_BOARD_INFO_TB.BOARD_NAME);			
@@ -132,7 +132,7 @@ public class BoardDeleteReqServerTask extends AbstractServerTask {
 				}
 
 				String errorMessage = e.getMessage();
-				throw new ServerServiceException(errorMessage);
+				throw new ServerTaskException(errorMessage);
 			}
 			
 			/** 삭제할 게시글에 속한 그룹의 루트 노드에 해당하는 레코드에 락을 건다  */
@@ -160,7 +160,7 @@ public class BoardDeleteReqServerTask extends AbstractServerTask {
 				}
 				
 				String errorMessage = "2.해당 게시글이 존재 하지 않습니다";
-				throw new ServerServiceException(errorMessage);
+				throw new ServerTaskException(errorMessage);
 			}
 			
 			String dbPwdHashBase64 = boardRecord.getValue(SB_BOARD_TB.PWD_BASE64);
@@ -182,7 +182,7 @@ public class BoardDeleteReqServerTask extends AbstractServerTask {
 				String errorMessage = new StringBuilder("게시글의 상태 값[")
 						.append(boardState)
 						.append("]이 잘못되었습니다").toString();
-				throw new ServerServiceException(errorMessage);
+				throw new ServerTaskException(errorMessage);
 			}	
 			
 			if (BoardStateType.DELETE.equals(boardStateType)) {
@@ -193,7 +193,7 @@ public class BoardDeleteReqServerTask extends AbstractServerTask {
 				}
 				
 				String errorMessage = "해당 게시글은 삭제된 글입니다";
-				throw new ServerServiceException(errorMessage);
+				throw new ServerTaskException(errorMessage);
 			} else if (BoardStateType.BLOCK.equals(boardStateType)) {
 				try {
 					conn.rollback();
@@ -202,7 +202,7 @@ public class BoardDeleteReqServerTask extends AbstractServerTask {
 				}
 				
 				String errorMessage = "해당 게시글은 관리자에 의해 차단된 글입니다";
-				throw new ServerServiceException(errorMessage);
+				throw new ServerTaskException(errorMessage);
 			} else if (BoardStateType.TREEBLOCK.equals(boardStateType)) {
 				try {
 					conn.rollback();
@@ -211,7 +211,7 @@ public class BoardDeleteReqServerTask extends AbstractServerTask {
 				}
 				
 				String errorMessage = "해당 게시글은 관리자에 의해 차단된 글에 속한 글입니다";
-				throw new ServerServiceException(errorMessage);
+				throw new ServerTaskException(errorMessage);
 			}			
 			
 			
@@ -223,7 +223,7 @@ public class BoardDeleteReqServerTask extends AbstractServerTask {
 				}
 				
 				String errorMessage = "타인 글은 삭제 할 수 없습니다";
-				throw new ServerServiceException(errorMessage);
+				throw new ServerTaskException(errorMessage);
 			}
 			
 			if (MemberRoleType.GUEST.equals(memberRoleTypeOfRequestedUserID)) {
@@ -237,7 +237,7 @@ public class BoardDeleteReqServerTask extends AbstractServerTask {
 
 					String errorMessage = "손님으로 작성한 게시글의 비밀번호가 없습니다";
 
-					throw new ServerServiceException(errorMessage);
+					throw new ServerTaskException(errorMessage);
 				}
 			}
 			
@@ -254,7 +254,7 @@ public class BoardDeleteReqServerTask extends AbstractServerTask {
 					}
 					
 					String errorMessage = "게시글 비밀번호를 입력해 주세요";
-					throw new ServerServiceException(errorMessage);
+					throw new ServerTaskException(errorMessage);
 				}
 
 				if (! dbPwdHashBase64.equals(boardPasswordHashBase64)) {
@@ -265,7 +265,7 @@ public class BoardDeleteReqServerTask extends AbstractServerTask {
 					}
 					
 					String errorMessage = "설정한 게시글 비밀 번호와 일치하지 않습니다";
-					throw new ServerServiceException(errorMessage);
+					throw new ServerTaskException(errorMessage);
 				}
 			}
 			

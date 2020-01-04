@@ -24,7 +24,7 @@ import java.util.List;
 import kr.pe.codda.common.config.subset.ProjectPartConfiguration;
 
 /**
- * 모든 서브 프로젝트 파트 설정
+ * 서브 프로젝트 파트 관리자
  * 
  * @author Won Jonghoon
  *

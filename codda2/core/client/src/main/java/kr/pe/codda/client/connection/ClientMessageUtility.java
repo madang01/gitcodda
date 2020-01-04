@@ -41,6 +41,7 @@ public abstract class ClientMessageUtility {
 	 * 예를 들면 동적 호출 클래스 호출이 한다든지 하면 {@link ExceptionDeliveryRes} 을 반환한다.
 	 * </pre>
 	 * 
+	 * @param title 만들고자 하는 메시지 제목
 	 * @param messageCodecManger 메시지 코덱 관리자
 	 * @param messageProtocol 메시지 프로토콜
 	 * @param mailboxID 메일 박스 식별자

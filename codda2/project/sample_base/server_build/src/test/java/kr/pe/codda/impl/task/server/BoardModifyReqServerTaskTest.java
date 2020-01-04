@@ -12,7 +12,7 @@ import org.junit.Test;
 
 import junitlib.AbstractBoardTest;
 import kr.pe.codda.common.exception.DynamicClassCallException;
-import kr.pe.codda.common.exception.ServerServiceException;
+import kr.pe.codda.common.exception.ServerTaskException;
 import kr.pe.codda.common.util.CommonStaticUtil;
 import kr.pe.codda.impl.message.BoardBlockReq.BoardBlockReq;
 import kr.pe.codda.impl.message.BoardDeleteReq.BoardDeleteReq;
@@ -70,8 +70,8 @@ public class BoardModifyReqServerTaskTest extends AbstractBoardTest {
 		try {
 			boardModifyReqServerTask.doWork(TEST_DBCP_NAME, boardModifyReq);
 
-			fail("no ServerServiceException");
-		} catch (ServerServiceException e) {
+			fail("no ServerTaskException");
+		} catch (ServerTaskException e) {
 			String acutalErrorMessage = e.getMessage();
 			String expectedErrorMessage = new StringBuilder("입력 받은 게시판 식별자[").append(badBoardID)
 					.append("]가 게시판 정보 테이블에 존재하지  않습니다").toString();
@@ -122,8 +122,8 @@ public class BoardModifyReqServerTaskTest extends AbstractBoardTest {
 		try {
 			boardModifyReqServerTask.doWork(TEST_DBCP_NAME, boardModifyReq);
 	
-			fail("no ServerServiceException");
-		} catch (ServerServiceException e) {
+			fail("no ServerTaskException");
+		} catch (ServerTaskException e) {
 			String acutalErrorMessage = e.getMessage();
 			String expectedErrorMessage = "게시글 제목을 입력해 주세요";
 	
@@ -186,8 +186,8 @@ public class BoardModifyReqServerTaskTest extends AbstractBoardTest {
 		try {
 			boardModifyReqServerTask.doWork(TEST_DBCP_NAME, boardModifyReq);
 
-			fail("no ServerServiceException");
-		} catch (ServerServiceException e) {
+			fail("no ServerTaskException");
+		} catch (ServerTaskException e) {
 			String acutalErrorMessage = e.getMessage();
 			String expectedErrorMessage = new StringBuilder()
 					.append("기존 첨부 파일 등록 갯수[")
@@ -248,8 +248,8 @@ public class BoardModifyReqServerTaskTest extends AbstractBoardTest {
 		try {
 			boardModifyReqServerTask.doWork(TEST_DBCP_NAME, boardModifyReq);
 
-			fail("no ServerServiceException");
-		} catch (ServerServiceException e) {
+			fail("no ServerTaskException");
+		} catch (ServerTaskException e) {
 			String acutalErrorMessage = e.getMessage();
 			String expectedErrorMessage = new StringBuilder().append(0)
 					.append("번째 파일 이름 유효성 검사 에러 메시지::").append("첨부 파일명[")
@@ -306,8 +306,8 @@ public class BoardModifyReqServerTaskTest extends AbstractBoardTest {
 		try {
 			boardModifyReqServerTask.doWork(TEST_DBCP_NAME, boardModifyReq);
 
-			fail("no ServerServiceException");
-		} catch (ServerServiceException e) {
+			fail("no ServerTaskException");
+		} catch (ServerTaskException e) {
 			String acutalErrorMessage = e.getMessage();
 			String expectedErrorMessage = new StringBuilder()
 					.append("보존을 원하는 구 첨부 파일 목록에서 증복된 첨부 파일 시퀀스[").append(1)
@@ -363,8 +363,8 @@ public class BoardModifyReqServerTaskTest extends AbstractBoardTest {
 		try {
 			boardModifyReqServerTask.doWork(TEST_DBCP_NAME, boardModifyReq);
 
-			fail("no ServerServiceException");
-		} catch (ServerServiceException e) {
+			fail("no ServerTaskException");
+		} catch (ServerTaskException e) {
 			String acutalErrorMessage = e.getMessage();
 			String expectedErrorMessage = new StringBuilder()
 					.append("보존을 원하는 구 첨부 파일 시퀀스[").append(1)
@@ -420,8 +420,8 @@ public class BoardModifyReqServerTaskTest extends AbstractBoardTest {
 		try {
 			boardModifyReqServerTask.doWork(TEST_DBCP_NAME, boardModifyReq);
 
-			fail("no ServerServiceException");
-		} catch (ServerServiceException e) {
+			fail("no ServerTaskException");
+		} catch (ServerTaskException e) {
 			String acutalErrorMessage = e.getMessage();
 			String expectedErrorMessage = new StringBuilder()
 					.append("해당 게시글[boardID=")
@@ -505,8 +505,8 @@ public class BoardModifyReqServerTaskTest extends AbstractBoardTest {
 		try {
 			boardModifyReqServerTask.doWork(TEST_DBCP_NAME, boardModifyReq);
 
-			fail("no ServerServiceException");
-		} catch (ServerServiceException e) {
+			fail("no ServerTaskException");
+		} catch (ServerTaskException e) {
 			String acutalErrorMessage = e.getMessage();
 			String expectedErrorMessage = new StringBuilder("타인[")
 					.append(boardWriteReq.getRequestedUserID())
@@ -610,8 +610,8 @@ public class BoardModifyReqServerTaskTest extends AbstractBoardTest {
 		try {
 			boardModifyReqServerTask.doWork(TEST_DBCP_NAME, boardModifyReq);
 
-			fail("no ServerServiceException");
-		} catch (ServerServiceException e) {
+			fail("no ServerTaskException");
+		} catch (ServerTaskException e) {
 			String acutalErrorMessage = e.getMessage();
 			String expectedErrorMessage = "게시글 제목을 입력해 주세요";
 
@@ -650,7 +650,7 @@ public class BoardModifyReqServerTaskTest extends AbstractBoardTest {
 		try {
 			boardWriteRes = boardWriteReqServerTask.doWork(TEST_DBCP_NAME,
 					boardWriteReq);
-		} catch (ServerServiceException e) {
+		} catch (ServerTaskException e) {
 			log.warn(e.getMessage(), e);
 			fail("fail to execuate doTask");
 		} catch (Exception e) {
@@ -674,7 +674,7 @@ public class BoardModifyReqServerTaskTest extends AbstractBoardTest {
 		try {
 			boardDeleteReqServerTask.doWork(TEST_DBCP_NAME, boardDeleteReq);
 
-		} catch (ServerServiceException e) {
+		} catch (ServerTaskException e) {
 			log.warn(e.getMessage(), e);
 			fail("fail to execuate doTask");
 		} catch (Exception e) {
@@ -715,8 +715,8 @@ public class BoardModifyReqServerTaskTest extends AbstractBoardTest {
 		try {
 			boardModifyReqServerTask.doWork(TEST_DBCP_NAME, boardModifyReq);
 
-			fail("no ServerServiceException");
-		} catch (ServerServiceException e) {
+			fail("no ServerTaskException");
+		} catch (ServerTaskException e) {
 			String acutalErrorMessage = e.getMessage();
 			String expectedErrorMessage = "해당 게시글은 삭제된 글입니다";
 
@@ -756,7 +756,7 @@ public class BoardModifyReqServerTaskTest extends AbstractBoardTest {
 		try {
 			boardWriteRes = boardWriteReqServerTask.doWork(TEST_DBCP_NAME,
 					boardWriteReq);
-		} catch (ServerServiceException e) {
+		} catch (ServerTaskException e) {
 			log.warn(e.getMessage(), e);
 			fail("fail to execuate doTask");
 		} catch (Exception e) {
@@ -825,8 +825,8 @@ public class BoardModifyReqServerTaskTest extends AbstractBoardTest {
 		try {
 			boardModifyReqServerTask.doWork(TEST_DBCP_NAME, boardModifyReq);
 
-			fail("no ServerServiceException");
-		} catch (ServerServiceException e) {
+			fail("no ServerTaskException");
+		} catch (ServerTaskException e) {
 			String acutalErrorMessage = e.getMessage();
 			String expectedErrorMessage = "해당 게시글은 관리자에 의해 차단된 글입니다";
 
@@ -868,7 +868,7 @@ public class BoardModifyReqServerTaskTest extends AbstractBoardTest {
 		try {
 			boardWriteRes = boardWriteReqServerTask.doWork(TEST_DBCP_NAME,
 					boardWriteReq);
-		} catch (ServerServiceException e) {
+		} catch (ServerTaskException e) {
 			log.warn(e.getMessage(), e);
 			fail("fail to execuate doTask");
 		} catch (Exception e) {
@@ -904,7 +904,7 @@ public class BoardModifyReqServerTaskTest extends AbstractBoardTest {
 			boardReplyRes = boardReplyReqServerTask.doWork(TEST_DBCP_NAME,
 					boardReplyReq);
 			// log.info(boardReplyRes.toString());
-		} catch (ServerServiceException e) {
+		} catch (ServerTaskException e) {
 			log.warn(e.getMessage(), e);
 			fail("fail to execuate doTask");
 		} catch (Exception e) {
@@ -973,8 +973,8 @@ public class BoardModifyReqServerTaskTest extends AbstractBoardTest {
 		try {
 			boardModifyReqServerTask.doWork(TEST_DBCP_NAME, boardModifyReq);
 
-			fail("no ServerServiceException");
-		} catch (ServerServiceException e) {
+			fail("no ServerTaskException");
+		} catch (ServerTaskException e) {
 			String acutalErrorMessage = e.getMessage();
 			String expectedErrorMessage = "해당 게시글은 관리자에 의해 차단된 글을 루트로 하는 트리에 속한 글입니다";
 
@@ -1029,8 +1029,8 @@ public class BoardModifyReqServerTaskTest extends AbstractBoardTest {
 		try {
 			boardModifyReqServerTask.doWork(TEST_DBCP_NAME, boardModifyReq);
 
-			fail("no ServerServiceException");
-		} catch (ServerServiceException e) {
+			fail("no ServerTaskException");
+		} catch (ServerTaskException e) {
 			String acutalErrorMessage = e.getMessage();
 			String expectedErrorMessage = new StringBuilder()
 					.append("새로운 '다음 첨부 파일 시퀀스 번호'(= 기존 '다음 첨부 파일 시퀀스 번호'[")
@@ -1075,7 +1075,7 @@ public class BoardModifyReqServerTaskTest extends AbstractBoardTest {
 		try {
 			boardWriteRes = boardWriteReqServerTask.doWork(TEST_DBCP_NAME,
 					boardWriteReq);
-		} catch (ServerServiceException e) {
+		} catch (ServerTaskException e) {
 			log.warn(e.getMessage(), e);
 			fail("fail to execuate doTask");
 		} catch (Exception e) {
@@ -1116,8 +1116,8 @@ public class BoardModifyReqServerTaskTest extends AbstractBoardTest {
 		try {
 			boardModifyReqServerTask.doWork(TEST_DBCP_NAME, boardModifyReq);
 
-			fail("no ServerServiceException");
-		} catch (ServerServiceException e) {
+			fail("no ServerTaskException");
+		} catch (ServerTaskException e) {
 			String acutalErrorMessage = e.getMessage();
 			String expectedErrorMessage = new StringBuilder()
 					.append("입력 메시지로 받은 '다음 첨부 파일 시퀀스 번호'[")
@@ -1188,8 +1188,8 @@ public class BoardModifyReqServerTaskTest extends AbstractBoardTest {
 		try {
 			boardModifyReqServerTask.doWork(TEST_DBCP_NAME, boardModifyReq);
 
-			fail("no ServerServiceException");
-		} catch (ServerServiceException e) {
+			fail("no ServerTaskException");
+		} catch (ServerTaskException e) {
 			String acutalErrorMessage = e.getMessage();
 			String expectedErrorMessage = new StringBuilder()
 					.append("보존을 원하는 구 첨부 파일 목록에서 증복된 첨부 파일 시퀀스[").append(0)
@@ -1231,7 +1231,7 @@ public class BoardModifyReqServerTaskTest extends AbstractBoardTest {
 		try {
 			boardWriteRes = boardWriteReqServerTask.doWork(TEST_DBCP_NAME,
 					boardWriteReq);
-		} catch (ServerServiceException e) {
+		} catch (ServerTaskException e) {
 			log.warn(e.getMessage(), e);
 			fail("fail to execuate doTask");
 		} catch (Exception e) {
@@ -1279,8 +1279,8 @@ public class BoardModifyReqServerTaskTest extends AbstractBoardTest {
 		try {
 			boardModifyReqServerTask.doWork(TEST_DBCP_NAME, boardModifyReq);
 
-			fail("no ServerServiceException");
-		} catch (ServerServiceException e) {
+			fail("no ServerTaskException");
+		} catch (ServerTaskException e) {
 			String acutalErrorMessage = e.getMessage();
 			String expectedErrorMessage = new StringBuilder()
 					.append("보존을 원하는 구 첨부 파일 시퀀스[").append(0)
@@ -1341,7 +1341,7 @@ public class BoardModifyReqServerTaskTest extends AbstractBoardTest {
 		try {
 			boardWriteRes = boardWriteReqServerTask.doWork(TEST_DBCP_NAME,
 					boardWriteReq);
-		} catch (ServerServiceException e) {
+		} catch (ServerTaskException e) {
 			log.warn(e.getMessage(), e);
 			fail("fail to execuate doTask");
 		} catch (Exception e) {
@@ -1393,8 +1393,8 @@ public class BoardModifyReqServerTaskTest extends AbstractBoardTest {
 		try {
 			boardModifyReqServerTask.doWork(TEST_DBCP_NAME, boardModifyReq);
 
-			fail("no ServerServiceException");
-		} catch (ServerServiceException e) {
+			fail("no ServerTaskException");
+		} catch (ServerTaskException e) {
 			String acutalErrorMessage = e.getMessage();
 			String expectedErrorMessage = "구 첨부 파일들이 존재 하지 않는데 보존을 원하는 구 첨부 파일 목록을 요청하셨습니다";
 
@@ -1451,7 +1451,7 @@ public class BoardModifyReqServerTaskTest extends AbstractBoardTest {
 		try {
 			boardWriteRes = boardWriteReqServerTask.doWork(TEST_DBCP_NAME,
 					boardWriteReq);
-		} catch (ServerServiceException e) {
+		} catch (ServerTaskException e) {
 			log.warn(e.getMessage(), e);
 			fail("fail to execuate doTask");
 		} catch (Exception e) {
@@ -1509,8 +1509,8 @@ public class BoardModifyReqServerTaskTest extends AbstractBoardTest {
 		try {
 			boardModifyReqServerTask.doWork(TEST_DBCP_NAME, boardModifyReq);
 
-			fail("no ServerServiceException");
-		} catch (ServerServiceException e) {
+			fail("no ServerTaskException");
+		} catch (ServerTaskException e) {
 			String acutalErrorMessage = e.getMessage();
 			String expectedErrorMessage = new StringBuilder(
 					"보존을 원하는 구 첨부 파일 목록[=[0, 1]]중 실제 구 첨부 파일 목록[=[1]]에 존재하지 않는 첨부 파일이 존재합니다")
@@ -1578,7 +1578,7 @@ public class BoardModifyReqServerTaskTest extends AbstractBoardTest {
 		try {
 			boardWriteRes = boardWriteReqServerTask.doWork(TEST_DBCP_NAME,
 					boardWriteReq);
-		} catch (ServerServiceException e) {
+		} catch (ServerTaskException e) {
 			log.warn(e.getMessage(), e);
 			fail("fail to execuate doTask");
 		} catch (Exception e) {
@@ -1688,8 +1688,8 @@ public class BoardModifyReqServerTaskTest extends AbstractBoardTest {
 			boardModifyReqServerTask.doWork(
 					TEST_DBCP_NAME, boardModifyReq);
 			
-			fail("no ServerServiceException");
-		} catch (ServerServiceException e) {
+			fail("no ServerTaskException");
+		} catch (ServerTaskException e) {
 			String acutalErrorMessage = e.getMessage();
 			String expectedErrorMessage = "게시글 비밀번호를 입력해 주세요";
 
@@ -1755,7 +1755,7 @@ public class BoardModifyReqServerTaskTest extends AbstractBoardTest {
 		try {
 			boardWriteRes = boardWriteReqServerTask.doWork(TEST_DBCP_NAME,
 					boardWriteReq);
-		} catch (ServerServiceException e) {
+		} catch (ServerTaskException e) {
 			log.warn(e.getMessage(), e);
 			fail("fail to execuate doTask");
 		} catch (Exception e) {
@@ -1865,8 +1865,8 @@ public class BoardModifyReqServerTaskTest extends AbstractBoardTest {
 			boardModifyReqServerTask.doWork(
 					TEST_DBCP_NAME, boardModifyReq);
 			
-			fail("no ServerServiceException");
-		} catch (ServerServiceException e) {
+			fail("no ServerTaskException");
+		} catch (ServerTaskException e) {
 			String acutalErrorMessage = e.getMessage();
 			String expectedErrorMessage = "설정한 게시글 비밀 번호와 일치하지 않습니다";
 
@@ -1924,7 +1924,7 @@ public class BoardModifyReqServerTaskTest extends AbstractBoardTest {
 		try {
 			boardWriteRes = boardWriteReqServerTask.doWork(TEST_DBCP_NAME,
 					boardWriteReq);
-		} catch (ServerServiceException e) {
+		} catch (ServerTaskException e) {
 			log.warn(e.getMessage(), e);
 			fail("fail to execuate doTask");
 		} catch (Exception e) {
@@ -2072,7 +2072,7 @@ public class BoardModifyReqServerTaskTest extends AbstractBoardTest {
 		try {
 			boardWriteRes = boardWriteReqServerTask.doWork(TEST_DBCP_NAME,
 					boardWriteReq);
-		} catch (ServerServiceException e) {
+		} catch (ServerTaskException e) {
 			log.warn(e.getMessage(), e);
 			fail("fail to execuate doTask");
 		} catch (Exception e) {

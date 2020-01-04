@@ -19,7 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import kr.pe.codda.common.exception.DynamicClassCallException;
-import kr.pe.codda.common.exception.ServerServiceException;
+import kr.pe.codda.common.exception.ServerTaskException;
 import kr.pe.codda.common.message.AbstractMessage;
 import kr.pe.codda.impl.message.BoardChangeHistoryReq.BoardChangeHistoryReq;
 import kr.pe.codda.impl.message.BoardChangeHistoryRes.BoardChangeHistoryRes;
@@ -58,7 +58,7 @@ public class BoardChangeHistoryReqServerTask extends AbstractServerTask {
 			AbstractMessage outputMessage = doWork(ServerCommonStaticFinalVars.DEFAULT_DBCP_NAME,
 					(BoardChangeHistoryReq) inputMessage);
 			toLetterCarrier.addSyncOutputMessage(outputMessage);
-		} catch (ServerServiceException e) {
+		} catch (ServerTaskException e) {
 			String errorMessage = e.getMessage();
 			log.warn("errmsg=={}, inObj={}", errorMessage, inputMessage.toString());
 
@@ -82,7 +82,7 @@ public class BoardChangeHistoryReqServerTask extends AbstractServerTask {
 			ValueChecker.checkValidBoardNo(boardChangeHistoryReq.getBoardNo());
 		} catch(IllegalArgumentException e) {
 			String errorMessage = e.getMessage();
-			throw new ServerServiceException(errorMessage);
+			throw new ServerTaskException(errorMessage);
 		}
 		
 		final UByte boardID = UByte.valueOf(boardChangeHistoryReq.getBoardID());
@@ -105,7 +105,7 @@ public class BoardChangeHistoryReqServerTask extends AbstractServerTask {
 
 				String errorMessage = new StringBuilder("입력 받은 게시판 식별자[").append(boardID.shortValue())
 						.append("]가 게시판 정보 테이블에 존재하지  않습니다").toString();
-				throw new ServerServiceException(errorMessage);
+				throw new ServerTaskException(errorMessage);
 			}
 			
 			byte boardListTypeValue = boardInforRecord.get(SB_BOARD_INFO_TB.LIST_TYPE);
@@ -121,7 +121,7 @@ public class BoardChangeHistoryReqServerTask extends AbstractServerTask {
 				}
 
 				String errorMessage = e.getMessage();
-				throw new ServerServiceException(errorMessage);
+				throw new ServerTaskException(errorMessage);
 			}
 			
 			
@@ -143,7 +143,7 @@ public class BoardChangeHistoryReqServerTask extends AbstractServerTask {
 				}
 
 				String errorMessage = "지정한 게시글이 존재 하지 않습니다";
-				throw new ServerServiceException(errorMessage);
+				throw new ServerTaskException(errorMessage);
 			}
 			
 			

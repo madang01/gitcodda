@@ -10,7 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import kr.pe.codda.common.exception.DynamicClassCallException;
-import kr.pe.codda.common.exception.ServerServiceException;
+import kr.pe.codda.common.exception.ServerTaskException;
 import kr.pe.codda.common.message.AbstractMessage;
 import kr.pe.codda.impl.message.MemberAllInformationReq.MemberAllInformationReq;
 import kr.pe.codda.impl.message.MemberAllInformationRes.MemberAllInformationRes;
@@ -48,7 +48,7 @@ public class MemberAllInformationReqServerTask extends AbstractServerTask {
 		try {
 			AbstractMessage outputMessage = doWork(ServerCommonStaticFinalVars.DEFAULT_DBCP_NAME, (MemberAllInformationReq)inputMessage);
 			toLetterCarrier.addSyncOutputMessage(outputMessage);
-		} catch(ServerServiceException e) {
+		} catch(ServerTaskException e) {
 			String errorMessage = e.getMessage();
 			log.warn("errmsg=={}, inObj={}", errorMessage, inputMessage.toString());
 			
@@ -77,7 +77,7 @@ public class MemberAllInformationReqServerTask extends AbstractServerTask {
 			ValueChecker.checkValidUnBlockUserID(targetUserID);
 		} catch(IllegalArgumentException e) {
 			String errorMessage = e.getMessage();
-			throw new ServerServiceException(errorMessage);
+			throw new ServerTaskException(errorMessage);
 		}
 		
 		final MemberAllInformationRes userInformationRes = new MemberAllInformationRes();
@@ -90,7 +90,7 @@ public class MemberAllInformationReqServerTask extends AbstractServerTask {
 				/** 관리자가 아닌 경우 본인 여부 확인 */
 				if (! requestedUserID.equals(targetUserID)) {
 					String errorMessage = "타인의 사용자 정보는 검색할 수 없습니다";
-					throw new ServerServiceException(errorMessage);
+					throw new ServerTaskException(errorMessage);
 				}
 			}
 			
@@ -117,7 +117,7 @@ public class MemberAllInformationReqServerTask extends AbstractServerTask {
 				String errorMessage = new StringBuilder("회원 조회를 원하는 사용자[")
 						.append(targetUserID)
 						.append("]가 회원 테이블에 존재하지 않습니다").toString();				
-				throw new ServerServiceException(errorMessage);
+				throw new ServerTaskException(errorMessage);
 			}
 			
 			String nickname = memberRecordOfTargetUserID.get(SB_MEMBER_TB.NICKNAME);

@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
 
 import kr.pe.codda.common.etc.CommonStaticFinalVars;
 import kr.pe.codda.common.exception.DynamicClassCallException;
-import kr.pe.codda.common.exception.ServerServiceException;
+import kr.pe.codda.common.exception.ServerTaskException;
 import kr.pe.codda.common.message.AbstractMessage;
 import kr.pe.codda.impl.message.MessageResultRes.MessageResultRes;
 import kr.pe.codda.impl.message.RootMenuAddReq.RootMenuAddReq;
@@ -51,7 +51,7 @@ public class RootMenuAddReqServerTask extends AbstractServerTask {
 			AbstractMessage outputMessage = doWork(ServerCommonStaticFinalVars.DEFAULT_DBCP_NAME,
 					(RootMenuAddReq) inputMessage);
 			toLetterCarrier.addSyncOutputMessage(outputMessage);
-		} catch (ServerServiceException e) {
+		} catch (ServerTaskException e) {
 			String errorMessage = e.getMessage();
 			log.warn("errmsg=={}, inObj={}", errorMessage, inputMessage.toString());
 
@@ -77,7 +77,7 @@ public class RootMenuAddReqServerTask extends AbstractServerTask {
 			ValueChecker.checkValidRequestedUserID(rootMenuAddReq.getRequestedUserID());
 		} catch (IllegalArgumentException e) {
 			String errorMessage = e.getMessage();
-			throw new ServerServiceException(errorMessage);
+			throw new ServerTaskException(errorMessage);
 		}
 
 		final UByte menuSequenceID = SequenceType.MENU.getSequenceID();
@@ -101,7 +101,7 @@ public class RootMenuAddReqServerTask extends AbstractServerTask {
 
 				String errorMessage = new StringBuilder("메뉴 시퀀스 식별자[").append(menuSequenceID)
 						.append("]의 시퀀스를 가져오는데 실패하였습니다").toString();
-				throw new ServerServiceException(errorMessage);
+				throw new ServerTaskException(errorMessage);
 			}
 
 			UInteger rootMenuNo = menuSeqRecord.getValue(SB_SEQ_TB.SQ_VALUE);
@@ -115,7 +115,7 @@ public class RootMenuAddReqServerTask extends AbstractServerTask {
 
 				String errorMessage = new StringBuilder("메뉴 시퀀스 식별자[").append(menuSequenceID)
 						.append("]의 시퀀스가 최대치에 도달하였습니다").toString();
-				throw new ServerServiceException(errorMessage);
+				throw new ServerTaskException(errorMessage);
 			}
 
 			int seqUpdateCnt = create.update(SB_SEQ_TB).set(SB_SEQ_TB.SQ_VALUE, SB_SEQ_TB.SQ_VALUE.add(1))
@@ -130,7 +130,7 @@ public class RootMenuAddReqServerTask extends AbstractServerTask {
 
 				String errorMessage = new StringBuilder("메뉴 시퀀스 식별자[").append(menuSequenceID)
 						.append("]의 시퀀스 갱신하는데 실패하였습니다").toString();
-				throw new ServerServiceException(errorMessage);
+				throw new ServerTaskException(errorMessage);
 			}
 
 			short newOrderSeq = create.select(
@@ -145,7 +145,7 @@ public class RootMenuAddReqServerTask extends AbstractServerTask {
 				}
 
 				String errorMessage = "메뉴 갯수가 최대치(=255)에 도달하여 더 이상 추가할 수 없습니다";
-				throw new ServerServiceException(errorMessage);
+				throw new ServerTaskException(errorMessage);
 			}
 
 			int rootMenuInsertCount = create.insertInto(SB_SITEMENU_TB).set(SB_SITEMENU_TB.MENU_NO, rootMenuNo)
@@ -162,7 +162,7 @@ public class RootMenuAddReqServerTask extends AbstractServerTask {
 				}
 
 				String errorMessage = new StringBuilder().append("루트 메뉴 추가하는데 실패하였습니다").toString();
-				throw new ServerServiceException(errorMessage);
+				throw new ServerTaskException(errorMessage);
 			}
 
 			conn.commit();

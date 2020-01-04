@@ -15,7 +15,7 @@ import org.junit.Test;
 import junitlib.AbstractBoardTest;
 import kr.pe.codda.common.etc.CommonStaticFinalVars;
 import kr.pe.codda.common.exception.DynamicClassCallException;
-import kr.pe.codda.common.exception.ServerServiceException;
+import kr.pe.codda.common.exception.ServerTaskException;
 import kr.pe.codda.common.exception.SymmetricException;
 import kr.pe.codda.common.sessionkey.ClientSessionKeyIF;
 import kr.pe.codda.common.sessionkey.ClientSessionKeyManager;
@@ -105,8 +105,8 @@ public class MemberLoginReqServerTaskTest extends AbstractBoardTest {
 		try {
 			loginReqServerTask.doWork(TEST_DBCP_NAME, inObj);
 			
-			fail("no ServerServiceException");
-		} catch(ServerServiceException e) {
+			fail("no ServerTaskException");
+		} catch(ServerTaskException e) {
 			String errorMessage = e.getMessage();
 			String expectedErrorMessage = new StringBuilder("아이디[").append(notExistTestID).append("]가 존재하지 않습니다").toString();
 			
@@ -173,8 +173,8 @@ public class MemberLoginReqServerTaskTest extends AbstractBoardTest {
 		try {
 			loginReqServerTask.doWork(TEST_DBCP_NAME, inObj);
 			
-			fail("no ServerServiceException");
-		} catch(ServerServiceException e) {
+			fail("no ServerTaskException");
+		} catch(ServerTaskException e) {
 			String errorMessage = e.getMessage();
 			String expectedErrorMessage = "손님은 로그인 할 수 없습니다";
 			
@@ -218,7 +218,7 @@ public class MemberLoginReqServerTaskTest extends AbstractBoardTest {
 			try {
 				ServerDBUtil.registerMember(TEST_DBCP_NAME, MemberRoleType.MEMBER, testID, nickname, email,
 						passwordBytes, new java.sql.Timestamp(System.currentTimeMillis()), ip);
-			} catch (ServerServiceException e) {
+			} catch (ServerTaskException e) {
 				String expectedErrorMessage = new StringBuilder("기존 회원과 중복되는 아이디[").append(testID).append("] 입니다")
 						.toString();
 				String actualErrorMessag = e.getMessage();
@@ -285,8 +285,8 @@ public class MemberLoginReqServerTaskTest extends AbstractBoardTest {
 			try {
 				loginReqServerTask.doWork(TEST_DBCP_NAME, inObj);
 				
-				fail("no ServerServiceException");
-			} catch(ServerServiceException e) {
+				fail("no ServerTaskException");
+			} catch(ServerTaskException e) {
 				String errorMessage = e.getMessage();
 				String expectedErrorMessage = new StringBuilder()
 						.append(i+1).append(" 회 비밀 번호가 틀렸습니다").toString();
@@ -301,8 +301,8 @@ public class MemberLoginReqServerTaskTest extends AbstractBoardTest {
 		try {
 			loginReqServerTask.doWork(TEST_DBCP_NAME, inObj);
 			
-			fail("no ServerServiceException");
-		} catch(ServerServiceException e) {
+			fail("no ServerTaskException");
+		} catch(ServerTaskException e) {
 			String errorMessage = e.getMessage();
 			String expectedErrorMessage = new StringBuilder("최대 허용된 횟수[")
 					.append(ServerCommonStaticFinalVars.MAX_COUNT_OF_PASSWORD_FAILURES)
@@ -317,8 +317,8 @@ public class MemberLoginReqServerTaskTest extends AbstractBoardTest {
 		try {
 			loginReqServerTask.doWork(TEST_DBCP_NAME, inObj);
 			
-			fail("no ServerServiceException");
-		} catch(ServerServiceException e) {
+			fail("no ServerTaskException");
+		} catch(ServerTaskException e) {
 			String errorMessage = e.getMessage();
 			String expectedErrorMessage = new StringBuilder("최대 허용된 횟수[")
 					.append(ServerCommonStaticFinalVars.MAX_COUNT_OF_PASSWORD_FAILURES)
@@ -366,7 +366,7 @@ public class MemberLoginReqServerTaskTest extends AbstractBoardTest {
 			try {
 				ServerDBUtil.registerMember(TEST_DBCP_NAME, MemberRoleType.MEMBER, testID, nickname, email,
 						passwordBytes, new java.sql.Timestamp(System.currentTimeMillis()), ip);
-			} catch (ServerServiceException e) {
+			} catch (ServerTaskException e) {
 				String expectedErrorMessage = new StringBuilder("기존 회원과 중복되는 아이디[").append(testID).append("] 입니다")
 						.toString();
 				String actualErrorMessag = e.getMessage();
@@ -433,8 +433,8 @@ public class MemberLoginReqServerTaskTest extends AbstractBoardTest {
 			try {
 				loginReqServerTask.doWork(TEST_DBCP_NAME, inObj);
 				
-				fail("no ServerServiceException");
-			} catch(ServerServiceException e) {
+				fail("no ServerTaskException");
+			} catch(ServerTaskException e) {
 				String errorMessage = e.getMessage();
 				String expectedErrorMessage = new StringBuilder()
 						.append(i).append(" 회 비밀 번호가 틀렸습니다").toString();
@@ -593,8 +593,8 @@ public class MemberLoginReqServerTaskTest extends AbstractBoardTest {
 		try {
 			loginReqServerTask.doWork(TEST_DBCP_NAME, inObj);
 			
-			fail("no ServerServiceException");
-		} catch(ServerServiceException e) {
+			fail("no ServerTaskException");
+		} catch(ServerTaskException e) {
 			String errorMessage = e.getMessage();
 			String expectedErrorMessage = new StringBuilder("차단된 회원[").append(testID).append("] 입니다").toString();
 
@@ -701,8 +701,8 @@ public class MemberLoginReqServerTaskTest extends AbstractBoardTest {
 		try {
 			loginReqServerTask.doWork(TEST_DBCP_NAME, inObj);
 			
-			fail("no ServerServiceException");
-		} catch(ServerServiceException e) {
+			fail("no ServerTaskException");
+		} catch(ServerTaskException e) {
 			String errorMessage = e.getMessage();
 			String expectedErrorMessage = new StringBuilder("탈퇴한 회원[").append(testID).append("] 입니다").toString();
 

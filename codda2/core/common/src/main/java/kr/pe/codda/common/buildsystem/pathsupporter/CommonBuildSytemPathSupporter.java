@@ -20,7 +20,7 @@ package kr.pe.codda.common.buildsystem.pathsupporter;
 import java.io.File;
 
 /**
- * 공통 경로 관련  추상화 클래스, 설치 경로의 예 윈도 => "D:\gitcodda\codda2", 리눅스  "[개인 계정의 홈]/gitcodda/codda2"
+ * 공통 경로 관련  추상화 클래스, 설치 경로의 예 윈도 =&gt; "D:\gitcodda\codda2", 리눅스  "[개인 계정의 홈]/gitcodda/codda2"
  * 
  * @author Won Jonghoon
  *
@@ -67,7 +67,7 @@ public abstract class CommonBuildSytemPathSupporter {
 
 	/**
 	 * @param installedPathString 설치 경로
-	 * @return common resource path => [installed path]/resources
+	 * @return common resource path =&gt; [installed path]/resources
 	 */
 	public static String getCommonResourcesPathString(String installedPathString) {
 		if (null == installedPathString) {
@@ -86,7 +86,7 @@ public abstract class CommonBuildSytemPathSupporter {
 	
 	/**
 	 * @param installedPathString 설치 경로
-	 * @return message info path => [common resource path]/message_info
+	 * @return message info path =&gt; [common resource path]/message_info
 	 */
 	public static String getCommonMessageInfoDirectoryPathString(String installedPathString) {
 		StringBuilder strBuilder = new StringBuilder(getCommonResourcesPathString(installedPathString))
@@ -97,7 +97,7 @@ public abstract class CommonBuildSytemPathSupporter {
 	/**
 	 * @param installedPathString 설치 경로
 	 * @param messageID 메시지 식별자
-	 * @return message info file path => [message info path]/[message id].xml
+	 * @return message info file path =&gt; [message info path]/[message id].xml
 	 */
 	public static String getCommonMessageInfoFilePathString(String installedPathString, String messageID) {
 		StringBuilder strBuilder = new StringBuilder(getCommonMessageInfoDirectoryPathString(installedPathString))

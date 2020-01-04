@@ -24,7 +24,7 @@ import org.slf4j.LoggerFactory;
 
 import kr.pe.codda.common.etc.CommonStaticFinalVars;
 import kr.pe.codda.common.exception.DynamicClassCallException;
-import kr.pe.codda.common.exception.ServerServiceException;
+import kr.pe.codda.common.exception.ServerTaskException;
 import kr.pe.codda.common.message.AbstractMessage;
 import kr.pe.codda.impl.message.BoardMoveReq.BoardMoveReq;
 import kr.pe.codda.impl.message.BoardMoveRes.BoardMoveRes;
@@ -65,7 +65,7 @@ public class BoardMoveReqServerTask extends AbstractServerTask {
 			AbstractMessage outputMessage = doWork(ServerCommonStaticFinalVars.DEFAULT_DBCP_NAME,
 					(BoardMoveReq) inputMessage);
 			toLetterCarrier.addSyncOutputMessage(outputMessage);
-		} catch (ServerServiceException e) {
+		} catch (ServerTaskException e) {
 			String errorMessage = e.getMessage();
 			log.warn("errmsg=={}, inObj={}", errorMessage, inputMessage.toString());
 
@@ -82,54 +82,54 @@ public class BoardMoveReqServerTask extends AbstractServerTask {
 		}
 	}
 	
-	private void checkValidAllArgument(BoardMoveReq boardMoveReq) throws  ServerServiceException {		
+	private void checkValidAllArgument(BoardMoveReq boardMoveReq) throws  ServerTaskException {		
 		try {
 			ValueChecker.checkValidRequestedUserID(boardMoveReq.getRequestedUserID());
 			ValueChecker.checkValidIP(boardMoveReq.getIp());
 		} catch (IllegalArgumentException e) {
 			String errorMessage = e.getMessage();
-			throw new ServerServiceException(errorMessage);
+			throw new ServerTaskException(errorMessage);
 		}		
 		
 		if (boardMoveReq.getSourceBoardID() < 0) {
 			String errorMessage = new StringBuilder("이동 전 게시판 식별자[").append(boardMoveReq.getSourceBoardID())
 					.append("]가 0보다 작습니다").toString();
-			throw new ServerServiceException(errorMessage);
+			throw new ServerTaskException(errorMessage);
 		}
 
 		if (boardMoveReq.getSourceBoardID() > CommonStaticFinalVars.UNSIGNED_BYTE_MAX) {
 			String errorMessage = new StringBuilder("이동 전 게시판 식별자[").append(boardMoveReq.getSourceBoardID())
 					.append("]가 unsigned byte 최대값 255 보다 큽니다").toString();
-			throw new ServerServiceException(errorMessage);
+			throw new ServerTaskException(errorMessage);
 		}
 
 		if (boardMoveReq.getSourceBoardNo() <= 0) {
 			String errorMessage = new StringBuilder("이동 전 게시글 번호[").append(boardMoveReq.getSourceBoardNo())
 					.append("]가 0 보다 작습니다").toString();
-			throw new ServerServiceException(errorMessage);
+			throw new ServerTaskException(errorMessage);
 		}
 
 		if (boardMoveReq.getSourceBoardNo() > CommonStaticFinalVars.UNSIGNED_INTEGER_MAX) {
 			String errorMessage = new StringBuilder("이동 전 게시글 번호[").append(boardMoveReq.getSourceBoardNo())
 					.append("]가 unsigned integer 최대값 4294967295 보다 큽니다").toString();
-			throw new ServerServiceException(errorMessage);
+			throw new ServerTaskException(errorMessage);
 		}
 
 		if (boardMoveReq.getTargetBoardID() < 0) {
 			String errorMessage = new StringBuilder("이동 후 게시판 식별자[").append(boardMoveReq.getTargetBoardID())
 					.append("]가 0보다 작습니다").toString();
-			throw new ServerServiceException(errorMessage);
+			throw new ServerTaskException(errorMessage);
 		}
 
 		if (boardMoveReq.getTargetBoardID() > CommonStaticFinalVars.UNSIGNED_BYTE_MAX) {
 			String errorMessage = new StringBuilder("이동 후 게시판 식별자[").append(boardMoveReq.getTargetBoardID())
 					.append("]가 unsigned byte 최대값 255 보다 큽니다").toString();
-			throw new ServerServiceException(errorMessage);
+			throw new ServerTaskException(errorMessage);
 		}
 		
 		if (boardMoveReq.getTargetBoardID() == boardMoveReq.getSourceBoardID()) {
 			String errorMessage = "동일한 게시판으로 이동할 수 없습니다";
-			throw new ServerServiceException(errorMessage);
+			throw new ServerTaskException(errorMessage);
 		}
 				
 	}
@@ -171,7 +171,7 @@ public class BoardMoveReqServerTask extends AbstractServerTask {
 
 				String errorMessage = new StringBuilder("이동 전 게시판 식별자[").append(sourceBoardID.shortValue())
 						.append("]가 게시판 정보 테이블에 존재하지  않습니다").toString();
-				throw new ServerServiceException(errorMessage);
+				throw new ServerTaskException(errorMessage);
 			}
 
 			byte sourceBoardListTypeValue = sourceBoardInforRecord.get(SB_BOARD_INFO_TB.LIST_TYPE);
@@ -193,7 +193,7 @@ public class BoardMoveReqServerTask extends AbstractServerTask {
 				String errorMessage = new StringBuilder()
 						.append("이동할  게시글의 ")
 						.append(e.getMessage()).toString();
-				throw new ServerServiceException(errorMessage);
+				throw new ServerTaskException(errorMessage);
 			}
 					
 			
@@ -216,7 +216,7 @@ public class BoardMoveReqServerTask extends AbstractServerTask {
 
 				String errorMessage = new StringBuilder("이동 후 게시판 식별자[").append(targetBoardID.shortValue())
 						.append("]가 게시판 정보 테이블에 존재하지  않습니다").toString();
-				throw new ServerServiceException(errorMessage);
+				throw new ServerTaskException(errorMessage);
 			}
 
 			String targetBoardName = targetBoardInforRecord.get(SB_BOARD_INFO_TB.BOARD_NAME);
@@ -240,7 +240,7 @@ public class BoardMoveReqServerTask extends AbstractServerTask {
 				}
 
 				String errorMessage = "이동 하고자 하는 목적지의 게시판 유형이 일치 하지 않아 이동할 수 없습니다";
-				throw new ServerServiceException(errorMessage);
+				throw new ServerTaskException(errorMessage);
 			}
 
 			/** 수정할 게시글에 속한 그룹의 루트 노드에 해당하는 레코드에 락을 건다 */
@@ -255,7 +255,7 @@ public class BoardMoveReqServerTask extends AbstractServerTask {
 				}
 
 				String errorMessage = "이동할 게시글이 그룹의 루트인 본문글이 아닙니다";
-				throw new ServerServiceException(errorMessage);
+				throw new ServerTaskException(errorMessage);
 			}			
 			
 			/**
@@ -296,7 +296,7 @@ public class BoardMoveReqServerTask extends AbstractServerTask {
 					String errorMessage = new StringBuilder()
 							.append("이동할  ")
 							.append(e.getMessage()).toString();
-					throw new ServerServiceException(errorMessage);
+					throw new ServerTaskException(errorMessage);
 				}
 				
 				UInteger toBoardNo = UInteger.valueOf(targetNextBoardNo);
@@ -318,7 +318,7 @@ public class BoardMoveReqServerTask extends AbstractServerTask {
 					
 					// log.warn(errorMessage);
 					
-					throw new ServerServiceException(errorMessage);
+					throw new ServerTaskException(errorMessage);
 				}
 				
 				create.insertInto(SB_BOARD_TB).set(SB_BOARD_TB.BOARD_ID, targetBoardID)

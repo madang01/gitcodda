@@ -20,7 +20,7 @@ import org.junit.Test;
 import junitlib.AbstractBoardTest;
 import kr.pe.codda.common.etc.CommonStaticFinalVars;
 import kr.pe.codda.common.exception.DynamicClassCallException;
-import kr.pe.codda.common.exception.ServerServiceException;
+import kr.pe.codda.common.exception.ServerTaskException;
 import kr.pe.codda.impl.message.BoardInfoAddReq.BoardInfoAddReq;
 import kr.pe.codda.impl.message.BoardInfoAddRes.BoardInfoAddRes;
 import kr.pe.codda.impl.message.BoardInfoDeleteReq.BoardInfoDeleteReq;
@@ -84,7 +84,7 @@ public class BoardInfoIntegrationTest extends AbstractBoardTest	 {
 		try {
 			boardInfoListReqServerTask.doWork(TEST_DBCP_NAME, boardInfoListReq);
 			
-		} catch (ServerServiceException e) {
+		} catch (ServerTaskException e) {
 			String errorMessage = e.getMessage();
 
 			String expectedErrorMessage = "게시판 정보 목록 조회 서비스는 관리자 전용 서비스입니다";
@@ -146,8 +146,8 @@ public class BoardInfoIntegrationTest extends AbstractBoardTest	 {
 		try {
 			boardInfoAddReqServerTask.doWork(TEST_DBCP_NAME, boardInfoAddReq);
 			
-			 fail("no ServerServiceException");
-		} catch (ServerServiceException e) {
+			 fail("no ServerTaskException");
+		} catch (ServerTaskException e) {
 			String errorMessage = e.getMessage();
 
 			String expectedErrorMessage = "게시판 정보 추가 서비스는 관리자 전용 서비스입니다";
@@ -209,8 +209,8 @@ public class BoardInfoIntegrationTest extends AbstractBoardTest	 {
 		
 		try {
 			boardInfoAddReqServerTask.doWork(TEST_DBCP_NAME, boardInfoAddReq);
-			fail("no ServerServiceException");
-		} catch (ServerServiceException e) {
+			fail("no ServerTaskException");
+		} catch (ServerTaskException e) {
 			String errorMessage = e.getMessage();
 
 			String expectedErrorMessage = "새롭게 얻은 게시판 식별자 값이 최대값을 초과하여 더 이상 추가할 수 없습니다";
@@ -312,8 +312,8 @@ public class BoardInfoIntegrationTest extends AbstractBoardTest	 {
 		
 		try {
 			boardInfoDeleteReqServerTask.doWork(TEST_DBCP_NAME, boardInfoDeleteReq);
-			fail("no ServerServiceException");
-		} catch (ServerServiceException e) {
+			fail("no ServerTaskException");
+		} catch (ServerTaskException e) {
 			String errorMessage = e.getMessage();
 
 			String expectedErrorMessage = "게시판 정보 삭제 서비스는 관리자 전용 서비스입니다";
@@ -343,8 +343,8 @@ public class BoardInfoIntegrationTest extends AbstractBoardTest	 {
 		
 		try {
 			boardInfoDeleteReqServerTask.doWork(TEST_DBCP_NAME, boardInfoDeleteReq);
-			fail("no ServerServiceException");
-		} catch (ServerServiceException e) {
+			fail("no ServerTaskException");
+		} catch (ServerTaskException e) {
 			String errorMessage = e.getMessage();
 
 			String expectedErrorMessage = "지정한 게시판 식별자에 대한 게시판 정보가 존재하지 않습니다";
@@ -410,7 +410,7 @@ public class BoardInfoIntegrationTest extends AbstractBoardTest	 {
 		try {
 			boardWriteRes = boardWriteReqServerTask.doWork(
 					TEST_DBCP_NAME, boardWriteReq);
-		} catch (ServerServiceException e) {
+		} catch (ServerTaskException e) {
 			log.warn(e.getMessage(), e);
 			fail("fail to execuate doTask");
 		} catch (Exception e) {
@@ -433,8 +433,8 @@ public class BoardInfoIntegrationTest extends AbstractBoardTest	 {
 		
 		try {
 			boardInfoDeleteReqServerTask.doWork(TEST_DBCP_NAME, boardInfoDeleteReq);
-			fail("no ServerServiceException");
-		} catch (ServerServiceException e) {
+			fail("no ServerTaskException");
+		} catch (ServerTaskException e) {
 			String errorMessage = e.getMessage();
 
 			String expectedErrorMessage = "삭제를 원하는 게시판 식별자를 갖는 게시글이 존재하여 게시판 정보를 삭제 할 수 없습니다";
@@ -547,8 +547,8 @@ public class BoardInfoIntegrationTest extends AbstractBoardTest	 {
 		
 		try {
 			boardInfoModifyReqServerTask.doWork(TEST_DBCP_NAME, boardInfoModifyReq);
-			fail("no ServerServiceException");
-		} catch (ServerServiceException e) {
+			fail("no ServerTaskException");
+		} catch (ServerTaskException e) {
 			String errorMessage = e.getMessage();
 
 			String expectedErrorMessage = "게시판 정보 수정 서비스는 관리자 전용 서비스입니다";
@@ -582,8 +582,8 @@ public class BoardInfoIntegrationTest extends AbstractBoardTest	 {
 		
 		try {
 			boardInfoModifyReqServerTask.doWork(TEST_DBCP_NAME, boardInfoModifyReq);
-			fail("no ServerServiceException");
-		} catch (ServerServiceException e) {
+			fail("no ServerTaskException");
+		} catch (ServerTaskException e) {
 			String errorMessage = e.getMessage();
 
 			String expectedErrorMessage = "지정한 게시판 식별자에 대한 게시판 정보가 존재하지 않습니다";

@@ -29,7 +29,7 @@ import kr.pe.codda.common.exception.CoddaConfigurationException;
  * 최소 최대 의존성 검사기
  * @author Won Jonghoon
  *
- * @param <T>
+ * @param <T> 제너럴 타입
  */
 public class MinAndMaxDependencyValidator<T extends Number> extends
 		AbstractDependencyValidator {

@@ -45,7 +45,7 @@ import kr.pe.codda.common.config.CoddaConfiguration;
 import kr.pe.codda.common.config.CoddaConfigurationManager;
 import kr.pe.codda.common.etc.CommonStaticFinalVars;
 import kr.pe.codda.common.exception.DBCPDataSourceNotFoundException;
-import kr.pe.codda.common.exception.ServerServiceException;
+import kr.pe.codda.common.exception.ServerTaskException;
 import kr.pe.codda.common.util.CommonStaticUtil;
 import kr.pe.codda.impl.task.server.MemberRegisterReqServerTask;
 import kr.pe.codda.server.dbcp.DBCPManager;
@@ -405,7 +405,7 @@ public abstract class ServerDBUtil {
 
 		if (null == memberRoleType) {
 			String errorMessage = "the parameter memberRoleType is null";
-			throw new ServerServiceException(errorMessage);
+			throw new ServerTaskException(errorMessage);
 		}
 
 		try {
@@ -415,7 +415,7 @@ public abstract class ServerDBUtil {
 			ValueChecker.checkValidMemberReigsterPwd(passwordBytes);		
 			ValueChecker.checkValidIP(ip);
 		} catch (IllegalArgumentException e) {
-			throw new ServerServiceException(e.getMessage());
+			throw new ServerTaskException(e.getMessage());
 		}		
 
 		SecureRandom random = null;
@@ -444,7 +444,7 @@ public abstract class ServerDBUtil {
 				}
 
 				String errorMessage = new StringBuilder("기존 회원과 중복되는 아이디[").append(userID).append("] 입니다").toString();
-				throw new ServerServiceException(errorMessage);
+				throw new ServerTaskException(errorMessage);
 			}
 
 			boolean isSameNicknameMember = create.fetchExists(
@@ -458,7 +458,7 @@ public abstract class ServerDBUtil {
 				}
 
 				String errorMessage = new StringBuilder("기존 회원과 중복되는 별명[").append(nickname).append("] 입니다").toString();
-				throw new ServerServiceException(errorMessage);
+				throw new ServerTaskException(errorMessage);
 			}
 
 			int resultOfInsert = create.insertInto(SB_MEMBER_TB).set(SB_MEMBER_TB.USER_ID, userID)
@@ -484,7 +484,7 @@ public abstract class ServerDBUtil {
 				}
 
 				String errorMessage = "회원 등록하는데 실패하였습니다";
-				throw new ServerServiceException(errorMessage);
+				throw new ServerTaskException(errorMessage);
 			}			
 
 			conn.commit();
@@ -570,7 +570,7 @@ public abstract class ServerDBUtil {
 	}
 
 	public static UByte getToOrderSeqOfRelativeRootMenu(DSLContext create, UByte orderSeq, UInteger directParentNo)
-			throws ServerServiceException {
+			throws ServerTaskException {
 		while (true) {
 			Record1<UByte> toOrderSeqRecord = create.select(SB_SITEMENU_TB.ORDER_SQ.min().sub(1).as("toOrderSeq"))
 					.from(SB_SITEMENU_TB.forceIndex("sb_sitemenu_idx2"))
@@ -591,7 +591,7 @@ public abstract class ServerDBUtil {
 				if (null == parentMenuRecord) {
 					String errorMessage = new StringBuilder().append("직계 조상 메뉴[menuNo=").append(directParentNo)
 							.append("]가 없습니다").toString();
-					throw new ServerServiceException(errorMessage);
+					throw new ServerTaskException(errorMessage);
 				}
 
 				directParentNo = parentMenuRecord.getValue(SB_SITEMENU_TB.PARENT_NO);
@@ -629,11 +629,11 @@ public abstract class ServerDBUtil {
 	/*
 	 * public static MemberRoleType getValidMemberRoleType(Connection conn,
 	 * DSLContext create, InternalLogger log, String requestedUserID) throws
-	 * ServerServiceException { if (null == requestedUserID) { try {
+	 * ServerTaskException { if (null == requestedUserID) { try {
 	 * conn.rollback(); } catch (Exception e) { log.warn("fail to rollback"); }
 	 * 
 	 * String errorMessage = "서비스 요청자를 입력해 주세요"; throw new
-	 * ServerServiceException(errorMessage); }
+	 * ServerTaskException(errorMessage); }
 	 * 
 	 * MemberRoleType memberRoleTypeOfRequestedUserID = null;
 	 * 
@@ -646,7 +646,7 @@ public abstract class ServerDBUtil {
 	 * 
 	 * String errorMessage = new StringBuilder("서비스 요청자[").append(requestedUserID).
 	 * append("]가 회원 테이블에 존재하지 않습니다") .toString(); throw new
-	 * ServerServiceException(errorMessage); }
+	 * ServerTaskException(errorMessage); }
 	 * 
 	 * byte memeberStateOfRequestedUserID =
 	 * memberRecord.getValue(SB_MEMBER_TB.STATE); MemberStateType
@@ -660,7 +660,7 @@ public abstract class ServerDBUtil {
 	 * StringBuilder("서비스 요청자[").append(requestedUserID).append("]의 회원 상태[")
 	 * .append(memeberStateOfRequestedUserID).append("] 값이 잘못되었습니다").toString();
 	 * 
-	 * throw new ServerServiceException(errorMessage); }
+	 * throw new ServerTaskException(errorMessage); }
 	 * 
 	 * if (! MemberStateType.OK.equals(memberStateTypeOfRequestedUserID)) { try {
 	 * conn.rollback(); } catch (Exception e1) { log.warn("fail to rollback"); }
@@ -668,7 +668,7 @@ public abstract class ServerDBUtil {
 	 * String errorMessage = new
 	 * StringBuilder("서비스 요청자[").append(requestedUserID).append("]의 회원 상태[")
 	 * .append(memberStateTypeOfRequestedUserID.getName()).append("]가 정상이 아닙니다").
-	 * toString(); throw new ServerServiceException(errorMessage); }
+	 * toString(); throw new ServerTaskException(errorMessage); }
 	 * 
 	 * byte memberRoleTypeValueOfRequestedUserID =
 	 * memberRecord.getValue(SB_MEMBER_TB.ROLE);
@@ -681,7 +681,7 @@ public abstract class ServerDBUtil {
 	 * String errorMessage = new
 	 * StringBuilder("서비스 요청자[").append(requestedUserID).append("]의 멤버 역활 유형[")
 	 * .append(memberRoleTypeValueOfRequestedUserID).append("]이 잘못되어있습니다").toString(
-	 * ); throw new ServerServiceException(errorMessage); }
+	 * ); throw new ServerTaskException(errorMessage); }
 	 * 
 	 * return memberRoleTypeOfRequestedUserID; }
 	 */
@@ -709,11 +709,11 @@ public abstract class ServerDBUtil {
 	 * @param servicePermissionType 서비스 이용 권한 유형
 	 * @param requestedUserID         서비스 요청자
 	 * @return 서비스 요청자의 회원 역활 유형
-	 * @throws ServerServiceException 서비스 이용 권한이 없거나 기타 에러 발생시 던지는 예외
+	 * @throws ServerTaskException 서비스 이용 권한이 없거나 기타 에러 발생시 던지는 예외
 	 */
 	public static MemberRoleType checkUserAccessRights(Connection conn, DSLContext create, Logger log,
 			String serviceName, PermissionType servicePermissionType, String requestedUserID)
-			throws ServerServiceException {
+			throws ServerTaskException {
 
 		if (null == requestedUserID) {
 			try {
@@ -723,7 +723,7 @@ public abstract class ServerDBUtil {
 			}
 
 			String errorMessage = "서비스 요청자를 입력해 주세요";
-			throw new ServerServiceException(errorMessage);
+			throw new ServerTaskException(errorMessage);
 		}
 
 		
@@ -740,7 +740,7 @@ public abstract class ServerDBUtil {
 
 			String errorMessage = new StringBuilder("서비스 요청자[").append(requestedUserID).append("]가 회원 테이블에 존재하지 않습니다")
 					.toString();
-			throw new ServerServiceException(errorMessage);
+			throw new ServerTaskException(errorMessage);
 		}
 
 		byte memeberStateOfRequestedUserID = memberRecord.getValue(SB_MEMBER_TB.STATE);
@@ -757,7 +757,7 @@ public abstract class ServerDBUtil {
 			String errorMessage = new StringBuilder("서비스 요청자[").append(requestedUserID).append("]의 회원 상태[")
 					.append(memberStateTypeOfRequestedUserID.getName()).append("] 값이 잘못되었습니다").toString();
 
-			throw new ServerServiceException(errorMessage);
+			throw new ServerTaskException(errorMessage);
 		}
 
 		if (! MemberStateType.OK.equals(memberStateTypeOfRequestedUserID)) {
@@ -769,7 +769,7 @@ public abstract class ServerDBUtil {
 
 			String errorMessage = new StringBuilder("서비스 요청자[").append(requestedUserID).append("]의 회원 상태[")
 					.append(memberStateTypeOfRequestedUserID.getName()).append("]가 정상이 아닙니다").toString();
-			throw new ServerServiceException(errorMessage);
+			throw new ServerTaskException(errorMessage);
 		}
 
 		
@@ -787,7 +787,7 @@ public abstract class ServerDBUtil {
 
 			String errorMessage = new StringBuilder("서비스 요청자[").append(requestedUserID).append("]의 멤버 역활 유형[")
 					.append(memberRoleTypeValueOfRequestedUserID).append("]이 잘못되어있습니다").toString();
-			throw new ServerServiceException(errorMessage);
+			throw new ServerTaskException(errorMessage);
 		}
 
 		
@@ -800,7 +800,7 @@ public abstract class ServerDBUtil {
 				}
 
 				String errorMessage = new StringBuilder().append(serviceName).append("는 관리자 전용 서비스입니다").toString();
-				throw new ServerServiceException(errorMessage);
+				throw new ServerTaskException(errorMessage);
 			}
 		} else if (PermissionType.MEMBER.equals(servicePermissionType)) {
 			if (MemberRoleType.GUEST.equals(memberRoleTypeOfRequestedUserID)) {
@@ -811,7 +811,7 @@ public abstract class ServerDBUtil {
 				}
 
 				String errorMessage = new StringBuilder().append(serviceName).append("는 로그인 해야만 이용할 수 있습니다").toString();
-				throw new ServerServiceException(errorMessage);
+				throw new ServerTaskException(errorMessage);
 			}
 		}
 
@@ -838,7 +838,7 @@ public abstract class ServerDBUtil {
 		.where(SB_SITE_LOG_TB.YYYYMMDD.eq(yyyyMMdd)).fetchOne().value1();
 		
 		if (maxOfDayLogSeq == CommonStaticFinalVars.UNSIGNED_INTEGER_MAX) {
-			throw new ServerServiceException("작업 시점의 SB_SITE_LOG_TB 테이블의 날짜 시퀀스가 최대치에 도달하여 더 이상 로그를 추가할 수 없습니다");
+			throw new ServerTaskException("작업 시점의 SB_SITE_LOG_TB 테이블의 날짜 시퀀스가 최대치에 도달하여 더 이상 로그를 추가할 수 없습니다");
 		}
 		
 		create.insertInto(SB_SITE_LOG_TB)
@@ -911,7 +911,7 @@ public abstract class ServerDBUtil {
 					.append(", boardNo=")
 					.append(boardNo)
 					.append("]이 존재 하지 않습니다").toString();
-			throw new ServerServiceException(errorMessage);
+			throw new ServerTaskException(errorMessage);
 		}
 		
 		UInteger groupNo = groupRecord.get(SB_BOARD_TB.GROUP_NO);
@@ -936,7 +936,7 @@ public abstract class ServerDBUtil {
 					.append("]이 존재 하지 않습니다").toString(); 
 					
 					new StringBuilder("그룹 루트 게시글이 존재 하지 않습니다").toString();
-			throw new ServerServiceException(errorMessage);
+			throw new ServerTaskException(errorMessage);
 		}
 		/** 그룹 락 종료 */
 		
@@ -958,7 +958,7 @@ public abstract class ServerDBUtil {
 			DSLContext create = DSL.using(conn, SQLDialect.MYSQL, ServerDBUtil.getDBCPSettings(dbcpName));
 			
 			dbExecutor.execute(conn, create); 
-		} catch (ServerServiceException e) {
+		} catch (ServerTaskException e) {
 			throw e;
 		} catch (Exception e) {
 			if (null != conn) {

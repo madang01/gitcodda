@@ -37,7 +37,11 @@ public final class ClientSessionKeyManager {
 		static final ClientSessionKeyManager singleton = new ClientSessionKeyManager();
 	}
 
-	/** 동기화 쓰지 않는 싱글턴 구현 메소드 */
+	
+	/**
+	 * 동기화 쓰지 않는 싱글턴 구현 메소드 
+	 * @return ClientSessionKeyManager 객체
+	 */
 	public static ClientSessionKeyManager getInstance() {
 		return ClientSessionKeyManagerHolder.singleton;
 	}

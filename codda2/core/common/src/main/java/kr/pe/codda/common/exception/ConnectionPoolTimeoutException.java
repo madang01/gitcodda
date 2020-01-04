@@ -19,6 +19,12 @@ package kr.pe.codda.common.exception;
 
 import java.net.SocketTimeoutException;
 
+/**
+ * 연결 폴에서 연결을 얻을때 타임 아웃 발생시 던지는 예외, 참고 : {@link SocketTimeoutException} 를 상속한다.
+ * 
+ * @author Won Jonghoon
+ *
+ */
 public class ConnectionPoolTimeoutException extends SocketTimeoutException {
 
 	private static final long serialVersionUID = 2720180667897458907L;

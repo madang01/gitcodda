@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
 
 import kr.pe.codda.common.etc.CommonStaticFinalVars;
 import kr.pe.codda.common.exception.DynamicClassCallException;
-import kr.pe.codda.common.exception.ServerServiceException;
+import kr.pe.codda.common.exception.ServerTaskException;
 import kr.pe.codda.common.exception.SymmetricException;
 import kr.pe.codda.common.message.AbstractMessage;
 import kr.pe.codda.common.sessionkey.ServerSessionkeyIF;
@@ -61,7 +61,7 @@ public class MemberLoginReqServerTask extends AbstractServerTask {
 			AbstractMessage outputMessage = doWork(ServerCommonStaticFinalVars.DEFAULT_DBCP_NAME,
 					(MemberLoginReq) inputMessage);
 			toLetterCarrier.addSyncOutputMessage(outputMessage);
-		} catch (ServerServiceException e) {
+		} catch (ServerTaskException e) {
 			String errorMessage = e.getMessage();
 			log.warn("errmsg=={}, inObj={}", errorMessage, inputMessage.toString());
 
@@ -89,29 +89,29 @@ public class MemberLoginReqServerTask extends AbstractServerTask {
 
 		if (null == idCipherBase64) {
 			String errorMessage = "아이디를 입력해 주세요";
-			throw new ServerServiceException(errorMessage);
+			throw new ServerTaskException(errorMessage);
 		}
 
 		if (null == pwdCipherBase64) {
 			String errorMessage = "비밀번호를 입력해 주세요";
-			throw new ServerServiceException(errorMessage);
+			throw new ServerTaskException(errorMessage);
 		}
 
 		if (null == sessionKeyBase64) {
 			String errorMessage = "세션키를 입력해 주세요";
-			throw new ServerServiceException(errorMessage);
+			throw new ServerTaskException(errorMessage);
 		}
 
 		if (null == ivBase64) {
 			String errorMessage = "세션키 소금값을 입력해 주세요";
-			throw new ServerServiceException(errorMessage);
+			throw new ServerTaskException(errorMessage);
 		}
 
 		try {
 			ValueChecker.checkValidIP(memberLoginReq.getIp());
 		} catch (IllegalArgumentException e) {
 			String errorMessage = e.getMessage();
-			throw new ServerServiceException(errorMessage);
+			throw new ServerTaskException(errorMessage);
 		}
 		
 
@@ -124,27 +124,27 @@ public class MemberLoginReqServerTask extends AbstractServerTask {
 			idCipherBytes = CommonStaticUtil.Base64Decoder.decode(idCipherBase64);
 		} catch (Exception e) {
 			String errorMessage = "아이디 암호문은 베이스64로 인코딩되지 않았습니다";
-			throw new ServerServiceException(errorMessage);
+			throw new ServerTaskException(errorMessage);
 		}
 
 		try {
 			pwdCipherBytes = CommonStaticUtil.Base64Decoder.decode(pwdCipherBase64);
 		} catch (Exception e) {
 			String errorMessage = "비밀번호 암호문은 베이스64로 인코딩되지 않았습니다";
-			throw new ServerServiceException(errorMessage);
+			throw new ServerTaskException(errorMessage);
 		}
 		try {
 			sessionKeyBytes = CommonStaticUtil.Base64Decoder.decode(sessionKeyBase64);
 		} catch (Exception e) {
 			String errorMessage = "세션키는 베이스64로 인코딩되지 않았습니다";
-			throw new ServerServiceException(errorMessage);
+			throw new ServerTaskException(errorMessage);
 		}
 
 		try {
 			ivBytes = CommonStaticUtil.Base64Decoder.decode(ivBase64);
 		} catch (Exception e) {
 			String errorMessage = "세션키 소금값은 베이스64로 인코딩되지 않았습니다";
-			throw new ServerServiceException(errorMessage);
+			throw new ServerTaskException(errorMessage);
 		}
 
 		ServerSymmetricKeyIF serverSymmetricKey = null;
@@ -157,11 +157,11 @@ public class MemberLoginReqServerTask extends AbstractServerTask {
 		} catch (IllegalArgumentException e) {
 			String errorMessage = "서버 세션키를 얻는데 실패하였습니다";
 			log.warn(errorMessage, e);
-			throw new ServerServiceException(errorMessage);
+			throw new ServerTaskException(errorMessage);
 		} catch (SymmetricException e) {
 			String errorMessage = "서버 세션키를 얻는데 실패하였습니다";
 			log.warn(errorMessage, e);
-			throw new ServerServiceException(errorMessage);
+			throw new ServerTaskException(errorMessage);
 		}
 
 		final String userID;
@@ -171,11 +171,11 @@ public class MemberLoginReqServerTask extends AbstractServerTask {
 		} catch (IllegalArgumentException e) {
 			String errorMessage = "아이디에 대한 복호문을 얻는데 실패하였습니다";
 			log.warn(errorMessage, e);
-			throw new ServerServiceException(errorMessage);
+			throw new ServerTaskException(errorMessage);
 		} catch (SymmetricException e) {
 			String errorMessage = "아이디에 대한 복호문을 얻는데 실패하였습니다";
 			log.warn(errorMessage, e);
-			throw new ServerServiceException(errorMessage);
+			throw new ServerTaskException(errorMessage);
 		}
 
 		final byte[] passwordBytes;
@@ -186,11 +186,11 @@ public class MemberLoginReqServerTask extends AbstractServerTask {
 
 			String errorMessage = "비밀번호 복호문을 얻는데 실패하였습니다";
 			log.warn(errorMessage, e);
-			throw new ServerServiceException(errorMessage);
+			throw new ServerTaskException(errorMessage);
 		} catch (SymmetricException e) {
 			String errorMessage = "비밀번호 복호문을 얻는데 실패하였습니다";
 			log.warn(errorMessage, e);
-			throw new ServerServiceException(errorMessage);
+			throw new ServerTaskException(errorMessage);
 		}
 
 		try {
@@ -198,7 +198,7 @@ public class MemberLoginReqServerTask extends AbstractServerTask {
 			ValueChecker.checkValidLoginPwd(passwordBytes);
 		} catch (IllegalArgumentException e) {
 			String errorMessage = e.getMessage();
-			throw new ServerServiceException(errorMessage);
+			throw new ServerTaskException(errorMessage);
 		}
 		
 		final MemberLoginRes memberLoginRes = new MemberLoginRes();
@@ -218,7 +218,7 @@ public class MemberLoginReqServerTask extends AbstractServerTask {
 				}
 
 				String errorMessage = new StringBuilder("아이디[").append(userID).append("]가 존재하지 않습니다").toString();
-				throw new ServerServiceException(errorMessage);
+				throw new ServerTaskException(errorMessage);
 			}
 
 			String nickname = memberRecord.get(SB_MEMBER_TB.NICKNAME);
@@ -244,7 +244,7 @@ public class MemberLoginReqServerTask extends AbstractServerTask {
 
 				// log.warn(errorMessage);
 
-				throw new ServerServiceException(errorMessage);
+				throw new ServerTaskException(errorMessage);
 			}
 
 			if (MemberRoleType.GUEST.equals(memberRoleType)) {
@@ -263,7 +263,7 @@ public class MemberLoginReqServerTask extends AbstractServerTask {
 						new java.sql.Timestamp(System.currentTimeMillis()), memberLoginReq.getIp());
 				conn.commit();
 
-				throw new ServerServiceException(errorMessage);
+				throw new ServerTaskException(errorMessage);
 			}
 
 			MemberStateType memberStateType = null;
@@ -278,7 +278,7 @@ public class MemberLoginReqServerTask extends AbstractServerTask {
 
 				String errorMessage = new StringBuilder("회원[").append(userID).append("]의 멤버 상태[").append(memberState)
 						.append("]가 잘못되었습니다").toString();
-				throw new ServerServiceException(errorMessage);
+				throw new ServerTaskException(errorMessage);
 			}
 
 			if (memberStateType.equals(MemberStateType.BLOCK)) {
@@ -289,7 +289,7 @@ public class MemberLoginReqServerTask extends AbstractServerTask {
 				}
 
 				String errorMessage = new StringBuilder("차단된 회원[").append(userID).append("] 입니다").toString();
-				throw new ServerServiceException(errorMessage);
+				throw new ServerTaskException(errorMessage);
 			} else if (memberStateType.equals(MemberStateType.WITHDRAWAL)) {
 				try {
 					conn.rollback();
@@ -298,7 +298,7 @@ public class MemberLoginReqServerTask extends AbstractServerTask {
 				}
 
 				String errorMessage = new StringBuilder("탈퇴한 회원[").append(userID).append("] 입니다").toString();
-				throw new ServerServiceException(errorMessage);
+				throw new ServerTaskException(errorMessage);
 			}
 
 			if (ServerCommonStaticFinalVars.MAX_COUNT_OF_PASSWORD_FAILURES <= pwdFailedCount) {
@@ -311,7 +311,7 @@ public class MemberLoginReqServerTask extends AbstractServerTask {
 				String errorMessage = new StringBuilder("최대 허용된 횟수[")
 						.append(ServerCommonStaticFinalVars.MAX_COUNT_OF_PASSWORD_FAILURES)
 						.append("]까지 비밀 번호가 틀려 더 이상 로그인 하실 수 없습니다").toString();
-				throw new ServerServiceException(errorMessage);
+				throw new ServerTaskException(errorMessage);
 			}
 
 			byte[] pwdSaltBytes = CommonStaticUtil.Base64Decoder.decode(pwdSaltBase64);
@@ -336,7 +336,7 @@ public class MemberLoginReqServerTask extends AbstractServerTask {
 					}
 
 					String errorMessage = "비밀 번호 실패 횟수 갱신이 실패하였습니다";
-					throw new ServerServiceException(errorMessage);
+					throw new ServerTaskException(errorMessage);
 				}
 
 				conn.commit();
@@ -349,7 +349,7 @@ public class MemberLoginReqServerTask extends AbstractServerTask {
 
 				conn.commit();
 
-				throw new ServerServiceException(errorMessage);
+				throw new ServerTaskException(errorMessage);
 			}
 
 			if (pwdFailedCount > 0) {

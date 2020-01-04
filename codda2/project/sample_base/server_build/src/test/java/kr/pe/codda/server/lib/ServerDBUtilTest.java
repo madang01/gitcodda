@@ -13,7 +13,7 @@ import org.junit.Test;
 
 import junitlib.AbstractBoardTest;
 import kr.pe.codda.common.exception.DynamicClassCallException;
-import kr.pe.codda.common.exception.ServerServiceException;
+import kr.pe.codda.common.exception.ServerTaskException;
 import kr.pe.codda.impl.message.ArraySiteMenuReq.ArraySiteMenuReq;
 import kr.pe.codda.impl.message.ArraySiteMenuRes.ArraySiteMenuRes;
 import kr.pe.codda.impl.message.ArraySiteMenuRes.ArraySiteMenuRes.Menu;
@@ -339,9 +339,9 @@ public class ServerDBUtilTest extends AbstractBoardTest {
 				
 				ServerDBUtil.checkUserAccessRights(conn, create, log, "회원 미 존재 테스트 서비스", PermissionType.MEMBER,
 						requestedUserID);
-				fail("ServerServiceException");
+				fail("ServerTaskException");
 			});
-		} catch (ServerServiceException e) {
+		} catch (ServerTaskException e) {
 			String actualErrorMessag = e.getMessage();
 
 			String expectedErrorMessage = new StringBuilder("서비스 요청자[").append(requestedUserID)
@@ -387,9 +387,9 @@ public class ServerDBUtilTest extends AbstractBoardTest {
 				ServerDBUtil.checkUserAccessRights(conn, create, log, "회원 상태가 비정상 테스트 서비스", PermissionType.MEMBER,
 						requestedUserID);
 				
-				fail("ServerServiceException");
+				fail("ServerTaskException");
 			});
-		} catch (ServerServiceException e) {
+		} catch (ServerTaskException e) {
 			String actualErrorMessag = e.getMessage();
 
 			String expectedErrorMessage = new StringBuilder("서비스 요청자[").append(requestedUserID).append("]의 회원 상태[")
@@ -431,9 +431,9 @@ public class ServerDBUtilTest extends AbstractBoardTest {
 				ServerDBUtil.checkUserAccessRights(conn, create, log, "회원 역활 유형이 손님인 테스트 서비스", PermissionType.MEMBER,
 						requestedUserID);				
 				
-				fail("ServerServiceException");
+				fail("ServerTaskException");
 			});
-		} catch (ServerServiceException e) {
+		} catch (ServerTaskException e) {
 			String actualErrorMessag = e.getMessage();
 
 			String expectedErrorMessage = new StringBuilder("서비스 요청자[").append(requestedUserID)
@@ -468,9 +468,9 @@ public class ServerDBUtilTest extends AbstractBoardTest {
 				ServerDBUtil.checkUserAccessRights(conn, create, log, "회원 역활 유형이 손님인 테스트 서비스", PermissionType.MEMBER,
 						requestedUserID);
 				
-				fail("ServerServiceException");
+				fail("ServerTaskException");
 			});
-		} catch (ServerServiceException e) {
+		} catch (ServerTaskException e) {
 			String actualErrorMessag = e.getMessage();
 
 			String expectedErrorMessage = "회원 역활 유형이 손님인 테스트 서비스는 로그인 해야만 이용할 수 있습니다";
@@ -513,9 +513,9 @@ public class ServerDBUtilTest extends AbstractBoardTest {
 				ServerDBUtil.checkUserAccessRights(conn, create, log, "관리저 전용 서비스에 일반인 접근 테스트 서비스",
 						PermissionType.ADMIN, requestedUserID);
 
-				fail("no ServerServiceException");
+				fail("no ServerTaskException");
 			});
-		} catch (ServerServiceException e) {
+		} catch (ServerTaskException e) {
 			String actualErrorMessag = e.getMessage();
 
 			String expectedErrorMessage = "관리저 전용 서비스에 일반인 접근 테스트 서비스는 관리자 전용 서비스입니다";
@@ -537,9 +537,9 @@ public class ServerDBUtilTest extends AbstractBoardTest {
 				ServerDBUtil.checkUserAccessRights(conn, create, log, "관리저 전용 서비스에 손님 접근 테스트 서비스",
 						PermissionType.ADMIN, requestedUserID);
 
-				fail("no ServerServiceException");
+				fail("no ServerTaskException");
 			});
-		} catch (ServerServiceException e) {
+		} catch (ServerTaskException e) {
 			String actualErrorMessag = e.getMessage();
 
 			String expectedErrorMessage = "관리저 전용 서비스에 손님 접근 테스트 서비스는 관리자 전용 서비스입니다";
@@ -600,9 +600,9 @@ public class ServerDBUtilTest extends AbstractBoardTest {
 				ServerDBUtil.checkUserAccessRights(conn, create, log, "일반 사용자 서비스에 손님 접근 테스트 서비스", PermissionType.MEMBER,
 						requestedUserID);
 
-				fail("no ServerServiceException");
+				fail("no ServerTaskException");
 			});
-		} catch (ServerServiceException e) {
+		} catch (ServerTaskException e) {
 			String actualErrorMessag = e.getMessage();
 
 			String expectedErrorMessage = "일반 사용자 서비스에 손님 접근 테스트 서비스는 로그인 해야만 이용할 수 있습니다";

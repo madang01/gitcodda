@@ -11,7 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import kr.pe.codda.common.exception.DynamicClassCallException;
-import kr.pe.codda.common.exception.ServerServiceException;
+import kr.pe.codda.common.exception.ServerTaskException;
 import kr.pe.codda.common.message.AbstractMessage;
 import kr.pe.codda.impl.message.BoardDownloadFileReq.BoardDownloadFileReq;
 import kr.pe.codda.impl.message.BoardDownloadFileRes.BoardDownloadFileRes;
@@ -50,7 +50,7 @@ public class BoardDownloadFileReqServerTask extends AbstractServerTask {
 		try {
 			AbstractMessage outputMessage = doWork(ServerCommonStaticFinalVars.DEFAULT_DBCP_NAME, (BoardDownloadFileReq) inputMessage);
 			toLetterCarrier.addSyncOutputMessage(outputMessage);
-		} catch (ServerServiceException e) {
+		} catch (ServerTaskException e) {
 			String errorMessage = e.getMessage();
 			log.warn("errmsg=={}, inObj={}", errorMessage, inputMessage.toString());
 
@@ -76,7 +76,7 @@ public class BoardDownloadFileReqServerTask extends AbstractServerTask {
 			ValueChecker.checkValidBoardNo(boardDownloadFileReq.getBoardNo());
 		} catch (IllegalArgumentException e) {
 			String errorMessage = e.getMessage();
-			throw new ServerServiceException(errorMessage);
+			throw new ServerTaskException(errorMessage);
 		}
 
 		UByte boardID = UByte.valueOf(boardDownloadFileReq.getBoardID());
@@ -101,7 +101,7 @@ public class BoardDownloadFileReqServerTask extends AbstractServerTask {
 				}
 
 				String errorMessage = new StringBuilder("해당 게시글이 존재 하지 않습니다").toString();
-				throw new ServerServiceException(errorMessage);
+				throw new ServerTaskException(errorMessage);
 			}
 
 			byte boardStateTypeValue = boardRecord.getValue(SB_BOARD_TB.BOARD_ST);
@@ -118,7 +118,7 @@ public class BoardDownloadFileReqServerTask extends AbstractServerTask {
 
 				String errorMessage = new StringBuilder("게시글의 상태 값[").append(boardStateTypeValue).append("]이 잘못되었습니다")
 						.toString();
-				throw new ServerServiceException(errorMessage);
+				throw new ServerTaskException(errorMessage);
 			}
 
 			if (BoardStateType.DELETE.equals(boardStateType)) {
@@ -129,7 +129,7 @@ public class BoardDownloadFileReqServerTask extends AbstractServerTask {
 				}
 
 				String errorMessage = new StringBuilder("해당 게시글은 삭제된 글입니다").toString();
-				throw new ServerServiceException(errorMessage);
+				throw new ServerTaskException(errorMessage);
 			} else if (BoardStateType.BLOCK.equals(boardStateType)) {
 				try {
 					conn.rollback();
@@ -138,7 +138,7 @@ public class BoardDownloadFileReqServerTask extends AbstractServerTask {
 				}
 
 				String errorMessage = new StringBuilder("해당 게시글은 관리자에 의해 블락된 글입니다").toString();
-				throw new ServerServiceException(errorMessage);
+				throw new ServerTaskException(errorMessage);
 			}
 
 			if (! MemberRoleType.ADMIN.equals(memberRoleTypeOfRequestedUserID)) {
@@ -156,7 +156,7 @@ public class BoardDownloadFileReqServerTask extends AbstractServerTask {
 					}
 
 					String errorMessage = new StringBuilder("해당 게시글의 최초 작성자 정보가 존재 하지 않습니다").toString();
-					throw new ServerServiceException(errorMessage);
+					throw new ServerTaskException(errorMessage);
 				}
 
 				String firstWriterID = firstWriterBoardRecord.getValue(SB_BOARD_HISTORY_TB.REGISTRANT_ID);
@@ -170,7 +170,7 @@ public class BoardDownloadFileReqServerTask extends AbstractServerTask {
 
 					String errorMessage = new StringBuilder("타인[").append(firstWriterID).append("] 게시글은 수정 할 수 없습니다")
 							.toString();
-					throw new ServerServiceException(errorMessage);
+					throw new ServerTaskException(errorMessage);
 				}
 			}
 			
@@ -182,7 +182,7 @@ public class BoardDownloadFileReqServerTask extends AbstractServerTask {
 			
 			if (null == fileListRecord) {
 				String errorMessage = "지정한 첨부 파일 정보가 존재하지 않습니다";
-				throw new ServerServiceException(errorMessage);
+				throw new ServerTaskException(errorMessage);
 			}
 			
 			

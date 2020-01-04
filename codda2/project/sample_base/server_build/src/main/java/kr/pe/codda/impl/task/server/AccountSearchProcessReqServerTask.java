@@ -15,7 +15,7 @@ import org.slf4j.LoggerFactory;
 
 import kr.pe.codda.common.etc.CommonStaticFinalVars;
 import kr.pe.codda.common.exception.DynamicClassCallException;
-import kr.pe.codda.common.exception.ServerServiceException;
+import kr.pe.codda.common.exception.ServerTaskException;
 import kr.pe.codda.common.exception.SymmetricException;
 import kr.pe.codda.common.message.AbstractMessage;
 import kr.pe.codda.common.sessionkey.ServerSessionkeyIF;
@@ -61,7 +61,7 @@ public class AccountSearchProcessReqServerTask extends AbstractServerTask {
 			AbstractMessage outputMessage = doWork(ServerCommonStaticFinalVars.DEFAULT_DBCP_NAME,
 					(AccountSearchProcessReq) inputMessage);
 			toLetterCarrier.addSyncOutputMessage(outputMessage);
-		} catch (ServerServiceException e) {
+		} catch (ServerTaskException e) {
 			String errorMessage = e.getMessage();
 			log.warn("errmsg=={}, inObj={}", errorMessage, inputMessage.toString());
 
@@ -88,7 +88,7 @@ public class AccountSearchProcessReqServerTask extends AbstractServerTask {
 			accountSearchType = AccountSearchType.valueOf(passwordSearchProcessReq.getAccountSearchType());
 		} catch(IllegalArgumentException e) {
 			String errorMessage = e.getMessage();
-			throw new ServerServiceException(errorMessage);
+			throw new ServerTaskException(errorMessage);
 		}
 		
 		String emailCipherBase64 = passwordSearchProcessReq.getEmailCipherBase64();
@@ -99,29 +99,29 @@ public class AccountSearchProcessReqServerTask extends AbstractServerTask {
 		
 		if (null == emailCipherBase64) {
 			String errorMessage = "이메일를 입력해 주세요";
-			throw new ServerServiceException(errorMessage);
+			throw new ServerTaskException(errorMessage);
 		}
 		
 		if (null == secretAuthenticationValueCipherBase64) {
 			String errorMessage = "아이디/비밀버호 찾기용 비밀 값을 입력해 주세요";
-			throw new ServerServiceException(errorMessage);
+			throw new ServerTaskException(errorMessage);
 		}
 		
 		if (AccountSearchType.PASSWORD.equals(accountSearchType)) {
 			if (null == newPwdCipherBase64) {
 				String errorMessage = "비밀번호를 입력해 주세요";
-				throw new ServerServiceException(errorMessage);
+				throw new ServerTaskException(errorMessage);
 			}
 		}
 		
 		if (null == sessionKeyBase64) {
 			String errorMessage = "세션키를 입력해 주세요";
-			throw new ServerServiceException(errorMessage);
+			throw new ServerTaskException(errorMessage);
 		}
 		
 		if (null == ivBase64) {
 			String errorMessage = "세션키 소금값을 입력해 주세요";
-			throw new ServerServiceException(errorMessage);
+			throw new ServerTaskException(errorMessage);
 		}
 		
 		byte[] emailCipherBytes = null;
@@ -134,14 +134,14 @@ public class AccountSearchProcessReqServerTask extends AbstractServerTask {
 			emailCipherBytes = CommonStaticUtil.Base64Decoder.decode(emailCipherBase64);
 		} catch(Exception e) {
 			String errorMessage = "이메일 암호문은 베이스64로 인코딩되지 않았습니다";
-			throw new ServerServiceException(errorMessage);
+			throw new ServerTaskException(errorMessage);
 		}
 		
 		try {
 			secretAuthenticationValueCipherBytes = CommonStaticUtil.Base64Decoder.decode(secretAuthenticationValueCipherBase64);
 		} catch(Exception e) {
 			String errorMessage = "아이디 혹은 비밀번호 찾기용 비밀값 암호문은 베이스64로 인코딩되지 않았습니다";
-			throw new ServerServiceException(errorMessage);
+			throw new ServerTaskException(errorMessage);
 		}
 		
 		if (AccountSearchType.PASSWORD.equals(accountSearchType)) {
@@ -149,7 +149,7 @@ public class AccountSearchProcessReqServerTask extends AbstractServerTask {
 				newPwdCipherBytes = CommonStaticUtil.Base64Decoder.decode(newPwdCipherBase64);
 			} catch(Exception e) {
 				String errorMessage = "새로운 비밀번호 암호문은 베이스64로 인코딩되지 않았습니다";
-				throw new ServerServiceException(errorMessage);
+				throw new ServerTaskException(errorMessage);
 			}
 		}
 		
@@ -157,14 +157,14 @@ public class AccountSearchProcessReqServerTask extends AbstractServerTask {
 			sessionKeyBytes = CommonStaticUtil.Base64Decoder.decode(sessionKeyBase64);
 		} catch(Exception e) {
 			String errorMessage = "세션키는 베이스64로 인코딩되지 않았습니다";
-			throw new ServerServiceException(errorMessage);
+			throw new ServerTaskException(errorMessage);
 		}
 		
 		try {
 			ivBytes = CommonStaticUtil.Base64Decoder.decode(ivBase64);
 		} catch(Exception e) {
 			String errorMessage = "세션키 소금값은 베이스64로 인코딩되지 않았습니다";
-			throw new ServerServiceException(errorMessage);
+			throw new ServerTaskException(errorMessage);
 		}
 		
 		ServerSymmetricKeyIF serverSymmetricKey = null;
@@ -176,11 +176,11 @@ public class AccountSearchProcessReqServerTask extends AbstractServerTask {
 		} catch (IllegalArgumentException e) {
 			String errorMessage = "서버 세션키를 얻는데 실패하였습니다";
 			log.warn(errorMessage, e);
-			throw new ServerServiceException(errorMessage);
+			throw new ServerTaskException(errorMessage);
 		} catch (SymmetricException e) {
 			String errorMessage = "서버 세션키를 얻는데 실패하였습니다";
 			log.warn(errorMessage, e);
-			throw new ServerServiceException(errorMessage);
+			throw new ServerTaskException(errorMessage);
 		}
 		
 		String email = null;
@@ -192,7 +192,7 @@ public class AccountSearchProcessReqServerTask extends AbstractServerTask {
 		} catch (IllegalArgumentException | SymmetricException e) {
 			String errorMessage = "이메일에 대한 복호문을 얻는데 실패하였습니다";
 			log.warn(errorMessage, e);
-			throw new ServerServiceException(errorMessage);
+			throw new ServerTaskException(errorMessage);
 		}
 		
 		try {
@@ -200,7 +200,7 @@ public class AccountSearchProcessReqServerTask extends AbstractServerTask {
 		} catch (IllegalArgumentException | SymmetricException e) {
 			String errorMessage = "이메일에 대한 복호문을 얻는데 실패하였습니다";
 			log.warn(errorMessage, e);
-			throw new ServerServiceException(errorMessage);
+			throw new ServerTaskException(errorMessage);
 		}
 		
 		if (AccountSearchType.PASSWORD.equals(accountSearchType)) {
@@ -210,11 +210,11 @@ public class AccountSearchProcessReqServerTask extends AbstractServerTask {
 				
 				String errorMessage = "새로운 비밀번호 복호문을 얻는데 실패하였습니다";
 				log.warn(errorMessage, e);
-				throw new ServerServiceException(errorMessage);
+				throw new ServerTaskException(errorMessage);
 			} catch (SymmetricException e) {
 				String errorMessage = "새로운 비밀번호 복호문을 얻는데 실패하였습니다";
 				log.warn(errorMessage, e);
-				throw new ServerServiceException(errorMessage);
+				throw new ServerTaskException(errorMessage);
 			}
 		}
 		
@@ -245,7 +245,7 @@ public class AccountSearchProcessReqServerTask extends AbstractServerTask {
 			ValueChecker.checkValidIP(ip);
 		} catch(IllegalArgumentException e) {
 			String errorMessage = e.getMessage();
-			throw new ServerServiceException(errorMessage);
+			throw new ServerTaskException(errorMessage);
 		}
 		
 		
@@ -275,7 +275,7 @@ public class AccountSearchProcessReqServerTask extends AbstractServerTask {
 
 				String errorMessage = "입력한 이메일에 해당하는 일반 회원이 없습니다";
 
-				throw new ServerServiceException(errorMessage);
+				throw new ServerTaskException(errorMessage);
 			}
 			
 			String userID = memberRecord.get(SB_MEMBER_TB.USER_ID);
@@ -296,7 +296,7 @@ public class AccountSearchProcessReqServerTask extends AbstractServerTask {
 
 				String errorMessage = "아이디 혹은 비밀번호 찾기 준비 단계가 생략되었습니다";
 
-				throw new ServerServiceException(errorMessage);
+				throw new ServerTaskException(errorMessage);
 			}
 			
 			UByte failCount = passwordSearchRequestRecord.get(SB_ACCOUNT_SERARCH_TB.FAIL_CNT);
@@ -316,7 +316,7 @@ public class AccountSearchProcessReqServerTask extends AbstractServerTask {
 						.append(ServerCommonStaticFinalVars.MAX_WRONG_PASSWORD_COUNT_OF_PASSWORD_SEARCH_SERVICE)
 						.append("회에 도달하여 더 이상 진행할 수 없습니다, 관리자에게 문의하여 주시기 바랍니다").toString();
 
-				throw new ServerServiceException(errorMessage);
+				throw new ServerTaskException(errorMessage);
 			}
 			
 			long elapsedTime = (new java.util.Date().getTime() - lastRegisteredDate.getTime());
@@ -334,7 +334,7 @@ public class AccountSearchProcessReqServerTask extends AbstractServerTask {
 						.append(ServerCommonStaticFinalVars.TIMEOUT_OF_PASSWORD_SEARCH_SERVICE)
 						.append(" ms]을 초과하여 더 이상 진행할 수 없습니다, 처음 부터 다시 시작해 주시기 바랍니다").toString();
 
-				throw new ServerServiceException(errorMessage);
+				throw new ServerTaskException(errorMessage);
 			}
 			
 			if (! sourceSecretAuthenticationValue.equals(secretAuthenticationValue)) {
@@ -367,7 +367,7 @@ public class AccountSearchProcessReqServerTask extends AbstractServerTask {
 						.append(failCount.byteValue()+1)
 						.append("회 비밀 값이 틀렸습니다, 처음 부터 다시 시도해 주시기 바랍니다").toString();
 
-				throw new ServerServiceException(errorMessage);
+				throw new ServerTaskException(errorMessage);
 			}
 			
 			create.update(SB_ACCOUNT_SERARCH_TB)

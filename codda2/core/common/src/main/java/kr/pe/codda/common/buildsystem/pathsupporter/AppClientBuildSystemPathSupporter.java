@@ -30,7 +30,7 @@ public class AppClientBuildSystemPathSupporter {
 	/**
 	 * @param installedPathString 설치 경로
 	 * @param mainProjectName 메인 프로젝트 이름
-	 * @return application client build path : [project path]/client_build/app_build
+	 * @return application client build path =&gt; [project path]/client_build/app_build
 	 */
 	public static String getAppClientBuildPathString(String installedPathString, String mainProjectName) {
 		StringBuilder strBuilder = new StringBuilder(ProjectBuildSytemPathSupporter.getClientBuildBasePathString(installedPathString, mainProjectName));
@@ -43,7 +43,7 @@ public class AppClientBuildSystemPathSupporter {
 	 * 
 	 * @param installedPathString 설치 경로
 	 * @param mainProjectName 메인 프로젝트 이름
-	 * @return application client build.xml => [application client build path]/build.xml
+	 * @return application client build.xml =&gt; [application client build path]/build.xml
 	 */
 	public static String getAppClientAntBuildXMLFilePathString(String installedPathString, String mainProjectName) {
 		StringBuilder strBuilder = new StringBuilder(getAppClientBuildPathString(installedPathString, mainProjectName));

@@ -9,7 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import kr.pe.codda.common.exception.DynamicClassCallException;
-import kr.pe.codda.common.exception.ServerServiceException;
+import kr.pe.codda.common.exception.ServerTaskException;
 import kr.pe.codda.common.message.AbstractMessage;
 import kr.pe.codda.impl.message.MemberInformationReq.MemberInformationReq;
 import kr.pe.codda.impl.message.MemberInformationRes.MemberInformationRes;
@@ -49,7 +49,7 @@ public class MemberInformationReqServerTask extends AbstractServerTask {
 			AbstractMessage outputMessage = doWork(ServerCommonStaticFinalVars.DEFAULT_DBCP_NAME,
 					(MemberInformationReq) inputMessage);
 			toLetterCarrier.addSyncOutputMessage(outputMessage);
-		} catch (ServerServiceException e) {
+		} catch (ServerTaskException e) {
 			String errorMessage = e.getMessage();
 			log.warn("errmsg=={}, inObj={}", errorMessage, inputMessage.toString());
 
@@ -75,7 +75,7 @@ public class MemberInformationReqServerTask extends AbstractServerTask {
 			ValueChecker.checkValidActivtyTargetUserID(memberInformationReq.getTargetUserID());
 		} catch (IllegalArgumentException e) {
 			String errorMessage = e.getMessage();
-			throw new ServerServiceException(errorMessage);
+			throw new ServerTaskException(errorMessage);
 		}
 
 		MemberInformationRes memberInformationRes = new MemberInformationRes();
@@ -108,7 +108,7 @@ public class MemberInformationReqServerTask extends AbstractServerTask {
 						.append(memberInformationReq.getTargetUserID())
 						.append("]가 회원 테이블에 존재하지 않습니다").toString();	
 				
-				throw new ServerServiceException(errorMessage);
+				throw new ServerTaskException(errorMessage);
 			}
 			
 			
@@ -138,7 +138,7 @@ public class MemberInformationReqServerTask extends AbstractServerTask {
 						.append(targetUserMemberRole)
 						.append("]이 잘못되었습니다").toString();
 				
-				throw new ServerServiceException(errorMessage);
+				throw new ServerTaskException(errorMessage);
 			}
 			
 			if (MemberRoleType.GUEST.equals(targetUserMemberRoleType)) {
@@ -150,7 +150,7 @@ public class MemberInformationReqServerTask extends AbstractServerTask {
 				
 				String errorMessage = "개인 정보 조회 대상은 회원만 가능합니다";
 				
-				throw new ServerServiceException(errorMessage);
+				throw new ServerTaskException(errorMessage);
 			}
 			
 			MemberStateType targetUserMemberStateType = null;
@@ -168,7 +168,7 @@ public class MemberInformationReqServerTask extends AbstractServerTask {
 						.append("]의 멤버 상태[")
 						.append(targetUserMemberState)
 						.append("]가 잘못되었습니다").toString();
-				throw new ServerServiceException(errorMessage);
+				throw new ServerTaskException(errorMessage);
 			}
 			
 			conn.commit();

@@ -60,7 +60,7 @@ public interface SingleItemEncoderIF {
 	 * @param arrayMiddleObj 배열 객체
 	 * @param inx 배열 인덱스
 	 * @return "배열 객체" 로 부터 지정된 인덱스에 있는 객체
-	 * @throws Exception "배열 객체" 로 부터 지정된 인덱스에 있는 객체를 반환할때 에러 발생시 던지는 예외
+	 * @throws BodyFormatException "배열 객체" 로 부터 지정된 인덱스에 있는 객체를 반환할때 에러 발생시 던지는 예외
 	 */
 	public Object getMiddleObjectFromArrayMiddleObject(String path, Object arrayMiddleObj, int inx) throws BodyFormatException;
 	

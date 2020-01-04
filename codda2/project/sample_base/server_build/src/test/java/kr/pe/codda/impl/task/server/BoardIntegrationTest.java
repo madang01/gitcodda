@@ -19,7 +19,7 @@ import org.junit.Test;
 
 import junitlib.AbstractBoardTest;
 import kr.pe.codda.common.exception.DynamicClassCallException;
-import kr.pe.codda.common.exception.ServerServiceException;
+import kr.pe.codda.common.exception.ServerTaskException;
 import kr.pe.codda.impl.message.BoardBlockReq.BoardBlockReq;
 import kr.pe.codda.impl.message.BoardInfoAddReq.BoardInfoAddReq;
 import kr.pe.codda.impl.message.BoardInfoAddRes.BoardInfoAddRes;
@@ -180,7 +180,7 @@ public class BoardIntegrationTest extends AbstractBoardTest {
 			if (acutalBoardListRes.getCnt() != 0) {
 				fail("DB 초기 상태에에서 총 갯수가 0이 아닙니다");
 			}
-		} catch (ServerServiceException e) {
+		} catch (ServerTaskException e) {
 			log.warn(e.getMessage(), e);
 			fail("fail to execuate doTask");
 		} catch (Exception e) {
@@ -1126,7 +1126,7 @@ public class BoardIntegrationTest extends AbstractBoardTest {
 			firstBoardListRes = boardListReqServerTask.doWork(TEST_DBCP_NAME,
 					boardListReq);
 
-		} catch (ServerServiceException e) {
+		} catch (ServerTaskException e) {
 			log.warn(e.getMessage(), e);
 			fail("fail to execuate doTask");
 		} catch (Exception e) {
@@ -1334,7 +1334,7 @@ public class BoardIntegrationTest extends AbstractBoardTest {
 			firstBoardListRes = boardListReqServerTask.doWork(TEST_DBCP_NAME,
 					boardListReq);
 	
-		} catch (ServerServiceException e) {
+		} catch (ServerTaskException e) {
 			log.warn(e.getMessage(), e);
 			fail("fail to execuate doTask");
 		} catch (Exception e) {

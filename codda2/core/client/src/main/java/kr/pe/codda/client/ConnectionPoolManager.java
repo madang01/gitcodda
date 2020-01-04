@@ -23,11 +23,10 @@ import java.util.logging.Logger;
 
 import kr.pe.codda.common.config.CoddaConfiguration;
 import kr.pe.codda.common.config.CoddaConfigurationManager;
-import kr.pe.codda.common.config.subset.SubProjectPartConfigurationManager;
 import kr.pe.codda.common.config.subset.ProjectPartConfiguration;
+import kr.pe.codda.common.config.subset.SubProjectPartConfigurationManager;
 import kr.pe.codda.common.etc.CommonStaticFinalVars;
 import kr.pe.codda.common.exception.NoMoreDataPacketBufferException;
-import kr.pe.codda.common.exception.NotFoundProjectException;
 
 /**
  * 클라이언트 프로젝트 관리자
@@ -54,7 +53,11 @@ public final class ConnectionPoolManager {
 		static final ConnectionPoolManager singleton = new ConnectionPoolManager();
 	}
 
-	/** 동기화 쓰지 않는 싱글턴 구현 메소드 */
+	
+	/**
+	 * 동기화 쓰지 않는 싱글턴 구현 메소드 
+	 * @return ConnectionPoolManager 객체
+	 */
 	public static ConnectionPoolManager getInstance() {
 		return ClientProjectManagerHolder.singleton;
 	}
@@ -112,7 +115,7 @@ public final class ConnectionPoolManager {
 	 * @param subProjectName
 	 *            프로젝트 이름
 	 * @return 프로젝트 이름에 해당하는 외부 시각 클라이언트 프로젝트
-	 * @throws NotFoundProjectException
+	 * @throws IllegalStateException
 	 */
 	public AnyProjectConnectionPoolIF getSubProjectConnectionPool(String subProjectName) throws IllegalStateException {
 		AnyProjectConnectionPoolIF subProjectConnectionPool = subProjectConnectionPoolHash.get(subProjectName);

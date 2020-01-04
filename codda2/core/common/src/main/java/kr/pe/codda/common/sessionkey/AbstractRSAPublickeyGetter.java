@@ -79,36 +79,11 @@ public abstract class AbstractRSAPublickeyGetter {
 	 * 
 	 * @param subProjectName The subproject name from which to obtain the bytes of the public key.
 	 * @return public key bytes getting from sub project server
-	 * @throws SymmetricException
+	 * @throws SymmetricException 암복화 관련 에러 발생시 던지는 예외
 	 */
 	abstract public byte[] getSubProjectPublickeyBytes(
 			String subProjectName) throws SymmetricException;
 	
-	/*public byte[] getSubProjectPublickeyBytes(
-			String subProjectName) throws SymmetricException {
-		Logger log = LoggerFactory.getLogger(ClientRSAPublickeyGetter.class);
-		
-		AnyProjectClient subClientProject = null;
-		try {
-			subClientProject = ProjectClientManager.getInstance().getSubProjectClient(subProjectName);
-		} catch (NotFoundProjectException e) {
-			String errorMessage = e.getMessage();
-			log.warn(errorMessage, e);
-			throw new SymmetricException(errorMessage);
-		}
-
-		byte[] publicKeyBytes = null;
-		try {
-			publicKeyBytes = getPublickeyFromServer(subClientProject);
-		} catch (SocketTimeoutException | ServerNotReadyException | NoMoreDataPacketBufferException
-				| BodyFormatException | DynamicClassCallException | ServerTaskException | NotLoginException e) {
-			String errorMessage = e.getMessage();
-			log.warn(errorMessage, e);
-			throw new SymmetricException(errorMessage);
-		}
-
-		return publicKeyBytes;
-	}*/
 	
 	private final byte[] getPublickeyBytesFromFile() throws SymmetricException {
 		

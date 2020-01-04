@@ -11,7 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import kr.pe.codda.common.exception.DynamicClassCallException;
-import kr.pe.codda.common.exception.ServerServiceException;
+import kr.pe.codda.common.exception.ServerTaskException;
 import kr.pe.codda.common.message.AbstractMessage;
 import kr.pe.codda.impl.message.MenuDeleteReq.MenuDeleteReq;
 import kr.pe.codda.impl.message.MessageResultRes.MessageResultRes;
@@ -48,7 +48,7 @@ public class MenuDeleteReqServerTask extends AbstractServerTask {
 		try {
 			AbstractMessage outputMessage = doWork(ServerCommonStaticFinalVars.DEFAULT_DBCP_NAME, (MenuDeleteReq)inputMessage);
 			toLetterCarrier.addSyncOutputMessage(outputMessage);
-		} catch(ServerServiceException e) {
+		} catch(ServerTaskException e) {
 			String errorMessage = e.getMessage();
 			log.warn("errmsg=={}, inObj={}", errorMessage, inputMessage.toString());
 			
@@ -75,7 +75,7 @@ public class MenuDeleteReqServerTask extends AbstractServerTask {
 			ValueChecker.checkValidRequestedUserID(menuDeleteReq.getRequestedUserID());
 		} catch(IllegalArgumentException e) {
 			String errorMessage = e.getMessage();
-			throw new ServerServiceException(errorMessage);
+			throw new ServerTaskException(errorMessage);
 		}
 		
 		final UByte menuSequenceID = SequenceType.MENU.getSequenceID();
@@ -101,7 +101,7 @@ public class MenuDeleteReqServerTask extends AbstractServerTask {
 				String errorMessage = new StringBuilder("메뉴 시퀀스 식별자[")
 						.append(menuSequenceID)
 						.append("]의 시퀀스를 가져오는데 실패하였습니다").toString();
-				throw new ServerServiceException(errorMessage);
+				throw new ServerTaskException(errorMessage);
 			}
 			
 			
@@ -120,7 +120,7 @@ public class MenuDeleteReqServerTask extends AbstractServerTask {
 						.append("삭제할 메뉴[")
 						.append(menuDeleteReq.getMenuNo())
 						.append("]가 존재하지 않습니다").toString();
-				throw new ServerServiceException(errorMessage);
+				throw new ServerTaskException(errorMessage);
 			}
 			
 			boolean isParentMenuRecord = create.fetchExists(create.selectOne()
@@ -138,7 +138,7 @@ public class MenuDeleteReqServerTask extends AbstractServerTask {
 						.append("자식이 있는 메뉴[")
 						.append(menuDeleteReq.getMenuNo())
 						.append("]는 삭제 할 수 없습니다").toString();
-				throw new ServerServiceException(errorMessage);
+				throw new ServerTaskException(errorMessage);
 			}
 			
 			
@@ -157,7 +157,7 @@ public class MenuDeleteReqServerTask extends AbstractServerTask {
 						.append("메뉴[")
 						.append(menuDeleteReq.getMenuNo())
 						.append("] 삭제가 실패하였습니다").toString();
-				throw new ServerServiceException(errorMessage);
+				throw new ServerTaskException(errorMessage);
 			}
 			
 			/** 삭제할 메뉴 이후의 순서 보정 */

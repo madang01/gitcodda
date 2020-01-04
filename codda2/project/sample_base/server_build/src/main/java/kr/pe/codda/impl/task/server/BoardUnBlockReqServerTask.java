@@ -16,7 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import kr.pe.codda.common.exception.DynamicClassCallException;
-import kr.pe.codda.common.exception.ServerServiceException;
+import kr.pe.codda.common.exception.ServerTaskException;
 import kr.pe.codda.common.message.AbstractMessage;
 import kr.pe.codda.impl.message.BoardUnBlockReq.BoardUnBlockReq;
 import kr.pe.codda.impl.message.MessageResultRes.MessageResultRes;
@@ -55,7 +55,7 @@ public class BoardUnBlockReqServerTask extends AbstractServerTask {
 			AbstractMessage outputMessage = doWork(ServerCommonStaticFinalVars.DEFAULT_DBCP_NAME,
 					(BoardUnBlockReq) inputMessage);
 			toLetterCarrier.addSyncOutputMessage(outputMessage);
-		} catch (ServerServiceException e) {
+		} catch (ServerTaskException e) {
 			String errorMessage = e.getMessage();
 			log.warn("errmsg=={}, inObj={}", errorMessage, inputMessage.toString());
 
@@ -81,7 +81,7 @@ public class BoardUnBlockReqServerTask extends AbstractServerTask {
 			ValueChecker.checkValidBoardNo(boardUnBlockReq.getBoardNo());
 		} catch (IllegalArgumentException e) {
 			String errorMessage = e.getMessage();
-			throw new ServerServiceException(errorMessage);
+			throw new ServerTaskException(errorMessage);
 		}
 
 		final String requestedUserID = boardUnBlockReq.getRequestedUserID();
@@ -108,7 +108,7 @@ public class BoardUnBlockReqServerTask extends AbstractServerTask {
 
 				String errorMessage = new StringBuilder("입력 받은 게시판 식별자[").append(boardID.shortValue())
 						.append("]가 게시판 정보 테이블에 존재하지  않습니다").toString();
-				throw new ServerServiceException(errorMessage);
+				throw new ServerTaskException(errorMessage);
 			}
 
 			String boardName = boardInforRecord.get(SB_BOARD_INFO_TB.BOARD_NAME);
@@ -125,7 +125,7 @@ public class BoardUnBlockReqServerTask extends AbstractServerTask {
 				}
 
 				String errorMessage = e.getMessage();
-				throw new ServerServiceException(errorMessage);
+				throw new ServerTaskException(errorMessage);
 			}
 		
 			/** 차단 해제할 게시글에 속한 그룹의 루트 노드에 해당하는 레코드에 락을 건다  */
@@ -144,7 +144,7 @@ public class BoardUnBlockReqServerTask extends AbstractServerTask {
 				}
 
 				String errorMessage = "2.해당 게시글이 존재 하지 않습니다";
-				throw new ServerServiceException(errorMessage);
+				throw new ServerTaskException(errorMessage);
 			}
 
 			UShort groupSeq = boardRecord.getValue(SB_BOARD_TB.GROUP_SQ);
@@ -164,7 +164,7 @@ public class BoardUnBlockReqServerTask extends AbstractServerTask {
 
 				String errorMessage = new StringBuilder("게시글의 상태 값[").append(boardStateValue).append("]이 잘못되었습니다")
 						.toString();
-				throw new ServerServiceException(errorMessage);
+				throw new ServerTaskException(errorMessage);
 			}
 
 			if (!BoardStateType.BLOCK.equals(boardStateType)) {
@@ -176,7 +176,7 @@ public class BoardUnBlockReqServerTask extends AbstractServerTask {
 
 				String errorMessage = new StringBuilder().append("차단된 글[").append(boardStateType.getName())
 						.append("]이 아닙니다").toString();
-				throw new ServerServiceException(errorMessage);
+				throw new ServerTaskException(errorMessage);
 			}
 
 			/** 직계 부모 노드의 게시판 상태가 정상인지 여부 검사 */
@@ -200,7 +200,7 @@ public class BoardUnBlockReqServerTask extends AbstractServerTask {
 
 					String errorMessage = new StringBuilder().append("직계 부모 게시글[boardID=").append(boardID.shortValue())
 							.append(", boardNo=").append(directParentNo.longValue()).append("]이 존재 하지 않습니다").toString();
-					throw new ServerServiceException(errorMessage);
+					throw new ServerTaskException(errorMessage);
 				}
 
 				UInteger parentNoOfDirectParentNo = directParentBoardRecord.getValue(SB_BOARD_TB.PARENT_NO);
@@ -219,7 +219,7 @@ public class BoardUnBlockReqServerTask extends AbstractServerTask {
 					String errorMessage = new StringBuilder("직계 조상 게시글[boardID=").append(boardID.shortValue())
 							.append(", boardNo=").append(directParentNo.longValue()).append("] 의 상태 값[")
 							.append(directParentBoardStateValue).append("] 이 잘못되었습니다").toString();
-					throw new ServerServiceException(errorMessage);
+					throw new ServerTaskException(errorMessage);
 				}
 
 				if (!BoardStateType.OK.equals(directParentBoardStateType)) {
@@ -233,7 +233,7 @@ public class BoardUnBlockReqServerTask extends AbstractServerTask {
 							.append(", boardNo=").append(directParentNo.longValue()).append("]이 정상[")
 							.append(directParentBoardStateType.getName()).append("]이 아닌 게시글은 차단 해제 할 수 없습니다")
 							.toString();
-					throw new ServerServiceException(errorMessage);
+					throw new ServerTaskException(errorMessage);
 				}
 
 				directParentNo = parentNoOfDirectParentNo;
@@ -271,7 +271,7 @@ public class BoardUnBlockReqServerTask extends AbstractServerTask {
 					String errorMessage = new StringBuilder("차단 해제 트리에 속한 게시글[boardID=").append(boardID.shortValue())
 							.append(", boardNo=").append(childBoardNo.longValue()).append("] 의 상태 값[")
 							.append(childBoardState).append("] 이 잘못되었습니다").toString();
-					throw new ServerServiceException(errorMessage);
+					throw new ServerTaskException(errorMessage);
 				}
 				
 
@@ -319,7 +319,7 @@ public class BoardUnBlockReqServerTask extends AbstractServerTask {
 								log.warn("fail to rollback");
 							}
 							String errorMessage = "게시판 트리 점검 필요";
-							throw new ServerServiceException(errorMessage);
+							throw new ServerTaskException(errorMessage);
 						}
 					}
 				} else if (BoardStateType.OK.equals(childBoardStateType)) {
@@ -331,7 +331,7 @@ public class BoardUnBlockReqServerTask extends AbstractServerTask {
 						log.warn("fail to rollback");
 					}
 					String errorMessage = "게시판 트리 점검 필요";
-					throw new ServerServiceException(errorMessage);
+					throw new ServerTaskException(errorMessage);
 				} else if (BoardStateType.TREEBLOCK.equals(childBoardStateType)) {
 					unBlockBoardNoSet.add(childBoardNo.longValue());
 				}

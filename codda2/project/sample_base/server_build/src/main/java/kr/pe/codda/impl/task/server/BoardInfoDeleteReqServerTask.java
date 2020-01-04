@@ -8,7 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import kr.pe.codda.common.exception.DynamicClassCallException;
-import kr.pe.codda.common.exception.ServerServiceException;
+import kr.pe.codda.common.exception.ServerTaskException;
 import kr.pe.codda.common.message.AbstractMessage;
 import kr.pe.codda.impl.message.BoardInfoDeleteReq.BoardInfoDeleteReq;
 import kr.pe.codda.impl.message.MessageResultRes.MessageResultRes;
@@ -45,7 +45,7 @@ public class BoardInfoDeleteReqServerTask extends AbstractServerTask {
 			AbstractMessage outputMessage = doWork(ServerCommonStaticFinalVars.DEFAULT_DBCP_NAME,
 					(BoardInfoDeleteReq) inputMessage);
 			toLetterCarrier.addSyncOutputMessage(outputMessage);
-		} catch (ServerServiceException e) {
+		} catch (ServerTaskException e) {
 			String errorMessage = e.getMessage();
 			log.warn("errmsg=={}, inObj={}", errorMessage, inputMessage.toString());
 
@@ -70,7 +70,7 @@ public class BoardInfoDeleteReqServerTask extends AbstractServerTask {
 			ValueChecker.checkValidWriterID(boardInfoDeleteReq.getRequestedUserID());
 		} catch (IllegalArgumentException e) {
 			String errorMessage = e.getMessage();
-			throw new ServerServiceException(errorMessage);
+			throw new ServerTaskException(errorMessage);
 		}
 
 		UByte boardID = UByte.valueOf(boardInfoDeleteReq.getBoardID());		
@@ -90,7 +90,7 @@ public class BoardInfoDeleteReqServerTask extends AbstractServerTask {
 				}
 				
 				String errorMessage = "지정한 게시판 식별자에 대한 게시판 정보가 존재하지 않습니다";
-				throw new ServerServiceException(errorMessage);
+				throw new ServerTaskException(errorMessage);
 			}
 
 			boolean isBoardRecord = create
@@ -104,7 +104,7 @@ public class BoardInfoDeleteReqServerTask extends AbstractServerTask {
 				}
 				
 				String errorMessage = "삭제를 원하는 게시판 식별자를 갖는 게시글이 존재하여 게시판 정보를 삭제 할 수 없습니다";
-				throw new ServerServiceException(errorMessage);
+				throw new ServerTaskException(errorMessage);
 			}			
 
 			int countOfDelete = create.deleteFrom(SB_BOARD_INFO_TB).where(SB_BOARD_INFO_TB.BOARD_ID.eq(boardID))
@@ -119,7 +119,7 @@ public class BoardInfoDeleteReqServerTask extends AbstractServerTask {
 				
 				String errorMessage = new StringBuilder().append("게시판 정보[").append(boardInfoDeleteReq.getBoardID())
 						.append("]를 삭제하는데 실패하였습니다").toString();
-				throw new ServerServiceException(errorMessage);
+				throw new ServerTaskException(errorMessage);
 			}
 			
 

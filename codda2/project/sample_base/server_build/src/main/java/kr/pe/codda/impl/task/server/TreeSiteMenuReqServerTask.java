@@ -14,7 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import kr.pe.codda.common.exception.DynamicClassCallException;
-import kr.pe.codda.common.exception.ServerServiceException;
+import kr.pe.codda.common.exception.ServerTaskException;
 import kr.pe.codda.common.message.AbstractMessage;
 import kr.pe.codda.impl.message.MessageResultRes.MessageResultRes;
 import kr.pe.codda.impl.message.TreeSiteMenuReq.TreeSiteMenuReq;
@@ -52,7 +52,7 @@ public class TreeSiteMenuReqServerTask extends AbstractServerTask {
 		try {
 			AbstractMessage outputMessage = doWork(ServerCommonStaticFinalVars.DEFAULT_DBCP_NAME, (TreeSiteMenuReq)inputMessage);
 			toLetterCarrier.addSyncOutputMessage(outputMessage);
-		} catch(ServerServiceException e) {
+		} catch(ServerTaskException e) {
 			String errorMessage = e.getMessage();
 			log.warn("errmsg=={}, inObj={}", errorMessage, inputMessage.toString());
 			
@@ -79,7 +79,7 @@ public class TreeSiteMenuReqServerTask extends AbstractServerTask {
 			ValueChecker.checkValidRequestedUserID(treeSiteMenuReq.getRequestedUserID());
 		} catch (IllegalArgumentException e) {
 			String errorMessage = e.getMessage();
-			throw new ServerServiceException(errorMessage);
+			throw new ServerTaskException(errorMessage);
 		}
 		
 		java.util.List<TreeSiteMenuRes.Menu> rootMenuList = new ArrayList<TreeSiteMenuRes.Menu>();
@@ -139,7 +139,7 @@ public class TreeSiteMenuReqServerTask extends AbstractServerTask {
 								.append("]의 부모가 해쉬에 존재하지 않습니다").toString();
 						log.info(debugMessage);
 						
-						throw new ServerServiceException(errorMessage);
+						throw new ServerTaskException(errorMessage);
 					}
 					java.util.List<TreeSiteMenuRes.Menu> parentChildMenuList = parentMenu.getChildMenuList();
 					parentChildMenuList.add(menu);

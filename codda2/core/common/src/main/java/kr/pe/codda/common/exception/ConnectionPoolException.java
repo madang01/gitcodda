@@ -17,6 +17,12 @@
 
 package kr.pe.codda.common.exception;
 
+/**
+ * 연결 폴 관련 에러 발생시 던지는 예외
+ * 
+ * @author Won Jonghoon
+ *
+ */
 @SuppressWarnings("serial")
 public class ConnectionPoolException extends Exception {
 	public ConnectionPoolException(String errorMessage) {

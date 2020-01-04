@@ -31,6 +31,7 @@ public interface WrapBufferPoolIF {
 	/**
 	 * 프로젝트 자원인 데이터 패킷 버퍼 큐에서 데이터 패킷 버퍼를 얻어온다.
 	 * @return 데이터 패킷 버퍼
+	 * @throws NoMoreDataPacketBufferException 랩 버퍼 폴에 랩 버퍼가 없을 때 던지는 예외
 	 */
 	public WrapBuffer pollDataPacketBuffer() throws NoMoreDataPacketBufferException;
 	/**

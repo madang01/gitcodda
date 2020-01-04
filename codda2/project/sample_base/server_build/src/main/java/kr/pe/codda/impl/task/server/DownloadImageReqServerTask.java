@@ -8,7 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import kr.pe.codda.common.exception.DynamicClassCallException;
-import kr.pe.codda.common.exception.ServerServiceException;
+import kr.pe.codda.common.exception.ServerTaskException;
 import kr.pe.codda.common.message.AbstractMessage;
 import kr.pe.codda.impl.message.DownloadImageReq.DownloadImageReq;
 import kr.pe.codda.impl.message.DownloadImageRes.DownloadImageRes;
@@ -44,7 +44,7 @@ public class DownloadImageReqServerTask extends AbstractServerTask {
 			AbstractMessage outputMessage = doWork(ServerCommonStaticFinalVars.DEFAULT_DBCP_NAME,
 					(DownloadImageReq) inputMessage);
 			toLetterCarrier.addSyncOutputMessage(outputMessage);
-		} catch (ServerServiceException e) {
+		} catch (ServerTaskException e) {
 			String errorMessage = e.getMessage();
 			log.warn("errmsg=={}, inObj={}", errorMessage, inputMessage.toString());
 
@@ -83,7 +83,7 @@ public class DownloadImageReqServerTask extends AbstractServerTask {
 				}
 
 				String errorMessage = "업로드 이미지가 존재하지 않습니다";
-				throw new ServerServiceException(errorMessage);
+				throw new ServerTaskException(errorMessage);
 			}
 			
 			final String imageFileName =  uploadImageRecord.get(SB_UPLOAD_IMAGE_TB.FNAME);

@@ -20,9 +20,9 @@ package kr.pe.codda.common.util;
 import java.nio.ByteBuffer;
 
 /**
- * Hex 출력을 도와주는 유틸<br/>
- * 출력 형식은 파싱을 고려하 hex 코드를 나열하여 출력함<br/>
- * 예제) 107f<br/>
+ * Hex 출력을 도와주는 유틸<br>
+ * 출력 형식은 파싱을 고려하 hex 코드를 나열하여 출력함<br>
+ * 예제) 107f<br>
  * 
  * @author Won Jonghoon
  */

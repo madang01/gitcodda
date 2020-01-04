@@ -21,7 +21,7 @@ package kr.pe.codda.common.config;
  * 자바 타입 값 변환기 추상화 클래스
  * @author Won Jonghoon
  *
- * @param <T>
+ * @param <T> 제너럴 타입
  */
 public abstract class AbstractNativeValueConverter<T> {	
 	private Class<T> genericType = null;	

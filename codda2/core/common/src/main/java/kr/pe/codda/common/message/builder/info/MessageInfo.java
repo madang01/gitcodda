@@ -25,9 +25,9 @@ import kr.pe.codda.common.type.MessageTransferDirectionType;
 
 
 /**
- * 메시지 정보 클래스.<br/>
- * 
  * <pre>
+ * 메시지 정보 클래스.
+ * 
  * 참고) 메시지 표현 정규식
  * 메시지 = 메시지 식별자, 항목 그룹
  * 항목 그룹 = (항목)*

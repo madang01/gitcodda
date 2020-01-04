@@ -44,7 +44,7 @@ import kr.pe.codda.common.type.ItemInfoType;
 import kr.pe.codda.common.type.MessageTransferDirectionType;
 
 /**
- * XML로 작성된 메시지 정보 파일을 SAX 파싱하여 메시지 정보를 작성하는 클래스.<br/>
+ * XML로 작성된 메시지 정보 파일을 SAX 파싱하여 메시지 정보를 작성하는 클래스.<br>
  * XML로 작성된 메시지 정보 파일의 구조를 정의하는 XSD 파일과 연계하여 메시지 구조 적합성을 검증한다.
  * 
  * @author Won Jonghoon
@@ -414,14 +414,14 @@ public class MessageInfoSAXParser extends DefaultHandler {
 	 * WARNING! {@link SAXParser#parse(File, DefaultHandler)} 는 파싱 에러시 파일 스트림을 닫지 않는 버그를 갖고 있어 
 	 * 파일 스트림을 제어할 수 있는 {@link SAXParser#parse(java.io.InputStream, DefaultHandler)} 으로 변경함.
 	 * 
-	 * @param xmlFile
-	 * @param isFileNameCheck
+	 * @param xmlFile xml 정보 파일
+	 * @param isFileNameCheck 파일 이름 중복 검사 유무
 	 * @return XML로 작성된 메시지 정보 파일을 SAX 파싱하여 얻은 결과물인 메시지 정보
 	 * @throws IllegalArgumentException 파라미터 xmlFile 가 잘못되었을 경우 예를 들면 null, 
 	 * 확장자가 .xml이 아닌경우 그리고 파일명이 [메시지 식별자].xml 포맷을 가지지 않거나 
 	 * 파임명에서 추출한  메시지 식별자가가 메시지 식별자 형식에 부합하지 않는 경우 이 예외를 던진다.
-	 * @throws SAXException
-	 * @throws IOException
+	 * @throws SAXException 파싱 에러 발생시 던지는 예외
+	 * @throws IOException 입출력 에러 발생시 던지는 예외
 	 */
 	public MessageInfo parse(File xmlFile, boolean isFileNameCheck) 
 			throws IllegalArgumentException, SAXException, IOException {

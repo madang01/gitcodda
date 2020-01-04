@@ -24,7 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import kr.pe.codda.common.exception.DynamicClassCallException;
-import kr.pe.codda.common.exception.ServerServiceException;
+import kr.pe.codda.common.exception.ServerTaskException;
 import kr.pe.codda.common.message.AbstractMessage;
 import kr.pe.codda.impl.message.MessageResultRes.MessageResultRes;
 import kr.pe.codda.impl.message.PersonalActivityHistoryReq.PersonalActivityHistoryReq;
@@ -70,7 +70,7 @@ public class PersonalActivityHistoryReqServerTask extends AbstractServerTask {
 		try {
 			AbstractMessage outputMessage = doWork(ServerCommonStaticFinalVars.DEFAULT_DBCP_NAME, (PersonalActivityHistoryReq)inputMessage);
 			toLetterCarrier.addSyncOutputMessage(outputMessage);
-		} catch(ServerServiceException e) {
+		} catch(ServerTaskException e) {
 			String errorMessage = e.getMessage();
 			log.warn("errmsg=={}, inObj={}", errorMessage, inputMessage.toString());
 			
@@ -100,7 +100,7 @@ public class PersonalActivityHistoryReqServerTask extends AbstractServerTask {
 			ValueChecker.checkValidPageNoAndPageSize(personalActivityHistoryReq.getPageNo(), personalActivityHistoryReq.getPageSize());
 		} catch (IllegalArgumentException e) {
 			String errorMessage = e.getMessage();
-			throw new ServerServiceException(errorMessage);
+			throw new ServerTaskException(errorMessage);
 		}
 		
 		final int pageNo = personalActivityHistoryReq.getPageNo();
@@ -142,7 +142,7 @@ public class PersonalActivityHistoryReqServerTask extends AbstractServerTask {
 						.append(targetUserMemberRole)
 						.append("]이 잘못되었습니다").toString();
 				
-				throw new ServerServiceException(errorMessage);
+				throw new ServerTaskException(errorMessage);
 			}
 			
 			if (MemberRoleType.GUEST.equals(targetUserMemberRoleType)) {
@@ -154,7 +154,7 @@ public class PersonalActivityHistoryReqServerTask extends AbstractServerTask {
 				
 				String errorMessage = "개인 활동 내역 조회 서비스의 대상은 회원만 가능합니다";
 				
-				throw new ServerServiceException(errorMessage);
+				throw new ServerTaskException(errorMessage);
 			}
 			
 			MemberStateType targetUserMemberStateType = null;
@@ -172,7 +172,7 @@ public class PersonalActivityHistoryReqServerTask extends AbstractServerTask {
 						.append("]의 멤버 상태[")
 						.append(targetUserMemberState)
 						.append("]가 잘못되었습니다").toString();
-				throw new ServerServiceException(errorMessage);
+				throw new ServerTaskException(errorMessage);
 			}
 			
 			
@@ -189,7 +189,7 @@ public class PersonalActivityHistoryReqServerTask extends AbstractServerTask {
 						.append("] 상태[")
 						.append(targetUserMemberStateType.getName())
 						.append("]가 정상이 아닙니다").toString();
-				throw new ServerServiceException(errorMessage);
+				throw new ServerTaskException(errorMessage);
 			}
 			
 			

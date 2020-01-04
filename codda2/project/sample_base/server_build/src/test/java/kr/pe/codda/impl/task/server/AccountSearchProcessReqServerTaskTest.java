@@ -21,7 +21,7 @@ import com.icegreen.greenmail.util.ServerSetup;
 import junitlib.AbstractBoardTest;
 import kr.pe.codda.common.etc.CommonStaticFinalVars;
 import kr.pe.codda.common.exception.DynamicClassCallException;
-import kr.pe.codda.common.exception.ServerServiceException;
+import kr.pe.codda.common.exception.ServerTaskException;
 import kr.pe.codda.common.exception.SymmetricException;
 import kr.pe.codda.common.sessionkey.ClientSessionKeyIF;
 import kr.pe.codda.common.sessionkey.ClientSessionKeyManager;
@@ -56,8 +56,8 @@ public class AccountSearchProcessReqServerTaskTest extends AbstractBoardTest {
 			passwordSearchProcessReqServerTask.doPasswordChangeProcess(TEST_DBCP_NAME, log, AccountSearchType.ID,
 					email, "aa", null, ip);
 
-			fail("no ServerServiceException");
-		} catch (ServerServiceException e) {
+			fail("no ServerTaskException");
+		} catch (ServerTaskException e) {
 			String errorMessage = e.getMessage();
 			String expectedErrorMessage = "입력한 이메일에 해당하는 일반 회원이 없습니다";
 
@@ -84,8 +84,8 @@ public class AccountSearchProcessReqServerTaskTest extends AbstractBoardTest {
 			passwordSearchProcessReqServerTask.doPasswordChangeProcess(TEST_DBCP_NAME, log, AccountSearchType.ID,
 					email, "aa", null, ip);
 
-			fail("no ServerServiceException");
-		} catch (ServerServiceException e) {
+			fail("no ServerTaskException");
+		} catch (ServerTaskException e) {
 			String errorMessage = e.getMessage();
 			String expectedErrorMessage = "아이디 혹은 비밀번호 찾기 준비 단계가 생략되었습니다";
 
@@ -135,7 +135,7 @@ public class AccountSearchProcessReqServerTaskTest extends AbstractBoardTest {
 			try {
 				ServerDBUtil.registerMember(TEST_DBCP_NAME, MemberRoleType.MEMBER, testID, nickname, email,
 						passwordBytes, new java.sql.Timestamp(System.currentTimeMillis()), ip);
-			} catch (ServerServiceException e) {
+			} catch (ServerTaskException e) {
 				String expectedErrorMessage = new StringBuilder("기존 회원과 중복되는 아이디[").append(testID).append("] 입니다")
 						.toString();
 				String actualErrorMessag = e.getMessage();
@@ -187,8 +187,8 @@ public class AccountSearchProcessReqServerTaskTest extends AbstractBoardTest {
 					passwordSearchProcessReqServerTask.doPasswordChangeProcess(TEST_DBCP_NAME, log, AccountSearchType.ID, 
 							email, "aa", null, ip);
 					
-					fail("no ServerServiceException");
-				} catch(ServerServiceException e) {
+					fail("no ServerTaskException");
+				} catch(ServerTaskException e) {
 					String errorMessage = e.getMessage();
 					String expectedErrorMessage = new StringBuilder()						
 							.append("아이디 찾기 ")
@@ -207,8 +207,8 @@ public class AccountSearchProcessReqServerTaskTest extends AbstractBoardTest {
 				passwordSearchProcessReqServerTask.doPasswordChangeProcess(TEST_DBCP_NAME, log, AccountSearchType.ID, 
 						email, "aa", null, ip);
 				
-				fail("no ServerServiceException");
-			} catch(ServerServiceException e) {
+				fail("no ServerTaskException");
+			} catch(ServerTaskException e) {
 				String errorMessage = e.getMessage();
 				String expectedErrorMessage = new StringBuilder().append("아이디 찾기로 비밀 값 틀린 횟수가  최대 횟수 ")
 						.append(ServerCommonStaticFinalVars.MAX_WRONG_PASSWORD_COUNT_OF_PASSWORD_SEARCH_SERVICE)
@@ -262,7 +262,7 @@ public class AccountSearchProcessReqServerTaskTest extends AbstractBoardTest {
 			try {
 				ServerDBUtil.registerMember(TEST_DBCP_NAME, MemberRoleType.MEMBER, testID, nickname, email,
 						passwordBytes, new java.sql.Timestamp(System.currentTimeMillis()), ip);
-			} catch (ServerServiceException e) {
+			} catch (ServerTaskException e) {
 				String expectedErrorMessage = new StringBuilder("기존 회원과 중복되는 아이디[").append(testID).append("] 입니다")
 						.toString();
 				String actualErrorMessag = e.getMessage();
@@ -319,8 +319,8 @@ public class AccountSearchProcessReqServerTaskTest extends AbstractBoardTest {
 				passwordSearchProcessReqServerTask.doPasswordChangeProcess(TEST_DBCP_NAME, log, AccountSearchType.ID, 
 						email, "aa", null, ip);
 				
-				fail("no ServerServiceException");
-			} catch(ServerServiceException e) {
+				fail("no ServerTaskException");
+			} catch(ServerTaskException e) {
 				String errorMessage = e.getMessage();
 				String expectedErrorMessage = new StringBuilder().append("아이디 찾기에서 비밀 값 입력 제한 시간[")
 						.append(ServerCommonStaticFinalVars.TIMEOUT_OF_PASSWORD_SEARCH_SERVICE)
@@ -372,7 +372,7 @@ public class AccountSearchProcessReqServerTaskTest extends AbstractBoardTest {
 			try {
 				ServerDBUtil.registerMember(TEST_DBCP_NAME, MemberRoleType.MEMBER, testID, nickname, email,
 						passwordBytes, new java.sql.Timestamp(System.currentTimeMillis()), ip);
-			} catch (ServerServiceException e) {
+			} catch (ServerTaskException e) {
 				String expectedErrorMessage = new StringBuilder("기존 회원과 중복되는 아이디[").append(testID).append("] 입니다")
 						.toString();
 				String actualErrorMessag = e.getMessage();
@@ -441,8 +441,8 @@ public class AccountSearchProcessReqServerTaskTest extends AbstractBoardTest {
 				try {
 					loginReqServerTask.doWork(TEST_DBCP_NAME, inObj);
 					
-					fail("no ServerServiceException");
-				} catch(ServerServiceException e) {
+					fail("no ServerTaskException");
+				} catch(ServerTaskException e) {
 					String errorMessage = e.getMessage();
 					String expectedErrorMessage = new StringBuilder()
 							.append(i+1).append(" 회 비밀 번호가 틀렸습니다").toString();
@@ -457,8 +457,8 @@ public class AccountSearchProcessReqServerTaskTest extends AbstractBoardTest {
 			try {
 				loginReqServerTask.doWork(TEST_DBCP_NAME, inObj);
 				
-				fail("no ServerServiceException");
-			} catch(ServerServiceException e) {
+				fail("no ServerTaskException");
+			} catch(ServerTaskException e) {
 				String errorMessage = e.getMessage();
 				String expectedErrorMessage = new StringBuilder("최대 허용된 횟수[")
 						.append(ServerCommonStaticFinalVars.MAX_COUNT_OF_PASSWORD_FAILURES)

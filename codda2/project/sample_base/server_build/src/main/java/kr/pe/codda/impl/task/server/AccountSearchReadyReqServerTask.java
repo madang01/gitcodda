@@ -13,7 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import kr.pe.codda.common.exception.DynamicClassCallException;
-import kr.pe.codda.common.exception.ServerServiceException;
+import kr.pe.codda.common.exception.ServerTaskException;
 import kr.pe.codda.common.message.AbstractMessage;
 import kr.pe.codda.common.util.CommonStaticUtil;
 import kr.pe.codda.impl.message.AccountSearchReadyReq.AccountSearchReadyReq;
@@ -53,7 +53,7 @@ public class AccountSearchReadyReqServerTask extends AbstractServerTask {
 			AbstractMessage outputMessage = doWork(ServerCommonStaticFinalVars.DEFAULT_DBCP_NAME,
 					(AccountSearchReadyReq) inputMessage);
 			toLetterCarrier.addSyncOutputMessage(outputMessage);
-		} catch (ServerServiceException e) {
+		} catch (ServerTaskException e) {
 			String errorMessage = e.getMessage();
 			log.warn("errmsg=={}, inObj={}", errorMessage, inputMessage.toString());
 
@@ -83,7 +83,7 @@ public class AccountSearchReadyReqServerTask extends AbstractServerTask {
 			ValueChecker.checkValidIP(accountSearchReadyReq.getIp());
 		} catch (IllegalArgumentException e) {
 			String errorMessage = e.getMessage();
-			throw new ServerServiceException(errorMessage);
+			throw new ServerTaskException(errorMessage);
 		}
 
 		final MessageResultRes messageResultRes = new MessageResultRes();
@@ -109,7 +109,7 @@ public class AccountSearchReadyReqServerTask extends AbstractServerTask {
 
 				String errorMessage = "입력한 이메일에 해당하는 일반 회원이 없습니다";
 
-				throw new ServerServiceException(errorMessage);
+				throw new ServerTaskException(errorMessage);
 			}
 
 			String userID = memberRecord.get(SB_MEMBER_TB.USER_ID);
@@ -164,7 +164,7 @@ public class AccountSearchReadyReqServerTask extends AbstractServerTask {
 							.append(ServerCommonStaticFinalVars.MAX_RETRY_COUNT_OF_PASSWORD_SEARCH_SERVICE)
 							.append("회에 도달하여 더 이상 진행할 수 없습니다, 관리자에게 문의하여 주시기 바랍니다").toString();
 
-					throw new ServerServiceException(errorMessage);
+					throw new ServerTaskException(errorMessage);
 				}
 				
 				if (ServerCommonStaticFinalVars.MAX_WRONG_PASSWORD_COUNT_OF_PASSWORD_SEARCH_SERVICE == failCount
@@ -179,7 +179,7 @@ public class AccountSearchReadyReqServerTask extends AbstractServerTask {
 							.append(ServerCommonStaticFinalVars.MAX_WRONG_PASSWORD_COUNT_OF_PASSWORD_SEARCH_SERVICE)
 							.append("회에 도달하여 더 이상 진행할 수 없습니다, 관리자에게 문의하여 주시기 바랍니다").toString();
 
-					throw new ServerServiceException(errorMessage);
+					throw new ServerTaskException(errorMessage);
 				}
 
 				byte[] newSecretAuthenticationValueBytes = new byte[8];

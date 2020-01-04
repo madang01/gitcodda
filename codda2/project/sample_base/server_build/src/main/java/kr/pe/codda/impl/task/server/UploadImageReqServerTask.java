@@ -13,7 +13,7 @@ import org.slf4j.LoggerFactory;
 
 import kr.pe.codda.common.etc.CommonStaticFinalVars;
 import kr.pe.codda.common.exception.DynamicClassCallException;
-import kr.pe.codda.common.exception.ServerServiceException;
+import kr.pe.codda.common.exception.ServerTaskException;
 import kr.pe.codda.common.message.AbstractMessage;
 import kr.pe.codda.impl.message.MessageResultRes.MessageResultRes;
 import kr.pe.codda.impl.message.UploadImageReq.UploadImageReq;
@@ -51,7 +51,7 @@ public class UploadImageReqServerTask extends AbstractServerTask {
 			AbstractMessage outputMessage = doWork(ServerCommonStaticFinalVars.DEFAULT_DBCP_NAME,
 					(UploadImageReq) inputMessage);
 			toLetterCarrier.addSyncOutputMessage(outputMessage);
-		} catch (ServerServiceException e) {
+		} catch (ServerTaskException e) {
 			String errorMessage = e.getMessage();
 			log.warn("errmsg=={}, inObj={}", errorMessage, inputMessage.toString());
 
@@ -76,12 +76,12 @@ public class UploadImageReqServerTask extends AbstractServerTask {
 			ValueChecker.checkValidFileName(uploadImageReq.getImageFileName());
 		} catch (IllegalArgumentException e) {
 			String errorMessage = e.getMessage();
-			throw new ServerServiceException(errorMessage);
+			throw new ServerTaskException(errorMessage);
 		}
 
 		if (uploadImageReq.getFileSize() <= 0) {
 			String errorMessage = "이미지 파일 크기가 0 보다 작거나 같습니다";
-			throw new ServerServiceException(errorMessage);
+			throw new ServerTaskException(errorMessage);
 		}
 
 		final UploadImageRes uploadImageRes = new UploadImageRes();		
@@ -102,7 +102,7 @@ public class UploadImageReqServerTask extends AbstractServerTask {
 			.where(SB_UPLOAD_IMAGE_TB.YYYYMMDD.eq(yyyyMMdd)).fetchOne().value1();
 			
 			if (maxOfDaySeq == CommonStaticFinalVars.UNSIGNED_INTEGER_MAX) {
-				throw new ServerServiceException("작업 시점의 SB_UPLOAD_IMAGE_TB 테이블의 날짜 시퀀스가 최대치에 도달하여 더 이상 이미지를 추가할 수 없습니다");
+				throw new ServerTaskException("작업 시점의 SB_UPLOAD_IMAGE_TB 테이블의 날짜 시퀀스가 최대치에 도달하여 더 이상 이미지를 추가할 수 없습니다");
 			}
 			
 			long newDayLogSeq = maxOfDaySeq + 1;

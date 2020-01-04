@@ -7,7 +7,7 @@ import org.junit.Test;
 
 import junitlib.AbstractBoardTest;
 import kr.pe.codda.common.exception.DynamicClassCallException;
-import kr.pe.codda.common.exception.ServerServiceException;
+import kr.pe.codda.common.exception.ServerTaskException;
 import kr.pe.codda.impl.message.MenuDeleteReq.MenuDeleteReq;
 import kr.pe.codda.impl.message.MenuMoveDownReq.MenuMoveDownReq;
 import kr.pe.codda.impl.message.MessageResultRes.MessageResultRes;
@@ -158,8 +158,8 @@ public class MenuMoveDownReqServerTaskTest extends AbstractBoardTest {
 		try {
 			menuDownMoveReqServerTask.doWork(TEST_DBCP_NAME, menuDownMoveReq);
 			
-			fail("no ServerServiceException");
-		} catch (ServerServiceException e) {
+			fail("no ServerTaskException");
+		} catch (ServerTaskException e) {
 			String expectedErrorMessage  = new StringBuilder()
 					.append("지정한 메뉴[")
 					.append(menuDownMoveReq.getMenuNo())
@@ -213,8 +213,8 @@ public class MenuMoveDownReqServerTaskTest extends AbstractBoardTest {
 		try {
 			menuDownMoveReqServerTask.doWork(TEST_DBCP_NAME, menuDownMoveReq);
 			
-			fail("no ServerServiceException");
-		} catch (ServerServiceException e) {
+			fail("no ServerTaskException");
+		} catch (ServerTaskException e) {
 			String expectedErrorMessage = new StringBuilder()
 					.append("지정한 메뉴[")
 					.append(menuDownMoveReq.getMenuNo())

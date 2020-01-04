@@ -12,7 +12,7 @@ import org.junit.Test;
 
 import junitlib.AbstractBoardTest;
 import kr.pe.codda.common.exception.DynamicClassCallException;
-import kr.pe.codda.common.exception.ServerServiceException;
+import kr.pe.codda.common.exception.ServerTaskException;
 import kr.pe.codda.impl.message.MemberAllInformationReq.MemberAllInformationReq;
 import kr.pe.codda.impl.message.MemberAllInformationRes.MemberAllInformationRes;
 import kr.pe.codda.impl.message.MemberBlockReq.MemberBlockReq;
@@ -37,8 +37,8 @@ public class MemberIntegrationTest extends AbstractBoardTest {
 		try {
 			ServerDBUtil.registerMember(TEST_DBCP_NAME, MemberRoleType.MEMBER, userID, nickname, 
 					email, passwordBytes, new java.sql.Timestamp(System.currentTimeMillis()), ip);
-			fail("no ServerServiceException");
-		} catch (ServerServiceException e) {
+			fail("no ServerTaskException");
+		} catch (ServerTaskException e) {
 			String acutalErrorMessage = e.getMessage();
 			String exepcedErrorMessage = new StringBuilder("기존 회원과 중복되는 아이디[").append(userID).append("] 입니다").toString();
 			
@@ -80,8 +80,8 @@ public class MemberIntegrationTest extends AbstractBoardTest {
 		
 		try {
 			ServerDBUtil.registerMember(TEST_DBCP_NAME, MemberRoleType.MEMBER, userID, nickname, email, passwordBytes, new java.sql.Timestamp(System.currentTimeMillis()), ip);
-			fail("no ServerServiceException");
-		} catch (ServerServiceException e) {
+			fail("no ServerTaskException");
+		} catch (ServerTaskException e) {
 			String acutalErrorMessage = e.getMessage();
 			String exepcedErrorMessage = new StringBuilder("기존 회원과 중복되는 별명[").append(nickname).append("] 입니다").toString();
 			
@@ -263,8 +263,8 @@ public class MemberIntegrationTest extends AbstractBoardTest {
 		
 		try {
 			userBlockReqServerTask.doWork(TEST_DBCP_NAME, userBlockReq);
-			fail("no ServerServiceException");
-		} catch (ServerServiceException e) {
+			fail("no ServerTaskException");
+		} catch (ServerTaskException e) {
 			String acutalErrorMessage = e.getMessage();
 			String exepcedErrorMessage = "자기 자신을 차단 할 수 없습니다";
 			
@@ -292,8 +292,8 @@ public class MemberIntegrationTest extends AbstractBoardTest {
 		try {
 			userBlockReqServerTask.doWork(TEST_DBCP_NAME, userBlockReq);
 			
-			fail("no ServerServiceException");
-		} catch (ServerServiceException e) {
+			fail("no ServerTaskException");
+		} catch (ServerTaskException e) {
 			String acutalErrorMessage = e.getMessage();
 			String exepcedErrorMessage = "회원 차단 서비스는 관리자 전용 서비스입니다";
 			
@@ -321,8 +321,8 @@ public class MemberIntegrationTest extends AbstractBoardTest {
 		try {
 			userBlockReqServerTask.doWork(TEST_DBCP_NAME, userBlockReq);
 			
-			fail("no ServerServiceException");
-		} catch (ServerServiceException e) {
+			fail("no ServerTaskException");
+		} catch (ServerTaskException e) {
 			String acutalErrorMessage = e.getMessage();
 			String exepcedErrorMessage = new StringBuilder("차단 대상 사용자[")
 			.append(userBlockReq.getTargetUserID())
@@ -388,8 +388,8 @@ public class MemberIntegrationTest extends AbstractBoardTest {
 		try {
 			userBlockReqServerTask.doWork(TEST_DBCP_NAME, userBlockReq);
 			
-			fail("no ServerServiceException");
-		} catch (ServerServiceException e) {
+			fail("no ServerTaskException");
+		} catch (ServerTaskException e) {
 			String acutalErrorMessage = e.getMessage();
 			String exepcedErrorMessage = new StringBuilder().append("차단 대상 회원[id=")
 					.append(userID)
@@ -502,8 +502,8 @@ public class MemberIntegrationTest extends AbstractBoardTest {
 		try {
 			userBlockReqServerTask.doWork(TEST_DBCP_NAME, userBlockReq);
 			
-			fail("no ServerServiceException");
-		} catch (ServerServiceException e) {
+			fail("no ServerTaskException");
+		} catch (ServerTaskException e) {
 			String acutalErrorMessage = e.getMessage();
 			String exepcedErrorMessage = new StringBuilder("차단 대상 사용자[")
 			.append(userBlockReq.getTargetUserID())
@@ -626,8 +626,8 @@ public class MemberIntegrationTest extends AbstractBoardTest {
 		
 		try {
 			userUnBlockReqServerTask.doWork(TEST_DBCP_NAME, userUnBlockReq);
-			fail("no ServerServiceException");
-		} catch (ServerServiceException e) {
+			fail("no ServerTaskException");
+		} catch (ServerTaskException e) {
 			String acutalErrorMessage = e.getMessage();
 			String exepcedErrorMessage = "자기 자신을 차단 해제 할 수 없습니다";
 			
@@ -654,8 +654,8 @@ public class MemberIntegrationTest extends AbstractBoardTest {
 		
 		try {
 			userUnBlockReqServerTask.doWork(TEST_DBCP_NAME, userUnBlockReq);
-			fail("no ServerServiceException");
-		} catch (ServerServiceException e) {
+			fail("no ServerTaskException");
+		} catch (ServerTaskException e) {
 			String acutalErrorMessage = e.getMessage();
 			String exepcedErrorMessage = "회원 차단 해제 서비스는 관리자 전용 서비스입니다";
 			
@@ -682,8 +682,8 @@ public class MemberIntegrationTest extends AbstractBoardTest {
 		
 		try {
 			userUnBlockReqServerTask.doWork(TEST_DBCP_NAME, userUnBlockReq);
-			fail("no ServerServiceException");
-		} catch (ServerServiceException e) {
+			fail("no ServerTaskException");
+		} catch (ServerTaskException e) {
 			String acutalErrorMessage = e.getMessage();
 			String exepcedErrorMessage = new StringBuilder("차단 해제 대상 사용자[")
 			.append(userUnBlockReq.getTargetUserID())
@@ -747,8 +747,8 @@ public class MemberIntegrationTest extends AbstractBoardTest {
 		
 		try {
 			userUnBlockReqServerTask.doWork(TEST_DBCP_NAME, userUnBlockReq);
-			fail("no ServerServiceException");
-		} catch (ServerServiceException e) {
+			fail("no ServerTaskException");
+		} catch (ServerTaskException e) {
 			String acutalErrorMessage = e.getMessage();
 			String exepcedErrorMessage = new StringBuilder().append("차단 해제 대상 회원[id=")
 					.append(userID)
@@ -815,8 +815,8 @@ public class MemberIntegrationTest extends AbstractBoardTest {
 		
 		try {
 			userUnBlockReqServerTask.doWork(TEST_DBCP_NAME, userUnBlockReq);
-			fail("no ServerServiceException");
-		} catch (ServerServiceException e) {
+			fail("no ServerTaskException");
+		} catch (ServerTaskException e) {
 			String acutalErrorMessage = e.getMessage();
 			String exepcedErrorMessage = new StringBuilder("차단 해제 대상 사용자[사용자아이디=")
 			.append(userUnBlockReq.getTargetUserID())
@@ -949,8 +949,8 @@ public class MemberIntegrationTest extends AbstractBoardTest {
 			memberWithdrawReqServerTask.withdrawMember(TEST_DBCP_NAME, log, requestedUserID, passwordBytes, 
 					new java.sql.Timestamp(System.currentTimeMillis()), ip);
 			
-			fail("no ServerServiceException");
-		} catch (ServerServiceException e) {
+			fail("no ServerTaskException");
+		} catch (ServerTaskException e) {
 			String acutalErrorMessage = e.getMessage();
 			String exepcedErrorMessage = new StringBuilder("회원 탈퇴 요청자[")
 			.append(requestedUserID)
@@ -975,8 +975,8 @@ public class MemberIntegrationTest extends AbstractBoardTest {
 			memberWithdrawReqServerTask.withdrawMember(TEST_DBCP_NAME, log, requestedUserID, passwordBytes, 
 					new java.sql.Timestamp(System.currentTimeMillis()), ip);
 			
-			fail("no ServerServiceException");
-		} catch (ServerServiceException e) {
+			fail("no ServerTaskException");
+		} catch (ServerTaskException e) {
 			String acutalErrorMessage = e.getMessage();
 			String exepcedErrorMessage = "회원 탈퇴 요청자[역활:관리자]가 일반 회원이 아닙니다";
 			
@@ -1050,8 +1050,8 @@ public class MemberIntegrationTest extends AbstractBoardTest {
 			memberWithdrawReqServerTask.withdrawMember(TEST_DBCP_NAME, log, userID, passwordBytes, 
 					new java.sql.Timestamp(System.currentTimeMillis()), ip);
 			
-			fail("no ServerServiceException");
-		} catch (ServerServiceException e) {
+			fail("no ServerTaskException");
+		} catch (ServerTaskException e) {
 			String acutalErrorMessage = e.getMessage();
 			String exepcedErrorMessage = new StringBuilder("탈퇴 대상 사용자[")
 			.append(userID)

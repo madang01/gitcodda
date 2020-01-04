@@ -12,7 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import kr.pe.codda.common.exception.DynamicClassCallException;
-import kr.pe.codda.common.exception.ServerServiceException;
+import kr.pe.codda.common.exception.ServerTaskException;
 import kr.pe.codda.common.message.AbstractMessage;
 import kr.pe.codda.impl.message.BoardBlockReq.BoardBlockReq;
 import kr.pe.codda.impl.message.MessageResultRes.MessageResultRes;
@@ -51,7 +51,7 @@ public class BoardBlockReqServerTask extends AbstractServerTask {
 			AbstractMessage outputMessage = doWork(ServerCommonStaticFinalVars.DEFAULT_DBCP_NAME,
 					(BoardBlockReq) inputMessage);
 			toLetterCarrier.addSyncOutputMessage(outputMessage);
-		} catch (ServerServiceException e) {
+		} catch (ServerTaskException e) {
 			String errorMessage = e.getMessage();
 			log.warn("errmsg=={}, inObj={}", errorMessage, inputMessage.toString());
 
@@ -80,7 +80,7 @@ public class BoardBlockReqServerTask extends AbstractServerTask {
 			ValueChecker.checkValidBoardNo(boardBlockReq.getBoardNo());
 		} catch (IllegalArgumentException e) {
 			String errorMessage = e.getMessage();
-			throw new ServerServiceException(errorMessage);
+			throw new ServerTaskException(errorMessage);
 		}		
 		
 		String requestedUserID = boardBlockReq.getRequestedUserID();
@@ -105,7 +105,7 @@ public class BoardBlockReqServerTask extends AbstractServerTask {
 
 				String errorMessage = new StringBuilder("입력 받은 게시판 식별자[").append(boardID.shortValue())
 						.append("]가 게시판 정보 테이블에 존재하지  않습니다").toString();
-				throw new ServerServiceException(errorMessage);
+				throw new ServerTaskException(errorMessage);
 			}
 
 			String boardName = boardInforRecord.get(SB_BOARD_INFO_TB.BOARD_NAME);
@@ -123,7 +123,7 @@ public class BoardBlockReqServerTask extends AbstractServerTask {
 				}
 
 				String errorMessage = e.getMessage();
-				throw new ServerServiceException(errorMessage);
+				throw new ServerTaskException(errorMessage);
 			}
 
 			/** 차단할 게시글에 속한 그룹의 루트 노드에 해당하는 레코드에 락을 건다 */
@@ -142,7 +142,7 @@ public class BoardBlockReqServerTask extends AbstractServerTask {
 				}
 
 				String errorMessage = "2.해당 게시글이 존재 하지 않습니다";
-				throw new ServerServiceException(errorMessage);
+				throw new ServerTaskException(errorMessage);
 			}
 
 			UShort groupSeq = boardRecord.getValue(SB_BOARD_TB.GROUP_SQ);
@@ -162,7 +162,7 @@ public class BoardBlockReqServerTask extends AbstractServerTask {
 
 				String errorMessage = new StringBuilder("게시글의 상태 값[").append(boardState).append("]이 잘못되었습니다")
 						.toString();
-				throw new ServerServiceException(errorMessage);
+				throw new ServerTaskException(errorMessage);
 			}
 
 			if (BoardStateType.DELETE.equals(boardStateType)) {
@@ -173,7 +173,7 @@ public class BoardBlockReqServerTask extends AbstractServerTask {
 				}
 
 				String errorMessage = "해당 게시글은 삭제된 글입니다";
-				throw new ServerServiceException(errorMessage);
+				throw new ServerTaskException(errorMessage);
 			} else if (BoardStateType.BLOCK.equals(boardStateType)) {
 				try {
 					conn.rollback();
@@ -182,7 +182,7 @@ public class BoardBlockReqServerTask extends AbstractServerTask {
 				}
 
 				String errorMessage = "해당 게시글은 관리자에 의해 차단된 글입니다";
-				throw new ServerServiceException(errorMessage);
+				throw new ServerTaskException(errorMessage);
 			} else if (BoardStateType.TREEBLOCK.equals(boardStateType)) {
 				try {
 					conn.rollback();
@@ -191,7 +191,7 @@ public class BoardBlockReqServerTask extends AbstractServerTask {
 				}
 
 				String errorMessage = "해당 게시글은 관리자에 의해 차단된 글에 속한 글입니다";
-				throw new ServerServiceException(errorMessage);
+				throw new ServerTaskException(errorMessage);
 			}
 
 			UShort fromGroupSeq = groupSeq;

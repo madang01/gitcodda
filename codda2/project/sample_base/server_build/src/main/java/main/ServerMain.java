@@ -5,8 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import kr.pe.codda.common.etc.CommonStaticFinalVars;
-import kr.pe.codda.common.exception.NotFoundProjectException;
-import kr.pe.codda.common.exception.ServerServiceException;
+import kr.pe.codda.common.exception.ServerTaskException;
 import kr.pe.codda.server.AnyProjectServer;
 import kr.pe.codda.server.MainServerManager;
 import kr.pe.codda.server.lib.MemberRoleType;
@@ -15,7 +14,7 @@ import kr.pe.codda.server.lib.ServerDBUtil;
 
 public class ServerMain {
 
-	public static void main(String argv[]) throws NotFoundProjectException {
+	public static void main(String argv[]) {
 		Logger log = LoggerFactory.getLogger(CommonStaticFinalVars.BASE_PACKAGE_NAME);
 		
 		try {
@@ -34,7 +33,7 @@ public class ServerMain {
 				ServerDBUtil.registerMember(ServerCommonStaticFinalVars.DEFAULT_DBCP_NAME,
 						MemberRoleType.ADMIN, userID, nickname, email, 
 						passwordBytes, new java.sql.Timestamp(System.currentTimeMillis()), ip);
-				} catch (ServerServiceException e) {
+				} catch (ServerTaskException e) {
 					String expectedErrorMessage = new StringBuilder("기존 회원과 중복되는 아이디[")
 							.append(userID)
 							.append("] 입니다").toString();
@@ -62,7 +61,7 @@ public class ServerMain {
 					ServerDBUtil.registerMember(ServerCommonStaticFinalVars.DEFAULT_DBCP_NAME,
 							MemberRoleType.GUEST, userID, nickname, email, 
 							passwordBytes, new java.sql.Timestamp(System.currentTimeMillis()), ip);
-				} catch (ServerServiceException e) {
+				} catch (ServerTaskException e) {
 					String expectedErrorMessage = new StringBuilder("기존 회원과 중복되는 아이디[")
 							.append(userID)
 							.append("] 입니다").toString();

@@ -38,10 +38,13 @@ import kr.pe.codda.common.protocol.ReceivedMessageForwarderIF;
 import kr.pe.codda.common.util.CommonStaticUtil;
 
 /**
- * THB 메시지 프로토콜<br/> 
- * DHB 의 축소형 프로토콜로 DHB 와 달리 쓰레드 세이프 검출및 데이터 검증에 취약하다.<br/> 
- * 따라서 쓰레드 세이프 검증이 필요 없고 데이터 신뢰성 높은 TCP/IP 환경에서 유효하다.<br/>
- * DHB 를 통해서 쓰레드 세이프 검증 완료한후 THB 프로토콜로 전환하는것을 추천함.<br/>
+ * <pre>
+ * THB 메시지 프로토콜
+ * DHB 의 축소형 프로토콜로 DHB 와 달리 쓰레드 세이프 검출및 데이터 검증에 취약하다. 
+ * 따라서 쓰레드 세이프 검증이 필요 없고 데이터 신뢰성 높은 TCP/IP 환경에서 유효하다.
+ * DHB 를 통해서 쓰레드 세이프 검증 완료한후 THB 프로토콜로 전환하는것을 추천함.
+ * </pre>
+ * 
  * @author Won Jonghoon
  *
  */

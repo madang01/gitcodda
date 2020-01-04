@@ -26,7 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import kr.pe.codda.common.exception.DynamicClassCallException;
-import kr.pe.codda.common.exception.ServerServiceException;
+import kr.pe.codda.common.exception.ServerTaskException;
 import kr.pe.codda.common.message.AbstractMessage;
 import kr.pe.codda.impl.message.BoardDetailReq.BoardDetailReq;
 import kr.pe.codda.impl.message.BoardDetailRes.BoardDetailRes;
@@ -69,7 +69,7 @@ public class BoardDetailReqServerTask extends AbstractServerTask {
 			AbstractMessage outputMessage = doWork(ServerCommonStaticFinalVars.DEFAULT_DBCP_NAME,
 					(BoardDetailReq) inputMessage);
 			toLetterCarrier.addSyncOutputMessage(outputMessage);
-		} catch (ServerServiceException e) {
+		} catch (ServerTaskException e) {
 			String errorMessage = e.getMessage();
 			log.warn("errmsg=={}, inObj={}", errorMessage, inputMessage.toString());
 
@@ -96,7 +96,7 @@ public class BoardDetailReqServerTask extends AbstractServerTask {
 			ValueChecker.checkValidBoardNo(boardDetailReq.getBoardNo());
 		} catch(IllegalArgumentException e) {
 			String errorMessage = e.getMessage();
-			throw new ServerServiceException(errorMessage);
+			throw new ServerTaskException(errorMessage);
 		}
 
 		final UByte boardID = UByte.valueOf(boardDetailReq.getBoardID());
@@ -122,7 +122,7 @@ public class BoardDetailReqServerTask extends AbstractServerTask {
 
 				String errorMessage = new StringBuilder("입력 받은 게시판 식별자[").append(boardID.shortValue())
 						.append("]가 게시판 정보 테이블에 존재하지  않습니다").toString();
-				throw new ServerServiceException(errorMessage);
+				throw new ServerTaskException(errorMessage);
 			}
 
 			String boardName = boardInforRecord.get(SB_BOARD_INFO_TB.BOARD_NAME);
@@ -141,7 +141,7 @@ public class BoardDetailReqServerTask extends AbstractServerTask {
 				}
 
 				String errorMessage = e.getMessage();
-				throw new ServerServiceException(errorMessage);
+				throw new ServerTaskException(errorMessage);
 			}
 			
 			
@@ -189,7 +189,7 @@ public class BoardDetailReqServerTask extends AbstractServerTask {
 				}
 
 				String errorMessage = new StringBuilder("해당 게시글이 존재 하지 않습니다").toString();
-				throw new ServerServiceException(errorMessage);
+				throw new ServerTaskException(errorMessage);
 			}
 
 			UInteger groupNo = mainBoardRecord.get(SB_BOARD_TB.GROUP_NO);
@@ -224,7 +224,7 @@ public class BoardDetailReqServerTask extends AbstractServerTask {
 
 				String errorMessage = new StringBuilder("게시글의 DB 상태 값[").append(boardState).append("]이 잘못되었습니다")
 						.toString();
-				throw new ServerServiceException(errorMessage);
+				throw new ServerTaskException(errorMessage);
 			}
 
 			if (!BoardStateType.OK.equals(boardStateType)) {
@@ -249,7 +249,7 @@ public class BoardDetailReqServerTask extends AbstractServerTask {
 								.append("]가 정상이 아닙니다").toString();
 					}
 
-					throw new ServerServiceException(errorMessage);
+					throw new ServerTaskException(errorMessage);
 				}
 			}
 			
@@ -268,7 +268,7 @@ public class BoardDetailReqServerTask extends AbstractServerTask {
 					String errorMessage = new StringBuilder().append(boardName).append(" 게시판[").append(boardID)
 							.append("]은 본문로만 이루어진 목록을 갖는 게시판으로 본문만 상세 조회가 가능합니다. 상세 조회를 요청한 게시글[boardNo=")
 							.append(boardNo).append("]은 본문이 아닙니다").toString();
-					throw new ServerServiceException(errorMessage);
+					throw new ServerTaskException(errorMessage);
 				}
 
 				SbBoardTb a = SB_BOARD_TB.as("a");
@@ -409,7 +409,7 @@ public class BoardDetailReqServerTask extends AbstractServerTask {
 				}
 
 				String errorMessage = new StringBuilder("해당 게시글 읽은 횟수 갱신이 실패하였습니다").toString();
-				throw new ServerServiceException(errorMessage);
+				throw new ServerTaskException(errorMessage);
 			}
 
 			conn.commit();

@@ -28,8 +28,8 @@ public class SetTypeConverterReturningString extends AbstractSetTypeNativeValueC
 	
 	/**
 	 * 생성자
-	 * @param allowedValueSet
-	 * @throws IllegalArgumentException
+	 * @param allowedValueSet 허락한 문자열
+	 * @throws IllegalArgumentException 파라미터 값이 잘못되었을 경우 던지는 예외
 	 */
 	public SetTypeConverterReturningString(String ... allowedValueSet) throws IllegalArgumentException {
 		super(String.class);

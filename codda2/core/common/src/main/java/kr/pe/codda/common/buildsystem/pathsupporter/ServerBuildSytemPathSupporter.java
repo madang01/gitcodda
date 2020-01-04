@@ -30,7 +30,7 @@ public abstract class ServerBuildSytemPathSupporter {
 	/**
 	 * @param installedPathString 설치 경로
 	 * @param mainProjectName 메인 프로젝트 이름
-	 * @return server build path => [project path]/server_build
+	 * @return server build path =&gt; [project path]/server_build
 	 */
 	public static String getServerBuildPathString(String installedPathString, String mainProjectName) {
 		StringBuilder strBuilder = new StringBuilder(ProjectBuildSytemPathSupporter.getProjectPathString(installedPathString, mainProjectName));
@@ -42,7 +42,7 @@ public abstract class ServerBuildSytemPathSupporter {
 	/**
 	 * @param installedPathString 설치 경로
 	 * @param mainProjectName 메인 프로젝트 이름
-	 * @return server build.xml => [project path]/server_build/build.xml
+	 * @return server build.xml =&gt; [project path]/server_build/build.xml
 	 */
 	public static String getServerAntBuildXMLFilePathString(String installedPathString, String mainProjectName) {
 		StringBuilder strBuilder = new StringBuilder(getServerBuildPathString(installedPathString, mainProjectName));
@@ -54,7 +54,7 @@ public abstract class ServerBuildSytemPathSupporter {
 	/**
 	 * @param installedPathString 설치 경로
 	 * @param mainProjectName 메인 프로젝트 이름
-	 * @return APP-INF path => [server build path]/APP-INF
+	 * @return APP-INF path =&gt; [server build path]/APP-INF
 	 */
 	public static String getServerAPPINFPathString(String installedPathString, String mainProjectName) {
 		StringBuilder strBuilder = new StringBuilder(getServerBuildPathString(installedPathString, mainProjectName));
@@ -64,9 +64,9 @@ public abstract class ServerBuildSytemPathSupporter {
 	}
 	
 	/**
-	 * @param installedPathString
-	 * @param mainProjectName
-	 * @return APP-INF class path => [APP-INF path]/classes
+	 * @param installedPathString 설치 경로
+	 * @param mainProjectName 메인 프로젝트 이름
+	 * @return APP-INF class path =&gt; [APP-INF path]/classes
 	 */
 	public static String getServerAPPINFClassPathString(String installedPathString, String mainProjectName) {
 		StringBuilder strBuilder = new StringBuilder(getServerAPPINFPathString(installedPathString, mainProjectName));

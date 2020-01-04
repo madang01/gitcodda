@@ -44,8 +44,8 @@ public final class IncomingStream extends StreamBuffer {
 	 * 
 	 * @param wantedSizeToCut 자르기 원하는 크기, 0 보다 커야 한다.
 	 * @return 소켓 읽기를 통해 축적한 이진 데이터 스트림 맨 앞쪽에서 추출된 스트림을 갖는 '스트림 버퍼'
-	 * @throws IllegalArgumentException
-	 * @throws NoMoreDataPacketBufferException
+	 * @throws IllegalArgumentException 파라미터 값이 잘못되었을 경우 던지는 예외
+	 * @throws NoMoreDataPacketBufferException 랩 버퍼 폴에 랩 버퍼가 없을 때 던지는 예외
 	 * @throws IllegalStateException 실질적인 IO 를 통해야만 값이 설정되는 '마지막 버퍼 인덱스' 와 '위치 속성 값' 만큼 크기를 갖는 스트림이이 담겼을 경우 마지막 인덱스가 불일치한 경우 
 	 */
 	public StreamBuffer cutMessageInputStream(long wantedSizeToCut) throws IllegalArgumentException, NoMoreDataPacketBufferException, IllegalStateException {

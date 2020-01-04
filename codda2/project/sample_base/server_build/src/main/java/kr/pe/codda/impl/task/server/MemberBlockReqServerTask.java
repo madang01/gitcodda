@@ -9,7 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import kr.pe.codda.common.exception.DynamicClassCallException;
-import kr.pe.codda.common.exception.ServerServiceException;
+import kr.pe.codda.common.exception.ServerTaskException;
 import kr.pe.codda.common.message.AbstractMessage;
 import kr.pe.codda.impl.message.MemberBlockReq.MemberBlockReq;
 import kr.pe.codda.impl.message.MessageResultRes.MessageResultRes;
@@ -47,7 +47,7 @@ public class MemberBlockReqServerTask extends AbstractServerTask {
 		try {
 			AbstractMessage outputMessage = doWork(ServerCommonStaticFinalVars.DEFAULT_DBCP_NAME, (MemberBlockReq)inputMessage);
 			toLetterCarrier.addSyncOutputMessage(outputMessage);
-		} catch(ServerServiceException e) {
+		} catch(ServerTaskException e) {
 			String errorMessage = e.getMessage();
 			log.warn("errmsg=={}, inObj={}", errorMessage, inputMessage.toString());
 			
@@ -75,12 +75,12 @@ public class MemberBlockReqServerTask extends AbstractServerTask {
 			ValueChecker.checkValidBlockUserID(memberBlockReq.getTargetUserID());
 		} catch(IllegalArgumentException e) {
 			String errorMessage = e.getMessage();
-			throw new ServerServiceException(errorMessage);
+			throw new ServerTaskException(errorMessage);
 		}
 		
 		if (memberBlockReq.getRequestedUserID().equals(memberBlockReq.getTargetUserID())) {
 			String errorMessage = "자기 자신을 차단 할 수 없습니다";
-			throw new ServerServiceException(errorMessage);
+			throw new ServerTaskException(errorMessage);
 		}
 		
 		ServerDBUtil.execute(dbcpName, (conn, create) -> {
@@ -106,7 +106,7 @@ public class MemberBlockReqServerTask extends AbstractServerTask {
 				String errorMessage = new StringBuilder("차단 대상 사용자[")
 						.append(memberBlockReq.getTargetUserID())
 						.append("] 가 회원 테이블에 존재하지 않습니다").toString();				
-				throw new ServerServiceException(errorMessage);
+				throw new ServerTaskException(errorMessage);
 			}
 			
 			byte memberRoleOfTargetUserID = memberRecordOfTargetUserID.getValue(SB_MEMBER_TB.ROLE);
@@ -126,7 +126,7 @@ public class MemberBlockReqServerTask extends AbstractServerTask {
 					.append(memberRoleOfTargetUserID)
 					.append("] 값입니다").toString();
 				
-				throw new ServerServiceException(errorMessage);
+				throw new ServerTaskException(errorMessage);
 			}	
 			
 			if (! MemberRoleType.MEMBER.equals(memberRoleTypeOfTargetUserID)) {
@@ -141,7 +141,7 @@ public class MemberBlockReqServerTask extends AbstractServerTask {
 						.append(", 역활=")
 						.append(memberRoleTypeOfTargetUserID.name())
 						.append("]이 일반 회원이 아닙니다").toString();
-				throw new ServerServiceException(errorMessage);
+				throw new ServerTaskException(errorMessage);
 			}
 			
 			byte memeberStateOfTargetUserID = memberRecordOfTargetUserID.getValue(SB_MEMBER_TB.STATE);
@@ -160,7 +160,7 @@ public class MemberBlockReqServerTask extends AbstractServerTask {
 					.append("]의 상태[")
 					.append(memeberStateOfTargetUserID)
 					.append("] 값입니다").toString();				
-				throw new ServerServiceException(errorMessage);
+				throw new ServerTaskException(errorMessage);
 			}
 			
 			if (! MemberStateType.OK.equals(memberStateTypeOfTargetUserID)) {
@@ -175,7 +175,7 @@ public class MemberBlockReqServerTask extends AbstractServerTask {
 						.append("] 상태[")
 						.append(memberStateTypeOfTargetUserID.getName())
 						.append("]가 정상이 아닙니다").toString();				
-				throw new ServerServiceException(errorMessage);
+				throw new ServerTaskException(errorMessage);
 			}
 			
 			Timestamp lastStateModifiedDate = new java.sql.Timestamp(System.currentTimeMillis());

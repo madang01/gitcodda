@@ -29,7 +29,7 @@ public class WebClientBuildSystemPathSupporter {
 	/**
 	 * @param installedPathString 설치 경로
 	 * @param mainProjectName 메인 프로젝트 이름
-	 * @return web client build path => [project path]/client_build/web_build
+	 * @return web client build path =&gt; [project path]/client_build/web_build
 	 */
 	public static String getWebClientBuildPathString(String installedPathString, String mainProjectName) {
 		StringBuilder strBuilder = new StringBuilder(ProjectBuildSytemPathSupporter.getClientBuildBasePathString(installedPathString, mainProjectName));
@@ -41,7 +41,7 @@ public class WebClientBuildSystemPathSupporter {
 	/**
 	 * @param installedPathString 설치 경로
 	 * @param mainProjectName 메인 프로젝트 이름
-	 * @return web client build.xml => [web client build path]/build.xml
+	 * @return web client build.xml =&gt; [web client build path]/build.xml
 	 */
 	public static String getWebClientAntBuildXMLFilePathString(String installedPathString, String mainProjectName) {
 		StringBuilder strBuilder = new StringBuilder(getWebClientBuildPathString(installedPathString, mainProjectName));
@@ -55,7 +55,7 @@ public class WebClientBuildSystemPathSupporter {
 	/**
 	 * @param installedPathString 설치 경로
 	 * @param mainProjectName 메인 프로젝트 이름
-	 * @return ant.properties => [web client build path]/webAnt.properties
+	 * @return ant.properties =&gt; [web client build path]/webAnt.properties
 	 */
 	public static String getWebClientAntPropertiesFilePath(String installedPathString, String mainProjectName) {
 		StringBuilder strBuilder = new StringBuilder(getWebClientBuildPathString(installedPathString, mainProjectName));

@@ -20,7 +20,12 @@ package kr.pe.codda.common.buildsystem.pathsupporter;
 import java.io.File;
 
 public class WebRootBuildSystemPathSupporter {
-	/** [project path]/user_web_app_base */
+	
+	/**
+	 * @param installedPathString 설치 경로
+	 * @param mainProjectName 메인 프로젝트 이름
+	 * @return [project path]/user_web_app_base 
+	 */
 	public static String getUserWebRootBasePathString(String installedPathString, String mainProjectName) {
 		StringBuilder strBuilder = new StringBuilder(ProjectBuildSytemPathSupporter.getProjectPathString(installedPathString, mainProjectName));
 		strBuilder.append(File.separator);
@@ -28,7 +33,11 @@ public class WebRootBuildSystemPathSupporter {
 		return strBuilder.toString();
 	}
 	
-	/** [project path]/user_web_app_base/upload */
+	/**
+	 * @param installedPathString 설치 경로
+	 * @param mainProjectName 메인 프로젝트 이름
+	 * @return [project path]/user_web_app_base/upload
+	 */
 	public static String getUserWebUploadPathString(String installedPathString, String mainProjectName) {
 		StringBuilder strBuilder = new StringBuilder(getUserWebRootBasePathString(installedPathString, mainProjectName));
 		strBuilder.append(File.separator);
@@ -37,7 +46,11 @@ public class WebRootBuildSystemPathSupporter {
 	}
 		
 	
-	/** [project path]/user_web_app_base/temp */
+	/**
+	 * @param installedPathString 설치 경로
+	 * @param mainProjectName 메인 프로젝트 이름
+	 * @return [project path]/user_web_app_base/temp
+	 */
 	public static String getUserWebTempPathString(String installedPathString, String mainProjectName) {
 		StringBuilder strBuilder = new StringBuilder(getUserWebRootBasePathString(installedPathString, mainProjectName));
 		strBuilder.append(File.separator);
@@ -46,7 +59,9 @@ public class WebRootBuildSystemPathSupporter {
 	}	
 
 	/**
-	 * [project path]/user_web_app_base/ROOT
+	 * @param installedPathString 설치 경로
+	 * @param mainProjectName 메인 프로젝트 이름
+	 * @return [project path]/user_web_app_base/ROOT
 	 */
 	public static String getUserWebRootPathString(String installedPathString, String mainProjectName) {
 		StringBuilder strBuilder = new StringBuilder(getUserWebRootBasePathString(installedPathString, mainProjectName));
@@ -56,7 +71,9 @@ public class WebRootBuildSystemPathSupporter {
 	}
 	
 	/**
-	 * [project path]/user_web_app_base/ROOT/WEB-INF
+	 * @param installedPathString 설치 경로
+	 * @param mainProjectName 메인 프로젝트 이름
+	 * @return [project path]/user_web_app_base/ROOT/WEB-INF
 	 */
 	public static String getUserWebINFPathString(String installedPathString, String mainProjectName) {
 		StringBuilder strBuilder = new StringBuilder(getUserWebRootPathString(installedPathString, mainProjectName));
@@ -66,7 +83,9 @@ public class WebRootBuildSystemPathSupporter {
 	}
 	
 	/**
-	 * [project path]/user_web_app_base/ROOT/WEB-INF/web.xml
+	 * @param installedPathString 설치 경로
+	 * @param mainProjectName 메인 프로젝트 이름
+	 * @return [project path]/user_web_app_base/ROOT/WEB-INF/web.xml
 	 */
 	public static String getUserWebRootXMLFilePathString(String installedPathString, String mainProjectName) {
 		StringBuilder strBuilder = new StringBuilder(getUserWebINFPathString(installedPathString, mainProjectName));

@@ -25,7 +25,7 @@ import java.util.logging.Logger;
 import kr.pe.codda.common.etc.CommonStaticFinalVars;
 
 /**
- * 입출력 메시지 클래스의 부모 추상화 클래스.<br/>
+ * 입출력 메시지 클래스의 부모 추상화 클래스.
  * 메시지 구현 추상화 클래스를 상속 받으며 메시지 운용에 필요한 메시지 헤더 정보를 갖고 있다.
  * 
  * @author Won Jonghoon
@@ -144,12 +144,14 @@ public abstract class AbstractMessage {
 	}
 
 	/**
-	 * java.lang.reflect 를 이용한 멤버 변수들에 대한 이름, 값를 알기쉽게 표현한 문자열로 반환한다.<br/>
-	 * 참고) 이 메소드는 32767 번 반복 수행시 멤버변수가 적은것은 200-250 ms, 많은것은 500-600 ms 정도 걸렸음.<br/>
-	 * <br/>
-	 * 1. 구현시 참고한 사이트<br/>
-	 * 1.1 http://www.javapractices.com/topic/TopicAction.do?Id=55<br/>
+	 * <pre>
+	 * java.lang.reflect 를 이용한 멤버 변수들에 대한 이름, 값를 알기쉽게 표현한 문자열로 반환한다.
+	 * 참고) 이 메소드는 32767 번 반복 수행시 멤버변수가 적은것은 200-250 ms, 많은것은 500-600 ms 정도 걸렸음.
+	 * 
+	 * 1. 구현시 참고한 사이트
+	 * 1.1 http://www.javapractices.com/topic/TopicAction.do?Id=55
 	 * 1.2 http://www.roseindia.net/javatutorials/Generic_toString.shtml
+	 * </pre>
 	 * 
 	 * @return 멤버 변수 이름과 값을 알기 쉽게 표현한 문자열
 	 */	

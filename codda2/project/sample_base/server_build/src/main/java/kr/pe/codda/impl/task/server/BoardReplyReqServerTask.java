@@ -20,7 +20,7 @@ import org.slf4j.LoggerFactory;
 
 import kr.pe.codda.common.etc.CommonStaticFinalVars;
 import kr.pe.codda.common.exception.DynamicClassCallException;
-import kr.pe.codda.common.exception.ServerServiceException;
+import kr.pe.codda.common.exception.ServerTaskException;
 import kr.pe.codda.common.message.AbstractMessage;
 import kr.pe.codda.impl.message.BoardReplyReq.BoardReplyReq;
 import kr.pe.codda.impl.message.BoardReplyRes.BoardReplyRes;
@@ -64,7 +64,7 @@ public class BoardReplyReqServerTask extends AbstractServerTask {
 			AbstractMessage outputMessage = doWork(ServerCommonStaticFinalVars.DEFAULT_DBCP_NAME,
 					(BoardReplyReq) inputMessage);
 			toLetterCarrier.addSyncOutputMessage(outputMessage);
-		} catch (ServerServiceException e) {
+		} catch (ServerTaskException e) {
 			String errorMessage = e.getMessage();
 			log.warn("errmsg=={}, inObj={}", errorMessage, inputMessage.toString());
 
@@ -96,7 +96,7 @@ public class BoardReplyReqServerTask extends AbstractServerTask {
 			
 		} catch (IllegalArgumentException e) {
 			String errorMessage = e.getMessage();
-			throw new ServerServiceException(errorMessage);
+			throw new ServerTaskException(errorMessage);
 		}
 
 		if (boardReplyReq.getNewAttachedFileCnt() > 0) {
@@ -110,13 +110,13 @@ public class BoardReplyReqServerTask extends AbstractServerTask {
 				} catch (IllegalArgumentException e) {
 					String errorMessage = new StringBuilder().append(i).append("번째 파일 이름 유효성 검사 에러 메시지::")
 							.append(e.getMessage()).toString();
-					throw new ServerServiceException(errorMessage);
+					throw new ServerTaskException(errorMessage);
 				}
 
 				if (newAttachedFile.getAttachedFileSize() <= 0) {
 					String errorMessage = new StringBuilder().append(i).append("번째 파일[")
 							.append(newAttachedFile.getAttachedFileName()).append("] 크기가 0보다 작거나 같습니다").toString();
-					throw new ServerServiceException(errorMessage);
+					throw new ServerTaskException(errorMessage);
 				}
 			}
 		}		
@@ -146,7 +146,7 @@ public class BoardReplyReqServerTask extends AbstractServerTask {
 
 				String errorMessage = new StringBuilder("입력 받은 게시판 식별자[").append(boardID.shortValue())
 						.append("]가 게시판 정보 테이블에 존재하지  않습니다").toString();
-				throw new ServerServiceException(errorMessage);
+				throw new ServerTaskException(errorMessage);
 			}
 
 			String boardName = boardInforRecord.get(SB_BOARD_INFO_TB.BOARD_NAME);
@@ -166,7 +166,7 @@ public class BoardReplyReqServerTask extends AbstractServerTask {
 						.append(boardName)
 						.append(" 게시판[").append(boardID.shortValue())
 						.append("]은 최대 갯수까지 글이 등록되어 더 이상 글을 추가 할 수 없습니다").toString();
-				throw new ServerServiceException(errorMessage);
+				throw new ServerTaskException(errorMessage);
 			}
 
 			BoardListType boardListType = null;
@@ -180,7 +180,7 @@ public class BoardReplyReqServerTask extends AbstractServerTask {
 				}
 
 				String errorMessage = e.getMessage();
-				throw new ServerServiceException(errorMessage);
+				throw new ServerTaskException(errorMessage);
 			}
 
 			if (BoardListType.TREE.equals(boardListType)) {
@@ -194,7 +194,7 @@ public class BoardReplyReqServerTask extends AbstractServerTask {
 					}
 
 					String errorMessage = e.getMessage();
-					throw new ServerServiceException(errorMessage);
+					throw new ServerTaskException(errorMessage);
 				}
 			}
 
@@ -209,7 +209,7 @@ public class BoardReplyReqServerTask extends AbstractServerTask {
 				}
 
 				String errorMessage = e.getMessage();
-				throw new ServerServiceException(errorMessage);
+				throw new ServerTaskException(errorMessage);
 			}
 
 			PermissionType boardReplyPermissionType = null;
@@ -224,7 +224,7 @@ public class BoardReplyReqServerTask extends AbstractServerTask {
 				}
 
 				String errorMessage = e.getMessage();
-				throw new ServerServiceException(errorMessage);
+				throw new ServerTaskException(errorMessage);
 			}
 
 			if (BoardReplyPolicyType.NO_REPLY.equals(boardReplyPolicyType)) {
@@ -236,7 +236,7 @@ public class BoardReplyReqServerTask extends AbstractServerTask {
 
 				String errorMessage = new StringBuilder().append(boardName).append(" 게시판[").append(boardID)
 						.append("]은 댓글 쓰기가 금지되었습니다").toString();
-				throw new ServerServiceException(errorMessage);
+				throw new ServerTaskException(errorMessage);
 			}
 
 			MemberRoleType memberRoleTypeOfRequestedUserID = ServerDBUtil.checkUserAccessRights(conn, create, log,
@@ -251,7 +251,7 @@ public class BoardReplyReqServerTask extends AbstractServerTask {
 					}
 
 					String errorMessage = "손님의 경우 반듯이 게시글에 대한 비밀번호를 입력해야 합니다";
-					throw new ServerServiceException(errorMessage);
+					throw new ServerTaskException(errorMessage);
 				}
 			}
 
@@ -276,7 +276,7 @@ public class BoardReplyReqServerTask extends AbstractServerTask {
 						.append(", parentBoardNo=")
 						.append(parentBoardNo)
 						.append("]이 존재 하지 않습니다").toString();
-				throw new ServerServiceException(errorMessage);
+				throw new ServerTaskException(errorMessage);
 			}
 			
 			UShort groupSeqOfParentBoard = parentBoardRecord.getValue(SB_BOARD_TB.GROUP_SQ);
@@ -294,7 +294,7 @@ public class BoardReplyReqServerTask extends AbstractServerTask {
 
 					String errorMessage = new StringBuilder().append(boardName).append(" 게시판[").append(boardID)
 							.append("]은 본문에대한 댓글만이 허용되었습니다").toString();
-					throw new ServerServiceException(errorMessage);
+					throw new ServerTaskException(errorMessage);
 				}
 			}
 			
@@ -336,7 +336,7 @@ public class BoardReplyReqServerTask extends AbstractServerTask {
 					log.warn("fail to rollback");
 				}
 				String errorMessage = "댓글 저장하는데 실패하였습니다";
-				throw new ServerServiceException(errorMessage);
+				throw new ServerTaskException(errorMessage);
 			}
 
 			Timestamp registeredDate = new java.sql.Timestamp(System.currentTimeMillis());			
@@ -357,7 +357,7 @@ public class BoardReplyReqServerTask extends AbstractServerTask {
 					log.warn("fail to rollback");
 				}
 				String errorMessage = "댓글 내용을 저장하는데 실패하였습니다";
-				throw new ServerServiceException(errorMessage);
+				throw new ServerTaskException(errorMessage);
 			}
 
 			if (boardReplyReq.getNewAttachedFileCnt() > 0) {
@@ -378,7 +378,7 @@ public class BoardReplyReqServerTask extends AbstractServerTask {
 						String errorMessage = "댓글의 첨부 파일을  저장하는데 실패하였습니다";
 						log.warn("댓글의 첨부 파일 목록내 인덱스[{}]의 첨부 파일 이름을 저장하는데 실패하였습니다", attachedFileListIndex);
 
-						throw new ServerServiceException(errorMessage);
+						throw new ServerTaskException(errorMessage);
 					}
 
 					attachedFileListIndex++;

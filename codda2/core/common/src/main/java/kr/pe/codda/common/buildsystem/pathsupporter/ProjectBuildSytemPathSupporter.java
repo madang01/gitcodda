@@ -32,7 +32,7 @@ public abstract class ProjectBuildSytemPathSupporter {
 	 
 	/**
 	 * @param installedPathString 설치 경로
-	 * @return project base path => [installed path]/project
+	 * @return project base path =&gt; [installed path]/project
 	 */
 	public static String getProjectBasePathString(
 			String installedPathString) {
@@ -57,7 +57,7 @@ public abstract class ProjectBuildSytemPathSupporter {
 	 * 
 	 * @param installedPathString 설치 경로
 	 * @param mainProjectName 메인 프로젝트 이름
-	 * @return [project path] => [project base path]/[main project name]
+	 * @return [project path] =&gt; [project base path]/[main project name]
 	 */
 	public static String getProjectPathString(String installedPathString,  String mainProjectName) {
 		if (null == mainProjectName) {
@@ -83,7 +83,7 @@ public abstract class ProjectBuildSytemPathSupporter {
 	 * @param installedPathString 설치 경로
 	 * @param mainProjectName 메인 프로젝트 이름
 	 * @param logType 로그 종류, 참고 : {@link LogType}
-	 * @return log path => [project path]/log/[log type name]
+	 * @return log path =&gt; [project path]/log/[log type name]
 	 */
 	public static String getProjectLogPathString(String installedPathString, String mainProjectName, LogType logType) {		
 		if (null == logType) {
@@ -104,7 +104,7 @@ public abstract class ProjectBuildSytemPathSupporter {
 	/**
 	 * @param installedPathString 설치 경로
 	 * @param mainProjectName 메인 프로젝트 이름
-	 * @return project config path => [proejct path]/config
+	 * @return project config path =&gt; [proejct path]/config
 	 */
 	public static String getProjectConfigDirectoryPathString(String installedPathString, String mainProjectName) {
 		StringBuilder strBuilder = new StringBuilder(getProjectPathString(installedPathString, mainProjectName));
@@ -117,7 +117,7 @@ public abstract class ProjectBuildSytemPathSupporter {
 	/**
 	 * @param installedPathString 설치 경로
 	 * @param mainProjectName 메인 프로젝트 이름
-	 * @return project config file path => [project config path]/[project config short file name]
+	 * @return project config file path =&gt; [project config path]/[project config short file name]
 	 */
 	public static String getProejctConfigFilePathString(String installedPathString, String mainProjectName) {
 		StringBuilder strBuilder = new StringBuilder(
@@ -130,7 +130,7 @@ public abstract class ProjectBuildSytemPathSupporter {
 	/**
 	 * @param installedPathString 설치 경로
 	 * @param mainProjectName 메인 프로젝트 이름
-	 * @return project resources path => [project path]/resources
+	 * @return project resources path =&gt; [project path]/resources
 	 */
 	public static String getProjectResourcesDirectoryPathString(String installedPathString, String mainProjectName) {
 		StringBuilder strBuilder = new StringBuilder(
@@ -144,7 +144,7 @@ public abstract class ProjectBuildSytemPathSupporter {
 	/**
 	 * @param installedPathString 설치 경로
 	 * @param mainProjectName 메인 프로젝트 이름
-	 * @return project email properties file => [project path]/resources/email.properties
+	 * @return project email properties file =&gt; [project path]/resources/email.properties
 	 */
 	public static String getProjectEmailPropertiesFilePathString(String installedPathString, String mainProjectName) {
 		StringBuilder strBuilder = new StringBuilder(
@@ -159,7 +159,7 @@ public abstract class ProjectBuildSytemPathSupporter {
 	/**
 	 * @param installedPathString 설치 경로
 	 * @param mainProjectName 메인 프로젝트 이름
-	 * @return logback config file path => [project resources path]/[logack log short file name] 
+	 * @return logback config file path =&gt; [project resources path]/[logack log short file name] 
 	 */
 	public static String getProjectLogbackConfigFilePathString(String installedPathString, String mainProjectName) {
 		StringBuilder strBuilder = new StringBuilder(getProjectResourcesDirectoryPathString(installedPathString, mainProjectName));
@@ -171,8 +171,8 @@ public abstract class ProjectBuildSytemPathSupporter {
 	/**
 	 * @param installedPathString 설치 경로
 	 * @param mainProjectName 메인 프로젝트 이름
-	 * @param dbcpName
-	 * @return DBCP configuration file path => [project path]/resources/dbcp/dbcp.[dbcp name].properties
+	 * @param dbcpName dbcp 이름
+	 * @return DBCP configuration file path =&gt; [project path]/resources/dbcp/dbcp.[dbcp name].properties
 	 */
 	public static String getProjectDBCPConfigFilePathString(String installedPathString, String mainProjectName,
 			 String dbcpName) {
@@ -190,7 +190,7 @@ public abstract class ProjectBuildSytemPathSupporter {
 	/**
 	 * @param installedPathString 설치 경로
 	 * @param mainProjectName 메인 프로젝트 이름
-	 * @return message info path => [project path]/resources/message_info
+	 * @return message info path =&gt; [project path]/resources/message_info
 	 */
 	public static String getProjectMessageInfoDirectoryPathString(String installedPathString, String mainProjectName) {
 		StringBuilder strBuilder = new StringBuilder(getProjectResourcesDirectoryPathString(installedPathString, mainProjectName))
@@ -203,7 +203,7 @@ public abstract class ProjectBuildSytemPathSupporter {
 	 * @param installedPathString 설치 경로
 	 * @param mainProjectName 메인 프로젝트 이름
 	 * @param messageID 메시지 식별자
-	 * @return message info path => [project path]/resources/message_info/[message id].xml
+	 * @return message info path =&gt; [project path]/resources/message_info/[message id].xml
 	 */
 	public static String getProjectMessageInfoFilePathString(String installedPathString, String mainProjectName, String messageID) {
 		StringBuilder strBuilder = new StringBuilder(getProjectMessageInfoDirectoryPathString(installedPathString, mainProjectName))
@@ -216,7 +216,7 @@ public abstract class ProjectBuildSytemPathSupporter {
 	/**
 	 * @param installedPathString 설치 경로
 	 * @param mainProjectName 메인 프로젝트 이름
-	 * @return RSA keypair path => [project path]/resources/rsa_keypair
+	 * @return RSA keypair path =&gt; [project path]/resources/rsa_keypair
 	 */
 	public static String getSessionKeyRSAKeypairPathString(String installedPathString, String mainProjectName) {
 		StringBuilder strBuilder = new StringBuilder(getProjectResourcesDirectoryPathString(installedPathString, mainProjectName));
@@ -228,7 +228,7 @@ public abstract class ProjectBuildSytemPathSupporter {
 	/**
 	 * @param installedPathString 설치 경로
 	 * @param mainProjectName 메인 프로젝트 이름
-	 * @return RSA Publickey file => [RSA keypair path]/[publickey short file name]
+	 * @return RSA Publickey file =&gt; [RSA keypair path]/[publickey short file name]
 	 */
 	public static String getSessionKeyRSAPublickeyFilePathString(String installedPathString, String mainProjectName) {
 		StringBuilder strBuilder = new StringBuilder(getSessionKeyRSAKeypairPathString(installedPathString, mainProjectName));
@@ -240,7 +240,7 @@ public abstract class ProjectBuildSytemPathSupporter {
 	/**
 	 * @param installedPathString 설치 경로
 	 * @param mainProjectName 메인 프로젝트 이름
-	 * @return RSA Publickey file => [RSA keypair path]/[privatekey short file name]
+	 * @return RSA Publickey file =&gt; [RSA keypair path]/[privatekey short file name]
 	 */
 	public static String getSessionKeyRSAPrivatekeyFilePathString(String installedPathString, String mainProjectName) {
 		StringBuilder strBuilder = new StringBuilder(getSessionKeyRSAKeypairPathString(installedPathString, mainProjectName));
@@ -252,7 +252,7 @@ public abstract class ProjectBuildSytemPathSupporter {
 	/**
 	 * @param installedPathString 설치 경로
 	 * @param mainProjectName 메인 프로젝트 이름
-	 * @return db initialization path => [project path]/resources/db_initialization
+	 * @return db initialization path =&gt; [project path]/resources/db_initialization
 	 */
 	public static String getDBInitializationDirecotryPathString(String installedPathString, String mainProjectName) {
 		StringBuilder strBuilder = new StringBuilder(getProjectResourcesDirectoryPathString(installedPathString, mainProjectName))
@@ -265,7 +265,7 @@ public abstract class ProjectBuildSytemPathSupporter {
 	/**
 	 * @param installedPathString 설치 경로
 	 * @param mainProjectName 메인 프로젝트 이름
-	 * @return client build base path => [project path]/client_build
+	 * @return client build base path =&gt; [project path]/client_build
 	 */
 	public static String getClientBuildBasePathString(String installedPathString, String mainProjectName) {
 		StringBuilder strBuilder = new StringBuilder(getProjectPathString(installedPathString, mainProjectName));
