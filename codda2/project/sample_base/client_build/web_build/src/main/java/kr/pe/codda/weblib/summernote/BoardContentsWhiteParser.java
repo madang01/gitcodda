@@ -149,7 +149,7 @@ public class BoardContentsWhiteParser {
 					
 					// log.info("[" + newImgTagString + "]");
 					
-					int beginIndex = contents.indexOf("<img");
+					int beginIndex = contents.indexOf("<img", fromIndex);
 					int endIndex = contents.indexOf(">", beginIndex + 10 + srcAttributeValue.length() + dataFileNameAttributeValue.length()) + 1;
 					
 					/*
@@ -158,6 +158,15 @@ public class BoardContentsWhiteParser {
 					*/
 					newContnetStringBuilder.append(contents.substring(fromIndex, beginIndex));
 					newContnetStringBuilder.append(newImgTagString);
+					
+					fromIndex = endIndex;
+				} else {
+					int beginIndex = contents.indexOf("<img", fromIndex);
+					int endIndex = contents.indexOf(">", beginIndex + 10) + 1;
+					
+					String imageTagHavingURL = contents.substring(fromIndex, endIndex);					
+					
+					newContnetStringBuilder.append(imageTagHavingURL);
 					
 					fromIndex = endIndex;
 				}

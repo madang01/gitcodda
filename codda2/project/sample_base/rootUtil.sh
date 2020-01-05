@@ -1,7 +1,9 @@
 #!/bin/bash
 
-echo "change group of apache or tomcat log path and add 'group write permission' to apache or tomcat log path"
+echo "the diretory 'log/apache' needs group write permission and its group should be 'www-data'"
 chgrp www-data log/apache
 chmod g+w log/apache
-chgrp tomcat8 log/tomcat
-chmod g+w log/tomcat
+
+echo "the directory 'log/tomcat' and 'user_web_app_base/upload' need write permission and their group should be 'tomcat8'"
+chgrp tomcat8 log/tomcat user_web_app_base/upload
+chmod g+w log/tomcat user_web_app_base/upload
