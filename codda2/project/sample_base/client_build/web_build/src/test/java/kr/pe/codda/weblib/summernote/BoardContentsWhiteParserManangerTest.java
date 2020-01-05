@@ -177,5 +177,61 @@ public class BoardContentsWhiteParserManangerTest {
 	}
 	
 	// <h3>안녕하세요.&nbsp; 코다 커뮤니티 방문을 환영합니다.</h3><p><br></p><h3>코다는 RPC 서버를 기반으로하는 개발 프레임워크입니다.</h3><h3>이곳 사이트의 도메인은 현재 코다의 전신인 구 신놀이를 개발할때 사용한 도메인입니다.</h3><h3>지금은 코다 베타 테스트를 위한 사용하고 있고&nbsp;</h3><h3>같이할 멤버를 모아서 베타 테스트가 끝내서&nbsp;<a href="http://www.codda.org" target="_blank">www.codda.org</a> 로 인사를 드리겠습니다.</h3><h3>같이할 멤버 분들은 k9200544@hanmail.net 으로 연락 주시기 바랍니다.</h3><h3>그리고 베타 테스트및 howto 문서를 만들기 위해서 서버가 수시로 멈출 수 있으니 이점 양해해 주시기 바랍니다.</h3>
+	
+	@Test
+	public void test_이미지추가후수정_ok() {
+		String oldContents = "<p><img src=\"/servlet/DownloadImage?yyyyMMdd=20200105&amp;daySequence=1\" style=\"width: 50%;\"></p><p><br></p><p><br></p>";
+		
+		class NewImgTagSrcAttributeValueGetter implements ImageFileURLGetterIF {
+
+			@Override
+			public String getImageFileURL(BoardImageFileInformation boardImageFileInformation)
+					throws WhiteParserException {
+				return "/servlet/DownloadImage?yyyyMMdd=20191229&amp;daySequence=19";
+			}
+		}
+		
+		try {
+			String newContents = BoardContentsWhiteParserMananger
+					.getInstance().checkWhiteValue(new NewImgTagSrcAttributeValueGetter(), oldContents);
+
+			assertEquals(oldContents, newContents);
+		} catch (Exception e) {
+			log.log(Level.WARNING, "error", e);
+
+			fail("화이트 값 검사 실패, errmsg=" + e.getMessage());
+		}
+	}
+	
+	@Test
+	public void test_body태그에onClick_ok() {
+		
+		String oldContents = "<body onClick=\"alert('hello');\"><p><img src=\"/servlet/DownloadImage?yyyyMMdd=20200105&amp;daySequence=1\" style=\"width: 50%;\"></p><p><br></p><p><br></p></body>";
+		
+		class NewImgTagSrcAttributeValueGetter implements ImageFileURLGetterIF {
+
+			@Override
+			public String getImageFileURL(BoardImageFileInformation boardImageFileInformation)
+					throws WhiteParserException {
+				return "/servlet/DownloadImage?yyyyMMdd=20191229&amp;daySequence=19";
+			}
+		}
+		
+		try {
+			BoardContentsWhiteParserMananger
+					.getInstance().checkWhiteValue(new NewImgTagSrcAttributeValueGetter(), oldContents);
+
+			fail("no WhiteParserException");
+		} catch (WhiteParserException e) {
+			String expectedErrorMessage = "tag[body]'s attribute[onclick] is a disallowed attribute";
+			String errorMessage = e.getMessage();
+			
+			assertEquals(expectedErrorMessage, errorMessage);
+		} catch (Exception e) {
+			log.log(Level.WARNING, "error", e);
+
+			fail("화이트 값 검사 실패, errmsg=" + e.getMessage());
+		}
+	}
 
 }

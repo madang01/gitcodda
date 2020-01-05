@@ -1067,16 +1067,10 @@ function showModifyEditScreen(boardID, boardNo, nextAttachedFileSeq, isSubject, 
 	targetDiv.appendChild(processFormNode);
 	
 	$('#contentsOfBoard').summernote({
+<%= summerNoteConfiguration.buildInitializationOptionsString(3) %>,
 		placeholder: '이곳에 글을 작성해 주세요',
         tabsize: 2,
-        height: 200,
-        callbacks: {
-        	onImageUpload: function(imageFiles) {		        		
-        		for (var i=0; i < imageFiles.length; i++) {
-        			uploadImageFile(imageFiles[i]);
-        		}
-			}
-		}
+        height: 200
 	});
 			
 	var f = document.modifyInputFrm;

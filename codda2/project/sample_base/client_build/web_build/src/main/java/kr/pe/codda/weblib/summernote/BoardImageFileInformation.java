@@ -1,9 +1,9 @@
 package kr.pe.codda.weblib.summernote;
 
 public class BoardImageFileInformation {	
-	private String boardImageMimeType;
-	private byte[] boardImageFileContents;
-	private String boardImageFileName;
+	private String boardImageMimeType = null;
+	private byte[] boardImageFileContents = null;
+	private String boardImageFileName = null;
 		
 	
 	public String getBoardImageMimeType() {

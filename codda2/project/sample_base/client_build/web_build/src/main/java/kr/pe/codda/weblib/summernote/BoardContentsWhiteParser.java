@@ -96,70 +96,71 @@ public class BoardContentsWhiteParser {
 				ImgTagSrcAtrrWhiteValueChecker imgTagSrcAtrrWhiteValueChecker = (ImgTagSrcAtrrWhiteValueChecker)srcTagAttribute.getAttributeWhiteValueCheker();
 				
 				
-				imgTagSrcAtrrWhiteValueChecker.throwExceptionIfNoWhiteValue(srcAttributeValue, boardImageFileInformation);				
+				imgTagSrcAtrrWhiteValueChecker.throwExceptionIfNoWhiteValue(srcAttributeValue, boardImageFileInformation);
 				
-				
-				String dataFileNameAttributeValue = attributes.get("data-filename");
-				if (null == dataFileNameAttributeValue || dataFileNameAttributeValue.isEmpty()) {
-					String errorMessage = "img 태그에서 data-filename 속성이 없습니다";
-					throw new WhiteParserException(errorMessage);
-				}				
-				
-				WhiteTagAttribute dataFileNameTagAttribute = whiteTag.getWhiteTagAttribute("data-filename");
-				
-				ImgTagDataFileNameAttrWhiteValueChecker imgTagDataFileNameAttrWhiteValueChecker =  (ImgTagDataFileNameAttrWhiteValueChecker)dataFileNameTagAttribute.getAttributeWhiteValueCheker();
-				
-				imgTagDataFileNameAttrWhiteValueChecker.throwExceptionIfNoWhiteValue(dataFileNameAttributeValue, boardImageFileInformation);
-				
-				
-				String acutalContentType = null;
-				
-				try {
-					acutalContentType = URLConnection.guessContentTypeFromStream(new ByteArrayInputStream(boardImageFileInformation.getBoardImageFileContents()));
-				} catch(IOException e) {
-					String errorMessage = new StringBuilder("입출력 에러가 발생하여 게시글에 포함된 이미지 파일의 내용 종류를 파악하는데 실패하였습니다").toString();
-					throw new WhiteParserException(errorMessage);
-				}
-				
-				if (null == acutalContentType) {
-					String errorMessage = new StringBuilder("게시글에 포함된 이미지 파일의 내용 종류를 파악하는데 실패하였습니다").toString();
-					throw new WhiteParserException(errorMessage);
-				} 
+				if (null != boardImageFileInformation.getBoardImageMimeType()) {
+					String dataFileNameAttributeValue = attributes.get("data-filename");
+					if (null == dataFileNameAttributeValue || dataFileNameAttributeValue.isEmpty()) {
+						String errorMessage = "img 태그에서 data-filename 속성이 없습니다";
+						throw new WhiteParserException(errorMessage);
+					}				
+					
+					WhiteTagAttribute dataFileNameTagAttribute = whiteTag.getWhiteTagAttribute("data-filename");
+					
+					ImgTagDataFileNameAttrWhiteValueChecker imgTagDataFileNameAttrWhiteValueChecker =  (ImgTagDataFileNameAttrWhiteValueChecker)dataFileNameTagAttribute.getAttributeWhiteValueCheker();
+					
+					imgTagDataFileNameAttrWhiteValueChecker.throwExceptionIfNoWhiteValue(dataFileNameAttributeValue, boardImageFileInformation);
+					
+					
+					String acutalContentType = null;
+					
+					try {
+						acutalContentType = URLConnection.guessContentTypeFromStream(new ByteArrayInputStream(boardImageFileInformation.getBoardImageFileContents()));
+					} catch(IOException e) {
+						String errorMessage = new StringBuilder("입출력 에러가 발생하여 게시글에 포함된 이미지 파일의 내용 종류를 파악하는데 실패하였습니다").toString();
+						throw new WhiteParserException(errorMessage);
+					}
+					
+					if (null == acutalContentType) {
+						String errorMessage = new StringBuilder("게시글에 포함된 이미지 파일의 내용 종류를 파악하는데 실패하였습니다").toString();
+						throw new WhiteParserException(errorMessage);
+					} 
 
-				if (! acutalContentType.equals(boardImageFileInformation.getBoardImageMimeType())) {
-					String errorMessage = new StringBuilder("게시글에 포함된 이미지 파일의 내용 종류[")
-							.append(acutalContentType)
-							.append("]가 이미지 태그에서 지정한 파일 내용 종류[")
-							.append(boardImageFileInformation.getBoardImageMimeType())
-							.append("]가 일치 하지 않습니다").toString();
-					throw new WhiteParserException(errorMessage);
+					if (! acutalContentType.equals(boardImageFileInformation.getBoardImageMimeType())) {
+						String errorMessage = new StringBuilder("게시글에 포함된 이미지 파일의 내용 종류[")
+								.append(acutalContentType)
+								.append("]가 이미지 태그에서 지정한 파일 내용 종류[")
+								.append(boardImageFileInformation.getBoardImageMimeType())
+								.append("]가 일치 하지 않습니다").toString();
+						throw new WhiteParserException(errorMessage);
+					}
+					
+					
+					String newImgTagSrcAttributeString = imageFileURLGetter.getImageFileURL(boardImageFileInformation);
+					
+					attributes.put("src", newImgTagSrcAttributeString);
+					attributes.remove("data-filename");
+					
+					
+					/**
+					 * WARNING! 속성 변경 후 새롭게 갱신되 내용으로 반환해 주는 Element#outerHtml 를 함부로 다른 메소드로 바꾸지 말것, 만약 이것을 Element#html 로 바꾸면 오동작함
+					 */
+					String newImgTagString = element.outerHtml();
+					
+					// log.info("[" + newImgTagString + "]");
+					
+					int beginIndex = contents.indexOf("<img");
+					int endIndex = contents.indexOf(">", beginIndex + 10 + srcAttributeValue.length() + dataFileNameAttributeValue.length()) + 1;
+					
+					/*
+					String tmp = contents.substring(beginIndex, endIndex);
+					log.info("[" + tmp + "]");
+					*/
+					newContnetStringBuilder.append(contents.substring(fromIndex, beginIndex));
+					newContnetStringBuilder.append(newImgTagString);
+					
+					fromIndex = endIndex;
 				}
-				
-				
-				String newImgTagSrcAttributeString = imageFileURLGetter.getImageFileURL(boardImageFileInformation);
-				
-				attributes.put("src", newImgTagSrcAttributeString);
-				attributes.remove("data-filename");
-				
-				
-				/**
-				 * WARNING! 속성 변경 후 새롭게 갱신되 내용으로 반환해 주는 Element#outerHtml 를 함부로 다른 메소드로 바꾸지 말것, 만약 이것을 Element#html 로 바꾸면 오동작함
-				 */
-				String newImgTagString = element.outerHtml();
-				
-				// log.info("[" + newImgTagString + "]");
-				
-				int beginIndex = contents.indexOf("<img");
-				int endIndex = contents.indexOf(">", beginIndex + 10 + srcAttributeValue.length() + dataFileNameAttributeValue.length()) + 1;
-				
-				/*
-				String tmp = contents.substring(beginIndex, endIndex);
-				log.info("[" + tmp + "]");
-				*/
-				newContnetStringBuilder.append(contents.substring(fromIndex, beginIndex));
-				newContnetStringBuilder.append(newImgTagString);
-				
-				fromIndex = endIndex;
 			}
 			
 							

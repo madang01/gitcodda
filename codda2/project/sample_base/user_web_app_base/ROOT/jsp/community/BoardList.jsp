@@ -243,41 +243,6 @@
 		}
 	}
 	
-	function uploadImageFile(imageFile) {
-		console.log('size=' + imageFile.size);
-		console.log('type=' + imageFile.type);
-		console.log('name=' + imageFile.name);
-		
-		// var cloneImageFile = imageFile.clone();
-		
-		var formData = new FormData(document.uploadImageProcessFrm);
-		formData.append("uplodImageFile", imageFile, imageFile.name);
-		// formData.append("uplodImageFile", cloneImageFile, cloneImageFile.name);		
-		
-		// var uploadImageProcessFrm = document.uploadImageProcessFrm;
-		// uploadImageProcessFrm.submit();		
-		
-		$.ajax({
-            method: 'POST',
-            url: '/servlet/UploadImageProcess',
-            contentType: false,
-            cache: false,
-            processData: false,
-            data: formData,
-            success: function (responseText) { 
-            	var uploadImageResJsonObj = JSON.parse(responseText);
-            	
-            	var imageURL = "/servlet/DownloadImage?yyyyMMdd=" + uploadImageResJsonObj.yyyyMMdd + "&daySequence=" + uploadImageResJsonObj.daySequence;
-            	
-            	$('#contentsOfBoard').summernote("insertImage", imageURL);
-            },
-            error: function (jqXHR, textStatus, errorThrown) {            	
-                console.error(textStatus + " " + errorThrown);
-                alert("이미지[" + imageFile.name + "]를 업로드 하는데 실패하였습니다");
-            }
-        });
-		
-	}
 	
 	function hideWriteEditScreen() {	
 		var editScreenNodeOfBoard0 = document.getElementById('editScreenOfBoard0');
