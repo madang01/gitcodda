@@ -3,7 +3,6 @@ package kr.pe.codda.weblib.summernote;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
-import java.io.File;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Handler;
 import java.util.logging.Level;
@@ -22,36 +21,9 @@ import kr.pe.codda.weblib.exception.WhiteParserException;
 public class BoardContentsWhiteParserManangerTest {
 	private Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
 
-	private final static String installedPathString = "D:\\gitcodda\\codda2";
-	private static File installedPath = null;
-	private static File wasLibPath = null;
-	private final static String mainProjectName = "sample_base";
-
 	@BeforeClass
-	public static void setUpBeforeClass() throws Exception {		
-
-		installedPath = new File(installedPathString);
-
-		if (!installedPath.exists()) {
-			fail("the installed path doesn't exist");
-		}
-
-		if (!installedPath.isDirectory()) {
-			fail("the installed path isn't a directory");
-		}
-
-		wasLibPath = new File("D:\\apache-tomcat-8.5.32\\lib");
-// wasLibPath = new File("/usr/share/tomcat8/lib");
-		if (!wasLibPath.exists()) {
-			fail("the was libaray path doesn't exist");
-		}
-
-		if (!wasLibPath.isDirectory()) {
-			fail("the was libaray path isn't a directory");
-		}
-
-		System.setProperty(CommonStaticFinalVars.JAVA_SYSTEM_PROPERTIES_KEY_RUNNING_PROJECT_NAME, mainProjectName);
-		System.setProperty(CommonStaticFinalVars.JAVA_SYSTEM_PROPERTIES_KEY_INSTALLED_PATH, installedPathString);
+	public static void setUpBeforeClass() throws Exception {	
+		
 
 		/////////////////
 		Logger rootLogger = Logger.getLogger("");
@@ -118,7 +90,7 @@ public class BoardContentsWhiteParserManangerTest {
 		} catch (Exception e) {
 			log.log(Level.WARNING, "error", e);
 
-			fail("XSS 검사 실패, errmsg=" + e.getMessage());
+			fail("화이트 값 검사 실패, errmsg=" + e.getMessage());
 		}
 
 	}
@@ -144,40 +116,39 @@ public class BoardContentsWhiteParserManangerTest {
 		} catch (Exception e) {
 			log.log(Level.WARNING, "error", e);
 
-			fail("XSS 검사 실패, errmsg=" + e.getMessage());
+			fail("화이트 값 검사 실패, errmsg=" + e.getMessage());
 		}
 	}
 	
 	@Test
 	public void test_두단어로된폰트이름테스트() {
-		final String testFontName = "Courier New";
-		
-		assertEquals("summernote 설정에 폰트 패밀리에 폰트 이름이 등록되어 있어야 이 테스트가 가능하다", false, SummerNoteConfigurationManger.getInstance().isNoFontFamily());
-		
-		assertEquals("summernote 설정에 폰트 패밀리에 'Arial' 폰트가 등록되어 있어야 한다", true, SummerNoteConfigurationManger.getInstance().isFontName(testFontName));
-		
-		String unsafe = "<span style=\"background-color: rgb(206, 0, 0); color: rgb(255, 255, 0); font-family: &quot;Courier New&quot;;\">색상테스트</span>";
-		
-		class NewImgTagSrcAttributeValueGetter implements ImageFileURLGetterIF {
+		if (! SummerNoteConfigurationManger.getInstance().isFontFamilyNotDefined()) {
+			final String testFontName = "Courier New";
+			
+			assertEquals("summernote 설정에 폰트 패밀리에 'Arial' 폰트가 등록되어 있어야 한다", true, SummerNoteConfigurationManger.getInstance().isFontName(testFontName));
+			
+			String unsafe = "<span style=\"background-color: rgb(206, 0, 0); color: rgb(255, 255, 0); font-family: &quot;Courier New&quot;;\">색상테스트</span>";
+			
+			class NewImgTagSrcAttributeValueGetter implements ImageFileURLGetterIF {
 
-			@Override
-			public String getImageFileURL(BoardImageFileInformation boardImageFileInformation)
-					throws WhiteParserException {
-				return "/servlet/DownloadImage?yyyyMMdd=20191229&amp;daySequence=19";
+				@Override
+				public String getImageFileURL(BoardImageFileInformation boardImageFileInformation)
+						throws WhiteParserException {
+					return "/servlet/DownloadImage?yyyyMMdd=20191229&amp;daySequence=19";
+				}
+			}
+			
+			try {
+				String newContents = BoardContentsWhiteParserMananger
+						.getInstance().checkWhiteValue(new NewImgTagSrcAttributeValueGetter(), unsafe);
+
+				log.info(newContents);
+			} catch (Exception e) {
+				log.log(Level.WARNING, "error", e);
+
+				fail("화이트 값 검사 실패, errmsg=" + e.getMessage());
 			}
 		}
-		
-		try {
-			String newContents = BoardContentsWhiteParserMananger
-					.getInstance().checkWhiteValue(new NewImgTagSrcAttributeValueGetter(), unsafe);
-
-			log.info(newContents);
-		} catch (Exception e) {
-			log.log(Level.WARNING, "error", e);
-
-			fail("XSS 검사 실패, errmsg=" + e.getMessage());
-		}
-		
 	}
 	
 	@Test
@@ -201,7 +172,7 @@ public class BoardContentsWhiteParserManangerTest {
 		} catch (Exception e) {
 			log.log(Level.WARNING, "error", e);
 
-			fail("XSS 검사 실패, errmsg=" + e.getMessage());
+			fail("화이트 값 검사 실패, errmsg=" + e.getMessage());
 		}
 	}
 	

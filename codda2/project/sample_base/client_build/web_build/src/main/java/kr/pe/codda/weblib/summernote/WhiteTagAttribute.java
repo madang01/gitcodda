@@ -18,9 +18,9 @@ public class WhiteTagAttribute {
 	 * 
 	 * @param tagName 속성이 속한 태그 이름
 	 * @param attributeName 속성 이름
-	 * @param attributeWhiteValueChecker 허락되지 않은 속성 값 검사기
-	 * @throws IllegalArgumentException 태그 이름 이나 속성 이름 혹은  '허락되지 않은 속성 값 검사기' 가 null 인 경우 던지는 예외
-	 * @throws WhiteParserException '허락되지 않은 속성 값 검사기' 의 태그와 속성값이 불일치 할 경우 던지는 예외
+	 * @param attributeWhiteValueChecker 허락 받은 태그의 속성 값 여부 검사기 
+	 * @throws IllegalArgumentException 태그 이름 이나 속성 이름 혹은  '허락 받은 태그의 속성 값 여부 검사기 ' 가 null 인 경우 던지는 예외
+	 * @throws WhiteParserException '허락 받은 태그의 속성 값 여부 검사기 ' 의 태그와 속성값이 불일치 할 경우 던지는 예외
 	 */
 	public WhiteTagAttribute(String tagName, String attributeName, AttributeWhiteValueChekerIF attributeWhiteValueChecker) throws IllegalArgumentException, WhiteParserException {
 		if (null == tagName) {
@@ -35,20 +35,30 @@ public class WhiteTagAttribute {
 			throw new IllegalArgumentException("the paramter attributeWhiteValueChecker is null");
 		}
 		
+		if (! tagName.equals(attributeWhiteValueChecker.getTagName())) {
+			String errorMesssage = new StringBuilder()
+					.append("the parameter tagName[")
+					.append(tagName)
+					.append("] is diffrent from the tagName[")
+					.append(attributeWhiteValueChecker.getTagName())
+					.append("] of the paramter attributeWhiteValueChecker").toString();
+			throw new WhiteParserException(errorMesssage);
+		}
+		
+		if (! attributeName.equals(attributeWhiteValueChecker.getAttributeName())) {
+			String errorMesssage = new StringBuilder()
+					.append("the parameter attributeName[")
+					.append(attributeName)
+					.append("] is diffrent from the attributeName[")
+					.append(attributeWhiteValueChecker.getAttributeName())
+					.append("] of the paramter attributeWhiteValueChecker").toString();
+			throw new WhiteParserException(errorMesssage);
+		}
 		
 		this.tagName = tagName;
 		this.attributeName = attributeName;
 		this.attributeWhiteValueChecker = attributeWhiteValueChecker;
-		
-		throwExceptionIfWhiteValueCheckerIsInvalidTagNameOrAttributeName();
-	}
-	
-	/**
-	 * @return '속성 값에 대한 XSS 공격 검사기'
-	 */
-	public AttributeWhiteValueChekerIF getAttributeValueXSSAtackChecker() {
-		return attributeWhiteValueChecker;
-	}
+	}	
 	
 	/**
 	 * 속성 값에 대한 허락되지 않는 값 포함 여부를 검사하여 있다면 예외를 던진다
@@ -65,30 +75,23 @@ public class WhiteTagAttribute {
 	}
 	
 	/**
-	 * '허락되지 않은 속성 값 검사기' 태그와 속성값이 불일치 할 경우 예외를 던진다
-	 * 
-	 * @throws WhiteParserException '속성 값에 대한 XSS 공격 검사기' 태그와 속성값이 불일치 할 경우 던지는 예외
+	 * @return 태그 이름
 	 */
-	public void throwExceptionIfWhiteValueCheckerIsInvalidTagNameOrAttributeName() throws WhiteParserException {
-		if (! tagName.equals(attributeWhiteValueChecker.getTagName())) {
-			String errorMesssage = new StringBuilder()
-					.append("the var tagName[")
-					.append(tagName)
-					.append("] is diffrent from the tagName[")
-					.append(attributeWhiteValueChecker.getTagName())
-					.append("] of Handler").toString();
-			throw new WhiteParserException(errorMesssage);
-		}
-		
-		if (! attributeName.equals(attributeWhiteValueChecker.getAttributeName())) {
-			String errorMesssage = new StringBuilder()
-					.append("the var attributeName[")
-					.append(attributeName)
-					.append("] is diffrent from the attributeName[")
-					.append(attributeWhiteValueChecker.getAttributeName())
-					.append("] of XSSAttackChecker").toString();
-			throw new WhiteParserException(errorMesssage);
-		}
+	public String getTagName() {
+		return tagName;
 	}
+
+	/**
+	 * @return 태그의 속성
+	 */
+	public String getAttributeName() {
+		return attributeName;
+	}	
 	
+	/**
+	 * @return '허락 받은 태그의 속성 값 여부 검사기 '
+	 */
+	public AttributeWhiteValueChekerIF getAttributeWhiteValueCheker() {
+		return attributeWhiteValueChecker;
+	}
 }

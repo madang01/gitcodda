@@ -6,7 +6,8 @@ import kr.pe.codda.weblib.summernote.SummerNoteConfiguration;
 import kr.pe.codda.weblib.summernote.SummerNoteConfigurationManger;
 
 /**
- * span tag 의 속성 style 의 값에 대한 허락 받은 값 여부 검사기
+ * 허락된 span 태그의 style 속성 값 검사기
+ * 
  * @author Won Jonghoon
  *
  */
@@ -92,7 +93,7 @@ public class SpanTagStyleAttrWhiteValueChecker implements AttributeWhiteValueChe
 
 				SummerNoteConfiguration summerNoteConfiguration = SummerNoteConfigurationManger.getInstance();
 
-				if (summerNoteConfiguration.isNoFontFamily()) {
+				if (summerNoteConfiguration.isFontFamilyNotDefined()) {
 					String errorMessage = new StringBuilder().append("the tag name[").append(tagName)
 							.append("]'s attribte[").append(attributeName).append("] has a bad value[")
 							.append(attributeValue)

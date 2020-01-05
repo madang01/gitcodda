@@ -5,7 +5,7 @@ import java.util.HashSet;
 import kr.pe.codda.common.etc.CommonStaticFinalVars;
 
 public class SummerNoteConfiguration {
-	private final boolean isNoFontFamily;
+	private final boolean isFontFamilyNotDefined;
 	private final String[] fontNameList;
 	private final HashSet<String> fontNameSet = new HashSet<String>();
 	
@@ -15,9 +15,9 @@ public class SummerNoteConfiguration {
 		}
 		
 		if (0 == fontNameList.length) {
-			isNoFontFamily = true;
+			isFontFamilyNotDefined = true;
 		} else {
-			isNoFontFamily = false;
+			isFontFamilyNotDefined = false;
 		}
 		
 		this.fontNameList = fontNameList;
@@ -43,8 +43,8 @@ public class SummerNoteConfiguration {
 	}
 	
 	
-	public boolean isNoFontFamily() {
-		return isNoFontFamily;
+	public boolean isFontFamilyNotDefined() {
+		return isFontFamilyNotDefined;
 	}
 	
 	
@@ -73,7 +73,7 @@ public class SummerNoteConfiguration {
 				.append(CommonStaticFinalVars.NEWLINE).append(buildTabString(depth+1)).append("['fontStyle', ['style', 'bold', 'italic', 'underline', 'strikethrough', 'clear']]");
 				
 		
-		if (isNoFontFamily) {
+		if (! isFontFamilyNotDefined) {
 			toolBarStringBuilder
 			.append(",").append(CommonStaticFinalVars.NEWLINE).append(buildTabString(depth+1)).append("['fontname', ['fontname']]");
 		}		
@@ -95,9 +95,17 @@ public class SummerNoteConfiguration {
 		
 		popoverStringBuilder.append(CommonStaticFinalVars.NEWLINE).append(buildTabString(depth+1)).append("fontNames : [");
 		
+		boolean isFirst = true;
+		
 		for (String fontName : fontNameList) {
+			if (isFirst) {
+				isFirst = false;
+			} else {
+				popoverStringBuilder.append(",");
+			}
+			
 			popoverStringBuilder.append("'")
-			.append(fontName).append("', ");
+			.append(fontName).append("'");
 		}
 		
 		popoverStringBuilder.append(buildTabString(depth)).append("]")
@@ -110,7 +118,7 @@ public class SummerNoteConfiguration {
 	public String buildInitializationOptionsString(int depth) {
 		StringBuilder initStringBuilder = new StringBuilder(buildToolBarString(depth));
 		
-		if (isNoFontFamily) {
+		if (! isFontFamilyNotDefined) {
 			initStringBuilder.append(",").append(CommonStaticFinalVars.NEWLINE).append(buildPopoverStringForFont(depth));
 		}
 		

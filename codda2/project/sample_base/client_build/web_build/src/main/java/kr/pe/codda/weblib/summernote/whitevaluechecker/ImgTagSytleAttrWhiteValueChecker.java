@@ -3,6 +3,12 @@ package kr.pe.codda.weblib.summernote.whitevaluechecker;
 import kr.pe.codda.weblib.exception.WhiteParserException;
 import kr.pe.codda.weblib.summernote.AttributeWhiteValueChekerIF;
 
+/**
+ * 허락된 img 태그의 style 속성 값 검사기
+ * 
+ * @author Won Jonghoon
+ *
+ */
 public class ImgTagSytleAttrWhiteValueChecker implements AttributeWhiteValueChekerIF {
 	private final String tagName = "img";
 	private final String attributeName = "style";

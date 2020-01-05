@@ -3,7 +3,7 @@ package kr.pe.codda.weblib.summernote;
 import kr.pe.codda.weblib.exception.WhiteParserException;
 
 /**
- * 태그의 속성 값에 대한 허락 받은 값 여부 검사기 
+ * 허락 받은 태그의 속성 값 여부 검사기 
  * 
  * @author Won Jonghoon
  *

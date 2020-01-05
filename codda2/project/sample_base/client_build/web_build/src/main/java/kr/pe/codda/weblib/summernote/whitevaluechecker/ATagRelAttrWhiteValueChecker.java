@@ -3,6 +3,12 @@ package kr.pe.codda.weblib.summernote.whitevaluechecker;
 import kr.pe.codda.weblib.exception.WhiteParserException;
 import kr.pe.codda.weblib.summernote.AttributeWhiteValueChekerIF;
 
+/**
+ * 허락된 a 태그의 rel 속성 값 검사기
+ * 
+ * @author Won Jonghoon
+ *
+ */
 public class ATagRelAttrWhiteValueChecker implements AttributeWhiteValueChekerIF {	
 	private final String tagName = "a";
 	private final String attributeName = "rel";

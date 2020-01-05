@@ -93,10 +93,10 @@ public class BoardContentsWhiteParser {
 				
 				BoardImageFileInformation boardImageFileInformation = new BoardImageFileInformation();
 							
-				ImgTagSrcAtrrWhiteValueChecker imgTagSrcValueXSSAtackChecker = (ImgTagSrcAtrrWhiteValueChecker)srcTagAttribute.getAttributeValueXSSAtackChecker();
+				ImgTagSrcAtrrWhiteValueChecker imgTagSrcAtrrWhiteValueChecker = (ImgTagSrcAtrrWhiteValueChecker)srcTagAttribute.getAttributeWhiteValueCheker();
 				
 				
-				imgTagSrcValueXSSAtackChecker.checkXSSAttack(srcAttributeValue, boardImageFileInformation);				
+				imgTagSrcAtrrWhiteValueChecker.throwExceptionIfNoWhiteValue(srcAttributeValue, boardImageFileInformation);				
 				
 				
 				String dataFileNameAttributeValue = attributes.get("data-filename");
@@ -107,9 +107,9 @@ public class BoardContentsWhiteParser {
 				
 				WhiteTagAttribute dataFileNameTagAttribute = whiteTag.getWhiteTagAttribute("data-filename");
 				
-				ImgTagDataFileNameAttrWhiteValueChecker imgTagDataFileNameValueXSSAttackChecker =  (ImgTagDataFileNameAttrWhiteValueChecker)dataFileNameTagAttribute.getAttributeValueXSSAtackChecker();
+				ImgTagDataFileNameAttrWhiteValueChecker imgTagDataFileNameAttrWhiteValueChecker =  (ImgTagDataFileNameAttrWhiteValueChecker)dataFileNameTagAttribute.getAttributeWhiteValueCheker();
 				
-				imgTagDataFileNameValueXSSAttackChecker.checkXSSAttack(dataFileNameAttributeValue, boardImageFileInformation);
+				imgTagDataFileNameAttrWhiteValueChecker.throwExceptionIfNoWhiteValue(dataFileNameAttributeValue, boardImageFileInformation);
 				
 				
 				String acutalContentType = null;
@@ -167,7 +167,7 @@ public class BoardContentsWhiteParser {
 				String attributeName = att.getKey();
 				
 				
-				/** img tag 의 src 와 dafa-filename 속성들은 앞에서 XSS 공격 여부를 판단했기때문에 이 과정을 건너 뛴다 */
+				/** img tag 의 src 와 dafa-filename 속성은 앞에서 허락 받지 않은 문자 포함시 예외 처리를 했기 때문에 이 과정을 건너 뛴다 */
 				if ("img".equals(tagName)) {
 					if ("src".equals(attributeName)) {
 						

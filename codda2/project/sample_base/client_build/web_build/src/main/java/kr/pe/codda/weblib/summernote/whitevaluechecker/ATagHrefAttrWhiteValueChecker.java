@@ -5,6 +5,12 @@ import org.apache.commons.validator.routines.UrlValidator;
 import kr.pe.codda.weblib.exception.WhiteParserException;
 import kr.pe.codda.weblib.summernote.AttributeWhiteValueChekerIF;
 
+/**
+ * 허락된 a 태그의 href 속성 값 검사기
+ * 
+ * @author Won Jonghoon
+ *
+ */
 public class ATagHrefAttrWhiteValueChecker implements AttributeWhiteValueChekerIF {	
 	private final String tagName = "a";
 	private final String attributeName = "href";

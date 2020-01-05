@@ -3,7 +3,13 @@ package kr.pe.codda.weblib.summernote.whitevaluechecker;
 import kr.pe.codda.weblib.exception.WhiteParserException;
 import kr.pe.codda.weblib.summernote.AttributeWhiteValueChekerIF;
 
-public class PTagStyleValueXSSAttackChecker implements AttributeWhiteValueChekerIF {
+/**
+ * 허락된 p 태그의 style 속성 값 검사기
+ * 
+ * @author Won Jonghoon
+ *
+ */
+public class PTagStyleWhiteValueChecker implements AttributeWhiteValueChekerIF {
 	private final String tagName = "p";
 	private final String attributeName = "style";
 	

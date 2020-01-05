@@ -3,7 +3,6 @@ package kr.pe.codda.weblib.summernote;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
-import java.io.File;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Handler;
 import java.util.logging.Level;
@@ -15,8 +14,6 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import kr.pe.codda.common.buildsystem.pathsupporter.CommonBuildSytemPathSupporter;
-import kr.pe.codda.common.buildsystem.pathsupporter.ProjectBuildSytemPathSupporter;
 import kr.pe.codda.common.etc.CommonStaticFinalVars;
 import kr.pe.codda.common.util.JDKLoggerCustomFormatter;
 
@@ -24,88 +21,8 @@ public class SummerNoteConfigurationTest {
 	protected Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
 	
 	
-	private final static String installedPathString = "D:\\gitcodda\\codda2";
-	protected static File installedPath = new File(installedPathString);
-	protected static File wasLibPath = null;
-	protected final static String mainProjectName = "sample_base";
-	
-	private static void setupLogbackEnvromenetVariable(String installedPathString, String mainProejct) throws IllegalStateException {
-		if (null == installedPathString) {
-			throw new IllegalArgumentException("the parameter installedPathString is null");
-		}
-		
-		String logbackConfigFilePathString = ProjectBuildSytemPathSupporter.getProjectLogbackConfigFilePathString(installedPathString, mainProejct);
-		String rootLogPathString = CommonBuildSytemPathSupporter.getCommonLogPathString(installedPathString);
-		
-		
-		{
-			File logbackConfigFile = new File(logbackConfigFilePathString);		
-			
-			
-			if (! logbackConfigFile.exists()) {
-				String errorMessage = new StringBuilder("the logback config file[")
-						.append(logbackConfigFilePathString)
-						.append("] doesn't exist").toString();
-				System.out.println(errorMessage);
-				throw new IllegalStateException(errorMessage);
-			}
-			
-			
-			if (! logbackConfigFile.isFile()) {
-				String errorMessage = new StringBuilder("the logback config file[")
-						.append(logbackConfigFilePathString)
-						.append("] is not a normal file").toString();
-				System.out.println(errorMessage);
-				throw new IllegalStateException(errorMessage);
-			}
-
-
-			if (! logbackConfigFile.canRead()) {
-				String errorMessage = new StringBuilder("the logback config file[")
-						.append(logbackConfigFilePathString)
-						.append("] does not have read permissions").toString();
-				System.out.println(errorMessage);
-				throw new IllegalStateException(errorMessage);
-			}
-		}
-		
-		
-		{
-			File logPath = new File(rootLogPathString);
-			
-			if (! logPath.exists()) {
-				String errorMessage = new StringBuilder("the log path[")
-						.append(rootLogPathString)
-						.append("] doesn't exist").toString();
-				System.out.println(errorMessage);
-				throw new IllegalStateException(errorMessage);
-			}
-			
-			
-			if (! logPath.isDirectory()) {
-				String errorMessage = new StringBuilder("the log path[")
-						.append(rootLogPathString)
-						.append("] is not a directory").toString();
-				System.out.println(errorMessage);
-				throw new IllegalStateException(errorMessage);
-			}
-
-
-			if (! logPath.canWrite()) {
-				String errorMessage = new StringBuilder("the log path[")
-						.append(rootLogPathString)
-						.append("] is marked read-only").toString();
-				System.out.println(errorMessage);
-				throw new IllegalStateException(errorMessage);
-			}
-		}
-		
-		System.setProperty(CommonStaticFinalVars.JAVA_SYSTEM_PROPERTIES_KEY_LOG_PATH,
-				rootLogPathString);
-		System.setProperty(CommonStaticFinalVars.JAVA_SYSTEM_PROPERTIES_KEY_LOGBACK_CONFIG_FILE,
-				logbackConfigFilePathString);
-		
-		/////////////////////////////////////////
+	@BeforeClass
+	public static void setUpBeforeClass() throws Exception {
 		Logger rootLogger = Logger.getLogger("");
 
 		Handler[] handlers = rootLogger.getHandlers();
@@ -121,41 +38,6 @@ public class SummerNoteConfigurationTest {
 
 		rootLogger.setLevel(Level.INFO);
 		rootLogger.addHandler(handler);
-	}
-
-	@BeforeClass
-	public static void setUpBeforeClass() throws Exception {
-		
-		if (! installedPath.exists()) {
-			fail("the installed path doesn't exist");
-		}
-		
-		if (! installedPath.isDirectory()) {
-			fail("the installed path isn't a directory");
-		}
-		
-		wasLibPath = new File("D:\\apache-tomcat-8.5.32\\lib");
-		// wasLibPath = new File("/usr/share/tomcat8/lib");
-		if (! wasLibPath.exists()) {
-			fail("the was libaray path doesn't exist");
-		}
-		
-		if (! wasLibPath.isDirectory()) {
-			fail("the was libaray path isn't a directory");
-		}
-				
-		System
-				.setProperty(CommonStaticFinalVars.JAVA_SYSTEM_PROPERTIES_KEY_RUNNING_PROJECT_NAME,
-						mainProjectName);
-		System
-				.setProperty(CommonStaticFinalVars.JAVA_SYSTEM_PROPERTIES_KEY_INSTALLED_PATH,
-						installedPathString);
-		
-		try {
-			setupLogbackEnvromenetVariable(installedPathString, mainProjectName);
-		} catch(IllegalArgumentException | IllegalStateException e) {
-			fail(e.getMessage());
-		}
 	}
 
 	@AfterClass
@@ -196,9 +78,9 @@ public class SummerNoteConfigurationTest {
 		try {
 			SummerNoteConfiguration summerNoteConfiguration = new SummerNoteConfiguration(new String[0]);
 			
-			boolean expected = false;
+			boolean expected = true;
 			
-			assertEquals(expected, summerNoteConfiguration.isNoFontFamily());
+			assertEquals(expected, summerNoteConfiguration.isFontFamilyNotDefined());
 			
 			String acutalInitializationOptionsString = summerNoteConfiguration.buildInitializationOptionsString(0);
 			
@@ -214,11 +96,11 @@ public class SummerNoteConfigurationTest {
 	@Test
 	public void testSummerNoteConfiguration_theParameterFontNameListIsNotEmpty() {
 		try {
-			SummerNoteConfiguration summerNoteConfiguration = new SummerNoteConfiguration(new String[] {"Arial"});
+			SummerNoteConfiguration summerNoteConfiguration = new SummerNoteConfiguration(new String[] {"Arial", "Arial Black"});
 			
-			boolean expected = true;
+			boolean expected = false;
 			
-			assertEquals(expected, summerNoteConfiguration.isNoFontFamily());
+			assertEquals(expected, summerNoteConfiguration.isFontFamilyNotDefined());
 			
 			String acutalInitializationOptionsString = summerNoteConfiguration.buildInitializationOptionsString(0);
 			
