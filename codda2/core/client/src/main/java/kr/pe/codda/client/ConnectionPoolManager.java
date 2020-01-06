@@ -26,7 +26,7 @@ import kr.pe.codda.common.config.CoddaConfigurationManager;
 import kr.pe.codda.common.config.subset.ProjectPartConfiguration;
 import kr.pe.codda.common.config.subset.SubProjectPartConfigurationManager;
 import kr.pe.codda.common.etc.CommonStaticFinalVars;
-import kr.pe.codda.common.exception.NoMoreDataPacketBufferException;
+import kr.pe.codda.common.exception.NoMoreWrapBufferException;
 
 /**
  * 클라이언트 프로젝트 관리자
@@ -65,7 +65,7 @@ public final class ConnectionPoolManager {
 	/**
 	 * 동기화 쓰지 않고 싱글턴 구현을 위한 생성자
 	 * 
-	 * @throws NoMoreDataPacketBufferException
+	 * @throws NoMoreWrapBufferException
 	 */
 	private ConnectionPoolManager() {
 		CoddaConfiguration runningProjectConfiguration = CoddaConfigurationManager.getInstance()
@@ -112,10 +112,9 @@ public final class ConnectionPoolManager {
 	/**
 	 * 프로젝트 이름에 해당하는 외부에서 바라보는 시각을 가지는 클라이언트 프로젝트를 얻는다.
 	 * 
-	 * @param subProjectName
-	 *            프로젝트 이름
+	 * @param subProjectName 서브 프로젝트 이름
 	 * @return 프로젝트 이름에 해당하는 외부 시각 클라이언트 프로젝트
-	 * @throws IllegalStateException
+	 * @throws IllegalStateException 서브 프로젝트 연결 폴 생성시 에러가 발생한 상태일 경우 던지는 예외
 	 */
 	public AnyProjectConnectionPoolIF getSubProjectConnectionPool(String subProjectName) throws IllegalStateException {
 		AnyProjectConnectionPoolIF subProjectConnectionPool = subProjectConnectionPoolHash.get(subProjectName);

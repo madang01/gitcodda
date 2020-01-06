@@ -14,23 +14,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *******************************************************************************/
-package kr.pe.codda.common.exception;
+package kr.pe.codda.common.protocol.thb;
 
 /**
- * 데이터 패킷 버퍼 부족시 던지는 예외
+ * THB 프로토콜 단일 항목 타입의 디코더 매칭자 인터페이스
  * @author Won Jonghoon
- * 
+ *
  */
-
-@SuppressWarnings("serial")
-public class NoMoreDataPacketBufferException extends Exception {
-
+public interface THBSingleItemTypeDecoderMatcherIF {
 	/**
-	 * 생성자
-	 * @param errorMessage 에러 내용
+	 * @param itemTypeID 항목 타입 식별자
+	 * @return 파라미터 'itemTypeID'(=항목 타입 식별자) 에 1:1 대응하는  단일 항목 타입의 디코더 구현체
 	 */
-	public NoMoreDataPacketBufferException(String errorMessage) {
-		super(errorMessage);
-	}
-
+	public AbstractTHBSingleItemTypeDecoder getSingleItemDecoder(int itemTypeID);
 }

@@ -20,7 +20,7 @@ package kr.pe.codda.common.io;
 import java.io.IOException;
 import java.nio.channels.SocketChannel;
 
-import kr.pe.codda.common.exception.NoMoreDataPacketBufferException;
+import kr.pe.codda.common.exception.NoMoreWrapBufferException;
 
 /**
  * 클라이언트용 출력 스트림 인터페이스
@@ -44,9 +44,9 @@ public interface ClientOutgoingStreamIF {
 	 * @param writableSocketChannel 출력 스트림의 소유 소켓 채널
 	 * @return 소켓 채널 쓰기를 수행하여 쓴 바이트수, 단 0 혹은 출력 스트림의 종료를 알리는 -1 을 반환할 수 있다.
 	 * @throws IOException 입출력 에러시 던지는 예외
-	 * @throws NoMoreDataPacketBufferException 클라이언트용 출력 스트림은 성장형 스트림으로 성장을 위한 버퍼 자원 부족시 던지는 예외
+	 * @throws NoMoreWrapBufferException 클라이언트용 출력 스트림은 성장형 스트림으로 성장을 위한 버퍼 자원 부족시 던지는 예외
 	 */
-	public int write(SocketChannel writableSocketChannel) throws IOException, NoMoreDataPacketBufferException;
+	public int write(SocketChannel writableSocketChannel) throws IOException, NoMoreWrapBufferException;
 	
 	/**
 	 * 출력 메시지 갯수 1 감소, 참고) 메시지가 도착한 경우 호출되는 메소드 

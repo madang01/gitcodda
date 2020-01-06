@@ -74,9 +74,16 @@ public class SpanTagStyleAttrWhiteValueChecker implements AttributeWhiteValueChe
 			String value = property[1].trim();
 
 			/**
-			 * 허용된 값 : font-weight: bold; font-style: italic; text-decoration-line:
-			 * underline line-through; background-color: rgb(0, 0, 0);
+			 * <pre>
+			 * 허용된 값 : font-weight: bold; font-style: italic; text-decoration-line: underline line-through; 
+			 * 			background-color: rgb(0, 0, 0); white-space: pre-line;
+			 * </pre>
 			 */
+			if ("white-space".equals(key) && "pre-line".equals(value)) {
+				// OK
+				continue;
+			}
+			
 			if ("font-weight".equals(key) && "bold".equals(value)) {
 				// font-weight: bold;
 				// OK

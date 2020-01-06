@@ -115,7 +115,7 @@ public abstract class CommonStaticUtil {
 	 * @param sourceString
 	 *            변환을 원하는 문자열
 	 * @param lineSeparatorType
-	 *            지정한 칼럼 마다 삽입을 원하는 문자열 구분, BR: <br/>
+	 *            지정한 칼럼 마다 삽입을 원하는 문자열 구분, BR: <br>
 	 *            , NEWLINE: newline
 	 * @param wantedColumnSize
 	 *            원하는 문자열 가로 칼럼수
@@ -516,7 +516,7 @@ public abstract class CommonStaticUtil {
 	
 
 	/**
-	 * Punctuation: One of !"#$%&'()*+,-./:;<=>?@[\]^_`{|}~ 
+	 * Punctuation: One of !"#$%&amp;'()*+,-./:;&lt;=&gt;?@[\]^_`{|}~ 
 	 * 
 	 * @param c 판단 대상 문자
 	 * @return 출력 가능한 특수문자 여부
@@ -757,17 +757,17 @@ public abstract class CommonStaticUtil {
 	 * '중간 객체'를 메시지로 변환한다. 참고) 파라미터로 넘어온 '중간 객체'는 에러 여부에 상관없이 무조건 자원 해제된다.
 	 *  
 	 * @param messageProtocol '중간 객체' 를 만든 주체이자 해체시킬 프로토콜 
-	 * @param messageDecoder
-	 * @param singleItemDecoder
-	 * @param mailboxID
-	 * @param mailID
-	 * @param messageID
-	 * @param readableMiddleObject
+	 * @param messageDecoder 메시지 디코더
+	 * @param singleItemDecoder 단일 항목 디코더
+	 * @param mailboxID 메일 박스 식별자
+	 * @param mailID 메일 식별자
+	 * @param messageID 메시지 식별자
+	 * @param recievedMiddleObject 수신한 메시지 내용이 담긴 중간 객체
 	 * @return 중간 객체에서 변환된 메시지
-	 * @throws BodyFormatException
-	 * @throws IllegalArgumentException
+	 * @throws BodyFormatException 수신한 메시지 내용이 담긴 중간 객체를 메시지로 변환하는 과정에서 에러 발생시 던지는 예외
+	 * @throws IllegalArgumentException 파라미터 값이 잘못되었을 경우 던지는 예외
 	 */
-	public static AbstractMessage O2M(MessageProtocolIF messageProtocol, AbstractMessageDecoder messageDecoder, SingleItemDecoderIF singleItemDecoder,  int mailboxID, int mailID, String messageID, Object readableMiddleObject) 
+	public static AbstractMessage O2M(MessageProtocolIF messageProtocol, AbstractMessageDecoder messageDecoder, SingleItemDecoderIF singleItemDecoder,  int mailboxID, int mailID, String messageID, Object recievedMiddleObject) 
 			throws IllegalArgumentException, BodyFormatException {		
 		try {
 			if (null == messageProtocol) {
@@ -786,11 +786,11 @@ public abstract class CommonStaticUtil {
 				throw new IllegalArgumentException("the parameter messageID is null");
 			}
 
-			if (null == readableMiddleObject) {
+			if (null == recievedMiddleObject) {
 				throw new IllegalArgumentException("the parameter readableMiddleObject is null");
 			}
 			
-			AbstractMessage outputMessage = messageDecoder.decode(singleItemDecoder, readableMiddleObject);
+			AbstractMessage outputMessage = messageDecoder.decode(singleItemDecoder, recievedMiddleObject);
 			outputMessage.setMailboxID(mailboxID);
 			outputMessage.setMailID(mailID);
 			
@@ -817,7 +817,7 @@ public abstract class CommonStaticUtil {
 			throw new BodyFormatException(errorMessage);
 		} finally {			
 			try {
-				messageProtocol.closeReadableMiddleObject(mailboxID, mailID, messageID, readableMiddleObject);
+				messageProtocol.closeReadableMiddleObject(mailboxID, mailID, messageID, recievedMiddleObject);
 			} catch(Exception e1) {
 				String errorMessage = new StringBuilder()
 						.append("fail to close the message body stream[messageID=")

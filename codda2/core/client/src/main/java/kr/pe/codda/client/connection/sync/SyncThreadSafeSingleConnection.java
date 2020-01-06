@@ -35,7 +35,7 @@ import kr.pe.codda.common.etc.StreamCharsetFamily;
 import kr.pe.codda.common.exception.BodyFormatException;
 import kr.pe.codda.common.exception.DynamicClassCallException;
 import kr.pe.codda.common.exception.HeaderFormatException;
-import kr.pe.codda.common.exception.NoMoreDataPacketBufferException;
+import kr.pe.codda.common.exception.NoMoreWrapBufferException;
 import kr.pe.codda.common.exception.NotSupportedException;
 import kr.pe.codda.common.exception.ServerTaskException;
 import kr.pe.codda.common.exception.ServerTaskPermissionException;
@@ -176,7 +176,7 @@ public final class SyncThreadSafeSingleConnection implements SyncConnectionIF {
 
 	@Override
 	public AbstractMessage sendSyncInputMessage(MessageCodecMangerIF messageCodecManger, AbstractMessage inputMessage)
-			throws InterruptedException, IOException, NoMoreDataPacketBufferException, DynamicClassCallException,
+			throws InterruptedException, IOException, NoMoreWrapBufferException, DynamicClassCallException,
 			BodyFormatException, ServerTaskException, ServerTaskPermissionException {
 
 		final AbstractMessage outputMessage;
@@ -209,7 +209,7 @@ public final class SyncThreadSafeSingleConnection implements SyncConnectionIF {
 			
 			try {
 				messageProtocol.M2S(inputMessage, messageEncoder, inputMessageStreamBuffer);
-			} catch (NoMoreDataPacketBufferException e) {
+			} catch (NoMoreWrapBufferException e) {
 				throw e;
 			} catch (BodyFormatException e) {
 				throw e;
@@ -275,13 +275,13 @@ public final class SyncThreadSafeSingleConnection implements SyncConnectionIF {
 					
 				} while (! syncOutputMessageReceiver.isReceivedMessage() && ! syncOutputMessageReceiver.isError());
 
-			} catch (NoMoreDataPacketBufferException e) {
+			} catch (NoMoreWrapBufferException e) {
 				String errorMessage = new StringBuilder()
 						.append("the no more data packet buffer error occurred while reading the socket[")
 						.append(clientSC.hashCode()).append("], errmsg=").append(e.getMessage()).toString();
 				close();
 
-				throw new NoMoreDataPacketBufferException(errorMessage);
+				throw new NoMoreWrapBufferException(errorMessage);
 			} catch (IOException e) {
 				String errorMessage = new StringBuilder().append("the io error occurred while reading the socket[")
 						.append(clientSC.hashCode()).append("], errmsg=").append(e.getMessage()).toString();			
@@ -316,7 +316,7 @@ public final class SyncThreadSafeSingleConnection implements SyncConnectionIF {
 
 	@Override
 	public void sendAsynInputMessage(MessageCodecMangerIF messageCodecManger, AbstractMessage inputMessage) throws InterruptedException, NotSupportedException,
-			IOException, NoMoreDataPacketBufferException, DynamicClassCallException, BodyFormatException {
+			IOException, NoMoreWrapBufferException, DynamicClassCallException, BodyFormatException {
 		throw new NotSupportedException(
 				"this connection doesn't support this method because it is a blocking mode connection and no sharing connection between threads");
 	}

@@ -29,7 +29,7 @@ import kr.pe.codda.common.etc.CommonStaticFinalVars;
 import kr.pe.codda.common.etc.StreamCharsetFamily;
 import kr.pe.codda.common.exception.ConnectionPoolException;
 import kr.pe.codda.common.exception.ConnectionPoolTimeoutException;
-import kr.pe.codda.common.exception.NoMoreDataPacketBufferException;
+import kr.pe.codda.common.exception.NoMoreWrapBufferException;
 import kr.pe.codda.common.io.WrapBufferPoolIF;
 import kr.pe.codda.common.protocol.MessageProtocolIF;
 
@@ -64,7 +64,7 @@ public class SyncNoShareConnectionPool implements ConnectionPoolIF {
 			int clientConnectionCount,
 			MessageProtocolIF messageProtocol, 
 			WrapBufferPoolIF wrapBufferPool,
-			ConnectionPoolSupporterIF connectionPoolSupporter) throws NoMoreDataPacketBufferException, IOException, ConnectionPoolException {
+			ConnectionPoolSupporterIF connectionPoolSupporter) throws NoMoreWrapBufferException, IOException, ConnectionPoolException {
 		if (null == serverHost) {
 			throw new IllegalArgumentException("the parameter serverHost is null");
 		}
@@ -99,7 +99,7 @@ public class SyncNoShareConnectionPool implements ConnectionPoolIF {
 		
 		try {			
 			fillAllConnection();
-		} catch(NoMoreDataPacketBufferException e) {
+		} catch(NoMoreWrapBufferException e) {
 			log.warning("stops adding SyncNoShareConnection because a data packet buffer error has occurred");
 			
 		} catch(IOException e) {
@@ -285,7 +285,7 @@ public class SyncNoShareConnectionPool implements ConnectionPoolIF {
 	}
 
 	@Override
-	public void fillAllConnection() throws NoMoreDataPacketBufferException, IOException, InterruptedException {
+	public void fillAllConnection() throws NoMoreWrapBufferException, IOException, InterruptedException {
 		synchronized (monitor) {
 			while (numberOfConnection  < clientConnectionCount) {
 				

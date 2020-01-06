@@ -35,7 +35,7 @@ import kr.pe.codda.common.etc.CommonStaticFinalVars;
 import kr.pe.codda.common.etc.StreamCharsetFamily;
 import kr.pe.codda.common.exception.ConnectionPoolException;
 import kr.pe.codda.common.exception.ConnectionPoolTimeoutException;
-import kr.pe.codda.common.exception.NoMoreDataPacketBufferException;
+import kr.pe.codda.common.exception.NoMoreWrapBufferException;
 import kr.pe.codda.common.io.WrapBufferPoolIF;
 import kr.pe.codda.common.protocol.MessageProtocolIF;
 
@@ -76,7 +76,7 @@ public class AsynNoShareConnectionPool implements ConnectionPoolIF, AsynConnecte
 			WrapBufferPoolIF wrapBufferPool,
 			ConnectionPoolSupporterIF connectionPoolSupporter,
 			ClientIOEventControllerIF asynClientIOEventController)
-			throws NoMoreDataPacketBufferException, IOException {
+			throws NoMoreWrapBufferException, IOException {
 		
 
 		if (null == messageProtocol) {
@@ -257,7 +257,7 @@ public class AsynNoShareConnectionPool implements ConnectionPoolIF, AsynConnecte
 		
 	}
 	
-	public void fillAllConnection() throws NoMoreDataPacketBufferException, IOException, InterruptedException {
+	public void fillAllConnection() throws NoMoreWrapBufferException, IOException, InterruptedException {
 		/*
 		log.info("numberOfUnregisteredConnection={}, numberOfConnection={}," +
 				"clientConnectionCount={}",
@@ -292,7 +292,7 @@ public class AsynNoShareConnectionPool implements ConnectionPoolIF, AsynConnecte
 		log.info(infoMessage);
 	}
 
-	private ClientIOEventHandlerIF newUnregisteredConnection() throws NoMoreDataPacketBufferException, IOException {
+	private ClientIOEventHandlerIF newUnregisteredConnection() throws NoMoreWrapBufferException, IOException {
 		
 
 		ClientIOEventHandlerIF asynInterestedConnection = new AsynNoShareConnection(projectName,

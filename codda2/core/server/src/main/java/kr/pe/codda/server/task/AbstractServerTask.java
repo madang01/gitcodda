@@ -147,7 +147,7 @@ public abstract class AbstractServerTask {
 	 * @param receviedMiddleObject 수신한 스트림으로 부터 추출된 중간 객체로 입력 메시지로 변환되는 매개체이다.
 	 * @param messageProtocol 메시지 프로토콜
 	 * @param fromPersonalLoginManager 개별적인 로그인 관리자
-	 * @throws InterruptedException
+	 * @throws InterruptedException 인터럽트 발생시 던지는 예외
 	 */
 	public void execute(String projectName,
 			AcceptedConnection fromAcceptedConnection,			

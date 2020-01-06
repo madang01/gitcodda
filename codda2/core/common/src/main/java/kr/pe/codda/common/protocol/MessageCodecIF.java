@@ -21,7 +21,21 @@ import kr.pe.codda.common.exception.DynamicClassCallException;
 import kr.pe.codda.common.message.codec.AbstractMessageDecoder;
 import kr.pe.codda.common.message.codec.AbstractMessageEncoder;
 
+/**
+ * 메시지 코덱 인터페이스
+ * @author Won Jonghoon
+ *
+ */
 public interface MessageCodecIF {
+	/**
+	 * @return 메시지 디코더
+	 * @throws DynamicClassCallException 동적 클래스 관련 에러 발생시 던지는 예외
+	 */
 	public AbstractMessageDecoder getMessageDecoder() throws DynamicClassCallException;
+	
+	/**
+	 * @return 메시지 인코더
+	 * @throws DynamicClassCallException 동적 클래스 관련 에러 발생시 던지는 예외
+	 */
 	public AbstractMessageEncoder getMessageEncoder() throws DynamicClassCallException;
 }

@@ -23,7 +23,7 @@ import kr.pe.codda.common.classloader.MessageCodecMangerIF;
 import kr.pe.codda.common.exception.BodyFormatException;
 import kr.pe.codda.common.exception.ConnectionPoolException;
 import kr.pe.codda.common.exception.DynamicClassCallException;
-import kr.pe.codda.common.exception.NoMoreDataPacketBufferException;
+import kr.pe.codda.common.exception.NoMoreWrapBufferException;
 import kr.pe.codda.common.exception.NotSupportedException;
 import kr.pe.codda.common.exception.ServerTaskException;
 import kr.pe.codda.common.exception.ServerTaskPermissionException;
@@ -38,18 +38,18 @@ public interface AnyProjectConnectionPoolIF {
 	
 	public AbstractMessage sendSyncInputMessage(MessageCodecMangerIF messageCodecManger, AbstractMessage inputMessage)
 			throws InterruptedException, ConnectionPoolException, 
-			IOException, NoMoreDataPacketBufferException, DynamicClassCallException,
+			IOException, NoMoreWrapBufferException, DynamicClassCallException,
 			BodyFormatException, ServerTaskException, ServerTaskPermissionException;
 	
 	public void sendAsynInputMessage(MessageCodecMangerIF messageCodecManger, AbstractMessage inputMessage)
 			throws InterruptedException, NotSupportedException, ConnectionPoolException, 
-			IOException, NoMoreDataPacketBufferException, DynamicClassCallException, BodyFormatException;
+			IOException, NoMoreWrapBufferException, DynamicClassCallException, BodyFormatException;
 		
 	public ConnectionIF createAsynThreadSafeConnection(String serverHost, int serverPort)
-			throws InterruptedException, IOException, NoMoreDataPacketBufferException, NotSupportedException;
+			throws InterruptedException, IOException, NoMoreWrapBufferException, NotSupportedException;
 	
 	public ConnectionIF createSyncThreadSafeConnection(String serverHost, int serverPort)
-			throws InterruptedException, IOException, NoMoreDataPacketBufferException;
+			throws InterruptedException, IOException, NoMoreWrapBufferException;
 	
 	public String getPoolState();
 }

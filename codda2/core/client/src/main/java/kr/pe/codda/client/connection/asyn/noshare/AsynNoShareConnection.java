@@ -43,7 +43,7 @@ import kr.pe.codda.common.etc.StreamCharsetFamily;
 import kr.pe.codda.common.exception.BodyFormatException;
 import kr.pe.codda.common.exception.DynamicClassCallException;
 import kr.pe.codda.common.exception.HeaderFormatException;
-import kr.pe.codda.common.exception.NoMoreDataPacketBufferException;
+import kr.pe.codda.common.exception.NoMoreWrapBufferException;
 import kr.pe.codda.common.exception.NotSupportedException;
 import kr.pe.codda.common.exception.ServerTaskException;
 import kr.pe.codda.common.exception.ServerTaskPermissionException;
@@ -54,9 +54,9 @@ import kr.pe.codda.common.io.WrapBufferPoolIF;
 import kr.pe.codda.common.message.AbstractMessage;
 import kr.pe.codda.common.message.codec.AbstractMessageEncoder;
 import kr.pe.codda.common.protocol.MessageProtocolIF;
-import kr.pe.codda.common.protocol.ReceivedMessageForwarderIF;
+import kr.pe.codda.common.protocol.ReceivedMiddleObjectForwarderIF;
 
-public class AsynNoShareConnection implements AsynConnectionIF, ClientIOEventHandlerIF, ReceivedMessageForwarderIF {
+public class AsynNoShareConnection implements AsynConnectionIF, ClientIOEventHandlerIF, ReceivedMiddleObjectForwarderIF {
 	private Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
 
 	private boolean isQueueIn = true;
@@ -149,7 +149,7 @@ public class AsynNoShareConnection implements AsynConnectionIF, ClientIOEventHan
 	}
 	
 	private void addInputMessage(MessageCodecMangerIF messageCodecManger, AbstractMessage inputMessage)
-			throws DynamicClassCallException, NoMoreDataPacketBufferException, BodyFormatException,
+			throws DynamicClassCallException, NoMoreWrapBufferException, BodyFormatException,
 			HeaderFormatException, IOException, InterruptedException {
 
 		AbstractMessageEncoder messageEncoder = null;
@@ -170,7 +170,7 @@ public class AsynNoShareConnection implements AsynConnectionIF, ClientIOEventHan
 			messageProtocol.M2S(inputMessage, messageEncoder, inputMessageStreamBuffer);
 			
 			inputMessageStreamBuffer.flip();
-		} catch (NoMoreDataPacketBufferException e) {
+		} catch (NoMoreWrapBufferException e) {
 			inputMessageStreamBuffer.releaseAllWrapBuffers();
 			throw e;
 		} catch (BodyFormatException e) {
@@ -212,7 +212,7 @@ public class AsynNoShareConnection implements AsynConnectionIF, ClientIOEventHan
 
 	@Override
 	public AbstractMessage sendSyncInputMessage(MessageCodecMangerIF messageCodecManger, AbstractMessage inputMessage)
-			throws InterruptedException, IOException, NoMoreDataPacketBufferException, DynamicClassCallException,
+			throws InterruptedException, IOException, NoMoreWrapBufferException, DynamicClassCallException,
 			BodyFormatException, ServerTaskException, ServerTaskPermissionException {
 
 		// synchronized (clientSC) {
@@ -231,7 +231,7 @@ public class AsynNoShareConnection implements AsynConnectionIF, ClientIOEventHan
 
 	@Override
 	public void sendAsynInputMessage(MessageCodecMangerIF messageCodecManger, AbstractMessage inputMessage)
-			throws InterruptedException, NotSupportedException, IOException, NoMoreDataPacketBufferException,
+			throws InterruptedException, NotSupportedException, IOException, NoMoreWrapBufferException,
 			DynamicClassCallException, BodyFormatException {
 		inputMessage.setMailboxID(AsynMessageMailbox.getMailboxID());
 		inputMessage.setMailID(AsynMessageMailbox.getNextMailID());
@@ -332,7 +332,7 @@ public class AsynNoShareConnection implements AsynConnectionIF, ClientIOEventHan
 	}
 
 	@Override
-	public void putReceivedMessage(int mailboxID, int mailID, String messageID, Object readableMiddleObject)
+	public void putReceivedMiddleObject(int mailboxID, int mailID, String messageID, Object readableMiddleObject)
 			throws InterruptedException {
 
 		if (CommonStaticFinalVars.SERVER_ASYN_MAILBOX_ID == mailboxID) {

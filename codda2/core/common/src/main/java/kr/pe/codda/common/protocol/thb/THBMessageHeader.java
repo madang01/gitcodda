@@ -18,6 +18,13 @@
 package kr.pe.codda.common.protocol.thb;
 
 /**
+ * <pre>
+ * TBH 헤더
+ * 
+ * 서버와 클라이언트사이에 THB 방식의 데이터 교환은 THB 데이터 패킷 단위로 이루어진다.
+ * THB 데이터 패킷은 THB 데이터 헤더와 THB 데이터 바디로 구성된다.
+ * </pre>
+ * 
  * @author Won Jonghoon
  *
  */

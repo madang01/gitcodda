@@ -24,9 +24,9 @@ import kr.pe.codda.common.classloader.MessageCodecMangerIF;
 import kr.pe.codda.common.etc.CommonStaticFinalVars;
 import kr.pe.codda.common.message.AbstractMessage;
 import kr.pe.codda.common.protocol.MessageProtocolIF;
-import kr.pe.codda.common.protocol.ReceivedMessageForwarderIF;
+import kr.pe.codda.common.protocol.ReceivedMiddleObjectForwarderIF;
 
-public class SyncOutputMessageReceiver implements ReceivedMessageForwarderIF {
+public class SyncOutputMessageReceiver implements ReceivedMiddleObjectForwarderIF {
 	private Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
 
 	// private ReadableMiddleObjectWrapper readableMiddleObjectWrapper = null;
@@ -41,7 +41,7 @@ public class SyncOutputMessageReceiver implements ReceivedMessageForwarderIF {
 	}
 
 	@Override
-	public void putReceivedMessage(int mailboxID, int mailID, String messageID, Object readableMiddleObject)
+	public void putReceivedMiddleObject(int mailboxID, int mailID, String messageID, Object readableMiddleObject)
 			throws InterruptedException {
 		if (null != receivedMessage) {
 			/** discard message */

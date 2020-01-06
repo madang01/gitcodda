@@ -31,6 +31,11 @@ import kr.pe.codda.common.exception.SymmetricException;
 import kr.pe.codda.common.type.SessionKey;
 import kr.pe.codda.common.util.CommonStaticUtil;
 
+/**
+ * RSA 공개키 반환자 추상화 클래스
+ * @author Won Jonghoon
+ *
+ */
 public abstract class AbstractRSAPublickeyGetter {
 	
 	public final byte[] getMainProjectPublickeyBytes() throws SymmetricException, InterruptedException {

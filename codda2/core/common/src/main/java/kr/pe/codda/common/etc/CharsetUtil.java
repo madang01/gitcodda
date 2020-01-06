@@ -22,9 +22,9 @@ import java.nio.charset.CharsetDecoder;
 import java.nio.charset.CharsetEncoder;
 
 /**
- * client의 문자셋에 관련 encoder와 decoder를 쉽게 만들어 주는 클래스<br/>
- * 사용자가 지정한 문자셋으로 encoder, decoder를 생성한다. <br/>
- * 단 지정한것이 없을시에는 서버설정파일에서 지정한 문자셋을 따르며 <br/>
+ * client의 문자셋에 관련 encoder와 decoder를 쉽게 만들어 주는 클래스<br>
+ * 사용자가 지정한 문자셋으로 encoder, decoder를 생성한다. <br>
+ * 단 지정한것이 없을시에는 서버설정파일에서 지정한 문자셋을 따르며 <br>
  * 그거 마자 실패시에는 UTF-8로 세팅된다.
  * 
  * @author Won Jonghoon
@@ -32,10 +32,10 @@ import java.nio.charset.CharsetEncoder;
 public class CharsetUtil {
 
 	/**
-	 * 사용자가 원하는 문자셋 이름으로 문자셋을 생성 반환한다. 단, 문자셋 지정 실패시 설정값에서 정하는 문자셋을 가지는 @see
-	 * #CONFIG_CHARSET 로 설정된다.
+	 * 사용자가 원하는 문자셋 이름으로 문자셋을 생성 반환한다.
 	 * 
-	 * @param charsetName 사용자가 원하는 문자셋
+	 * @param charsetName 반환 받기 원하는 문자셋 이름
+	 * @return 파라미터 'charsetName' 로 지정한 문자셋
 	 * @throws IllegalArgumentException 파라미터 값이 잘못되었을 경우 던지는 예외
 	 */
 	public static Charset getCharset(String charsetName) throws IllegalArgumentException {

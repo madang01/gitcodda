@@ -373,6 +373,9 @@ public class MessageInfoSAXParser extends DefaultHandler {
 		}
 	}
 	
+	/**
+	 * @return 파싱할 결과 문자열
+	 */
 	private String getParsingResultFromItemGroupInfoStack() {
 		if (null == messageInfo) {
 			return "the var messageInfo is null";
@@ -483,6 +486,10 @@ public class MessageInfoSAXParser extends DefaultHandler {
 		}		
 	}
 	
+	/**
+	 * @return 새로운 {@link SAXParser} 인스턴스
+	 * @throws SAXException 신규 SAXParser 인스턴스 생성 실패시 던지는 예외 
+	 */
 	private SAXParser getNewInstanceOfSAXParser() throws SAXException {
 		SAXParser saxParser = null;
 		try {
@@ -505,6 +512,10 @@ public class MessageInfoSAXParser extends DefaultHandler {
 		return saxParser;
 	}
 	
+	/**
+	 * 재활용 하기 위한 상태 리셋
+	 * @throws SAXException
+	 */
 	private void reset() throws SAXException {
 		this.messageInfo = null;
 		this.rootTag = null;
@@ -514,16 +525,17 @@ public class MessageInfoSAXParser extends DefaultHandler {
 		try {
 			saxParser.reset();
 		} catch (UnsupportedOperationException e) {
-			/**
-			 * 두번 세번 이상 사용할려면 과거 파싱한 잔재를 지워 초기 상태로 만들어야한다.
-			 * 이 전제 조건이 무너지면 구조를 바꾸어야 하기때문에 시스템 종료를 사용하였다. 
-			 */
 			log.log(Level.WARNING, "sax 파서가 reset() 메소드를 미 지원하므로 과거 파싱 잔재를 지워 초기 상태로 만들기 위해서 기존 sax 파서를 버리고 새로운 sax 파서 인스턴스로 대체한다.", e);
 			
 			saxParser  = getNewInstanceOfSAXParser();
 		}	
 	}
 	
+	/**
+	 * @param messageInformationXMLFilePathString 메시지 정보 파일 경로 문자열
+	 * @return 파라미터 'messageInformationXMLFilePathString' 로 부터 추출한 메시지 식별자 
+	 * @throws IllegalArgumentException 파라미터가 잘못되엇을 경우 던지는 예외
+	 */
 	public String getMessageIDFromXMLFilePathString(String messageInformationXMLFilePathString) 
 			throws IllegalArgumentException {
 		if (null == messageInformationXMLFilePathString) {

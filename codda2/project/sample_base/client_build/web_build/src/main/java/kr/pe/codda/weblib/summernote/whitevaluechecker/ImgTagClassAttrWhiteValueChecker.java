@@ -31,6 +31,10 @@ public class ImgTagClassAttrWhiteValueChecker implements AttributeWhiteValueChek
 			return;
 		}
 
+		if ("img-rounded".equals(attributeValue)) {
+			return;
+		}
+
 		if ("table table-bordered".equals(attributeValue)) {
 			return;
 		}

@@ -42,6 +42,23 @@ public abstract class AbstractMessage {
 	 * 메일 식별자, mailID : int 4bytes
 	 */
 	private int mailID;
+
+	/**
+	 * 생성자
+	 */
+	public AbstractMessage() {
+		messageID = this.getClass().getSimpleName();
+		if (!AbstractMessage.IsValidMessageID(messageID)) {
+			String errorMessage = new StringBuilder()
+					.append("this class's name[")
+					.append(messageID)
+					.append("] is not a valid message id").toString();
+			
+			Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
+			log.log(Level.SEVERE, errorMessage);
+			System.exit(1);
+		}
+	}
 	
 	/**
 	 * 입력 받은 메세지 식별자의 유효성을 반환한다.
@@ -57,37 +74,40 @@ public abstract class AbstractMessage {
 		boolean isValid = messageID.matches(regexMessageID);
 		return isValid;
 	}
-
-	public AbstractMessage() {
-		messageID = this.getClass().getSimpleName();
-		if (!AbstractMessage.IsValidMessageID(messageID)) {
-			String errorMessage = new StringBuilder()
-					.append("this class's name[")
-					.append(messageID)
-					.append("] is not a valid message id").toString();
-			
-			Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
-			log.log(Level.SEVERE, errorMessage);
-			System.exit(1);
-		}
-	}
 	
+	/**
+	 * @return 메시지 식별자
+	 */
 	public String getMessageID() {
 		return messageID;
 	}
 	
+	/**
+	 * @return 메일 박스 식별자
+	 */
 	public int getMailboxID() {
 		return mailboxID;
 	}
 
+	/**
+	 * '메일 박스 식별자'를 저장한다.
+	 * @param mailboxID 메일 박스 식별자
+	 */
 	public void setMailboxID(int mailboxID) {
 		this.mailboxID = mailboxID;
 	}
 
+	/**
+	 * @return 메일 식별자
+	 */
 	public int getMailID() {
 		return mailID;
 	}
 
+	/**
+	 * '메일 식별자'를 저장한다.
+	 * @param mailID 메일 식별자
+	 */
 	public void setMailID(int mailID) {
 		this.mailID = mailID;
 	}

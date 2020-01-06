@@ -16,6 +16,12 @@
  *******************************************************************************/
 package kr.pe.codda.common.type;
 
+/**
+ * 단일 항목 타입 열거형 타입
+ * 
+ * @author Won Jonghoon
+ *
+ */
 public enum SingleItemType {
 	EXCEPTION_DELIVERY_ERROR_PLACE(0, "exception delivery error place"),
 	EXCEPTION_DELIVERY_ERROR_TYPE(1, "exception delivery error type"),
@@ -36,22 +42,38 @@ public enum SingleItemType {
 	FIXED_LENGTH_BYTES(16, "fixed length byte[]"),
 	JAVA_SQL_DATE(17, "java sql date"),
 	JAVA_SQL_TIMESTAMP(18, "java sql timestamp"),	
-	BOOLEAN(19, "boolean");
+	BOOLEAN(19, "boolean");	
 	
-	
+	/**
+	 * 단일 항목 타입 이름
+	 */
 	private String itemTypeName;
+	/**
+	 * 단일 항목 타입 식별자
+	 */
 	private int itemTypeID;
 	
 	
+	/**
+	 * 생성자
+	 * @param itemTypeID 단일 항목 타입 식별자
+	 * @param itemTypeName 단일 항목 타입 이름
+	 */
 	private SingleItemType(int itemTypeID, String itemTypeName) {
 		this.itemTypeID = itemTypeID;
 		this.itemTypeName = itemTypeName;
 	}
 	
+	/**
+	 * @return 단일 항목 타입 식별자
+	 */
 	public int getItemTypeID() {
 		return itemTypeID;
 	}
 	
+	/**
+	 * @return 단일 항목 타입 이름
+	 */
 	public String getItemTypeName() {
 		return itemTypeName;
 	}

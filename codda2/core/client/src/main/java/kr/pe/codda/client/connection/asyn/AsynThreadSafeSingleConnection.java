@@ -40,7 +40,7 @@ import kr.pe.codda.common.exception.BodyFormatException;
 import kr.pe.codda.common.exception.ConnectionPoolTimeoutException;
 import kr.pe.codda.common.exception.DynamicClassCallException;
 import kr.pe.codda.common.exception.HeaderFormatException;
-import kr.pe.codda.common.exception.NoMoreDataPacketBufferException;
+import kr.pe.codda.common.exception.NoMoreWrapBufferException;
 import kr.pe.codda.common.exception.NotSupportedException;
 import kr.pe.codda.common.exception.ServerTaskException;
 import kr.pe.codda.common.exception.ServerTaskPermissionException;
@@ -51,10 +51,10 @@ import kr.pe.codda.common.io.WrapBufferPoolIF;
 import kr.pe.codda.common.message.AbstractMessage;
 import kr.pe.codda.common.message.codec.AbstractMessageEncoder;
 import kr.pe.codda.common.protocol.MessageProtocolIF;
-import kr.pe.codda.common.protocol.ReceivedMessageForwarderIF;
+import kr.pe.codda.common.protocol.ReceivedMiddleObjectForwarderIF;
 
 public class AsynThreadSafeSingleConnection
-		implements AsynConnectionIF, ClientIOEventHandlerIF, ReceivedMessageForwarderIF {
+		implements AsynConnectionIF, ClientIOEventHandlerIF, ReceivedMiddleObjectForwarderIF {
 	private Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
 
 	private final String projectName;
@@ -133,7 +133,7 @@ public class AsynThreadSafeSingleConnection
 	}
 	
 	private void addInputMessage(MessageCodecMangerIF messageCodecManger, AbstractMessage inputMessage)
-			throws DynamicClassCallException, NoMoreDataPacketBufferException, BodyFormatException,
+			throws DynamicClassCallException, NoMoreWrapBufferException, BodyFormatException,
 			HeaderFormatException, IOException, InterruptedException {
 
 		AbstractMessageEncoder messageEncoder = null;
@@ -154,7 +154,7 @@ public class AsynThreadSafeSingleConnection
 			messageProtocol.M2S(inputMessage, messageEncoder, inputMessageStreamBuffer);
 			
 			inputMessageStreamBuffer.flip();
-		} catch (NoMoreDataPacketBufferException e) {
+		} catch (NoMoreWrapBufferException e) {
 			inputMessageStreamBuffer.releaseAllWrapBuffers();
 			throw e;
 		} catch (BodyFormatException e) {
@@ -194,7 +194,7 @@ public class AsynThreadSafeSingleConnection
 
 	@Override
 	public AbstractMessage sendSyncInputMessage(MessageCodecMangerIF messageCodecManger, AbstractMessage inputMessage)
-			throws InterruptedException, IOException, NoMoreDataPacketBufferException, DynamicClassCallException,
+			throws InterruptedException, IOException, NoMoreWrapBufferException, DynamicClassCallException,
 			BodyFormatException, ServerTaskException, ServerTaskPermissionException {
 
 		// synchronized (clientSC) {
@@ -229,7 +229,7 @@ public class AsynThreadSafeSingleConnection
 
 	@Override
 	public void sendAsynInputMessage(MessageCodecMangerIF messageCodecManger, AbstractMessage inputMessage)
-			throws InterruptedException, NotSupportedException, IOException, NoMoreDataPacketBufferException,
+			throws InterruptedException, NotSupportedException, IOException, NoMoreWrapBufferException,
 			DynamicClassCallException, BodyFormatException {
 		inputMessage.setMailboxID(AsynMessageMailbox.getMailboxID());
 		inputMessage.setMailID(AsynMessageMailbox.getNextMailID());		
@@ -308,7 +308,7 @@ public class AsynThreadSafeSingleConnection
 	}
 
 	@Override
-	public void putReceivedMessage(int mailboxID, int mailID, String messageID, Object readableMiddleObject)
+	public void putReceivedMiddleObject(int mailboxID, int mailID, String messageID, Object readableMiddleObject)
 			throws InterruptedException {
 		
 		

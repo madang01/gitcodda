@@ -27,7 +27,7 @@ import kr.pe.codda.common.etc.CommonStaticFinalVars;
 import kr.pe.codda.common.etc.StreamCharsetFamily;
 import kr.pe.codda.common.exception.BodyFormatException;
 import kr.pe.codda.common.exception.HeaderFormatException;
-import kr.pe.codda.common.exception.NoMoreDataPacketBufferException;
+import kr.pe.codda.common.exception.NoMoreWrapBufferException;
 import kr.pe.codda.common.io.IncomingStream;
 import kr.pe.codda.common.io.StreamBuffer;
 import kr.pe.codda.common.io.WrapBufferPoolIF;
@@ -35,18 +35,23 @@ import kr.pe.codda.common.message.AbstractMessage;
 import kr.pe.codda.common.message.codec.AbstractMessageDecoder;
 import kr.pe.codda.common.message.codec.AbstractMessageEncoder;
 import kr.pe.codda.common.protocol.MessageProtocolIF;
-import kr.pe.codda.common.protocol.ReceivedMessageForwarderIF;
+import kr.pe.codda.common.protocol.ReceivedMiddleObjectForwarderIF;
 import kr.pe.codda.common.protocol.thb.THBSingleItemDecoder;
-import kr.pe.codda.common.protocol.thb.THBSingleItemDecoderMatcher;
-import kr.pe.codda.common.protocol.thb.THBSingleItemDecoderMatcherIF;
+import kr.pe.codda.common.protocol.thb.THBSingleItemTypeDecoderMatcher;
+import kr.pe.codda.common.protocol.thb.THBSingleItemTypeDecoderMatcherIF;
 import kr.pe.codda.common.protocol.thb.THBSingleItemEncoder;
-import kr.pe.codda.common.protocol.thb.THBSingleItemEncoderMatcher;
-import kr.pe.codda.common.protocol.thb.THBSingleItemEncoderMatcherIF;
+import kr.pe.codda.common.protocol.thb.THBSingleItemTypeEncoderMatcher;
+import kr.pe.codda.common.protocol.thb.THBSingleItemTypeEncoderMatcherIF;
 import kr.pe.codda.common.util.CommonStaticUtil;
 import kr.pe.codda.common.util.HexUtil;
 
 /**
- * DHB 메시지 교환 프로토콜
+ * <pre>
+ * DHB 메시지 교환 프로토콜.
+ * 
+ * 쓰레드 세이프 검출및 데이터 검증을 하는데 도움을 주는 헤더와 바디 부분의 교차 MD5 체크섬이 있다.
+ * 이때문에 상대적으로 THB 프로토콜 보다 느리다.
+ * </pre>
  * 
  * @author Won Jonghoon
  * 
@@ -54,7 +59,7 @@ import kr.pe.codda.common.util.HexUtil;
 public class DHBMessageProtocol implements MessageProtocolIF {
 	private Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
 
-	private final int dataPacketBufferMaxCntPerMessage;
+	private final int maxNumberOfWrapBufferPerMessage;
 	private final StreamCharsetFamily streamCharsetFamily;
 	private final WrapBufferPoolIF wrapBufferPool;
 
@@ -69,12 +74,18 @@ public class DHBMessageProtocol implements MessageProtocolIF {
 	private CharsetEncoder headerCharsetEncoder = null;
 	private CharsetDecoder headerCharsetDecoder = null;
 
-	public DHBMessageProtocol(int dataPacketBufferMaxCntPerMessage, StreamCharsetFamily streamCharsetFamily,
+	/**
+	 * 생성자
+	 * @param maxNumberOfWrapBufferPerMessage 메시지당 랩 버퍼 최대 갯수
+	 * @param streamCharsetFamily 문자셋, 문자셋 디코더 그리고 문자셋 인코더 묶음
+	 * @param wrapBufferPool 랩 버퍼 폴
+	 */
+	public DHBMessageProtocol(int maxNumberOfWrapBufferPerMessage, StreamCharsetFamily streamCharsetFamily,
 			WrapBufferPoolIF wrapBufferPool) {
 
-		if (dataPacketBufferMaxCntPerMessage <= 0) {
-			String errorMessage = new StringBuilder().append("the parameter dataPacketBufferMaxCntPerMessage[")
-					.append(dataPacketBufferMaxCntPerMessage).append("] is less than or equal to zero").toString();
+		if (maxNumberOfWrapBufferPerMessage <= 0) {
+			String errorMessage = new StringBuilder().append("the parameter maxNumberOfWrapBufferPerMessage[")
+					.append(maxNumberOfWrapBufferPerMessage).append("] is less than or equal to zero").toString();
 			throw new IllegalArgumentException(errorMessage);
 		}
 
@@ -87,7 +98,7 @@ public class DHBMessageProtocol implements MessageProtocolIF {
 			throw new IllegalArgumentException("the parameter wrapBufferPool is null");
 		}
 
-		this.dataPacketBufferMaxCntPerMessage = dataPacketBufferMaxCntPerMessage;
+		this.maxNumberOfWrapBufferPerMessage = maxNumberOfWrapBufferPerMessage;
 		this.streamCharsetFamily = streamCharsetFamily;
 		this.wrapBufferPool = wrapBufferPool;
 
@@ -98,12 +109,10 @@ public class DHBMessageProtocol implements MessageProtocolIF {
 		CharsetEncoder streamCharsetEncoder = streamCharsetFamily.getCharsetEncoder();
 		CharsetDecoder streamCharsetDecoder = streamCharsetFamily.getCharsetDecoder();
 
-		THBSingleItemDecoderMatcherIF thbSingleItemDecoderMatcher = new THBSingleItemDecoderMatcher(
-				streamCharsetDecoder);
+		THBSingleItemTypeDecoderMatcherIF thbSingleItemDecoderMatcher = new THBSingleItemTypeDecoderMatcher(streamCharsetFamily);
 		thbSingleItemDecoder = new THBSingleItemDecoder(thbSingleItemDecoderMatcher);
 
-		THBSingleItemEncoderMatcherIF thbSingleItemEncoderMatcher = new THBSingleItemEncoderMatcher(
-				streamCharsetEncoder);
+		THBSingleItemTypeEncoderMatcherIF thbSingleItemEncoderMatcher = new THBSingleItemTypeEncoderMatcher(streamCharsetFamily);
 		thbSingleItemEncoder = new THBSingleItemEncoder(thbSingleItemEncoderMatcher);
 
 		headerCharsetEncoder = headerCharset.newEncoder();
@@ -115,20 +124,18 @@ public class DHBMessageProtocol implements MessageProtocolIF {
 		headerCharsetDecoder.onUnmappableCharacter(streamCharsetDecoder.unmappableCharacterAction());
 	}
 	
+	@Override
 	public StreamBuffer createNewMessageStreamBuffer() {
-		StreamBuffer outputMesssageStreamBuffer = new StreamBuffer(streamCharsetFamily, dataPacketBufferMaxCntPerMessage, 
+		StreamBuffer outputMesssageStreamBuffer = new StreamBuffer(streamCharsetFamily, maxNumberOfWrapBufferPerMessage, 
 				wrapBufferPool);
 		
 		return outputMesssageStreamBuffer;
 	}
 
-	/**
-	 * 단위 테스트 특성상 이 메소드에 대한 기능 검증은 {@link #S2O(IncomingStream, ReceivedMessageForwarderIF) } 와 쌍을 이루어 이루어진다.
-	 * 하여 단위테스트를 원할 하게 하기 위해서 반환되는 리턴값의 타입을 InputStreamResource 으로 한다.
-	 */
+	
 	@Override
 	public void M2S(AbstractMessage inputMessage, AbstractMessageEncoder messageEncoder, StreamBuffer targetStreamBuffer)
-			throws NoMoreDataPacketBufferException, BodyFormatException, HeaderFormatException {
+			throws NoMoreWrapBufferException, BodyFormatException, HeaderFormatException {
 		if (null == inputMessage) {
 			throw new IllegalArgumentException("the parameter inputMessage is null");
 		}
@@ -166,7 +173,7 @@ public class DHBMessageProtocol implements MessageProtocolIF {
 			targetStreamBuffer.putUBPascalString(messageID, headerCharset);
 			targetStreamBuffer.putUnsignedShort(mailboxID);
 			targetStreamBuffer.putInt(mailID);
-		} catch (NoMoreDataPacketBufferException e) {
+		} catch (NoMoreWrapBufferException e) {
 			throw e;
 		} catch (Exception e) {
 			String errorMessage = new StringBuilder("fail to make the header in body of the input message[")
@@ -181,7 +188,7 @@ public class DHBMessageProtocol implements MessageProtocolIF {
 		/** 메시지 바디 */
 		try {
 			messageEncoder.encode(inputMessage, thbSingleItemEncoder, targetStreamBuffer);
-		} catch (NoMoreDataPacketBufferException e) {
+		} catch (NoMoreWrapBufferException e) {
 			throw e;
 		} catch (Exception e) {
 			String errorMessage = new StringBuilder().append("fail to encode the input message[")
@@ -212,7 +219,7 @@ public class DHBMessageProtocol implements MessageProtocolIF {
 
 			targetStreamBuffer.setPosition(messageStartPostion + headerBodySize);
 			targetStreamBuffer.putBytes(dhbMessageHeader.headerBodyMD5Bytes);
-		} catch (NoMoreDataPacketBufferException e) {
+		} catch (NoMoreWrapBufferException e) {
 			throw e;
 		} catch (Exception e) {
 			String errorMessage = new StringBuilder("fail to make the header of the input message[")
@@ -231,8 +238,8 @@ public class DHBMessageProtocol implements MessageProtocolIF {
 	}
 
 	@Override
-	public void S2O(IncomingStream inputStreamResource, ReceivedMessageForwarderIF receivedMessageForwarder)
-			throws HeaderFormatException, NoMoreDataPacketBufferException, InterruptedException {
+	public void S2O(IncomingStream inputStreamResource, ReceivedMiddleObjectForwarderIF receivedMessageForwarder)
+			throws HeaderFormatException, NoMoreWrapBufferException, InterruptedException {
 		if (null == inputStreamResource) {
 			throw new IllegalArgumentException("the parameter inputStreamResource is null");
 		}
@@ -379,7 +386,7 @@ public class DHBMessageProtocol implements MessageProtocolIF {
 						}
 
 						try {
-							receivedMessageForwarder.putReceivedMessage(mailboxID, mailID, messageID,
+							receivedMessageForwarder.putReceivedMiddleObject(mailboxID, mailID, messageID,
 									messageInputStream);
 						} catch (InterruptedException e) {
 							messageInputStream.releaseAllWrapBuffers();
@@ -408,6 +415,7 @@ public class DHBMessageProtocol implements MessageProtocolIF {
 		return receivedMessage;
 	}
 	
+	@Override
 	public void closeReadableMiddleObject(int mailboxID, int mailID, String messageID, Object readableMiddleObject) {
 		if (null == readableMiddleObject) {
 			throw new IllegalArgumentException("the parameter readableMiddleObject is null");

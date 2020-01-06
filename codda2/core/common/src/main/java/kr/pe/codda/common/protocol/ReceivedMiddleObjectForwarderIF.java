@@ -14,8 +14,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *******************************************************************************/
-package kr.pe.codda.common.protocol.thb;
 
-public interface THBSingleItemEncoderMatcherIF {
-	public AbstractTHBSingleItemEncoder get(int itemTypeID);
+package kr.pe.codda.common.protocol;
+
+/**
+ * 수신한 중간 객체 전달자 인터페이스.
+ * 
+ * @author Won Jonghoon
+ *
+ */
+public interface ReceivedMiddleObjectForwarderIF {
+	/**
+	 * 수신한 메시지로 부터 변화된 중간 객체를 전달한다.
+	 *
+	 * @param mailboxID 수신한 메시지의 메일 박스 식별자
+	 * @param mailID 수신한 메시지의 메일 식별자
+	 * @param messageID 수신한 메시지의 메시지 식별자
+	 * @param receviedMiddleObject 수신한 메시지로 부터 변화된 중간 객체
+	 * @throws InterruptedException 인터럽트 발생시 던지는 예외
+	 */
+	public void putReceivedMiddleObject(int mailboxID, int mailID, String messageID, Object receviedMiddleObject) throws InterruptedException;
 }

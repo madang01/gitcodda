@@ -44,15 +44,15 @@ public class WrapBuffer {
 	//private Throwable lastThrowable = null;
 
 	
-	public WrapBuffer(boolean isDirect, int capacity, ByteOrder byteOrderOfBuffer) {
+	public WrapBuffer(boolean isDirect, int capacity, ByteOrder byteOrder) {
 		this.isDirect = isDirect;
 		if (isDirect) {
 			buffer = ByteBuffer.allocateDirect(capacity);
 		} else {
 			buffer = ByteBuffer.allocate(capacity);
 		}
-		buffer.order(byteOrderOfBuffer);
-		this.byteOrderOfBuffer = byteOrderOfBuffer;		
+		buffer.order(byteOrder);
+		this.byteOrderOfBuffer = byteOrder;		
 	}
 	
 	

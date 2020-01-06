@@ -20,6 +20,11 @@ import kr.pe.codda.common.exception.BodyFormatException;
 import kr.pe.codda.common.message.AbstractMessage;
 import kr.pe.codda.common.protocol.SingleItemDecoderIF;
 
+/**
+ * 메시지 디코더 추상화 클래스
+ * @author Won Jonghoon
+ *
+ */
 public abstract class AbstractMessageDecoder {
 	
 	/**
@@ -34,13 +39,12 @@ public abstract class AbstractMessageDecoder {
 	 * 이런 경우   "중간 다리 역활 읽기 객체" 는 그 자체로 입력 스트림이 된다.
 	 * 디코딩 흐름도) 입력 스트림 -&gt; 중간 다리 역활 읽기 객체 -&gt; 메시지
 	 * (2) 그리고 DJSON 프로토콜의 경우 "중간 다리 역활 읽기 객체" 는 입력 스트림으로부터 추출된 존슨 객체이다.
-	 * 디코딩 흐름도) 입력 스트림 -&gt; 존슨 객체 -> 메시지
+	 * 디코딩 흐름도) 입력 스트림 -&gt; 존슨 객체 -&gt; 메시지
 	 * </pre> 
 	 * @param singleItemDecoder 단일항목 디코더
-	 * @param streamCharset 프로젝트 문자셋
 	 * @param receivedMiddleObject  중간 다리 역활 읽기 객체
 	 * @return "단일항목 디코더"를 이용하여 "중간 다리 역활 읽기 객체" 에서 추출된 메시지
-	 * @throws Exception "단일항목 디코더"를 이용하여 "중간 다리 역활 읽기 객체" 에서 추출할때 에러 발생시 던지는 예외
+	 * @throws BodyFormatException 중간 객체를 메시지로의 변환하는 과정중 에러 발생시 던지는 예외
 	 */
 	public AbstractMessage decode(SingleItemDecoderIF singleItemDecoder, Object receivedMiddleObject) throws BodyFormatException {
 		/**
@@ -67,5 +71,13 @@ public abstract class AbstractMessageDecoder {
 		return retObj;
 	}
 	
+	/**
+	 * 실질적으로 중간 객체로 부터 디코딩 수행하여 메시지 반환한다.
+	 * 
+	 * @param singleItemDecoder 단일 항목 디코더
+	 * @param receivedMiddleObject 중간 객체
+	 * @return 중간 객체를 디코딩 하여 얻은 메시지
+	 * @throws BodyFormatException 디코딩중 에러 발생시 던지는 예외
+	 */
 	protected abstract AbstractMessage decodeBody(SingleItemDecoderIF singleItemDecoder, Object receivedMiddleObject) throws BodyFormatException;
 }

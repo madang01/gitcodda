@@ -38,7 +38,7 @@ import kr.pe.codda.common.etc.CommonStaticFinalVars;
 import kr.pe.codda.common.etc.StreamCharsetFamily;
 import kr.pe.codda.common.exception.CharsetDecoderException;
 import kr.pe.codda.common.exception.CharsetEncoderException;
-import kr.pe.codda.common.exception.NoMoreDataPacketBufferException;
+import kr.pe.codda.common.exception.NoMoreWrapBufferException;
 import kr.pe.codda.common.util.HexUtil;
 
 /**
@@ -216,18 +216,18 @@ public class StreamBuffer {
 	 * 파라미터 'maxOfWrapBuffer' 에 맞추어 배열 크기를 갖는 랩 버퍼 배열을 자체 생성하는 생성자
 	 * 
 	 * @param streamCharsetFamily 문자셋과 문자셋 인코더/디코더 묶음
-	 * @param maxOfWrapBuffer     랩버퍼 최대 갯수
+	 * @param maxNumberOfWrapBuffer     랩버퍼 최대 갯수
 	 * @param wrapBufferPool      랩 버퍼 폴
 	 * @throws IllegalArgumentException 파라미터 값이 잘못된 경우에 던지는 예외
 	 */
-	public StreamBuffer(StreamCharsetFamily streamCharsetFamily, int maxOfWrapBuffer, WrapBufferPoolIF wrapBufferPool)
+	public StreamBuffer(StreamCharsetFamily streamCharsetFamily, int maxNumberOfWrapBuffer, WrapBufferPoolIF wrapBufferPool)
 			throws IllegalArgumentException {
 		if (null == streamCharsetFamily) {
 			throw new IllegalArgumentException("the parameter streamCharsetFamily is null");
 		}
 
-		if (maxOfWrapBuffer <= 0) {
-			throw new IllegalArgumentException("the parameter maxOfWrapBuffer is less than or equal to zero");
+		if (maxNumberOfWrapBuffer <= 0) {
+			throw new IllegalArgumentException("the parameter maxNumberOfWrapBuffer is less than or equal to zero");
 		}
 
 		if (null == wrapBufferPool) {
@@ -244,11 +244,11 @@ public class StreamBuffer {
 		byteOrder = wrapBufferPool.getByteOrder();
 		dataPacketBufferSize = wrapBufferPool.getDataPacketBufferSize();
 
-		capacity = (long) maxOfWrapBuffer * dataPacketBufferSize;
+		capacity = (long) maxNumberOfWrapBuffer * dataPacketBufferSize;
 		limit = capacity;
 
-		wrapBufferArray = new WrapBuffer[maxOfWrapBuffer];
-		byteBufferArray = new ByteBuffer[maxOfWrapBuffer];
+		wrapBufferArray = new WrapBuffer[maxNumberOfWrapBuffer];
+		byteBufferArray = new ByteBuffer[maxNumberOfWrapBuffer];
 
 		startTime = System.nanoTime();
 	}
@@ -379,9 +379,9 @@ public class StreamBuffer {
 	 * </pre>
 	 * 
 	 * @param ioDemandIndex 읽기 혹은 쓰기 작업할 스트림 버퍼 인덱스
-	 * @throws NoMoreDataPacketBufferException 랩 버퍼 폴에 랩 버퍼가 없을 때 던지는 예외
+	 * @throws NoMoreWrapBufferException 랩 버퍼 폴에 랩 버퍼가 없을 때 던지는 예외
 	 */
-	private void fillWrapBuffer(int ioDemandIndex) throws NoMoreDataPacketBufferException {
+	private void fillWrapBuffer(int ioDemandIndex) throws NoMoreWrapBufferException {
 		if (ioDemandIndex < 0) {
 			throw new IllegalArgumentException("the parameter newLastIndex is less than zero");
 		}
@@ -410,9 +410,9 @@ public class StreamBuffer {
 	 * 
 	 * @param value byte 타입 값
 	 * @throws BufferOverflowException         바이트 버퍼에서 버퍼 오버프로시 던지는 예외
-	 * @throws NoMoreDataPacketBufferException 랩 버퍼 폴에 랩 버퍼가 없을 때 던지는 예외
+	 * @throws NoMoreWrapBufferException 랩 버퍼 폴에 랩 버퍼가 없을 때 던지는 예외
 	 */
-	private void doPutByte(byte value) throws BufferOverflowException, NoMoreDataPacketBufferException {
+	private void doPutByte(byte value) throws BufferOverflowException, NoMoreWrapBufferException {
 		int bufferIndexOfStartPostion = (int) (position / dataPacketBufferSize);
 		int bufferOffsetOfStartPostion = (int) (position % dataPacketBufferSize);
 
@@ -437,9 +437,9 @@ public class StreamBuffer {
 	 * 
 	 * @param value byte 타입 값
 	 * @throws BufferOverflowException         '스트림 버퍼' 혹은 바이트 버퍼에서 버퍼 오버프로시 던지는 예외
-	 * @throws NoMoreDataPacketBufferException 랩 버퍼 폴에 랩 버퍼가 없을 때 던지는 예외
+	 * @throws NoMoreWrapBufferException 랩 버퍼 폴에 랩 버퍼가 없을 때 던지는 예외
 	 */
-	public void putByte(byte value) throws BufferOverflowException, NoMoreDataPacketBufferException {
+	public void putByte(byte value) throws BufferOverflowException, NoMoreWrapBufferException {
 		if ((limit - position) < 1) {
 			throw new BufferOverflowException();
 		}
@@ -452,12 +452,12 @@ public class StreamBuffer {
 	 * 
 	 * @param value unsigned byte 타입 값 범위를 갖는 'short 타입 값'
 	 * @throws BufferOverflowException         '스트림 버퍼' 혹은 바이트 버퍼에서 버퍼 오버프로시 던지는 예외
-	 * @throws NoMoreDataPacketBufferException 랩 버퍼 폴에 랩 버퍼가 없을 때 던지는 예외
+	 * @throws NoMoreWrapBufferException 랩 버퍼 폴에 랩 버퍼가 없을 때 던지는 예외
 	 * @throws IllegalArgumentException        파라미터 'short 타입 값' 이 unsigned byte
 	 *                                         type 에 부함되지 않았을 경우 던지는 예외
 	 */
 	public void putUnsignedByte(short value)
-			throws BufferOverflowException, NoMoreDataPacketBufferException, IllegalArgumentException {
+			throws BufferOverflowException, NoMoreWrapBufferException, IllegalArgumentException {
 		if (value < 0) {
 			String errorMessage = new StringBuilder().append("the parameter value[").append(value)
 					.append("] is less than zero").toString();
@@ -479,12 +479,12 @@ public class StreamBuffer {
 	 * 
 	 * @param value unsigend byte 타입 값 범위를 갖는 'int 타입 값'
 	 * @throws BufferOverflowException         '스트림 버퍼' 혹은 바이트 버퍼에서 버퍼 오버프로시 던지는 예외
-	 * @throws NoMoreDataPacketBufferException 랩 버퍼 폴에 랩 버퍼가 없을 때 던지는 예외
+	 * @throws NoMoreWrapBufferException 랩 버퍼 폴에 랩 버퍼가 없을 때 던지는 예외
 	 * @throws IllegalArgumentException        파라미터 'int 타입 값' 이 unsigned byte 타입 에
 	 *                                         부함되지 않았을 경우 던지는 예외
 	 */
 	public void putUnsignedByte(int value)
-			throws BufferOverflowException, NoMoreDataPacketBufferException, IllegalArgumentException {
+			throws BufferOverflowException, NoMoreWrapBufferException, IllegalArgumentException {
 		if (value < 0) {
 			String errorMessage = new StringBuilder().append("the parameter value[").append(value)
 					.append("] is less than zero").toString();
@@ -506,12 +506,12 @@ public class StreamBuffer {
 	 * 
 	 * @param value unsigend byte 타입 값 범위를 갖는 'long 타입 값'
 	 * @throws BufferOverflowException         '스트림 버퍼' 혹은 바이트 버퍼에서 버퍼 오버프로시 던지는 예외
-	 * @throws NoMoreDataPacketBufferException 랩 버퍼 폴에 랩 버퍼가 없을 때 던지는 예외
+	 * @throws NoMoreWrapBufferException 랩 버퍼 폴에 랩 버퍼가 없을 때 던지는 예외
 	 * @throws IllegalArgumentException        파라미터 'long 타입 값' 이 unsigned byte 타입 에
 	 *                                         부함되지 않았을 경우 던지는 예외
 	 */
 	public void putUnsignedByte(long value)
-			throws BufferOverflowException, NoMoreDataPacketBufferException, IllegalArgumentException {
+			throws BufferOverflowException, NoMoreWrapBufferException, IllegalArgumentException {
 		if (value < 0) {
 			String errorMessage = new StringBuilder().append("the parameter value[").append(value)
 					.append("] is less than zero").toString();
@@ -534,9 +534,9 @@ public class StreamBuffer {
 	 * 
 	 * @param value short 타입 값 범위를 갖는 int 타입 값
 	 * @throws BufferOverflowException         바이트 버퍼에서 버퍼 오버프로시 던지는 예외
-	 * @throws NoMoreDataPacketBufferException 랩 버퍼 폴에 랩 버퍼가 없을 때 던지는 예외
+	 * @throws NoMoreWrapBufferException 랩 버퍼 폴에 랩 버퍼가 없을 때 던지는 예외
 	 */
-	private void doPutShort(int value) throws BufferOverflowException, NoMoreDataPacketBufferException {
+	private void doPutShort(int value) throws BufferOverflowException, NoMoreWrapBufferException {
 		byte t2 = (byte) (value & 0xff);
 		byte t1 = (byte) ((value & 0xff00) >> 8);
 
@@ -554,9 +554,9 @@ public class StreamBuffer {
 	 * 
 	 * @param value short 타입 값
 	 * @throws BufferOverflowException         '스트림 버퍼' 혹은 바이트 버퍼에서 버퍼 오버프로시 던지는 예외
-	 * @throws NoMoreDataPacketBufferException 랩 버퍼 폴에 랩 버퍼가 없을 때 던지는 예외
+	 * @throws NoMoreWrapBufferException 랩 버퍼 폴에 랩 버퍼가 없을 때 던지는 예외
 	 */
-	public void putShort(short value) throws BufferOverflowException, NoMoreDataPacketBufferException {
+	public void putShort(short value) throws BufferOverflowException, NoMoreWrapBufferException {
 		if ((limit - position) < 2) {
 			throw new BufferOverflowException();
 		}
@@ -578,12 +578,12 @@ public class StreamBuffer {
 	 * 
 	 * @param value unsigned short 타입 값 범위를 갖는 'int 타입 값'
 	 * @throws BufferOverflowException         '스트림 버퍼' 혹은 바이트 버퍼에서 버퍼 오버프로시 던지는 예외
-	 * @throws NoMoreDataPacketBufferException 랩 버퍼 폴에 랩 버퍼가 없을 때 던지는 예외
+	 * @throws NoMoreWrapBufferException 랩 버퍼 폴에 랩 버퍼가 없을 때 던지는 예외
 	 * @throws IllegalArgumentException        파라미터 'int 타입 값' 이 unsigned short 타입 에
 	 *                                         부함되지 않았을 경우 던지는 예외
 	 */
 	public void putUnsignedShort(int value)
-			throws BufferOverflowException, NoMoreDataPacketBufferException, IllegalArgumentException {
+			throws BufferOverflowException, NoMoreWrapBufferException, IllegalArgumentException {
 		if (value < 0) {
 			String errorMessage = new StringBuilder().append("the parameter value[").append(value)
 					.append("] is less than zero").toString();
@@ -609,12 +609,12 @@ public class StreamBuffer {
 	 * 
 	 * @param value unsigned short 타입 값 범위를 갖는 'long 타입 값'
 	 * @throws BufferOverflowException         '스트림 버퍼' 혹은 바이트 버퍼에서 버퍼 오버프로시 던지는 예외
-	 * @throws NoMoreDataPacketBufferException 랩 버퍼 폴에 랩 버퍼가 없을 때 던지는 예외
+	 * @throws NoMoreWrapBufferException 랩 버퍼 폴에 랩 버퍼가 없을 때 던지는 예외
 	 * @throws IllegalArgumentException        파라미터 'long 타입 값' 이 unsigned short 타입
 	 *                                         에 부함되지 않았을 경우 던지는 예외
 	 */
 	public void putUnsignedShort(long value)
-			throws BufferOverflowException, NoMoreDataPacketBufferException, IllegalArgumentException {
+			throws BufferOverflowException, NoMoreWrapBufferException, IllegalArgumentException {
 		if (value < 0) {
 			String errorMessage = new StringBuilder().append("the parameter value[").append(value)
 					.append("] is less than zero").toString();
@@ -636,9 +636,9 @@ public class StreamBuffer {
 	 * 
 	 * @param value int 타입 값
 	 * @throws BufferOverflowException         바이트 버퍼에서 버퍼 오버프로시 던지는 예외
-	 * @throws NoMoreDataPacketBufferException 랩 버퍼 폴에 랩 버퍼가 없을 때 던지는 예외
+	 * @throws NoMoreWrapBufferException 랩 버퍼 폴에 랩 버퍼가 없을 때 던지는 예외
 	 */
-	private void doPutInt(int value) throws BufferOverflowException, NoMoreDataPacketBufferException {
+	private void doPutInt(int value) throws BufferOverflowException, NoMoreWrapBufferException {
 
 		final byte[] intBuffer;
 
@@ -659,9 +659,9 @@ public class StreamBuffer {
 	 * 
 	 * @param value int 타입 값
 	 * @throws BufferOverflowException         '스트림 버퍼' 혹은 바이트 버퍼에서 버퍼 오버프로시 던지는 예외
-	 * @throws NoMoreDataPacketBufferException 랩 버퍼 폴에 랩 버퍼가 없을 때 던지는 예외
+	 * @throws NoMoreWrapBufferException 랩 버퍼 폴에 랩 버퍼가 없을 때 던지는 예외
 	 */
-	public void putInt(int value) throws BufferOverflowException, NoMoreDataPacketBufferException {
+	public void putInt(int value) throws BufferOverflowException, NoMoreWrapBufferException {
 		if ((limit - position) < 4) {
 			throw new BufferOverflowException();
 		}
@@ -685,12 +685,12 @@ public class StreamBuffer {
 	 * 
 	 * @param value unsigned int 타입 값의 범위를 갖는 long 타입 값
 	 * @throws BufferOverflowException         '스트림 버퍼' 혹은 바이트 버퍼에서 버퍼 오버프로시 던지는 예외
-	 * @throws NoMoreDataPacketBufferException 랩 버퍼 폴에 랩 버퍼가 없을 때 던지는 예외
+	 * @throws NoMoreWrapBufferException 랩 버퍼 폴에 랩 버퍼가 없을 때 던지는 예외
 	 * @throws IllegalArgumentException        파라미터 'long 타입 값' 이 unsigned int 타입에
 	 *                                         부합되지 않을때 던지는 예외
 	 */
 	public void putUnsignedInt(long value)
-			throws BufferOverflowException, NoMoreDataPacketBufferException, IllegalArgumentException {
+			throws BufferOverflowException, NoMoreWrapBufferException, IllegalArgumentException {
 		if (value < 0) {
 			String errorMessage = new StringBuilder().append("the parameter value[").append(value)
 					.append("] is less than zero").toString();
@@ -716,9 +716,9 @@ public class StreamBuffer {
 	 * 
 	 * @param value long 타입 값
 	 * @throws BufferOverflowException         '스트림 버퍼' 혹은 바이트 버퍼에서 버퍼 오버프로시 던지는 예외
-	 * @throws NoMoreDataPacketBufferException 랩 버퍼 폴에 랩 버퍼가 없을 때 던지는 예외
+	 * @throws NoMoreWrapBufferException 랩 버퍼 폴에 랩 버퍼가 없을 때 던지는 예외
 	 */
-	public void putLong(long value) throws BufferOverflowException, NoMoreDataPacketBufferException {
+	public void putLong(long value) throws BufferOverflowException, NoMoreWrapBufferException {
 		if ((limit - position) < 8) {
 			throw new BufferOverflowException();
 		}
@@ -750,10 +750,10 @@ public class StreamBuffer {
 	 * @param offset 배열내 저장할 시작 위치
 	 * @param length 저장을 원하는 길이
 	 * @throws BufferOverflowException         바이트 버퍼에서 버퍼 오버프로시 던지는 예외
-	 * @throws NoMoreDataPacketBufferException 랩 버퍼 폴에 랩 버퍼가 없을 때 던지는 예외
+	 * @throws NoMoreWrapBufferException 랩 버퍼 폴에 랩 버퍼가 없을 때 던지는 예외
 	 */
 	private void doPutBytes(byte src[], int offset, int length)
-			throws BufferOverflowException, NoMoreDataPacketBufferException {
+			throws BufferOverflowException, NoMoreWrapBufferException {
 
 		int bufferIndexOfStartPostion = (int) (position / dataPacketBufferSize);
 		int bufferOffsetOfStartPostion = (int) (position % dataPacketBufferSize);
@@ -810,11 +810,11 @@ public class StreamBuffer {
 	 * @param offset 배열내 저장할 시작 위치
 	 * @param length 저장을 원하는 길이
 	 * @throws BufferOverflowException         '스트림 버퍼' 혹은 바이트 버퍼에서 버퍼 오버프로시 던지는 예외
-	 * @throws NoMoreDataPacketBufferException 랩 버퍼 폴에 랩 버퍼가 없을 때 던지는 예외
+	 * @throws NoMoreWrapBufferException 랩 버퍼 폴에 랩 버퍼가 없을 때 던지는 예외
 	 * @throws IllegalArgumentException        파라미터 값이 잘못되었을 경우 던지는 예외
 	 */
 	public void putBytes(byte[] src, int offset, int length)
-			throws BufferOverflowException, NoMoreDataPacketBufferException, IllegalArgumentException {
+			throws BufferOverflowException, NoMoreWrapBufferException, IllegalArgumentException {
 		if (src == null) {
 			throw new IllegalArgumentException("the parameter src is null");
 		}
@@ -865,11 +865,11 @@ public class StreamBuffer {
 	 * 
 	 * @param src 저장할 데이터가 담긴 바이트 배열
 	 * @throws BufferOverflowException         '스트림 버퍼' 혹은 바이트 버퍼에서 버퍼 오버프로시 던지는 예외
-	 * @throws NoMoreDataPacketBufferException 랩 버퍼 폴에 랩 버퍼가 없을 때 던지는 예외
+	 * @throws NoMoreWrapBufferException 랩 버퍼 폴에 랩 버퍼가 없을 때 던지는 예외
 	 * @throws IllegalArgumentException        파라미터 값이 잘못되었을 경우 던지는 예외
 	 */
 	public void putBytes(byte[] src)
-			throws BufferOverflowException, NoMoreDataPacketBufferException, IllegalArgumentException {
+			throws BufferOverflowException, NoMoreWrapBufferException, IllegalArgumentException {
 		if (src == null) {
 			throw new IllegalArgumentException("the parameter src is null");
 		}
@@ -886,11 +886,11 @@ public class StreamBuffer {
 	 * 
 	 * @param src 저장할 데이터가 담긴 바이트 배열
 	 * @throws BufferOverflowException         '스트림 버퍼' 혹은 바이트 버퍼에서 버퍼 오버프로시 던지는 예외
-	 * @throws NoMoreDataPacketBufferException 랩 버퍼 폴에 랩 버퍼가 없을 때 던지는 예외
+	 * @throws NoMoreWrapBufferException 랩 버퍼 폴에 랩 버퍼가 없을 때 던지는 예외
 	 * @throws IllegalArgumentException        파라미터 값이 잘못되었을 경우 던지는 예외
 	 */
 	public void putBytes2(byte[] src)
-			throws BufferOverflowException, NoMoreDataPacketBufferException, IllegalArgumentException {
+			throws BufferOverflowException, NoMoreWrapBufferException, IllegalArgumentException {
 		if (src == null) {
 			throw new IllegalArgumentException("the parameter src is null");
 		}
@@ -909,11 +909,11 @@ public class StreamBuffer {
 	 * 
 	 * @param src 저장할 데이터가 담긴 ByteBuffer
 	 * @throws BufferOverflowException         '스트림 버퍼' 혹은 바이트 버퍼에서 버퍼 오버프로시 던지는 예외
-	 * @throws NoMoreDataPacketBufferException 랩 버퍼 폴에 랩 버퍼가 없을 때 던지는 예외
+	 * @throws NoMoreWrapBufferException 랩 버퍼 폴에 랩 버퍼가 없을 때 던지는 예외
 	 * @throws IllegalArgumentException        파라미터 값이 잘못되었을 경우 던지는 예외
 	 */
 	public void putBytes(ByteBuffer src)
-			throws BufferOverflowException, NoMoreDataPacketBufferException, IllegalArgumentException {
+			throws BufferOverflowException, NoMoreWrapBufferException, IllegalArgumentException {
 		if (src == null) {
 			throw new IllegalArgumentException("the parameter src is null");
 		}
@@ -978,12 +978,12 @@ public class StreamBuffer {
 	 * @param fixedLength 고정 길이
 	 * @param src         저장할 문자열
 	 * @throws BufferOverflowException         '스트림 버퍼' 혹은 바이트 버퍼에서 버퍼 오버프로시 던지는 예외
-	 * @throws NoMoreDataPacketBufferException 랩 버퍼 폴에 랩 버퍼가 없을 때 던지는 예외
+	 * @throws NoMoreWrapBufferException 랩 버퍼 폴에 랩 버퍼가 없을 때 던지는 예외
 	 * @throws IllegalArgumentException        파라미터 값이 잘못되었을 경우 던지는 예외
 	 * @throws CharsetEncoderException         문자셋 인코딩 실패시 던지는 예외
 	 */
 	public void putFixedLengthString(int fixedLength, String src) throws BufferOverflowException,
-			NoMoreDataPacketBufferException, IllegalArgumentException, CharsetEncoderException {
+			NoMoreWrapBufferException, IllegalArgumentException, CharsetEncoderException {
 		putFixedLengthString(fixedLength, src, defaultCharsetEncoder);
 	}
 
@@ -994,12 +994,12 @@ public class StreamBuffer {
 	 * @param src                  저장할 문자열
 	 * @param wantedCharsetEncoder 저장을 원하는 문자열
 	 * @throws BufferOverflowException         '스트림 버퍼' 혹은 바이트 버퍼에서 버퍼 오버프로시 던지는 예외
-	 * @throws NoMoreDataPacketBufferException 랩 버퍼 폴에 랩 버퍼가 없을 때 던지는 예외
+	 * @throws NoMoreWrapBufferException 랩 버퍼 폴에 랩 버퍼가 없을 때 던지는 예외
 	 * @throws IllegalArgumentException        파라미터 값이 잘못되었을 경우 던지는 예외
 	 * @throws CharsetEncoderException         문자셋 인코딩 실패시 던지는 예외
 	 */
 	public void putFixedLengthString(int fixedLength, String src, CharsetEncoder wantedCharsetEncoder)
-			throws BufferOverflowException, NoMoreDataPacketBufferException, IllegalArgumentException,
+			throws BufferOverflowException, NoMoreWrapBufferException, IllegalArgumentException,
 			CharsetEncoderException {
 		if (fixedLength < 0) {
 			String errorMessage = new StringBuilder().append("the parameter fixedLength[").append(fixedLength)
@@ -1046,11 +1046,11 @@ public class StreamBuffer {
 	 * 
 	 * @param src 저장할 문자열
 	 * @throws BufferOverflowException         '스트림 버퍼' 혹은 바이트 버퍼에서 버퍼 오버프로시 던지는 예외
-	 * @throws NoMoreDataPacketBufferException 랩 버퍼 폴에 랩 버퍼가 없을 때 던지는 예외
+	 * @throws NoMoreWrapBufferException 랩 버퍼 폴에 랩 버퍼가 없을 때 던지는 예외
 	 * @throws IllegalArgumentException        파라미터 값이 잘못되었을 경우 던지는 예외
 	 * @throws CharsetEncoderException         문자셋 인코딩 실패시 던지는 예외
 	 */
-	public void putAllString(String src) throws BufferOverflowException, NoMoreDataPacketBufferException,
+	public void putAllString(String src) throws BufferOverflowException, NoMoreWrapBufferException,
 			IllegalArgumentException, CharsetEncoderException {
 		putAllString(src, defaultCharset);
 	}
@@ -1061,12 +1061,12 @@ public class StreamBuffer {
 	 * @param src           저장할 문자열
 	 * @param wantedCharset 저장을 원하는 문자젯
 	 * @throws BufferOverflowException         '스트림 버퍼' 혹은 바이트 버퍼에서 버퍼 오버프로시 던지는 예외
-	 * @throws NoMoreDataPacketBufferException 랩 버퍼 폴에 랩 버퍼가 없을 때 던지는 예외
+	 * @throws NoMoreWrapBufferException 랩 버퍼 폴에 랩 버퍼가 없을 때 던지는 예외
 	 * @throws IllegalArgumentException        파라미터 값이 잘못되었을 경우 던지는 예외
 	 * @throws CharsetEncoderException         문자셋 인코딩 실패시 던지는 예외
 	 */
 	public void putAllString(String src, Charset wantedCharset) throws BufferOverflowException,
-			NoMoreDataPacketBufferException, IllegalArgumentException, CharsetEncoderException {
+			NoMoreWrapBufferException, IllegalArgumentException, CharsetEncoderException {
 		if (src == null) {
 			throw new IllegalArgumentException("the parameter src is null");
 		}
@@ -1099,11 +1099,11 @@ public class StreamBuffer {
 	 * 
 	 * @param src           저장할 문자열
 	 * @throws BufferOverflowException         '스트림 버퍼' 혹은 바이트 버퍼에서 버퍼 오버프로시 던지는 예외
-	 * @throws NoMoreDataPacketBufferException 랩 버퍼 폴에 랩 버퍼가 없을 때 던지는 예외
+	 * @throws NoMoreWrapBufferException 랩 버퍼 폴에 랩 버퍼가 없을 때 던지는 예외
 	 * @throws IllegalArgumentException        파라미터 값이 잘못되었을 경우 던지는 예외
 	 * @throws CharsetEncoderException         문자셋 인코딩 실패시 던지는 예외
 	 */
-	public void putUBPascalString(String src) throws BufferOverflowException, NoMoreDataPacketBufferException,
+	public void putUBPascalString(String src) throws BufferOverflowException, NoMoreWrapBufferException,
 			IllegalArgumentException, CharsetEncoderException {
 		putUBPascalString(src, defaultCharset);
 	}
@@ -1115,12 +1115,12 @@ public class StreamBuffer {
 	 * @param src           저장할 문자열
 	 * @param wantedCharset 원하는 문자셋
 	 * @throws BufferOverflowException         '스트림 버퍼' 혹은 바이트 버퍼에서 버퍼 오버프로시 던지는 예외
-	 * @throws NoMoreDataPacketBufferException 랩 버퍼 폴에 랩 버퍼가 없을 때 던지는 예외
+	 * @throws NoMoreWrapBufferException 랩 버퍼 폴에 랩 버퍼가 없을 때 던지는 예외
 	 * @throws IllegalArgumentException        파라미터 값이 잘못되었을 경우 던지는 예외
 	 * @throws CharsetEncoderException         문자셋 인코딩 실패시 던지는 예외
 	 */
 	public void putUBPascalString(String src, Charset wantedCharset) throws BufferOverflowException,
-			IllegalArgumentException, NoMoreDataPacketBufferException, CharsetEncoderException {
+			IllegalArgumentException, NoMoreWrapBufferException, CharsetEncoderException {
 		if (src == null) {
 			throw new IllegalArgumentException("the parameter src is null");
 		}
@@ -1164,12 +1164,12 @@ public class StreamBuffer {
 	 * 
 	 * @param src           저장할 문자열
 	 * @throws BufferOverflowException         '스트림 버퍼' 혹은 바이트 버퍼에서 버퍼 오버프로시 던지는 예외
-	 * @throws NoMoreDataPacketBufferException 랩 버퍼 폴에 랩 버퍼가 없을 때 던지는 예외
+	 * @throws NoMoreWrapBufferException 랩 버퍼 폴에 랩 버퍼가 없을 때 던지는 예외
 	 * @throws IllegalArgumentException        파라미터 값이 잘못되었을 경우 던지는 예외
 	 * @throws CharsetEncoderException         문자셋 인코딩 실패시 던지는 예외
 	 */
 	public void putUSPascalString(String src) throws BufferOverflowException, IllegalArgumentException,
-			NoMoreDataPacketBufferException, CharsetEncoderException {
+			NoMoreWrapBufferException, CharsetEncoderException {
 		putUSPascalString(src, defaultCharset);
 	}
 
@@ -1180,12 +1180,12 @@ public class StreamBuffer {
 	 * @param src           저장할 문자열
 	 * @param wantedCharset 원하는 문자셋
 	 * @throws BufferOverflowException         '스트림 버퍼' 혹은 바이트 버퍼에서 버퍼 오버프로시 던지는 예외
-	 * @throws NoMoreDataPacketBufferException 랩 버퍼 폴에 랩 버퍼가 없을 때 던지는 예외
+	 * @throws NoMoreWrapBufferException 랩 버퍼 폴에 랩 버퍼가 없을 때 던지는 예외
 	 * @throws IllegalArgumentException        파라미터 값이 잘못되었을 경우 던지는 예외
 	 * @throws CharsetEncoderException         문자셋 인코딩 실패시 던지는 예외
 	 */
 	public void putUSPascalString(String src, Charset wantedCharset) throws BufferOverflowException,
-			IllegalArgumentException, NoMoreDataPacketBufferException, CharsetEncoderException {
+			IllegalArgumentException, NoMoreWrapBufferException, CharsetEncoderException {
 		if (src == null) {
 			throw new IllegalArgumentException("the parameter src is null");
 		}
@@ -1228,12 +1228,12 @@ public class StreamBuffer {
 	 * 
 	 * @param src           저장할 문자열
 	 * @throws BufferOverflowException         '스트림 버퍼' 혹은 바이트 버퍼에서 버퍼 오버프로시 던지는 예외
-	 * @throws NoMoreDataPacketBufferException 랩 버퍼 폴에 랩 버퍼가 없을 때 던지는 예외
+	 * @throws NoMoreWrapBufferException 랩 버퍼 폴에 랩 버퍼가 없을 때 던지는 예외
 	 * @throws IllegalArgumentException        파라미터 값이 잘못되었을 경우 던지는 예외
 	 * @throws CharsetEncoderException         문자셋 인코딩 실패시 던지는 예외
 	 */
 	public void putSIPascalString(String src) throws BufferOverflowException, IllegalArgumentException,
-			NoMoreDataPacketBufferException, CharsetEncoderException {
+			NoMoreWrapBufferException, CharsetEncoderException {
 		putSIPascalString(src, defaultCharset);
 	}
 
@@ -1243,12 +1243,12 @@ public class StreamBuffer {
 	 * @param src           저장할 문자열
 	 * @param wantedCharset 원하는 문자셋
 	 * @throws BufferOverflowException         '스트림 버퍼' 혹은 바이트 버퍼에서 버퍼 오버프로시 던지는 예외
-	 * @throws NoMoreDataPacketBufferException 랩 버퍼 폴에 랩 버퍼가 없을 때 던지는 예외
+	 * @throws NoMoreWrapBufferException 랩 버퍼 폴에 랩 버퍼가 없을 때 던지는 예외
 	 * @throws IllegalArgumentException        파라미터 값이 잘못되었을 경우 던지는 예외
 	 * @throws CharsetEncoderException         문자셋 인코딩 실패시 던지는 예외
 	 */
 	public void putSIPascalString(String src, Charset wantedCharset) throws BufferOverflowException,
-			IllegalArgumentException, NoMoreDataPacketBufferException, CharsetEncoderException {
+			IllegalArgumentException, NoMoreWrapBufferException, CharsetEncoderException {
 		if (src == null) {
 			throw new IllegalArgumentException("the parameter src is null");
 		}
@@ -1280,9 +1280,9 @@ public class StreamBuffer {
 	/**
 	 * @return byte 타입 값
 	 * @throws BufferUnderflowException        바이트 버퍼에서 버퍼 언더 플로우일때 던지는 예외
-	 * @throws NoMoreDataPacketBufferException 랩 버퍼 폴에 랩 버퍼가 없을 때 던지는 예외
+	 * @throws NoMoreWrapBufferException 랩 버퍼 폴에 랩 버퍼가 없을 때 던지는 예외
 	 */
-	private byte doGetByte() throws BufferUnderflowException, NoMoreDataPacketBufferException {
+	private byte doGetByte() throws BufferUnderflowException, NoMoreWrapBufferException {
 		int bufferIndexOfStartPostion = (int) (position / dataPacketBufferSize);
 		int bufferOffsetOfStartPostion = (int) (position % dataPacketBufferSize);
 
@@ -1308,9 +1308,9 @@ public class StreamBuffer {
 	 * @return byte 타입 값
 	 * @throws BufferUnderflowException        '스트림 버퍼' 혹은 바이트 버퍼에서 버퍼 언더 플로우일때 던지는
 	 *                                         예외
-	 * @throws NoMoreDataPacketBufferException 랩 버퍼 폴에 랩 버퍼가 없을 때 던지는 예외
+	 * @throws NoMoreWrapBufferException 랩 버퍼 폴에 랩 버퍼가 없을 때 던지는 예외
 	 */
-	public byte getByte() throws BufferUnderflowException, NoMoreDataPacketBufferException {
+	public byte getByte() throws BufferUnderflowException, NoMoreWrapBufferException {
 		if ((limit - position) < 1) {
 			throw new BufferUnderflowException();
 		}
@@ -1322,9 +1322,9 @@ public class StreamBuffer {
 	 * @return unsigned byte 타입 값
 	 * @throws BufferUnderflowException        '스트림 버퍼' 혹은 바이트 버퍼에서 버퍼 언더 플로우일때 던지는
 	 *                                         예외
-	 * @throws NoMoreDataPacketBufferException 랩 버퍼 폴에 랩 버퍼가 없을 때 던지는 예외
+	 * @throws NoMoreWrapBufferException 랩 버퍼 폴에 랩 버퍼가 없을 때 던지는 예외
 	 */
-	public short getUnsignedByte() throws BufferUnderflowException, NoMoreDataPacketBufferException {
+	public short getUnsignedByte() throws BufferUnderflowException, NoMoreWrapBufferException {
 		if ((limit - position) < 1) {
 			throw new BufferUnderflowException();
 		}
@@ -1337,9 +1337,9 @@ public class StreamBuffer {
 	 * @return short 타입 값
 	 * @throws BufferUnderflowException        '스트림 버퍼' 혹은 바이트 버퍼에서 버퍼 언더 플로우일때 던지는
 	 *                                         예외
-	 * @throws NoMoreDataPacketBufferException 랩 버퍼 폴에 랩 버퍼가 없을 때 던지는 예외
+	 * @throws NoMoreWrapBufferException 랩 버퍼 폴에 랩 버퍼가 없을 때 던지는 예외
 	 */
-	public short getShort() throws BufferUnderflowException, NoMoreDataPacketBufferException {
+	public short getShort() throws BufferUnderflowException, NoMoreWrapBufferException {
 		if ((limit - position) < 2) {
 			throw new BufferUnderflowException();
 		}
@@ -1364,9 +1364,9 @@ public class StreamBuffer {
 	 * @return unsigned short 타입 값
 	 * @throws BufferUnderflowException        '스트림 버퍼' 혹은 바이트 버퍼에서 버퍼 언더 플로우일때 던지는
 	 *                                         예외
-	 * @throws NoMoreDataPacketBufferException 랩 버퍼 폴에 랩 버퍼가 없을 때 던지는 예외
+	 * @throws NoMoreWrapBufferException 랩 버퍼 폴에 랩 버퍼가 없을 때 던지는 예외
 	 */
-	public int getUnsignedShort() throws BufferUnderflowException, NoMoreDataPacketBufferException {
+	public int getUnsignedShort() throws BufferUnderflowException, NoMoreWrapBufferException {
 		if ((limit - position) < 2) {
 			throw new BufferUnderflowException();
 		}
@@ -1391,9 +1391,9 @@ public class StreamBuffer {
 	 * @return integer 타입 값
 	 * @throws BufferUnderflowException        '스트림 버퍼' 혹은 바이트 버퍼에서 버퍼 언더 플로우일때 던지는
 	 *                                         예외
-	 * @throws NoMoreDataPacketBufferException 랩 버퍼 폴에 랩 버퍼가 없을 때 던지는 예외
+	 * @throws NoMoreWrapBufferException 랩 버퍼 폴에 랩 버퍼가 없을 때 던지는 예외
 	 */
-	public int getInt() throws BufferUnderflowException, NoMoreDataPacketBufferException {
+	public int getInt() throws BufferUnderflowException, NoMoreWrapBufferException {
 		if ((limit - position) < 4) {
 			throw new BufferUnderflowException();
 		}
@@ -1415,9 +1415,9 @@ public class StreamBuffer {
 	 * @return unsigned integer 타입 값
 	 * @throws BufferUnderflowException        '스트림 버퍼' 혹은 바이트 버퍼에서 버퍼 언더 플로우일때 던지는
 	 *                                         예외
-	 * @throws NoMoreDataPacketBufferException 랩 버퍼 폴에 랩 버퍼가 없을 때 던지는 예외
+	 * @throws NoMoreWrapBufferException 랩 버퍼 폴에 랩 버퍼가 없을 때 던지는 예외
 	 */
-	public long getUnsignedInt() throws BufferUnderflowException, NoMoreDataPacketBufferException {
+	public long getUnsignedInt() throws BufferUnderflowException, NoMoreWrapBufferException {
 		if ((limit - position) < 4) {
 			throw new BufferUnderflowException();
 		}
@@ -1439,9 +1439,9 @@ public class StreamBuffer {
 	 * @return long 타입 값
 	 * @throws BufferUnderflowException        '스트림 버퍼' 혹은 바이트 버퍼에서 버퍼 언더 플로우일때 던지는
 	 *                                         예외
-	 * @throws NoMoreDataPacketBufferException 랩 버퍼 폴에 랩 버퍼가 없을 때 던지는 예외
+	 * @throws NoMoreWrapBufferException 랩 버퍼 폴에 랩 버퍼가 없을 때 던지는 예외
 	 */
-	public long getLong() throws BufferUnderflowException, NoMoreDataPacketBufferException {
+	public long getLong() throws BufferUnderflowException, NoMoreWrapBufferException {
 		if ((limit - position) < 8) {
 			throw new BufferUnderflowException();
 		}
@@ -1470,9 +1470,9 @@ public class StreamBuffer {
 	 * @param length 원하는 바이트 배열 크기
 	 * @return 파라미터 'length' 만큼의 바이트 배열
 	 * @throws BufferUnderflowException        바이트 버퍼에서 버퍼 언더 플로우일때 던지는 예외
-	 * @throws NoMoreDataPacketBufferException 랩 버퍼 폴에 랩 버퍼가 없을 때 던지는 예외
+	 * @throws NoMoreWrapBufferException 랩 버퍼 폴에 랩 버퍼가 없을 때 던지는 예외
 	 */
-	private byte[] doGetBytes(int length) throws BufferUnderflowException, NoMoreDataPacketBufferException {
+	private byte[] doGetBytes(int length) throws BufferUnderflowException, NoMoreWrapBufferException {
 		byte dstBytes[] = new byte[length];
 		int offset = 0;
 
@@ -1530,11 +1530,11 @@ public class StreamBuffer {
 	 * @return 파라미터 'length' 만큼의 바이트 배열
 	 * @throws BufferUnderflowException        '스트림 버퍼' 혹은 바이트 버퍼에서 버퍼 언더 플로우일때 던지는
 	 *                                         예외
-	 * @throws NoMoreDataPacketBufferException 랩 버퍼 폴에 랩 버퍼가 없을 때 던지는 예외
+	 * @throws NoMoreWrapBufferException 랩 버퍼 폴에 랩 버퍼가 없을 때 던지는 예외
 	 * @throws IllegalArgumentException        파라미터 'length' 값이 음수일 경우 던지는 예외
 	 */
 	public byte[] getBytes(int length)
-			throws BufferUnderflowException, NoMoreDataPacketBufferException, IllegalArgumentException {
+			throws BufferUnderflowException, NoMoreWrapBufferException, IllegalArgumentException {
 		if (length < 0) {
 			String errorMessage = new StringBuilder().append("the parameter length[").append(length)
 					.append("] is less than zero").toString();
@@ -1558,10 +1558,10 @@ public class StreamBuffer {
 	 * @param length 저장할 데이터 크기
 	 * @throws BufferUnderflowException        '스트림 버퍼' 혹은 바이트 버퍼에서 버퍼 언더 플로우일때 던지는
 	 *                                         예외
-	 * @throws NoMoreDataPacketBufferException 랩 버퍼 폴에 랩 버퍼가 없을 때 던지는 예외
+	 * @throws NoMoreWrapBufferException 랩 버퍼 폴에 랩 버퍼가 없을 때 던지는 예외
 	 */
 	private void doGetBytes(byte dst[], int offset, int length)
-			throws BufferUnderflowException, NoMoreDataPacketBufferException {
+			throws BufferUnderflowException, NoMoreWrapBufferException {
 
 		int bufferIndexOfStartPostion = (int) (position / dataPacketBufferSize);
 		int bufferOffsetOfStartPostion = (int) (position % dataPacketBufferSize);
@@ -1620,11 +1620,11 @@ public class StreamBuffer {
 	 * @param length 저장할 데이터 크기
 	 * @throws BufferUnderflowException        '스트림 버퍼' 혹은 바이트 버퍼에서 버퍼 언더 플로우일때 던지는
 	 *                                         예외
-	 * @throws NoMoreDataPacketBufferException 랩 버퍼 폴에 랩 버퍼가 없을 때 던지는 예외
+	 * @throws NoMoreWrapBufferException 랩 버퍼 폴에 랩 버퍼가 없을 때 던지는 예외
 	 * @throws IllegalArgumentException        파라미터 값이 잘못되었을 경우 던지는 예외
 	 */
 	public void getBytes(byte[] dst, int offset, int length)
-			throws BufferUnderflowException, NoMoreDataPacketBufferException, IllegalArgumentException {
+			throws BufferUnderflowException, NoMoreWrapBufferException, IllegalArgumentException {
 		if (null == dst) {
 			throw new IllegalArgumentException("the parameter dst is null");
 		}
@@ -1674,11 +1674,11 @@ public class StreamBuffer {
 	 * @param stringCharset 문자셋
 	 * @return 파라미터 'length' 만큼 읽어와 파라미터 'stringCharset' 문자셋으로 디코딩하여 얻은 문자열
 	 * @throws BufferUnderflowException        바이트 버퍼에서 버퍼 언더 플로우일때 던지는 예외
-	 * @throws NoMoreDataPacketBufferException 랩 버퍼 폴에 랩 버퍼가 없을 때 던지는 예외
+	 * @throws NoMoreWrapBufferException 랩 버퍼 폴에 랩 버퍼가 없을 때 던지는 예외
 	 * @throws CharsetDecoderException         문자셋으로 디코딩할때 실패시 던지는 예외
 	 */
 	private String doGetString(int length, Charset stringCharset)
-			throws BufferUnderflowException, NoMoreDataPacketBufferException, CharsetDecoderException {
+			throws BufferUnderflowException, NoMoreWrapBufferException, CharsetDecoderException {
 
 		byte dstBytes[] = doGetBytes(length);
 
@@ -1702,12 +1702,12 @@ public class StreamBuffer {
 	 * @param wantedCharsetDecoder 원하는 문자셋
 	 * @return 파라미터 'fixedLength' 로 지정한 크기 만큼 파라미터 'wantedCharsetDecoder' 로 지정된 문자젯으로 디코딩 하여 얻은 문자열
 	 * @throws BufferUnderflowException  '스트림 버퍼' 혹은 바이트 버퍼에서 버퍼 언더 플로우일때 던지는 예외
-	 * @throws NoMoreDataPacketBufferException 랩 버퍼 폴에 랩 버퍼가 없을 때 던지는 예외
+	 * @throws NoMoreWrapBufferException 랩 버퍼 폴에 랩 버퍼가 없을 때 던지는 예외
 	 * @throws CharsetDecoderException 문자셋으로 디코딩할때 실패시 던지는 예외
 	 * @throws IllegalArgumentException 파라미터 값이 잘못되었을 경우 던지는 예외
 	 */
 	public String getFixedLengthString(final int fixedLength, final CharsetDecoder wantedCharsetDecoder)
-			throws BufferUnderflowException, NoMoreDataPacketBufferException, CharsetDecoderException,
+			throws BufferUnderflowException, NoMoreWrapBufferException, CharsetDecoderException,
 			IllegalArgumentException {
 		if (fixedLength < 0) {
 			String errorMessage = new StringBuilder().append("the parameter fixedLength[").append(fixedLength)
@@ -1750,12 +1750,12 @@ public class StreamBuffer {
 	 * @param fixedLength 문자열로 변활될 바이트 수
 	 * @return 파라미터 'fixedLength' 로 지정한 크기 만큼 디폴트 문자젯으로 디코딩 하여 얻은 문자열
 	 * @throws BufferUnderflowException  '스트림 버퍼' 혹은 바이트 버퍼에서 버퍼 언더 플로우일때 던지는 예외
-	 * @throws NoMoreDataPacketBufferException 랩 버퍼 폴에 랩 버퍼가 없을 때 던지는 예외
+	 * @throws NoMoreWrapBufferException 랩 버퍼 폴에 랩 버퍼가 없을 때 던지는 예외
 	 * @throws CharsetDecoderException 문자셋으로 디코딩할때 실패시 던지는 예외
 	 * @throws IllegalArgumentException 파라미터 값이 잘못되었을 경우 던지는 예외
 	 */
 	public String getFixedLengthString(final int fixedLength) throws BufferUnderflowException,
-			NoMoreDataPacketBufferException, CharsetDecoderException, IllegalArgumentException {
+			NoMoreWrapBufferException, CharsetDecoderException, IllegalArgumentException {
 		return getFixedLengthString(fixedLength, defaultCharsetDecoder);
 	}
 
@@ -1764,10 +1764,10 @@ public class StreamBuffer {
 	 * @throws IllegalStateException 남아 있는 데이터 양이 integer.max 보다 클 경우 던지는 예외
 	 * @throws IllegalArgumentException 파라미터 값이 잘못되었을 경우 던지는 예외
 	 * @throws CharsetDecoderException  문자셋으로 디코딩할때 실패시 던지는 예외
-	 * @throws NoMoreDataPacketBufferException 랩 버퍼 폴에 랩 버퍼가 없을 때 던지는 예외
+	 * @throws NoMoreWrapBufferException 랩 버퍼 폴에 랩 버퍼가 없을 때 던지는 예외
 	 */
 	public String getAllString() throws IllegalStateException, IllegalArgumentException, CharsetDecoderException,
-			NoMoreDataPacketBufferException {
+			NoMoreWrapBufferException {
 		return getAllString(defaultCharset);
 	}
 
@@ -1777,9 +1777,9 @@ public class StreamBuffer {
 	 * @throws IllegalStateException 남아 있는 데이터 양이 integer.max 보다 클 경우 던지는 예외
 	 * @throws IllegalArgumentException 파라미터 값이 잘못되었을 경우 던지는 예외
 	 * @throws CharsetDecoderException  문자셋으로 디코딩할때 실패시 던지는 예외
-	 * @throws NoMoreDataPacketBufferException 랩 버퍼 폴에 랩 버퍼가 없을 때 던지는 예외
+	 * @throws NoMoreWrapBufferException 랩 버퍼 폴에 랩 버퍼가 없을 때 던지는 예외
 	 */
-	public String getAllString(Charset wantedCharset) throws NoMoreDataPacketBufferException, CharsetDecoderException,
+	public String getAllString(Charset wantedCharset) throws NoMoreWrapBufferException, CharsetDecoderException,
 			IllegalArgumentException, IllegalStateException {
 		if (null == wantedCharset) {
 			throw new IllegalArgumentException("the parameter wantedCharset is null");
@@ -1811,11 +1811,11 @@ public class StreamBuffer {
 	/**
 	 * @return 디폴트 문자셋으로 디코딩하여 얻은 signed integer 파스칸 문자열
 	 * @throws BufferUnderflowException  '스트림 버퍼' 혹은 바이트 버퍼에서 버퍼 언더 플로우일때 던지는 예외
-	 * @throws NoMoreDataPacketBufferException 랩 버퍼 폴에 랩 버퍼가 없을 때 던지는 예외
+	 * @throws NoMoreWrapBufferException 랩 버퍼 폴에 랩 버퍼가 없을 때 던지는 예외
 	 * @throws CharsetDecoderException 문자셋으로 디코딩할때 실패시 던지는 예외
 	 * @throws IllegalArgumentException 파라미터 값이 잘못되었을 경우 던지는 예외
 	 */
-	public String getSIPascalString() throws BufferUnderflowException, NoMoreDataPacketBufferException,
+	public String getSIPascalString() throws BufferUnderflowException, NoMoreWrapBufferException,
 			CharsetDecoderException, IllegalArgumentException {
 		return getSIPascalString(defaultCharset);
 	}
@@ -1824,12 +1824,12 @@ public class StreamBuffer {
 	 * @param wantedCharset 원하는 문자셋
 	 * @return 파라미터 'wantedCharset' 로 지정된 문자셋을 갖는 signed integer 파스칸 문자열
 	 * @throws BufferUnderflowException  '스트림 버퍼' 혹은 바이트 버퍼에서 버퍼 언더 플로우일때 던지는 예외
-	 * @throws NoMoreDataPacketBufferException 랩 버퍼 폴에 랩 버퍼가 없을 때 던지는 예외
+	 * @throws NoMoreWrapBufferException 랩 버퍼 폴에 랩 버퍼가 없을 때 던지는 예외
 	 * @throws CharsetDecoderException 문자셋으로 디코딩할때 실패시 던지는 예외
 	 * @throws IllegalArgumentException 파라미터 값이 잘못되었을 경우 던지는 예외
 	 */
 	public String getSIPascalString(Charset wantedCharset) throws BufferUnderflowException,
-			NoMoreDataPacketBufferException, CharsetDecoderException, IllegalArgumentException {
+			NoMoreWrapBufferException, CharsetDecoderException, IllegalArgumentException {
 		if (null == wantedCharset) {
 			throw new IllegalArgumentException("the parameter wantedCharset is null");
 		}
@@ -1856,11 +1856,11 @@ public class StreamBuffer {
 	/**
 	 * @return 디폴트 문자셋으로 디코딩하여 얻은 unsigned short 파스칸 문자열
 	 * @throws BufferUnderflowException  '스트림 버퍼' 혹은 바이트 버퍼에서 버퍼 언더 플로우일때 던지는 예외
-	 * @throws NoMoreDataPacketBufferException 랩 버퍼 폴에 랩 버퍼가 없을 때 던지는 예외
+	 * @throws NoMoreWrapBufferException 랩 버퍼 폴에 랩 버퍼가 없을 때 던지는 예외
 	 * @throws CharsetDecoderException 문자셋으로 디코딩할때 실패시 던지는 예외
 	 * @throws IllegalArgumentException 파라미터 값이 잘못되었을 경우 던지는 예외
 	 */
-	public String getUSPascalString() throws BufferUnderflowException, NoMoreDataPacketBufferException,
+	public String getUSPascalString() throws BufferUnderflowException, NoMoreWrapBufferException,
 			CharsetDecoderException, IllegalArgumentException {
 		return getUSPascalString(defaultCharset);
 	}
@@ -1869,12 +1869,12 @@ public class StreamBuffer {
 	 * @param wantedCharset 원하는 문자셋
 	 * @return 파라미터 'wantedCharset' 로 지정된 문자셋으로 디코딩하여 얻은 unsigned short 파스칸 문자열
 	 * @throws BufferUnderflowException  '스트림 버퍼' 혹은 바이트 버퍼에서 버퍼 언더 플로우일때 던지는 예외
-	 * @throws NoMoreDataPacketBufferException 랩 버퍼 폴에 랩 버퍼가 없을 때 던지는 예외
+	 * @throws NoMoreWrapBufferException 랩 버퍼 폴에 랩 버퍼가 없을 때 던지는 예외
 	 * @throws CharsetDecoderException 문자셋으로 디코딩할때 실패시 던지는 예외
 	 * @throws IllegalArgumentException 파라미터 값이 잘못되었을 경우 던지는 예외
 	 */
 	public String getUSPascalString(Charset wantedCharset) throws BufferUnderflowException,
-			NoMoreDataPacketBufferException, CharsetDecoderException, IllegalArgumentException {
+			NoMoreWrapBufferException, CharsetDecoderException, IllegalArgumentException {
 		if (null == wantedCharset) {
 			throw new IllegalArgumentException("the parameter wantedCharset is null");
 		}
@@ -1895,11 +1895,11 @@ public class StreamBuffer {
 	/**
 	 * @return 디폴트 문자셋으로 디코딩하여 얻은 unsigned byte 파스칸 문자열
 	 * @throws BufferUnderflowException  '스트림 버퍼' 혹은 바이트 버퍼에서 버퍼 언더 플로우일때 던지는 예외
-	 * @throws NoMoreDataPacketBufferException 랩 버퍼 폴에 랩 버퍼가 없을 때 던지는 예외
+	 * @throws NoMoreWrapBufferException 랩 버퍼 폴에 랩 버퍼가 없을 때 던지는 예외
 	 * @throws CharsetDecoderException 문자셋으로 디코딩할때 실패시 던지는 예외
 	 * @throws IllegalArgumentException 파라미터 값이 잘못되었을 경우 던지는 예외
 	 */
-	public String getUBPascalString() throws BufferUnderflowException, NoMoreDataPacketBufferException,
+	public String getUBPascalString() throws BufferUnderflowException, NoMoreWrapBufferException,
 			CharsetDecoderException, IllegalArgumentException {
 		return getUBPascalString(defaultCharset);
 	}
@@ -1908,12 +1908,12 @@ public class StreamBuffer {
 	 * @param wantedCharset 원하는 문자셋
 	 * @return 파라미터 'wantedCharset' 로 지정된 문자셋으로 디코딩하여 얻은 unsigned byte 파스칸 문자열
 	 * @throws BufferUnderflowException  '스트림 버퍼' 혹은 바이트 버퍼에서 버퍼 언더 플로우일때 던지는 예외
-	 * @throws NoMoreDataPacketBufferException 랩 버퍼 폴에 랩 버퍼가 없을 때 던지는 예외
+	 * @throws NoMoreWrapBufferException 랩 버퍼 폴에 랩 버퍼가 없을 때 던지는 예외
 	 * @throws CharsetDecoderException 문자셋으로 디코딩할때 실패시 던지는 예외
 	 * @throws IllegalArgumentException 파라미터 값이 잘못되었을 경우 던지는 예외
 	 */
 	public String getUBPascalString(Charset wantedCharset) throws BufferUnderflowException,
-			NoMoreDataPacketBufferException, CharsetDecoderException, IllegalArgumentException {
+			NoMoreWrapBufferException, CharsetDecoderException, IllegalArgumentException {
 		if (null == wantedCharset) {
 			throw new IllegalArgumentException("the parameter wantedCharset is null");
 		}
@@ -1934,10 +1934,10 @@ public class StreamBuffer {
 	/**
 	 * 파라미터 'n' 만큼 위치 속성을 증가한다, 단 파라미터 'n' 값은 0 보다 크고 남은 용량 보다 작거나 같아야 한다.
 	 * @param n 위치 증가를 원하는 크기
-	 * @throws NoMoreDataPacketBufferException 랩 버퍼 폴에 랩 버퍼가 없을 때 던지는 예외
+	 * @throws NoMoreWrapBufferException 랩 버퍼 폴에 랩 버퍼가 없을 때 던지는 예외
 	 * @throws IllegalArgumentException 파라미터 'n' 이 음수이거나 남은 용량 보다 크가면 던지는 예외 
 	 */
-	public void skip(long n) throws NoMoreDataPacketBufferException {
+	public void skip(long n) throws NoMoreWrapBufferException {
 		if (n <= 0) {
 			String errorMessage = new StringBuilder().append("the parameter n[").append(n)
 					.append("] is less than or equal to zero").toString();
@@ -1956,9 +1956,9 @@ public class StreamBuffer {
 	/**
 	 * @param size MD5  하고자 하는 크기
 	 * @return 파라미터 'size' 에서 지정한 양 만큼 MD5 한 결과
-	 * @throws NoMoreDataPacketBufferException 랩 버퍼 폴에 랩 버퍼가 없을 때 던지는 예외
+	 * @throws NoMoreWrapBufferException 랩 버퍼 폴에 랩 버퍼가 없을 때 던지는 예외
 	 */
-	public byte[] getMD5WithoutChange(long size) throws NoMoreDataPacketBufferException {
+	public byte[] getMD5WithoutChange(long size) throws NoMoreWrapBufferException {
 		if (size < 0) {
 			throw new IllegalArgumentException("the parameter size is less than zero");
 		}
@@ -2064,10 +2064,10 @@ public class StreamBuffer {
 	 * @return 소켓 채널로 부터 읽어 들인 바이트 수
 	 * @throws IOException 입출력 에러 발생시 던지는 예외
 	 * @throws BufferUnderflowException '위치' 속성에 대응하는 바이트 버퍼에서 버퍼 언더 플로우일때 던지는 예외
-	 * @throws NoMoreDataPacketBufferException 랩 버퍼 폴에 랩 버퍼가 없을 때 던지는 예외
+	 * @throws NoMoreWrapBufferException 랩 버퍼 폴에 랩 버퍼가 없을 때 던지는 예외
 	 */
 	public int read(SocketChannel readableSocketChannel)
-			throws IOException, BufferUnderflowException, NoMoreDataPacketBufferException {
+			throws IOException, BufferUnderflowException, NoMoreWrapBufferException {
 		if (null == readableSocketChannel) {
 			throw new IllegalArgumentException("the parameter readableSocketChannel is null");
 		}
@@ -2124,10 +2124,10 @@ public class StreamBuffer {
 	 * @return 실질적으로 소켓에 쓰여진 양
 	 * @throws IOException 입출력 에러 발생시 던지는 예외
 	 * @throws BufferOverflowException '위치' 속성에 대응하는 바이트 버퍼에서 버퍼 오버 플로우일때 던지는 예외
-	 * @throws NoMoreDataPacketBufferException 랩 버퍼 폴에 랩 버퍼가 없을 때 던지는 예외
+	 * @throws NoMoreWrapBufferException 랩 버퍼 폴에 랩 버퍼가 없을 때 던지는 예외
 	 */
 	public int write(SocketChannel writableSocketChannel)
-			throws IOException, BufferOverflowException, NoMoreDataPacketBufferException {
+			throws IOException, BufferOverflowException, NoMoreWrapBufferException {
 		if (null == writableSocketChannel) {
 			throw new IllegalArgumentException("the parameter writableSocketChannel is null");
 		}

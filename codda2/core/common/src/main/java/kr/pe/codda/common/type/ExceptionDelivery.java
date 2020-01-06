@@ -21,7 +21,7 @@ import java.io.IOException;
 
 import kr.pe.codda.common.exception.BodyFormatException;
 import kr.pe.codda.common.exception.DynamicClassCallException;
-import kr.pe.codda.common.exception.NoMoreDataPacketBufferException;
+import kr.pe.codda.common.exception.NoMoreWrapBufferException;
 import kr.pe.codda.common.exception.ServerTaskException;
 import kr.pe.codda.common.exception.ServerTaskPermissionException;
 import kr.pe.codda.impl.message.ExceptionDeliveryRes.ExceptionDeliveryRes;
@@ -89,7 +89,7 @@ public abstract class ExceptionDelivery {
 				return BodyFormatException;
 			} else if (errorTypeClass.equals(DynamicClassCallException.class)) {
 				return DynamicClassCallException;
-			} else if (errorTypeClass.equals(NoMoreDataPacketBufferException.class)) {
+			} else if (errorTypeClass.equals(NoMoreWrapBufferException.class)) {
 				return NoMoreDataPacketBufferException;
 			} else if (errorTypeClass.equals(ServerTaskException.class)) {
 				return ServerTaskException;
@@ -108,7 +108,7 @@ public abstract class ExceptionDelivery {
 		
 		public static void throwSelfExnException(ExceptionDeliveryRes throwExceptionRes) 
 				throws DynamicClassCallException, 
-				NoMoreDataPacketBufferException, ServerTaskException,
+				NoMoreWrapBufferException, ServerTaskException,
 				ServerTaskPermissionException, BodyFormatException, IOException {
 			ErrorType errorType = throwExceptionRes.getErrorType();
 			String errorMessage = throwExceptionRes.toString();
@@ -119,7 +119,7 @@ public abstract class ExceptionDelivery {
 			case DynamicClassCallException :
 				throw new DynamicClassCallException(errorMessage);
 			case NoMoreDataPacketBufferException :
-				throw new NoMoreDataPacketBufferException(errorMessage);
+				throw new NoMoreWrapBufferException(errorMessage);
 			case ServerTaskException :
 				throw new ServerTaskException(errorMessage);
 			case ServerTaskPermissionException :

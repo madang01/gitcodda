@@ -48,7 +48,7 @@ import kr.pe.codda.common.message.AbstractMessage;
 import kr.pe.codda.common.message.codec.AbstractMessageDecoder;
 import kr.pe.codda.common.protocol.MessageCodecIF;
 import kr.pe.codda.common.protocol.MessageProtocolIF;
-import kr.pe.codda.common.protocol.ReceivedMessageForwarderIF;
+import kr.pe.codda.common.protocol.ReceivedMiddleObjectForwarderIF;
 import kr.pe.codda.common.type.ExceptionDelivery;
 import kr.pe.codda.common.util.CommonStaticUtil;
 import kr.pe.codda.common.util.JDKLoggerCustomFormatter;
@@ -210,7 +210,7 @@ public class DHBMessageProtocolTest {
 		int firstIndex = -1;
 		int differentCount = 0;
 
-		class ReceivedMessageForwarderImpl implements ReceivedMessageForwarderIF {
+		class ReceivedMessageForwarderImpl implements ReceivedMiddleObjectForwarderIF {
 			private final MessageProtocolIF messageProtocol;
 			private AbstractMessage receivedMessage = null;
 
@@ -256,7 +256,7 @@ public class DHBMessageProtocolTest {
 			}
 
 			@Override
-			public void putReceivedMessage(int mailboxID, int mailID, String messageID, Object readableMiddleObject)
+			public void putReceivedMiddleObject(int mailboxID, int mailID, String messageID, Object readableMiddleObject)
 					throws InterruptedException {
 				try {
 					ClassLoader classloader = this.getClass().getClassLoader();

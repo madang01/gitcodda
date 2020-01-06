@@ -17,7 +17,6 @@
 
 package kr.pe.codda.server;
 
-import java.net.SocketTimeoutException;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
 import java.util.logging.Level;
@@ -32,7 +31,7 @@ import kr.pe.codda.common.io.ServerOutgoingStreamIF;
 import kr.pe.codda.common.io.StreamBuffer;
 import kr.pe.codda.common.io.WrapBufferPoolIF;
 import kr.pe.codda.common.protocol.MessageProtocolIF;
-import kr.pe.codda.common.protocol.ReceivedMessageForwarderIF;
+import kr.pe.codda.common.protocol.ReceivedMiddleObjectForwarderIF;
 import kr.pe.codda.common.type.ExceptionDelivery;
 import kr.pe.codda.server.classloader.ServerTaskMangerIF;
 import kr.pe.codda.server.task.AbstractServerTask;
@@ -44,7 +43,7 @@ import kr.pe.codda.server.task.ToLetterCarrier;
  * @author Won Jonghoon
  * 
  */
-public class AcceptedConnection implements ServerIOEventHandlerIF, ReceivedMessageForwarderIF, LoginManagerIF {
+public class AcceptedConnection implements ServerIOEventHandlerIF, ReceivedMiddleObjectForwarderIF, LoginManagerIF {
 	private Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
 
 	private final SelectionKey personalSelectionKey;
@@ -150,9 +149,9 @@ public class AcceptedConnection implements ServerIOEventHandlerIF, ReceivedMessa
 	private void setFinalReadTime() {
 		finalReadTime = new java.util.Date();
 	}
-
+	
 	/**
-	 * 메일 식별자를 반환한다. 메일 식별자는 자동 증가된다.
+	 * @return 1 증가한 후의 서버용 메일 식별자.
 	 */
 	public int getServerMailID() {
 		// synchronized (monitorOfServerMailID) {
@@ -232,11 +231,9 @@ public class AcceptedConnection implements ServerIOEventHandlerIF, ReceivedMessa
 
 	/**
 	 * 서버 비지니스 로직에서 출력 메시지가 생겼을때 호출하는 메소드로 출력 메시지를 출력 메시지 큐에 넣고
-	 * 
-	 * @param outputMessage
-	 * @param outputMessageWrapBufferQueue
-	 * @throws InterruptedException
-	 * @throws SocketTimeoutException 
+	 *
+	 * @param outputMessageStreamBuffer 출력 메시지 내용이 담긴 스트림 버퍼
+	 * @throws InterruptedException 인터럽트 발생시 던지는 예외
 	 */
 	public void addOutputMessage(StreamBuffer outputMessageStreamBuffer)
 			throws InterruptedException {
@@ -262,7 +259,7 @@ public class AcceptedConnection implements ServerIOEventHandlerIF, ReceivedMessa
 	}
 
 	@Override
-	public void putReceivedMessage(int mailboxID, int mailID, String messageID, Object readableMiddleObject)
+	public void putReceivedMiddleObject(int mailboxID, int mailID, String messageID, Object readableMiddleObject)
 			throws InterruptedException {
 
 		AbstractServerTask serverTask = null;

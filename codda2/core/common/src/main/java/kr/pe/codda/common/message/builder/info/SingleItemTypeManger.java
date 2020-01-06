@@ -283,23 +283,35 @@ public class SingleItemTypeManger {
 		}
 	}
 
+	/**
+	 * @return xml 로 되어 있는 입력 메시지 정보 파일이 유효성 검사하는 XSL 파일 내용의 문자열.
+	 */
 	public String getMessageXSLStr() {
 		return messageXSLStr;
 	}
 
+	/**
+	 * @return xml 로 되어 있는 입력 메시지 정보 파일이 유효성 검사하는 XSL 파일 내용의 바이트 배열 스트림
+	 */
 	public ByteArrayInputStream getMesgXSLInputSream() {
 		ByteArrayInputStream xslByteArrayInputStream = new ByteArrayInputStream(
 				messageXSLStr.getBytes(CommonStaticFinalVars.SOURCE_FILE_CHARSET));
 		return xslByteArrayInputStream;
 	}
 
-	public int getItemTypeID(String itemTypeName) throws UnknownItemTypeException {
-		if (null == itemTypeName) {
-			throw new IllegalArgumentException("the parameter itemTypeName is null");
+	/**
+	 * 
+	 * @param singleItemTypeName 단일 항목 타입 이름
+	 * @return 단일 항목 타입 이름에 1:1 대응하는 단일 항목 타입 식별자
+	 * @throws UnknownItemTypeException 단일 항목 타입 이름에 1:1 대응하는 단일 항목 타입 식별자가 없을 경우 던지는 예외
+	 */
+	public int getItemTypeID(String singleItemTypeName) throws UnknownItemTypeException {
+		if (null == singleItemTypeName) {
+			throw new IllegalArgumentException("the parameter singleItemTypeName is null");
 		}
-		Integer itemTypeID = itemTypeNameToIDHash.get(itemTypeName);
+		Integer itemTypeID = itemTypeNameToIDHash.get(singleItemTypeName);
 		if (null == itemTypeID) {
-			String errorMessage = new StringBuilder("the parameter itemTypeName[").append(itemTypeName)
+			String errorMessage = new StringBuilder("the parameter singleItemTypeName[").append(singleItemTypeName)
 					.append("] is not an element of item value type set")
 					.append(getUnmodifiableItemTypeNameSet().toString()).toString();
 			UnknownItemTypeException e = new UnknownItemTypeException(errorMessage);
@@ -308,12 +320,17 @@ public class SingleItemTypeManger {
 		return itemTypeID.intValue();
 	}
 
-	public String getItemTypeName(int itemTypeID) throws UnknownItemTypeException {
-		String itemTypeName = itemIDToItemTypeNameHash.get(itemTypeID);
+	/**
+	 * @param singleItemTypeID 단일 항목 타입 식별자
+	 * @return 단일 항목 타입 식별자에 1:1 대응하는 단일 항목 타입 이름
+	 * @throws UnknownItemTypeException 단일 항목 타입 식별자에 1:1 대응하는 단일 항목 타입 이름이 없을 경우 던지는 예외 
+	 */
+	public String getItemTypeName(int singleItemTypeID) throws UnknownItemTypeException {
+		String itemTypeName = itemIDToItemTypeNameHash.get(singleItemTypeID);
 		if (null == itemTypeName) {
 			String errorMessage = new StringBuilder()
 					.append("unknown message item type id[")
-					.append(itemTypeID)
+					.append(singleItemTypeID)
 					.append("]").toString();
 			UnknownItemTypeException e = new UnknownItemTypeException(errorMessage);
 			// log.warn(errorMessage, e);
@@ -323,10 +340,18 @@ public class SingleItemTypeManger {
 		return itemTypeName;
 	}
 
+	/**
+	 * @return 단일 항목 타입 총 갯수
+	 */
 	public int getAllSingleItemTypeCount() {
 		return singleItemTypes.length;
 	}
 
+	/**
+	 * @param singleItemTypeID 단일 항목 타입 식별자
+	 * @return 단일 항목 타입 식별자에 1:1 대응하는 단일 항목 타입
+	 * @throws IllegalArgumentException 단일 항목 타입 식별자 값이 잘못되었을 경우 던지는 예외
+	 */
 	public SingleItemType getSingleItemType(int singleItemTypeID) {
 		if (singleItemTypeID < 0) {
 			String errorMessage = new StringBuilder()
@@ -348,6 +373,11 @@ public class SingleItemTypeManger {
 		return singleItemTypes[singleItemTypeID];
 	}
 
+	/**
+	 * @param itemTypeName 단일 항목 타입 이름
+	 * @return 단일 항목 타입 이름에 1:1 대응하는 단일 항목 타입
+	 * @throws UnknownItemTypeException 단일 항목 타입 이름에 1:1 대응하는 단일 항목 타입이 없을 경우 던지는 예외
+	 */
 	public SingleItemType getSingleItemType(String itemTypeName) throws UnknownItemTypeException {
 		if (null == itemTypeName) {
 			throw new IllegalArgumentException("the parameter itemTypeName is null");
@@ -364,6 +394,9 @@ public class SingleItemTypeManger {
 		return singleItemTypes[itemTypeID];
 	}
 
+	/**
+	 * @return 수정 불가능한 '단일 항목 이름 집합' 
+	 */
 	public Set<String> getUnmodifiableItemTypeNameSet() {
 		Set<String> itemTypeNameSet = Collections.unmodifiableSet(itemTypeNameToIDHash.keySet());
 		return itemTypeNameSet;

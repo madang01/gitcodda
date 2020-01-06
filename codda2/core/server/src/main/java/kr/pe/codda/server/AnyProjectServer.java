@@ -24,7 +24,7 @@ import kr.pe.codda.common.config.subset.ProjectPartConfiguration;
 import kr.pe.codda.common.etc.CommonStaticFinalVars;
 import kr.pe.codda.common.etc.StreamCharsetFamily;
 import kr.pe.codda.common.exception.CoddaConfigurationException;
-import kr.pe.codda.common.exception.NoMoreDataPacketBufferException;
+import kr.pe.codda.common.exception.NoMoreWrapBufferException;
 import kr.pe.codda.common.io.WrapBufferPool;
 import kr.pe.codda.common.io.WrapBufferPoolIF;
 import kr.pe.codda.common.protocol.MessageProtocolIF;
@@ -58,7 +58,7 @@ public class AnyProjectServer {
 	
 	public AnyProjectServer(String serverAPPINFClassPathString,
 			String projectResourcesPathString, ProjectPartConfiguration projectPartConfiguration)
-			throws NoMoreDataPacketBufferException, CoddaConfigurationException {
+			throws NoMoreWrapBufferException, CoddaConfigurationException {
 		
 		this.mainProjectName = projectPartConfiguration.getProjectName();
 		

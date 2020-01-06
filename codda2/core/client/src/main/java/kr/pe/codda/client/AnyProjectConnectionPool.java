@@ -48,7 +48,7 @@ import kr.pe.codda.common.exception.BodyFormatException;
 import kr.pe.codda.common.exception.CoddaConfigurationException;
 import kr.pe.codda.common.exception.ConnectionPoolException;
 import kr.pe.codda.common.exception.DynamicClassCallException;
-import kr.pe.codda.common.exception.NoMoreDataPacketBufferException;
+import kr.pe.codda.common.exception.NoMoreWrapBufferException;
 import kr.pe.codda.common.exception.NotSupportedException;
 import kr.pe.codda.common.exception.ServerTaskException;
 import kr.pe.codda.common.exception.ServerTaskPermissionException;
@@ -90,7 +90,7 @@ public final class AnyProjectConnectionPool implements AnyProjectConnectionPoolI
 	private ClientIOEventController asynClientIOEventController = null;
 	
 
-	public AnyProjectConnectionPool(ProjectPartConfiguration projectPartConfiguration) throws NoMoreDataPacketBufferException, IOException, ConnectionPoolException, InterruptedException {
+	public AnyProjectConnectionPool(ProjectPartConfiguration projectPartConfiguration) throws NoMoreWrapBufferException, IOException, ConnectionPoolException, InterruptedException {
 		// this.projectPartConfiguration = projectPartConfiguration;
 		
 		mainProjectName = projectPartConfiguration.getProjectName();
@@ -220,7 +220,7 @@ public final class AnyProjectConnectionPool implements AnyProjectConnectionPoolI
 
 	@Override
 	public AbstractMessage sendSyncInputMessage(MessageCodecMangerIF messageCodecManger, AbstractMessage inputMessage)
-			throws InterruptedException, IOException, NoMoreDataPacketBufferException, BodyFormatException,
+			throws InterruptedException, IOException, NoMoreWrapBufferException, BodyFormatException,
 			DynamicClassCallException, ServerTaskException, ServerTaskPermissionException, ConnectionPoolException {
 		/*long startTime = 0;
 		long endTime = 0;
@@ -258,7 +258,7 @@ public final class AnyProjectConnectionPool implements AnyProjectConnectionPoolI
 
 	@Override
 	public void sendAsynInputMessage(MessageCodecMangerIF messageCodecManger, AbstractMessage inputMessage) throws InterruptedException, NotSupportedException,
-			ConnectionPoolException, IOException, NoMoreDataPacketBufferException, DynamicClassCallException, BodyFormatException {
+			ConnectionPoolException, IOException, NoMoreWrapBufferException, DynamicClassCallException, BodyFormatException {
 		// long startTime = System.nanoTime();
 		
 		//log.info("sendAsynInputMessage::start");
@@ -276,7 +276,7 @@ public final class AnyProjectConnectionPool implements AnyProjectConnectionPoolI
 	}
 
 	@Override
-	public ConnectionIF createAsynThreadSafeConnection(String serverHost, int serverPort) throws InterruptedException, IOException, NoMoreDataPacketBufferException, NotSupportedException {
+	public ConnectionIF createAsynThreadSafeConnection(String serverHost, int serverPort) throws InterruptedException, IOException, NoMoreWrapBufferException, NotSupportedException {
 		if (connectionType.equals(ConnectionType.SYNC)) {
 			throw new NotSupportedException("the connection type is sync, it must be asyn, check the connection type in configuration");
 		}
@@ -318,7 +318,7 @@ public final class AnyProjectConnectionPool implements AnyProjectConnectionPoolI
 	}
 	
 	@Override
-	public ConnectionIF createSyncThreadSafeConnection(String serverHost, int serverPort) throws InterruptedException, IOException, NoMoreDataPacketBufferException {
+	public ConnectionIF createSyncThreadSafeConnection(String serverHost, int serverPort) throws InterruptedException, IOException, NoMoreWrapBufferException {
 		ConnectionIF connectedConnection = null;
 		
 		connectedConnection = new SyncThreadSafeSingleConnection(serverHost,

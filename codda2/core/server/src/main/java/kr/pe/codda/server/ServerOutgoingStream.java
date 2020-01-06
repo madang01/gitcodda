@@ -23,7 +23,7 @@ import java.util.ArrayDeque;
 import java.util.logging.Logger;
 
 import kr.pe.codda.common.etc.CommonStaticFinalVars;
-import kr.pe.codda.common.exception.NoMoreDataPacketBufferException;
+import kr.pe.codda.common.exception.NoMoreWrapBufferException;
 import kr.pe.codda.common.io.ServerOutgoingStreamIF;
 import kr.pe.codda.common.io.StreamBuffer;
 
@@ -83,7 +83,7 @@ public class ServerOutgoingStream implements ServerOutgoingStreamIF {
 
 	}
 
-	public int write(SocketChannel writableSocketChannel) throws IOException, NoMoreDataPacketBufferException {
+	public int write(SocketChannel writableSocketChannel) throws IOException, NoMoreWrapBufferException {
 		int ret;
 
 		if (null == workingStreamBuffer) {

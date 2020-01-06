@@ -14,8 +14,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *******************************************************************************/
-package kr.pe.codda.common.protocol.thb;
+package kr.pe.codda.common.exception;
 
-public interface THBSingleItemDecoderMatcherIF {
-	public AbstractTHBSingleItemDecoder get(int itemTypeID);
+/**
+ * 데이터 패킷 버퍼 부족시 던지는 예외
+ * @author Won Jonghoon
+ * 
+ */
+
+@SuppressWarnings("serial")
+public class NoMoreWrapBufferException extends Exception {
+
+	/**
+	 * 생성자
+	 * @param errorMessage 에러 내용
+	 */
+	public NoMoreWrapBufferException(String errorMessage) {
+		super(errorMessage);
+	}
+
 }

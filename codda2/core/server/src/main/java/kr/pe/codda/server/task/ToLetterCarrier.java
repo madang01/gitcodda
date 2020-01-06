@@ -26,7 +26,7 @@ import kr.pe.codda.common.etc.CommonStaticFinalVars;
 import kr.pe.codda.common.exception.BodyFormatException;
 import kr.pe.codda.common.exception.DynamicClassCallException;
 import kr.pe.codda.common.exception.LoginUserNotFoundException;
-import kr.pe.codda.common.exception.NoMoreDataPacketBufferException;
+import kr.pe.codda.common.exception.NoMoreWrapBufferException;
 import kr.pe.codda.common.io.StreamBuffer;
 import kr.pe.codda.common.message.AbstractMessage;
 import kr.pe.codda.common.message.codec.AbstractMessageEncoder;
@@ -58,7 +58,7 @@ public class ToLetterCarrier {
 	 * @param inputMessage 입력 메시지
 	 * @param projectLoginManager 프로젝트별 로그인 관리자
 	 * @param messageProtocol  메시지 프로토콜
-	 * @param messageCodecManager 
+	 * @param messageCodecManager  메시지 코덱 관리자
 	 */
 	public ToLetterCarrier(AcceptedConnection fromAcceptedConnection,
 			AbstractMessage inputMessage,
@@ -129,14 +129,14 @@ public class ToLetterCarrier {
 			outputMesssageStreamBuffer.flip();
 			
 			toAcceptedConnection.addOutputMessage(outputMesssageStreamBuffer);
-		} catch (NoMoreDataPacketBufferException e) {
+		} catch (NoMoreWrapBufferException e) {
 			outputMesssageStreamBuffer.releaseAllWrapBuffers();
 			
 			String errorMessage = new StringBuilder("fail to build a output message stream[")
 					.append(outputMessage.getMessageID())
 					.append("]::").append(e.getMessage()).toString();
 			
-			ExceptionDelivery.ErrorType errorType = ExceptionDelivery.ErrorType.valueOf(NoMoreDataPacketBufferException.class);
+			ExceptionDelivery.ErrorType errorType = ExceptionDelivery.ErrorType.valueOf(NoMoreWrapBufferException.class);
 			String errorReason = errorMessage;
 			
 			log.log(Level.WARNING, errorReason);

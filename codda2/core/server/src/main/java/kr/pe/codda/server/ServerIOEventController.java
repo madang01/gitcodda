@@ -31,7 +31,7 @@ import java.util.logging.Logger;
 
 import kr.pe.codda.common.etc.CommonStaticFinalVars;
 import kr.pe.codda.common.etc.StreamCharsetFamily;
-import kr.pe.codda.common.exception.NoMoreDataPacketBufferException;
+import kr.pe.codda.common.exception.NoMoreWrapBufferException;
 import kr.pe.codda.common.io.WrapBufferPoolIF;
 import kr.pe.codda.common.protocol.MessageProtocolIF;
 import kr.pe.codda.server.classloader.ServerTaskMangerIF;
@@ -210,7 +210,7 @@ public class ServerIOEventController extends Thread implements ServerIOEvenetCon
 											.append(acceptedKey.hashCode()).append("]'s accepted socket channel[")
 											.append(acceptedSocketChannel.hashCode())
 											.append("] to accepted socket channel").toString());
-								} catch (NoMoreDataPacketBufferException e) {
+								} catch (NoMoreWrapBufferException e) {
 									String errorMessage = new StringBuilder().append(
 											"the no more data packet buffer error occurred while registering the socket[")
 											.append(acceptedSocketChannel.hashCode())
@@ -320,7 +320,7 @@ public class ServerIOEventController extends Thread implements ServerIOEvenetCon
 
 							accpetedConneciton.close();
 							continue;
-						} catch (NoMoreDataPacketBufferException e) {
+						} catch (NoMoreWrapBufferException e) {
 							String errorMessage = new StringBuilder()
 									.append("the no more data packet buffer error occurred while reading the socket[")
 									.append(accpetedConneciton.hashCode()).append("], errmsg=").append(e.getMessage())

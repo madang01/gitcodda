@@ -19,7 +19,7 @@ package kr.pe.codda.common.io;
 
 import java.nio.ByteOrder;
 
-import kr.pe.codda.common.exception.NoMoreDataPacketBufferException;
+import kr.pe.codda.common.exception.NoMoreWrapBufferException;
 
 /**
  * 데이터 패킷 버퍼 관리자 인터페이스
@@ -31,9 +31,9 @@ public interface WrapBufferPoolIF {
 	/**
 	 * 프로젝트 자원인 데이터 패킷 버퍼 큐에서 데이터 패킷 버퍼를 얻어온다.
 	 * @return 데이터 패킷 버퍼
-	 * @throws NoMoreDataPacketBufferException 랩 버퍼 폴에 랩 버퍼가 없을 때 던지는 예외
+	 * @throws NoMoreWrapBufferException 랩 버퍼 폴에 랩 버퍼가 없을 때 던지는 예외
 	 */
-	public WrapBuffer pollDataPacketBuffer() throws NoMoreDataPacketBufferException;
+	public WrapBuffer pollDataPacketBuffer() throws NoMoreWrapBufferException;
 	/**
 	 * 프로젝트 자원인 데이터 패킷 버퍼 큐에 데이터 패킷 버퍼를 반환한다. 
 	 * 이때 (1) 큐 등록 상태를 등록으로 

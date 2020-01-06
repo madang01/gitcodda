@@ -22,7 +22,7 @@ import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
 import java.util.ArrayDeque;
 
-import kr.pe.codda.common.exception.NoMoreDataPacketBufferException;
+import kr.pe.codda.common.exception.NoMoreWrapBufferException;
 import kr.pe.codda.common.io.ClientOutgoingStreamIF;
 import kr.pe.codda.common.io.StreamBuffer;
 
@@ -140,7 +140,7 @@ public class ClientOutgoingStream implements ClientOutgoingStreamIF {
 		}
 	}
 
-	public int write(SocketChannel writableSocketChannel) throws IOException, NoMoreDataPacketBufferException {
+	public int write(SocketChannel writableSocketChannel) throws IOException, NoMoreWrapBufferException {
 		if (null == workingStreamBuffer) {
 			return 0;
 		}

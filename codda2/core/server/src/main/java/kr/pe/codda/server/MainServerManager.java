@@ -29,7 +29,7 @@ import kr.pe.codda.common.config.subset.SubProjectPartConfigurationManager;
 import kr.pe.codda.common.config.subset.ProjectPartConfiguration;
 import kr.pe.codda.common.etc.CommonStaticFinalVars;
 import kr.pe.codda.common.exception.CoddaConfigurationException;
-import kr.pe.codda.common.exception.NoMoreDataPacketBufferException;
+import kr.pe.codda.common.exception.NoMoreWrapBufferException;
 
 
 
@@ -56,15 +56,18 @@ public final class MainServerManager {
 	private static final class MainProjectServerManagerHolder {
 		static final MainServerManager singleton = new MainServerManager();
 	}
-
-	/** 동기화 쓰지 않는 싱글턴 구현 메소드 */
+	
+	/**
+	 * 동기화 쓰지 않는 싱글턴 구현 메소드
+	 * @return MainServerManager 클래스 객체
+	 */
 	public static MainServerManager getInstance() {
 		return MainProjectServerManagerHolder.singleton;
 	}
 
 	/**
 	 * 동기화 쓰지 않고 싱글턴 구현을 위한 생성자
-	 * @throws NoMoreDataPacketBufferException 
+	 * @throws NoMoreWrapBufferException 
 	 */
 	private MainServerManager() {
 		// try {
@@ -84,7 +87,7 @@ public final class MainServerManager {
 			
 			try {
 				mainProjectServer = new AnyProjectServer(serverAPPINFClassPathString, projectResourcesPathString, mainProjectPartConfiguration);
-			} catch (NoMoreDataPacketBufferException e) {
+			} catch (NoMoreWrapBufferException e) {
 				log.log(Level.WARNING, "NoMoreDataPacketBufferException", e);
 			} catch (CoddaConfigurationException e) {
 				log.log(Level.WARNING, "CoddaConfigurationException", e);
@@ -98,7 +101,7 @@ public final class MainServerManager {
 					subProjectServer = new AnyProjectServer(serverAPPINFClassPathString, projectResourcesPathString, allSubProjectPartConfiguration.getSubProjectPartConfiguration(subProjectName));
 					
 					subProjectServerHash.put(subProjectName, subProjectServer);
-				} catch (NoMoreDataPacketBufferException e) {
+				} catch (NoMoreWrapBufferException e) {
 					log.log(Level.WARNING, "NoMoreDataPacketBufferException", e);
 				} catch (CoddaConfigurationException e) {
 					log.log(Level.WARNING, "CoddaConfigurationException", e);
@@ -112,10 +115,9 @@ public final class MainServerManager {
 	}
 	
 	/**
-	 * 프로젝터 이름에 1:1 대응하는 서버 프로젝트를 반환한다.
-	 * @param projectName 프로젝트 이름
-	 * @return 프로젝터 이름에 1:1 대응하는 서버 프로젝트 {@link AnyProjectServer}
-	 * @throws IllegalStateException 
+	 * @param subProjectName 서브 프로젝트 이름
+	 * @return 서버 프로젝트 이름에 1:1 대응하는 프로젝트 서버
+	 * @throws IllegalStateException 서버 프로젝트 이름에 1:1 대응하는 프로젝트 서버가 없는 경우 던지는 예외
 	 */
 	public AnyProjectServer getSubProjectServer(String subProjectName) throws IllegalStateException {
 		AnyProjectServer subProjectServer =  subProjectServerHash.get(subProjectName);

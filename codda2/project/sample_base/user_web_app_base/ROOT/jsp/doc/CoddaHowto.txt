@@ -48,11 +48,11 @@ DB 계정 비밀번호가 test1234 라면 아래 howto 문서에 있는 'root비
 (5) 코다 도우미 유틸을 통해 설치 경로 적용
 (5-1) ./Helper.sh
 (5-2) 코다 도우미 첫화면에서 "All Main Project Manger" 버튼 클릭
-<img src="/images/howto/codda_helper_screenshot01.png" class="img-rounded" />
+<img src="/img/howto/codda_helper_screenshot01.png">
 (5-3) 설치 경로 지정 화면에서 설치 경로를 입력후 "Next" 버튼 클릭
-<img src="/images/howto/codda_helper_screenshot02.png" class="img-rounded"  />
+<img src="/img/howto/codda_helper_screenshot02.png">
 (5-4) "All Main Project Manger" 화면에서 "apply Codda installed path to all project" 버튼 클릭
-<img src="/images/howto/codda_helper_screenshot03.png" class="img-rounded"  />
+<img src="/img/howto/codda_helper_screenshot03.png">
 (5-5) 창종료
 (6) 코다 코어 컴파일후 복사 하기
 (6-1) /home/madang01/gitmadang/codda/core/all/ 경로에 들어가서 ant 
@@ -127,15 +127,15 @@ chmod g+w /home/madang01/gitmadang/codda/project/sample_base/log/tomcat
 	
 (3) workbench 설정
 (3-1) workbench 초기 화면
-<img src="/images/howto/workbench_screenshot01.png" class="img-rounded" style="width:100%" />
+<img src="/img/howto/workbench_screenshot01.png">
 (3-2) 기본적으로 있는 "Local instance 3306" 에 마우스 우클릭으로 펼쳐진 메뉴에서 "Edit Connection..." 선택
-<img src="/images/howto/workbench_screenshot02.png" class="img-rounded" style="width:100%" />
+<img src="/img/howto/workbench_screenshot02.png">
 (3-3) "Connection" tab -> "Parameters" tab 에서 Hostname 항목에 172.30.1.15 입력후 "Store in Keychain ..." 버튼 클릭하여 비밀번호 설정후 "Test Connection" 버튼 클릭하여 연결 테스트하여 정상 연결되면 "close" 버튼 클릭
-<img src="/images/howto/workbench_screenshot03.png" class="img-rounded" style="width:100%" />
+<img src="/img/howto/workbench_screenshot03.png">
 (3-4) "Local instance 3306" 버튼 클릭후 "Connection Warning" 경고창에서 "Continue Anyway" 버튼 클릭
-<img src="/images/howto/workbench_screenshot04.png" class="img-rounded" style="width:100%" />
+<img src="/img/howto/workbench_screenshot04.png">
 (3-5) workbench 정상 접속 화면
-<img src="/images/howto/workbench_screenshot05.png" class="img-rounded" style="width:100%" />
+<img src="/img/howto/workbench_screenshot05.png">
 (3-6)  "sample_base_db_erd.mwb" 파일을 열어 Databse -> Synchronize Model 메뉴을 선택하여 'sb_db', 'gt_sb_db', 'lt_sb_db' 각 스키마 생성후 madangshoe01  계정을 새로 만들때 select, insert, update, delete 권한을 줄것
 
 

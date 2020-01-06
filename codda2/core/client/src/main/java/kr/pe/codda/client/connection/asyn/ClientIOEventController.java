@@ -26,7 +26,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import kr.pe.codda.common.etc.CommonStaticFinalVars;
-import kr.pe.codda.common.exception.NoMoreDataPacketBufferException;
+import kr.pe.codda.common.exception.NoMoreWrapBufferException;
 
 public class ClientIOEventController extends Thread implements
 		ClientIOEventControllerIF {
@@ -38,7 +38,7 @@ public class ClientIOEventController extends Thread implements
 	private LinkedBlockingDeque<ClientIOEventHandlerIF> unregisteredAsynConnectionQueue = new LinkedBlockingDeque<ClientIOEventHandlerIF>();
 
 	public ClientIOEventController(long clientSelectorWakeupInterval) throws IOException,
-			NoMoreDataPacketBufferException {
+			NoMoreWrapBufferException {
 		this.clientSelectorWakeupInterval = clientSelectorWakeupInterval;
 
 		ioEventSelector = Selector.open();
@@ -181,7 +181,7 @@ public class ClientIOEventController extends Thread implements
 						log.warning(errorMessage);
 						interestedAsynConnection.close();
 						throw e;
-					} catch (NoMoreDataPacketBufferException e) {
+					} catch (NoMoreWrapBufferException e) {
 						String errorMessage = new StringBuilder()
 								.append("the no more data packet buffer error occurred while reading the socket[")
 								.append(interestedAsynConnection.hashCode()).append("], errmsg=")

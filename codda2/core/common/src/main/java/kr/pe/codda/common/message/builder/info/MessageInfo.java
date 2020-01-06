@@ -47,39 +47,66 @@ public class MessageInfo {
 	
 	private OrderedItemSet messageOrderedItemSet = new OrderedItemSet();
 	
-	private File messageInfoXMLFile = null;
-		
+	private File messageInfoXMLFile = null;	
 
-	public File getMessageInfoXMLFile() {
-		return messageInfoXMLFile;
-	}
-
+	/**
+	 * 생성자
+	 * 
+	 * @param messageID 메시지 식별자
+	 * @param messageInfoXMLFile 메시지 식별자의 메시지 정보 파일
+	 */
 	public MessageInfo(String messageID, File messageInfoXMLFile) {		
 		this.messageID = messageID;
 		this.messageInfoXMLFile = messageInfoXMLFile;
 		this.firstLowerMessageID = messageID.substring(0,1).toLowerCase()+messageID.substring(1);
 	}
 
+	/**
+	 * @return 메시지 식별자의 메시지 정보 파일
+	 */
+	public File getMessageInfoXMLFile() {
+		return messageInfoXMLFile;
+	}
+	
+	/**
+	 * @return 메시지 식별자
+	 */
 	public String getMessageID() {
 		return messageID;
 	}
 	
+	/**
+	 * @return 메시지 정보 파일의 마지막 수정 시간
+	 */
 	public java.util.Date getLastModified() {
 		return new java.util.Date(messageInfoXMLFile.lastModified());
 	}
 	
+	/**
+	 * 파라미터 'messageTransferDirectionType' 를 저장한다.
+	 * @param messageTransferDirectionType 메시지 전송 방향 종류
+	 */
 	public void setDirection(MessageTransferDirectionType messageTransferDirectionType) {
 		this.messageTransferDirectionType = messageTransferDirectionType;
 	}
 	
+	/**
+	 * @return 메시지 전송 방향 종류
+	 */
 	public MessageTransferDirectionType getDirection() {
 		return messageTransferDirectionType;
 	}
 	
+	/**
+	 * @return 첫문자를 소문자로 변환시킨 메시지 식별자 
+	 */
 	public String getFirstLowerMessageID() {
 		return firstLowerMessageID;
 	}
 	
+	/**
+	 * @return 메시지 정보 파일로 부터 얻은 순서를 가지는 '항목 정보' 집합
+	 */
 	public OrderedItemSet getOrderedItemSet() {
 		return messageOrderedItemSet;
 	}	

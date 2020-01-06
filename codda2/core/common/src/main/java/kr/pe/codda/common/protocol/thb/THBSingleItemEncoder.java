@@ -22,7 +22,7 @@ import java.util.logging.Logger;
 
 import kr.pe.codda.common.etc.CommonStaticFinalVars;
 import kr.pe.codda.common.exception.BodyFormatException;
-import kr.pe.codda.common.exception.NoMoreDataPacketBufferException;
+import kr.pe.codda.common.exception.NoMoreWrapBufferException;
 import kr.pe.codda.common.io.StreamBuffer;
 import kr.pe.codda.common.protocol.SingleItemEncoderIF;
 import kr.pe.codda.common.type.SingleItemType;
@@ -35,9 +35,13 @@ import kr.pe.codda.common.type.SingleItemType;
 public class THBSingleItemEncoder implements SingleItemEncoderIF {
 	private Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
 	
-	private THBSingleItemEncoderMatcherIF thbSingleItemEncoderMatcher = null;
+	private THBSingleItemTypeEncoderMatcherIF thbSingleItemEncoderMatcher = null;
 	
-	public THBSingleItemEncoder(THBSingleItemEncoderMatcherIF thbSingleItemEncoderMatcher) {
+	/**
+	 * 생성자
+	 * @param thbSingleItemEncoderMatcher THB 프로토콜 단일 항목 타입의 인코더 매칭자
+	 */
+	public THBSingleItemEncoder(THBSingleItemTypeEncoderMatcherIF thbSingleItemEncoderMatcher) {
 		if (null == thbSingleItemEncoderMatcher) {
 			throw new IllegalArgumentException("the parameter thbSingleItemEncoderMatcher is null");
 		}
@@ -87,12 +91,12 @@ public class THBSingleItemEncoder implements SingleItemEncoderIF {
 		
 		StreamBuffer binaryOutputStream = (StreamBuffer)writableMiddleObject;		
 		try {
-			AbstractTHBSingleItemEncoder thbSingleItemEncoder = thbSingleItemEncoderMatcher.get(itemTypeID);
+			AbstractTHBSingleItemTypeEncoder thbSingleItemEncoder = thbSingleItemEncoderMatcher.getSingleItemEncoder(itemTypeID);
 			
 			thbSingleItemEncoder.putValue(itemTypeID, itemName, nativeItemValue, itemSize, nativeItemCharset, binaryOutputStream);
 		} catch(IllegalArgumentException e) {
 			throw e;
-		} catch(NoMoreDataPacketBufferException e) {
+		} catch(NoMoreWrapBufferException e) {
 			throw e;
 		} catch(Exception | OutOfMemoryError e) {
 			String errorMessage = new StringBuilder("fail to encode a single item value::")

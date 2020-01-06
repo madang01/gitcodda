@@ -23,19 +23,26 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import kr.pe.codda.common.etc.CommonStaticFinalVars;
+import kr.pe.codda.common.etc.StreamCharsetFamily;
 import kr.pe.codda.common.exception.BodyFormatException;
 import kr.pe.codda.common.io.StreamBuffer;
 import kr.pe.codda.common.type.ExceptionDelivery;
 import kr.pe.codda.common.type.SingleItemType;
 
-public class THBSingleItemDecoderMatcher implements THBSingleItemDecoderMatcherIF {
+/**
+ * THB 프로토콜 단일 항목 타입의 디코더 매칭자
+ * @author Won Jonghoon
+ *
+ */
+public class THBSingleItemTypeDecoderMatcher implements THBSingleItemTypeDecoderMatcherIF {
 	private Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
 	
+	private Charset streamCharset = null;
 	private CharsetDecoder streamCharsetDecoder = null;
 	private CodingErrorAction streamCodingErrorActionOnMalformedInput = null;
 	private CodingErrorAction streamCodingErrorActionOnUnmappableCharacter = null;
 	
-	private final AbstractTHBSingleItemDecoder[] thbSingleItemDecoderList = new AbstractTHBSingleItemDecoder[] { 
+	private final AbstractTHBSingleItemTypeDecoder[] thbSingleItemDecoderList = new AbstractTHBSingleItemTypeDecoder[] { 
 			new THBExceptionDeliveryErrorPlaceSingleItemDecoder(), new THBExceptionDeliveryErrorTypeSingleItemDecoder(),
 			new THBByteSingleItemDecoder(), new THBUnsignedByteSingleItemDecoder(), 
 			new THBShortSingleItemDecoder(), new THBUnsignedShortSingleItemDecoder(),
@@ -49,18 +56,25 @@ public class THBSingleItemDecoderMatcher implements THBSingleItemDecoderMatcherI
 			new THBBooleanSingleItemDecoder()
 	};
 	
-	
-	public THBSingleItemDecoderMatcher(CharsetDecoder streamCharsetDecoder) {
+	/**
+	 * 생성자
+	 * @param streamCharsetFamily 문자셋, 문자셋 인코더 그리고 문자셋 디코더 묶음
+	 */
+	public THBSingleItemTypeDecoderMatcher(StreamCharsetFamily streamCharsetFamily) {
 		if (null == streamCharsetDecoder) {
 			throw new IllegalArgumentException("the parameter streamCharsetDecoder is null");
 		}
-		this.streamCharsetDecoder = streamCharsetDecoder;
+		this.streamCharset = streamCharsetFamily.getCharset();
+		this.streamCharsetDecoder = streamCharsetFamily.getCharsetDecoder();
 		this.streamCodingErrorActionOnMalformedInput = streamCharsetDecoder.malformedInputAction();
 		this.streamCodingErrorActionOnUnmappableCharacter = streamCharsetDecoder.unmappableCharacterAction();
 		
 		checkValidTHBSingleItemDecoderList();
 	}
 	
+	/**
+	 * 변수 thbSingleItemDecoderList 의 유효성 검사
+	 */
 	private void checkValidTHBSingleItemDecoderList() {
 		SingleItemType[] singleItemTypes = SingleItemType.values();
 		
@@ -95,7 +109,12 @@ public class THBSingleItemDecoderMatcher implements THBSingleItemDecoderMatcherI
 		}
 	}
 
-	private final class THBExceptionDeliveryErrorPlaceSingleItemDecoder extends AbstractTHBSingleItemDecoder {
+	/**
+	 * 'exception delivery error place' 타입의 단일 항목 디코더 구현자
+	 * @author Won Jonghoon
+	 *
+	 */
+	private final class THBExceptionDeliveryErrorPlaceSingleItemDecoder extends AbstractTHBSingleItemTypeDecoder {
 		@Override
 		public Object getValue(int itemTypeID, String itemName, int itemSize,
 				String nativeItemCharset, StreamBuffer binaryInputStream)
@@ -104,15 +123,20 @@ public class THBSingleItemDecoderMatcher implements THBSingleItemDecoderMatcherI
 			throwExceptionIfItemTypeIsDifferent(itemTypeID, itemName, binaryInputStream);
 			
 			return ExceptionDelivery.ErrorPlace.valueOf(binaryInputStream.getByte());
-		}	
+		}
 		
+		@Override
 		public SingleItemType getSingleItemType() {
 			return SingleItemType.EXCEPTION_DELIVERY_ERROR_PLACE;
 		}
 	}	
 	
-	
-	private final class THBExceptionDeliveryErrorTypeSingleItemDecoder extends AbstractTHBSingleItemDecoder {
+	/**
+	 * 'exception delivery error type' 타입의 단일 항목 디코더 구현자
+	 * @author Won Jonghoon
+	 *
+	 */
+	private final class THBExceptionDeliveryErrorTypeSingleItemDecoder extends AbstractTHBSingleItemTypeDecoder {
 		@Override
 		public Object getValue(int itemTypeID, String itemName, int itemSize,
 				String nativeItemCharset, StreamBuffer binaryInputStream)
@@ -121,8 +145,9 @@ public class THBSingleItemDecoderMatcher implements THBSingleItemDecoderMatcherI
 			throwExceptionIfItemTypeIsDifferent(itemTypeID, itemName, binaryInputStream);
 			
 			return ExceptionDelivery.ErrorType.valueOf(binaryInputStream.getByte());
-		}	
+		}
 		
+		@Override
 		public SingleItemType getSingleItemType() {
 			return SingleItemType.EXCEPTION_DELIVERY_ERROR_TYPE;
 		}
@@ -130,7 +155,7 @@ public class THBSingleItemDecoderMatcher implements THBSingleItemDecoderMatcherI
 	
 	
 	/** THB 프로토콜의 byte 타입 단일 항목 스트림 변환기 구현 클래스 */
-	private final class THBByteSingleItemDecoder extends AbstractTHBSingleItemDecoder {
+	private final class THBByteSingleItemDecoder extends AbstractTHBSingleItemTypeDecoder {
 		@Override
 		public Object getValue(int itemTypeID, String itemName, int itemSize,
 				String nativeItemCharset, StreamBuffer binaryInputStream)
@@ -141,6 +166,7 @@ public class THBSingleItemDecoderMatcher implements THBSingleItemDecoderMatcherI
 			return binaryInputStream.getByte();
 		}
 
+		@Override
 		public SingleItemType getSingleItemType() {
 			return SingleItemType.BYTE;
 		}
@@ -148,7 +174,7 @@ public class THBSingleItemDecoderMatcher implements THBSingleItemDecoderMatcherI
 	}
 
 	/** THB 프로토콜의 unsigned byte 타입 단일 항목 스트림 변환기 구현 클래스 */
-	private final class THBUnsignedByteSingleItemDecoder extends AbstractTHBSingleItemDecoder {
+	private final class THBUnsignedByteSingleItemDecoder extends AbstractTHBSingleItemTypeDecoder {
 
 		@Override
 		public Object getValue(int itemTypeID, String itemName, int itemSize,
@@ -159,13 +185,14 @@ public class THBSingleItemDecoderMatcher implements THBSingleItemDecoderMatcherI
 			return binaryInputStream.getUnsignedByte();
 		}		
 		
+		@Override
 		public SingleItemType getSingleItemType() {
 			return SingleItemType.UNSIGNED_BYTE;
 		}
 	}
 
 	/** THB 프로토콜의 short 타입 단일 항목 스트림 변환기 구현 클래스 */
-	private final class THBShortSingleItemDecoder extends AbstractTHBSingleItemDecoder {
+	private final class THBShortSingleItemDecoder extends AbstractTHBSingleItemTypeDecoder {
 		@Override
 		public Object getValue(int itemTypeID, String itemName, int itemSize,
 				String nativeItemCharset, StreamBuffer binaryInputStream)
@@ -175,13 +202,14 @@ public class THBSingleItemDecoderMatcher implements THBSingleItemDecoderMatcherI
 			return binaryInputStream.getShort();
 		}
 		
+		@Override
 		public SingleItemType getSingleItemType() {
 			return SingleItemType.SHORT;
 		}
 	}
 
 	/** THB 프로토콜의 unsigned short 타입 단일 항목 스트림 변환기 구현 클래스 */
-	private final class THBUnsignedShortSingleItemDecoder extends AbstractTHBSingleItemDecoder {
+	private final class THBUnsignedShortSingleItemDecoder extends AbstractTHBSingleItemTypeDecoder {
 		
 		@Override
 		public Object getValue(int itemTypeID, String itemName, int itemSize,
@@ -193,13 +221,14 @@ public class THBSingleItemDecoderMatcher implements THBSingleItemDecoderMatcherI
 			return binaryInputStream.getUnsignedShort();
 		}		
 		
+		@Override
 		public SingleItemType getSingleItemType() {
 			return SingleItemType.UNSIGNED_SHORT;
 		}
 	}
 
 	/** THB 프로토콜의 integer 타입 단일 항목 스트림 변환기 구현 클래스 */
-	private final class THBIntSingleItemDecoder extends AbstractTHBSingleItemDecoder {
+	private final class THBIntSingleItemDecoder extends AbstractTHBSingleItemTypeDecoder {
 		
 		@Override
 		public Object getValue(int itemTypeID, String itemName, int itemSize,
@@ -208,15 +237,16 @@ public class THBSingleItemDecoderMatcher implements THBSingleItemDecoderMatcherI
 			throwExceptionIfItemTypeIsDifferent(itemTypeID, itemName, binaryInputStream);
 			
 			return binaryInputStream.getInt();
-		}	
+		}
 		
+		@Override
 		public SingleItemType getSingleItemType() {
 			return SingleItemType.INTEGER;
 		}
 	}
 
 	/** THB 프로토콜의 unsigned integer 타입 단일 항목 스트림 변환기 구현 클래스 */
-	private final class THBUnsignedIntSingleItemDecoder extends AbstractTHBSingleItemDecoder {
+	private final class THBUnsignedIntSingleItemDecoder extends AbstractTHBSingleItemTypeDecoder {
 		
 		@Override
 		public Object getValue(int itemTypeID, String itemName, int itemSize,
@@ -224,15 +254,16 @@ public class THBSingleItemDecoderMatcher implements THBSingleItemDecoderMatcherI
 				throws Exception  {
 			throwExceptionIfItemTypeIsDifferent(itemTypeID, itemName, binaryInputStream);
 			return binaryInputStream.getUnsignedInt();
-		}		
+		}
 		
+		@Override		
 		public SingleItemType getSingleItemType() {
 			return SingleItemType.UNSIGNED_INTEGER;
 		}
 	}
 
 	/** THB 프로토콜의 long 타입 단일 항목 스트림 변환기 구현 클래스 */
-	private final class THBLongSingleItemDecoder extends AbstractTHBSingleItemDecoder {		
+	private final class THBLongSingleItemDecoder extends AbstractTHBSingleItemTypeDecoder {		
 		@Override
 		public Object getValue(int itemTypeID, String itemName, int itemSize,
 				String nativeItemCharset, StreamBuffer binaryInputStream)
@@ -241,18 +272,19 @@ public class THBSingleItemDecoderMatcher implements THBSingleItemDecoderMatcherI
 			return binaryInputStream.getLong();
 		}		
 		
+		@Override
 		public SingleItemType getSingleItemType() {
 			return SingleItemType.LONG;
 		}
 	}
 
 	/** THB 프로토콜의 ub pascal string 타입 단일 항목 스트림 변환기 구현 클래스 */
-	private final class THBUBPascalStringSingleItemDecoder extends AbstractTHBSingleItemDecoder {		
+	private final class THBUBPascalStringSingleItemDecoder extends AbstractTHBSingleItemTypeDecoder {		
 		@Override
 		public Object getValue(int itemTypeID, String itemName, int itemSize,
 				String nativeItemCharset, StreamBuffer binaryInputStream)
 				throws Exception {			
-			Charset itemCharset = streamCharsetDecoder.charset();
+			Charset itemCharset = streamCharset;
 			
 			if (null != nativeItemCharset) {				
 				try {
@@ -270,18 +302,19 @@ public class THBSingleItemDecoderMatcher implements THBSingleItemDecoderMatcherI
 			return binaryInputStream.getUBPascalString(itemCharset);
 		}	
 		
+		@Override
 		public SingleItemType getSingleItemType() {
 			return SingleItemType.UB_PASCAL_STRING;
 		}
 	}
 
 	/** THB 프로토콜의 us pascal string 타입 단일 항목 스트림 변환기 구현 클래스 */
-	private final class THBUSPascalStringSingleItemDecoder extends AbstractTHBSingleItemDecoder {
+	private final class THBUSPascalStringSingleItemDecoder extends AbstractTHBSingleItemTypeDecoder {
 		@Override
 		public Object getValue(int itemTypeID, String itemName, int itemSize,
 				String nativeItemCharset, StreamBuffer binaryInputStream)
 				throws Exception {
-			Charset itemCharset = streamCharsetDecoder.charset();
+			Charset itemCharset = streamCharset;
 			
 			if (null != nativeItemCharset) {
 				try {
@@ -296,20 +329,21 @@ public class THBSingleItemDecoderMatcher implements THBSingleItemDecoderMatcherI
 			
 			throwExceptionIfItemTypeIsDifferent(itemTypeID, itemName, binaryInputStream);
 			return binaryInputStream.getUSPascalString(itemCharset);
-		}		
+		}
 		
+		@Override
 		public SingleItemType getSingleItemType() {
 			return SingleItemType.US_PASCAL_STRING;
 		}
 	}
 
 	/** THB 프로토콜의 si pascal string 타입 단일 항목 스트림 변환기 구현 클래스 */
-	private final class THBSIPascalStringSingleItemDecoder extends AbstractTHBSingleItemDecoder {
+	private final class THBSIPascalStringSingleItemDecoder extends AbstractTHBSingleItemTypeDecoder {
 		@Override
 		public Object getValue(int itemTypeID, String itemName, int itemSize,
 				String nativeItemCharset, StreamBuffer binaryInputStream)
 				throws Exception {
-			Charset itemCharset = streamCharsetDecoder.charset();
+			Charset itemCharset = streamCharset;
 			
 			if (null != nativeItemCharset) {
 				try {
@@ -326,13 +360,14 @@ public class THBSingleItemDecoderMatcher implements THBSingleItemDecoderMatcherI
 			return binaryInputStream.getSIPascalString(itemCharset);
 		}		
 		
+		@Override
 		public SingleItemType getSingleItemType() {
 			return SingleItemType.SI_PASCAL_STRING;
 		}
 	}
 
 	/** THB 프로토콜의 fixed length string 타입 단일 항목 스트림 변환기 구현 클래스 */
-	private final class THBFixedLengthStringSingleItemDecoder extends AbstractTHBSingleItemDecoder {
+	private final class THBFixedLengthStringSingleItemDecoder extends AbstractTHBSingleItemTypeDecoder {
 		@Override
 		public Object getValue(int itemTypeID, String itemName, int itemSize,
 				String nativeItemCharset, StreamBuffer binaryInputStream)
@@ -364,6 +399,7 @@ public class THBSingleItemDecoderMatcher implements THBSingleItemDecoderMatcherI
 			return binaryInputStream.getFixedLengthString(itemSize, resultCharsetDecoder);
 		}	
 		
+		@Override
 		public SingleItemType getSingleItemType() {
 			return SingleItemType.FIXED_LENGTH_STRING;
 		}
@@ -372,7 +408,7 @@ public class THBSingleItemDecoderMatcher implements THBSingleItemDecoderMatcherI
 	
 
 	/** THB 프로토콜의 ub variable length byte[] 타입 단일 항목 스트림 변환기 구현 클래스 */
-	private final class THBUBVariableLengthBytesSingleItemDecoder extends AbstractTHBSingleItemDecoder {
+	private final class THBUBVariableLengthBytesSingleItemDecoder extends AbstractTHBSingleItemTypeDecoder {
 		@Override
 		public Object getValue(int itemTypeID, String itemName, int itemSize,
 				String nativeItemCharset, StreamBuffer binaryInputStream)
@@ -381,15 +417,16 @@ public class THBSingleItemDecoderMatcher implements THBSingleItemDecoderMatcherI
 			
 			short len = binaryInputStream.getUnsignedByte();
 			return binaryInputStream.getBytes(len);
-		}	
+		}
 		
+		@Override
 		public SingleItemType getSingleItemType() {
 			return SingleItemType.UB_VARIABLE_LENGTH_BYTES;
 		}
 	}
 
 	/** THB 프로토콜의 us variable length byte[] 타입 단일 항목 스트림 변환기 구현 클래스 */
-	private final class THBUSVariableLengthBytesSingleItemDecoder extends AbstractTHBSingleItemDecoder {
+	private final class THBUSVariableLengthBytesSingleItemDecoder extends AbstractTHBSingleItemTypeDecoder {
 		@Override
 		public Object getValue(int itemTypeID, String itemName, int itemSize,
 				String nativeItemCharset, StreamBuffer binaryInputStream)
@@ -400,13 +437,14 @@ public class THBSingleItemDecoderMatcher implements THBSingleItemDecoderMatcherI
 			return binaryInputStream.getBytes(len);
 		}	
 		
+		@Override
 		public SingleItemType getSingleItemType() {
 			return SingleItemType.US_VARIABLE_LENGTH_BYTES;
 		}
 	}
 	
 	/** THB 프로토콜의 si variable length byte[] 타입 단일 항목 스트림 변환기 구현 클래스 */
-	private final class THBSIVariableLengthBytesSingleItemDecoder extends AbstractTHBSingleItemDecoder {
+	private final class THBSIVariableLengthBytesSingleItemDecoder extends AbstractTHBSingleItemTypeDecoder {
 		@Override
 		public Object getValue(int itemTypeID, String itemName, int itemSize,
 				String nativeItemCharset, StreamBuffer binaryInputStream)
@@ -416,13 +454,14 @@ public class THBSingleItemDecoderMatcher implements THBSingleItemDecoderMatcherI
 			return binaryInputStream.getBytes(len);
 		}		
 		
+		@Override
 		public SingleItemType getSingleItemType() {
 			return SingleItemType.SI_VARIABLE_LENGTH_BYTES;
 		}
 	}
 	
 	/** THB 프로토콜의 fixed length byte[] 타입 단일 항목 스트림 변환기 구현 클래스 */
-	private final class THBFixedLengthBytesSingleItemDecoder extends AbstractTHBSingleItemDecoder {
+	private final class THBFixedLengthBytesSingleItemDecoder extends AbstractTHBSingleItemTypeDecoder {
 		@Override
 		public Object getValue(int itemTypeID, String itemName, int itemSize,
 				String nativeItemCharset, StreamBuffer binaryInputStream)
@@ -438,13 +477,14 @@ public class THBSingleItemDecoderMatcher implements THBSingleItemDecoderMatcherI
 			return binaryInputStream.getBytes(itemSize);
 		}		
 		
+		@Override
 		public SingleItemType getSingleItemType() {
 			return SingleItemType.FIXED_LENGTH_BYTES;
 		}
 	}
 	
 	/** THB 프로토콜의 java sql date 타입 단일 항목 스트림 변환기 구현 클래스 */
-	private final class THBJavaSqlDateSingleItemDecoder extends AbstractTHBSingleItemDecoder {
+	private final class THBJavaSqlDateSingleItemDecoder extends AbstractTHBSingleItemTypeDecoder {
 		@Override
 		public Object getValue(int itemTypeID, String itemName, int itemSize,
 				String nativeItemCharset, StreamBuffer binaryInputStream) throws Exception {
@@ -454,13 +494,14 @@ public class THBSingleItemDecoderMatcher implements THBSingleItemDecoderMatcherI
 			return new java.sql.Date(javaSqlDateLongValue);
 		}
 		
+		@Override
 		public SingleItemType getSingleItemType() {
 			return SingleItemType.JAVA_SQL_DATE;
 		}
 	}
 	
 	/** THB 프로토콜의 java sql timestamp 타입 단일 항목 스트림 변환기 구현 클래스 */
-	private final class THBJavaSqlTimestampSingleItemDecoder extends AbstractTHBSingleItemDecoder {
+	private final class THBJavaSqlTimestampSingleItemDecoder extends AbstractTHBSingleItemTypeDecoder {
 		@Override
 		public Object getValue(int itemTypeID, String itemName, int itemSize,
 				String nativeItemCharset, StreamBuffer binaryInputStream) throws Exception {
@@ -470,13 +511,14 @@ public class THBSingleItemDecoderMatcher implements THBSingleItemDecoderMatcherI
 			return new java.sql.Timestamp(javaSqlDateLongValue);
 		}
 		
+		@Override
 		public SingleItemType getSingleItemType() {
 			return SingleItemType.JAVA_SQL_TIMESTAMP;
 		}
 	}
 	
 	/** THB 프로토콜의 boolean 타입 단일 항목 스트림 변환기 구현 클래스 */
-	private final class THBBooleanSingleItemDecoder extends AbstractTHBSingleItemDecoder {
+	private final class THBBooleanSingleItemDecoder extends AbstractTHBSingleItemTypeDecoder {
 		@Override
 		public Object getValue(int itemTypeID, String itemName, int itemSize,
 				String nativeItemCharset, StreamBuffer binaryInputStream) throws Exception {
@@ -497,12 +539,14 @@ public class THBSingleItemDecoderMatcher implements THBSingleItemDecoderMatcherI
 			return (0 != itemValue);
 		}
 		
+		@Override
 		public SingleItemType getSingleItemType() {
 			return SingleItemType.BOOLEAN;
 		}
 	}
 	
-	public AbstractTHBSingleItemDecoder get(int itemTypeID) {
+	@Override
+	public AbstractTHBSingleItemTypeDecoder getSingleItemDecoder(int itemTypeID) {
 		return thbSingleItemDecoderList[itemTypeID];
 	}
 }

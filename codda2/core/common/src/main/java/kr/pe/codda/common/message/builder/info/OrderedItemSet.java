@@ -22,10 +22,21 @@ import java.util.List;
 
 import kr.pe.codda.common.etc.CommonStaticFinalVars;
 
+/**
+ * 순서화된 항목 정보 집합
+ * 
+ * @author Won Jonghoon
+ *
+ */
 public class OrderedItemSet {
 	private ArrayList<AbstractItemInfo> itemInfoList = new ArrayList<AbstractItemInfo>();
 	private HashMap<String, AbstractItemInfo> itemInfoHash = new HashMap<String, AbstractItemInfo>();
 
+	/**
+	 * 항목 정보를 추가한다.
+	 * 
+	 * @param itemInfo 항목 정보
+	 */
 	public void addItemInfo(AbstractItemInfo itemInfo) {
 		if (null ==  itemInfo) {
 			throw new IllegalArgumentException("the parameter itemInfo is null");
@@ -43,6 +54,10 @@ public class OrderedItemSet {
 		itemInfoHash.put(itemInfo.getItemName(), itemInfo);
 	}
 	
+	/**
+	 * @param itemIName 항목 이름
+	 * @return 파라미터 'itemIName' 값을 항목 이름으로 갖는 항목 정보 등록 유무
+	 */
 	public boolean isRegisted(String itemIName) {
 		if (null ==  itemIName) {
 			throw new IllegalArgumentException("the parameter itemIName is null");
@@ -50,6 +65,10 @@ public class OrderedItemSet {
 		return itemInfoHash.containsKey(itemIName);
 	}
 	
+	/**
+	 * @param itemIName 항목 이름
+	 * @return 파라미터 'itemIName' 값을 항목 이름으로 갖는 항목 정보, 없다면 null 을 반환한다.
+	 */
 	public AbstractItemInfo getItemInfo(String itemIName) {
 		if (null ==  itemIName) {
 			throw new IllegalArgumentException("the parameter itemIName is null");
@@ -57,6 +76,9 @@ public class OrderedItemSet {
 		return itemInfoHash.get(itemIName);
 	}
 	
+	/**
+	 * @return 항목 정보 목록
+	 */
 	public List<AbstractItemInfo> getItemInfoList() {
 		return itemInfoList;
 	}

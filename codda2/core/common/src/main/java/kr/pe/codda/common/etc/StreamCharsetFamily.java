@@ -22,7 +22,7 @@ import java.nio.charset.CharsetDecoder;
 import java.nio.charset.CharsetEncoder;
 
 /**
- * 문자셋과 문자셋 인코더/디코더 묶음 클래스  
+ * 문자셋, 문자셋 인코더 그리고 문자셋 디코더 묶음 클래스  
  * 
  * @author Won Jonghoon
  *

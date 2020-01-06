@@ -36,8 +36,7 @@ public abstract class CommonStaticFinalVars {
 	public static final int ZERO_INTEGER = 0;
 	public static final long ZERO_LONG = 0L;	
 	
-	public static final String CORE_LOG_NAME = "kr.pe.codda";
-	
+	public static final String CORE_LOG_NAME = "kr.pe.codda";	
 	
 	
 	public static final ExceptionDeliveryResEncoder EXCEPTIONDELIVERY_ENCODER = new ExceptionDeliveryResEncoder();
@@ -81,12 +80,27 @@ public abstract class CommonStaticFinalVars {
 	
 	
 	
+	/**
+	 * 자바 시스템 환경 변수 '메인 프로젝트 이름'
+	 */
 	public static final String JAVA_SYSTEM_PROPERTIES_KEY_RUNNING_PROJECT_NAME = "codda.projectName";
+	
+	/**
+	 * 자바 시스템 환경 변수 '설치 경로'
+	 */
 	public static final String JAVA_SYSTEM_PROPERTIES_KEY_INSTALLED_PATH = "codda.installedPath";
+	
+	/**
+	 * 자바 시스템 환경 변수 '로그백 설정파일' 
+	 */
 	public static final String JAVA_SYSTEM_PROPERTIES_KEY_LOGBACK_CONFIG_FILE = "logback.configurationFile";
+	
+	/**
+	 * 자바 시스템 환경 변수 '코다 로그 경로'
+	 */
 	public static final String JAVA_SYSTEM_PROPERTIES_KEY_LOG_PATH = "codda.logPath";
 	
-			
+
 	public static final String CONFIG_FILE_CHARSET = "UTF-8";
 	
 	

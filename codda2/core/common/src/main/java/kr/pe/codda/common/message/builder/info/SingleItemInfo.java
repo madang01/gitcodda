@@ -400,12 +400,13 @@ public class SingleItemInfo extends AbstractItemInfo {
 	}
 	
 	/**
-	 * 
-	 * @param itemName
-	 * @param nativeItemDefaultValue
-	 * @param nativeItemSize
-	 * @param nativeItemCharset
-	 * @throws IllegalArgumentException
+	 * 'ExceptionDelivery error place' 타입에 대한 빌드 정보를 만든다.
+	 *  
+	 * @param itemName 항목 이름
+	 * @param nativeItemDefaultValue 디폴트 값
+	 * @param nativeItemSize 항목 크기
+	 * @param nativeItemCharset 문자셋
+	 * @throws IllegalArgumentException 파라미터가 잘못되엇을 경우 던지는 예외
 	 */
 	private void makeSourceBuilderInformationOfExcepionDeliveryErrorPlace(
 			String itemName, String nativeItemDefaultValue, String nativeItemSize,
@@ -437,27 +438,35 @@ public class SingleItemInfo extends AbstractItemInfo {
 		this.JavaLangClassCastingTypeOfItemType = javaLangTypeOfItemType;
 	}
 
-	
+	/**
+	 * 'ExceptionDelivery error type' 타입에 대한 빌드 정보를 만든다.
+	 *  
+	 * @param itemName 항목 이름
+	 * @param nativeItemDefaultValue 디폴트 값
+	 * @param nativeItemSize 항목 크기
+	 * @param nativeItemCharset 문자셋
+	 * @throws IllegalArgumentException 파라미터가 잘못되엇을 경우 던지는 예외
+	 */
 	private void makeSourceBuilderInformationOfExcepionDeliveryErrorType(
 			String itemName, String nativeItemDefaultValue, String nativeItemSize,
 			String nativeItemCharset) throws IllegalArgumentException {
 		if (null != nativeItemDefaultValue) {
 			String errorMessage = new StringBuilder(
-					"this 'ExceptionDelivery error place' type single item[").append(itemName)
+					"this 'ExceptionDelivery error type' type single item[").append(itemName)
 					.append("] doesn't support attribute 'defaultValue'").toString();
 			throw new IllegalArgumentException(errorMessage);
 		}	
 
 		if (null != nativeItemSize) {
 			String errorMessage = new StringBuilder(
-					"this 'ExceptionDelivery error place' type single item[").append(itemName)
+					"this 'ExceptionDelivery error type' type single item[").append(itemName)
 					.append("] doesn't support attribute 'size'").toString();
 			throw new IllegalArgumentException(errorMessage);
 		}
 
 		if (null != nativeItemCharset) {
 			String errorMessage = new StringBuilder(
-					"this 'ExceptionDelivery error place' type single item[").append(itemName)
+					"this 'ExceptionDelivery error type' type single item[").append(itemName)
 					.append("] doesn't support attribute 'charset'").toString();
 			throw new IllegalArgumentException(errorMessage);
 		}
@@ -468,6 +477,15 @@ public class SingleItemInfo extends AbstractItemInfo {
 		this.JavaLangClassCastingTypeOfItemType = javaLangTypeOfItemType;
 	}
 	
+	/**
+	 * 'byte' 타입에 대한 빌드 정보를 만든다.
+	 *  
+	 * @param itemName 항목 이름
+	 * @param nativeItemDefaultValue 디폴트 값
+	 * @param nativeItemSize 항목 크기
+	 * @param nativeItemCharset 문자셋
+	 * @throws IllegalArgumentException 파라미터가 잘못되엇을 경우 던지는 예외
+	 */
 	private void makeSourceBuilderInformationOfByte(
 			String itemName, String nativeItemDefaultValue, String nativeItemSize,
 			String nativeItemCharset) throws IllegalArgumentException {
@@ -507,6 +525,15 @@ public class SingleItemInfo extends AbstractItemInfo {
 		this.JavaLangClassCastingTypeOfItemType = "Byte";
 	}
 
+	/**
+	 * 'unsigned byte' 타입에 대한 빌드 정보를 만든다.
+	 *  
+	 * @param itemName 항목 이름
+	 * @param nativeItemDefaultValue 디폴트 값
+	 * @param nativeItemSize 항목 크기
+	 * @param nativeItemCharset 문자셋
+	 * @throws IllegalArgumentException 파라미터가 잘못되엇을 경우 던지는 예외
+	 */
 	private void makeSourceBuilderInformationOfUnsignedByte(
 			String itemName, String nativeItemDefaultValue, String nativeItemSize,
 			String nativeItemCharset) throws IllegalArgumentException {
@@ -565,6 +592,15 @@ public class SingleItemInfo extends AbstractItemInfo {
 		this.JavaLangClassCastingTypeOfItemType = "Short";
 	}
 
+	/**
+	 * 'short' 타입에 대한 빌드 정보를 만든다.
+	 *  
+	 * @param itemName 항목 이름
+	 * @param nativeItemDefaultValue 디폴트 값
+	 * @param nativeItemSize 항목 크기
+	 * @param nativeItemCharset 문자셋
+	 * @throws IllegalArgumentException 파라미터가 잘못되엇을 경우 던지는 예외
+	 */
 	private void makeSourceBuilderInformationOfShort(
 			String itemName, String nativeItemDefaultValue, String nativeItemSize,
 			String nativeItemCharset) throws IllegalArgumentException {
@@ -603,6 +639,15 @@ public class SingleItemInfo extends AbstractItemInfo {
 		this.JavaLangClassCastingTypeOfItemType = "Short";
 	}
 
+	/**
+	 * 'unsigned short' 타입에 대한 빌드 정보를 만든다.
+	 *  
+	 * @param itemName 항목 이름
+	 * @param nativeItemDefaultValue 디폴트 값
+	 * @param nativeItemSize 항목 크기
+	 * @param nativeItemCharset 문자셋
+	 * @throws IllegalArgumentException 파라미터가 잘못되엇을 경우 던지는 예외
+	 */
 	private void makeSourceBuilderInformationOfUnsignedShort(
 			String itemName, String nativeItemDefaultValue, String nativeItemSize,
 			String nativeItemCharset) throws IllegalArgumentException {
@@ -660,6 +705,15 @@ public class SingleItemInfo extends AbstractItemInfo {
 		this.JavaLangClassCastingTypeOfItemType = "Integer";
 	}
 
+	/**
+	 * 'integer' 타입에 대한 빌드 정보를 만든다.
+	 *  
+	 * @param itemName 항목 이름
+	 * @param nativeItemDefaultValue 디폴트 값
+	 * @param nativeItemSize 항목 크기
+	 * @param nativeItemCharset 문자셋
+	 * @throws IllegalArgumentException 파라미터가 잘못되엇을 경우 던지는 예외
+	 */
 	private void makeSourceBuilderInformationOfInteger(
 			String itemName, String nativeItemDefaultValue, String nativeItemSize,
 			String nativeItemCharset) throws IllegalArgumentException {
@@ -698,6 +752,15 @@ public class SingleItemInfo extends AbstractItemInfo {
 		this.JavaLangClassCastingTypeOfItemType = "Integer";
 	}
 
+	/**
+	 * 'unsigned integer' 타입에 대한 빌드 정보를 만든다.
+	 *  
+	 * @param itemName 항목 이름
+	 * @param nativeItemDefaultValue 디폴트 값
+	 * @param nativeItemSize 항목 크기
+	 * @param nativeItemCharset 문자셋
+	 * @throws IllegalArgumentException 파라미터가 잘못되엇을 경우 던지는 예외
+	 */	
 	private void makeSourceBuilderInformationOfUnsignedInteger(
 			String itemName, String nativeItemDefaultValue, String nativeItemSize,
 			String nativeItemCharset) throws IllegalArgumentException {
@@ -757,6 +820,15 @@ public class SingleItemInfo extends AbstractItemInfo {
 		this.JavaLangClassCastingTypeOfItemType = "Long";
 	}
 
+	/**
+	 * 'long' 타입에 대한 빌드 정보를 만든다.
+	 *  
+	 * @param itemName 항목 이름
+	 * @param nativeItemDefaultValue 디폴트 값
+	 * @param nativeItemSize 항목 크기
+	 * @param nativeItemCharset 문자셋
+	 * @throws IllegalArgumentException 파라미터가 잘못되엇을 경우 던지는 예외
+	 */	
 	private void makeSourceBuilderInformationOfLong(
 			String itemName, String nativeItemDefaultValue, String nativeItemSize,
 			String nativeItemCharset) throws IllegalArgumentException {
@@ -795,6 +867,16 @@ public class SingleItemInfo extends AbstractItemInfo {
 		this.JavaLangClassCastingTypeOfItemType = "Long";
 	}
 
+	/**
+	 * 파라미터 'pascalStringGubun' 로 지정한  'pascal string' 타입에 대한 빌드 정보를 만든다.
+	 *  
+	 * @param pascalStringGubun 파스칼 문자열 종류, 총 3가지 'ub', 'us', 'si' 가 있다.
+	 * @param itemName 항목 이름
+	 * @param nativeItemDefaultValue 디폴트 값
+	 * @param nativeItemSize 항목 크기
+	 * @param nativeItemCharset 문자셋
+	 * @throws IllegalArgumentException 파라미터가 잘못되엇을 경우 던지는 예외
+	 */
 	private void makeSourceBuilderInformationOfPascalString(
 			String pascalStringGubun, String itemName, String nativeItemDefaultValue,
 			String nativeItemSize, String nativeItemCharset)
@@ -861,6 +943,15 @@ public class SingleItemInfo extends AbstractItemInfo {
 		JavaLangClassCastingTypeOfItemType = "String";
 	}
 
+	/**
+	 * 'fixed length string' 타입에 대한 빌드 정보를 만든다.
+	 *  
+	 * @param itemName 항목 이름
+	 * @param nativeItemDefaultValue 디폴트 값
+	 * @param nativeItemSize 항목 크기
+	 * @param nativeItemCharset 문자셋
+	 * @throws IllegalArgumentException 파라미터가 잘못되엇을 경우 던지는 예외
+	 */	
 	private void makeSourceBuilderInformationOfFixedLengthString(
 			String itemName, String nativeItemDefaultValue, String nativeItemSize,
 			String nativeItemCharset) throws IllegalArgumentException {
@@ -938,6 +1029,16 @@ public class SingleItemInfo extends AbstractItemInfo {
 		JavaLangClassCastingTypeOfItemType = "String";
 	}
 
+	/**
+	 * 파라미터 'variableLengthByteArrayType' 로 지정한  'variable length byte[]' 타입에 대한 빌드 정보를 만든다.
+	 *  
+	 * @param variableLengthByteArrayType 'variable length byte' 타입 종류, 총 3가지 'ub', 'us', 'si' 가 있다.
+	 * @param itemName 항목 이름
+	 * @param nativeItemDefaultValue 디폴트 값
+	 * @param nativeItemSize 항목 크기
+	 * @param nativeItemCharset 문자셋
+	 * @throws IllegalArgumentException 파라미터가 잘못되엇을 경우 던지는 예외
+	 */
 	private void makeSourceBuilderInformationOfVariableLengthByteArray(
 			String variableLengthByteArrayType, String itemName,
 			String nativeItemDefaultValue, String nativeItemSize, String nativeItemCharset)
@@ -990,6 +1091,15 @@ public class SingleItemInfo extends AbstractItemInfo {
 		JavaLangClassCastingTypeOfItemType = "byte[]";
 	}
 	
+	/**
+	 * 'fixed length byte[]' 타입에 대한 빌드 정보를 만든다.
+	 *  
+	 * @param itemName 항목 이름
+	 * @param nativeItemDefaultValue 디폴트 값
+	 * @param nativeItemSize 항목 크기
+	 * @param nativeItemCharset 문자셋
+	 * @throws IllegalArgumentException 파라미터가 잘못되엇을 경우 던지는 예외
+	 */	
 	private void makeSourceBuilderInformationOfFixedLengthByteArray(
 			String itemName, String nativeItemDefaultValue, String nativeItemSize,
 			String nativeItemCharset) throws IllegalArgumentException {
@@ -1042,6 +1152,15 @@ public class SingleItemInfo extends AbstractItemInfo {
 		JavaLangClassCastingTypeOfItemType = "byte[]";
 	}
 	
+	/**
+	 * 'java sql date' 타입에 대한 빌드 정보를 만든다.
+	 *  
+	 * @param itemName 항목 이름
+	 * @param nativeItemDefaultValue 디폴트 값
+	 * @param nativeItemSize 항목 크기
+	 * @param nativeItemCharset 문자셋
+	 * @throws IllegalArgumentException 파라미터가 잘못되엇을 경우 던지는 예외
+	 */	
 	private void makeSourceBuilderInformationOfJavaSqlDate(
 			String itemName, String nativeItemDefaultValue, String nativeItemSize,
 			String nativeItemCharset) throws IllegalArgumentException {
@@ -1074,6 +1193,15 @@ public class SingleItemInfo extends AbstractItemInfo {
 		JavaLangClassCastingTypeOfItemType = "java.sql.Date";
 	}
 	
+	/**
+	 * 'java sql timestamp' 타입에 대한 빌드 정보를 만든다.
+	 *  
+	 * @param itemName 항목 이름
+	 * @param nativeItemDefaultValue 디폴트 값
+	 * @param nativeItemSize 항목 크기
+	 * @param nativeItemCharset 문자셋
+	 * @throws IllegalArgumentException 파라미터가 잘못되엇을 경우 던지는 예외
+	 */
 	private void makeSourceBuilderInformationOfJavaSqlTimestamp(
 			String itemName, String nativeItemDefaultValue, String nativeItemSize,
 			String nativeItemCharset) throws IllegalArgumentException {
@@ -1106,6 +1234,15 @@ public class SingleItemInfo extends AbstractItemInfo {
 		JavaLangClassCastingTypeOfItemType = "java.sql.Timestamp";
 	}
 	
+	/**
+	 * boolean 타입에 대한 빌드 정보를 만든다.
+	 *  
+	 * @param itemName 항목 이름
+	 * @param nativeItemDefaultValue 디폴트 값
+	 * @param nativeItemSize 항목 크기
+	 * @param nativeItemCharset 문자셋
+	 * @throws IllegalArgumentException 파라미터가 잘못되엇을 경우 던지는 예외
+	 */
 	private void makeSourceBuilderInformationOfBoolean(
 			String itemName, String nativeItemDefaultValue, String nativeItemSize,
 			String nativeItemCharset) throws IllegalArgumentException {

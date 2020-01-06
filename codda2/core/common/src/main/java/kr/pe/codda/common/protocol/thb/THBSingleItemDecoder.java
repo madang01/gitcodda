@@ -34,9 +34,13 @@ public class THBSingleItemDecoder implements SingleItemDecoderIF {
 	private Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
 	
 	
-	private THBSingleItemDecoderMatcherIF thbSingleItemDecoderMacher = null;
+	private THBSingleItemTypeDecoderMatcherIF thbSingleItemDecoderMacher = null;
 	
-	public THBSingleItemDecoder(THBSingleItemDecoderMatcherIF thbSingleItemDecoderMacher) {
+	/**
+	 * 생성자
+	 * @param thbSingleItemDecoderMacher THB 프로토콜 단일 항목 타입의 디코더 매칭자
+	 */
+	public THBSingleItemDecoder(THBSingleItemTypeDecoderMatcherIF thbSingleItemDecoderMacher) {
 		if (null == thbSingleItemDecoderMacher) {
 			throw new IllegalArgumentException("the parameter thbSingleItemDecoderMacher is null");
 		}
@@ -47,7 +51,7 @@ public class THBSingleItemDecoder implements SingleItemDecoderIF {
 	@Override
 	public Object getValue(String path, String itemName,
 			SingleItemType singleItemType, int itemSize,
-			String nativeItemCharset, Object readableMiddleObject) throws BodyFormatException {
+			String nativeItemCharset, Object receivedMiddleObject) throws BodyFormatException {
 		if (null == path) {
 			throw new IllegalArgumentException("the parameter path is null");
 		}
@@ -59,13 +63,13 @@ public class THBSingleItemDecoder implements SingleItemDecoderIF {
 			throw new IllegalArgumentException("the parameter singleItemType is null");
 		}
 		
-		if (null == readableMiddleObject) {
+		if (null == receivedMiddleObject) {
 			throw new IllegalArgumentException("the parameter readableMiddleObject is null");
 		}
 		
-		if (!(readableMiddleObject instanceof StreamBuffer)) {
-			String errorMessage = new StringBuilder("the parameter readableMiddleObject's class[")
-					.append(readableMiddleObject.getClass().getCanonicalName())
+		if (!(receivedMiddleObject instanceof StreamBuffer)) {
+			String errorMessage = new StringBuilder("the parameter receivedMiddleObject's class[")
+					.append(receivedMiddleObject.getClass().getCanonicalName())
 					.append("] is not a StreamBuffer class").toString();
 			throw new IllegalArgumentException(errorMessage);
 		}
@@ -73,10 +77,10 @@ public class THBSingleItemDecoder implements SingleItemDecoderIF {
 		int itemTypeID = singleItemType.getItemTypeID();
 		String itemTypeName = singleItemType.getItemTypeName();
 		
-		StreamBuffer binaryInputStream = (StreamBuffer)readableMiddleObject;
+		StreamBuffer binaryInputStream = (StreamBuffer)receivedMiddleObject;
 		Object retObj = null;
 		try {
-			AbstractTHBSingleItemDecoder thbTypeSingleItemDecoder = thbSingleItemDecoderMacher.get(itemTypeID);
+			AbstractTHBSingleItemTypeDecoder thbTypeSingleItemDecoder = thbSingleItemDecoderMacher.getSingleItemDecoder(itemTypeID);
 			
 			retObj = thbTypeSingleItemDecoder.getValue(itemTypeID, itemName, itemSize, nativeItemCharset, binaryInputStream);
 		} catch(IllegalArgumentException e) {

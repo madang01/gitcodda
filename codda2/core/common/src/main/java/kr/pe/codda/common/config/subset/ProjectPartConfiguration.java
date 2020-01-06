@@ -109,7 +109,11 @@ public class ProjectPartConfiguration {
 	
 	/************* server 변수 종료 ******************/
 	
-	
+	/**
+	 * 생성자
+	 * @param projectType 프로젝트 종류, 메인프로젝트와 서브 프로젝트로 나뉜다.
+	 * @param projectName 프로젝트 이름
+	 */
 	public ProjectPartConfiguration(ProjectType projectType, String projectName) {
 		this.projectName = projectName;
 		this.projectType = projectType;
@@ -121,14 +125,23 @@ public class ProjectPartConfiguration {
 		}
 	}
 	
+	/**
+	 * @return 서버 호스트 주소
+	 */
 	public String getServerHost() {
 		return serverHost;
 	}
 
+	/**
+	 * @return 서버 포트 번호
+	 */
 	public int getServerPort() {
 		return serverPort;
 	}
 
+	/**
+	 * @return 바이트 오더
+	 */
 	public ByteOrder getByteOrder() {
 		return byteOrder;
 	}

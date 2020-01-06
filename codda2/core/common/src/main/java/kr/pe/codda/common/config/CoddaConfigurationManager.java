@@ -28,7 +28,13 @@ import kr.pe.codda.common.exception.CoddaConfigurationException;
 import kr.pe.codda.common.util.CommonStaticUtil;
 
 /**
- * 코다 설정 관리자
+ * <pre>
+ * 코다 설정 관리자.
+ * 
+ * 자바 시스템 환경 설정 변수 2를 참고하여 환경 설정 파일을 읽어와 적재한다.
+ * 첫번째 {@link CommonStaticFinalVars#JAVA_SYSTEM_PROPERTIES_KEY_RUNNING_PROJECT_NAME} 는 메인 프로젝트 이름
+ * 마지막 두번째 {@link CommonStaticFinalVars#JAVA_SYSTEM_PROPERTIES_KEY_INSTALLED_PATH} 는 설치 경로 
+ * </pre>
  * 
  * @author Won Jonghoon
  * 

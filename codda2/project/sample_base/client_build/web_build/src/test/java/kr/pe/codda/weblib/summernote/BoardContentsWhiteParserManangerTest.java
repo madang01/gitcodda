@@ -262,4 +262,280 @@ public class BoardContentsWhiteParserManangerTest {
 		}
 	}
 
+	
+	@Test
+	public void test_summernote에서이미지를코드보기를통해강제적으로img태그로변경했을경우무사통과여부검사_ok() {
+		String contents = "<p><span style=\"color: rgb(51, 51, 51); white-space: pre-line;\">제목 : 데비안에서 codda 개발 환경 구축하기\r\n" + 
+				"작성일 : 2019년 5월 4일\r\n" + 
+				"작성자 : Won Jonghoon\r\n" + 
+				"\r\n" + 
+				"\r\n" + 
+				"(0) 시작하기 앞서 알아 두어야할 사항\r\n" + 
+				"첫번째 보안을 위해서 git 에 DB 계정 혹은 개인 메일 계정의 아이디와 비밀번호를 올리지 않도록 주의하시기 바랍니다.\r\n" + 
+				"\r\n" + 
+				"두번째 서버로 운영해야 하기때문에 자동 IP 가 아닌 수동으로 설정한 IP 이어야 합니다. 코다 개발 환경을 구축할 PC 는 OS 로 데비안 9.9 가 설치되었으며 IP 주소는 172.30.1.15 를 갖습니다.\r\n" + 
+				"자신의 PC 환경에 맞게 IP 와 와 DB 계정 비밀번호를 바꾸어 주시면 됩니다.\r\n" + 
+				"DB 계정 비밀번호가 test1234 라면 아래 howto 문서에 있는 'root비밀번호' 로 표시된 부분에서 작은 따옴표 안에 자신의 비밀번호를 넣어 'test1234' 로 수정하시면 됩니다.\r\n" + 
+				"\r\n" + 
+				"세번째 아파치 &amp; tomcat 은 계속 진화중인지라 각 버전마다 설장 방법이 조금씩 다를 수 있습니다.\r\n" + 
+				"\r\n" + 
+				"네번째 sample_base' 라는 프로젝트는 코다 코어 라이브러리를 활용하여 코다 커뮤니트 사이트를 구축할 목적으로 만든 프로젝트입니다.\r\n" + 
+				"코다 커뮤니트 사이트에서 비밀번호 찾기 메뉴에서 메일 서버가 필요한데 git 에 올려진 메일 서버 설정(=&gt; gitmadang/codda/project/sample_base/resources/email.properties)은 가짜 메일 서버에 맞춘것입니다.\r\n" + 
+				"메일 서버 설치및 운영은 매우 복잡하기때문에 네이버, 다음, 구글등 외부 메일 서버를 이용하는것을 권장합니다.\r\n" + 
+				"외부 메일 서버 설정은 &lt;a href=\"http://blog.naver.com/jmkoo02/20199969614\"&gt;\"Java Mail API 활용:주요 포털 웹메일 IMAP/SMTP 설정 정보\"&lt;/a&gt; 블로그를 참고해 주시기 바랍니다.\r\n" + 
+				"\r\n" + 
+				"다섯번째 mariadb 는 대소문자 구별 없는것에 맞추어져 있으므로 꼭 대소문자 구별 없두록 설정을 해 주어야 합니다.\r\n" + 
+				"\r\n" + 
+				"\r\n" + 
+				"여섯째 코다의 과거 이름은 신놀이 였으며 그때 사용한 도메인이 www.sinnori.pe.kr 입니다. 통합 테스트를 위해서 이 도메인으로 가 오픈할 예정입니다.\r\n" + 
+				"\r\n" + 
+				"일곱번째 아래 필요한 파일들을 설치해서인지 ant 가 자동으로 설치된것을 확인할 수 있습니다. 만약에 ant 가 없다면 ant 도 추가해 주시기 바랍니다.\r\n" + 
+				"\r\n" + 
+				"------------ 필요한 파일 설치 파트 시작 ------------\r\n" + 
+				"(1) apt-get install git\r\n" + 
+				"(2) apt-get install default-jdk\r\n" + 
+				"(3) apt-get install mariadb-server\r\n" + 
+				"(4) apt-get install apache2\r\n" + 
+				"(5) apt-get install tomcat8\r\n" + 
+				"(6) apt-get install libapache2-mod-jk\r\n" + 
+				"(7) apt-get install mysql-workbench\r\n" + 
+				"------------ 필요한 파일 설치 파트 종료 ------------\r\n" + 
+				"\r\n" + 
+				"------------ 기타 유틸 설치 파트 시작 ------------\r\n" + 
+				"(1) apt-get install net-tools\r\n" + 
+				"------------ 기타 유틸 설치 파트 종료 ------------\r\n" + 
+				"\r\n" + 
+				"\r\n" + 
+				"\r\n" + 
+				"------------ codda 소스 다운로드및 개발 환경 구축하기 시작 ------------\r\n" + 
+				"(1) git clone https://github.com/madang01/gitmadang.git gitmadang\r\n" + 
+				"(2) cd gitmadang\r\n" + 
+				"(3) cd codda\r\n" + 
+				"(4) chmod u+x Helper.sh\r\n" + 
+				"(5) 코다 도우미 유틸을 통해 설치 경로 적용\r\n" + 
+				"(5-1) ./Helper.sh\r\n" + 
+				"(5-2) 코다 도우미 첫화면에서 \"All Main Project Manger\" 버튼 클릭\r\n" + 
+				"<img src=\"/img/howto/codda_helper_screenshot01.png\">\r\n" + 
+				"</span></p><p><span style=\"color: rgb(51, 51, 51); white-space: pre-line;\">(5-3) 설치 경로 지정 화면에서 설치 경로를 입력후 \"Next\" 버튼 클릭\r\n" + 
+				"<img src=\"/img/howto/codda_helper_screenshot02.png\" style=\"width: 50%;\">\r\n" + 
+				"</span></p><p><span style=\"color: rgb(51, 51, 51); white-space: pre-line;\">(5-4) \"All Main Project Manger\" 화면에서 \"apply Codda installed path to all project\" 버튼 클릭\r\n" + 
+				"<img src=\"/img/howto/codda_helper_screenshot03.png\" style=\"width: 50%;\">\r\n" + 
+				"(5-5) 창종료\r\n" + 
+				"(6) 코다 코어 컴파일후 복사 하기\r\n" + 
+				"(6-1) /home/madang01/gitmadang/codda/core/all/ 경로에 들어가서 ant\r\n" + 
+				"(6-2) /home/madang01/gitmadang/codda/core/helper/ 경로에 들어가서 ant\r\n" + 
+				"(6-3) /home/madang01/gitmadang/codda/project/sample_base/server_build/ 경로 들어가서 ant copy.core\r\n" + 
+				"(6-4) /home/madang01/gitmadang/codda/project/sample_base/client_build/app_build/ 경로 들어가서 ant copy.core\r\n" + 
+				"(6-4) /home/madang01/gitmadang/codda/project/sample_base/client_build/web_build/ 경로 들어가서 ant copy.core\r\n" + 
+				"\r\n" + 
+				"(7) eclipse 환경 구축\r\n" + 
+				"(7-1) 이클립스를 다운로드 받는다\r\n" + 
+				"wget -O eclipse.tar.gz 'https://www.eclipse.org/downloads/download.php?file=/technology/epp/downloads/release/neon/1a/eclipse-java-neon-1a-linux-gtk-x86_64.tar.gz&amp;r=1'\r\n" + 
+				"(7-2) eclipse.tar.gz 압축을 푼후 이클립스를 구동시킨다.\r\n" + 
+				"(7-3) 이때 workspace 를 ~ 바로 밑에 생성한다.\r\n" + 
+				"(7-4) cp -r /home/madang01/gitmadang/codda/resources/eclipse/workbench/* ~/workspace\r\n" + 
+				"(7-5) eclipse 실행상태에서 import 메뉴 ==&gt; \"General\" ==&gt; \"Existing Projects into Workspace\" 를 선택하여 아래 이클립스 프로젝트인\r\n" + 
+				"codda_logger, codda_helper, codda_core_all, codda_sample_base_server, codda_sample_base_appclient, codda_sample_base_webclient 차례대로 포함시킨다.\r\n" + 
+				"참고) codda_sample_base_webclient 이클립스 프로젝트는 tomcat 서블릿 라이브러리인\r\n" + 
+				"/usr/share/tomcat8/lib/servlet-api.jar, /usr/share/tomcat8/lib/jsp-api.jar\r\n" + 
+				"2개 파일을 수동으로 추가시켜야 합니다.\r\n" + 
+				"\r\n" + 
+				"(8) /home/madang01/gitmadang/codda/project/sample_base/client_build/web_build/webAnt.properties 에서 servlet.systemlib.path 의 값을 /usr/share/tomcat8/lib 로 수정할것\r\n" + 
+				"\r\n" + 
+				"(9) /home/madang01/gitmadang/codda/project/sample_base/user_web_app_base/ROOT/userWebsiteMenuInfo.txt 의 그룹을 tomcat8 로 바꾼후 그룹에 쓰기 권한을 주어야 관라지 홈피 메뉴 관리자에서 사용자 홈피의 메뉴 갱신을 할 수 있습니다.\r\n" + 
+				"\r\n" + 
+				"(10) /home/madang01/gitmadang/codda/core/common/src/test/java/junitlib/AbstractJunitTest.java 에서\r\n" + 
+				"하드 코딩된 경로를 설치 기본 경로 /home/madang01/gitmadang 으로 그리고 tomcat 라이브러리 경로를 /usr/share/tomcat8/lib 로 수정할것\r\n" + 
+				"\r\n" + 
+				"(11) 아파치와 톰캣의 로그 경로에 대한 소유자 변경및 쓰기 권한 부여\r\n" + 
+				"(11-1) 아파치 로그\r\n" + 
+				"chgrp www-data /home/madang01/gitmadang/codda/project/sample_base/log/apache\r\n" + 
+				"chmod g+w /home/madang01/gitmadang/codda/project/sample_base/log/apache\r\n" + 
+				"(11-2) 톰캣 로그\r\n" + 
+				"chgrp tomcat8 /home/madang01/gitmadang/codda/project/sample_base/log/tomcat\r\n" + 
+				"chmod g+w /home/madang01/gitmadang/codda/project/sample_base/log/tomcat\r\n" + 
+				"\r\n" + 
+				"------------- codda 개발 환경을 위한 파일 퍼미션 변경 종료 -------------\r\n" + 
+				"\r\n" + 
+				"\r\n" + 
+				"\r\n" + 
+				"------------ mariadb db 서버 설치및 환경 설정 시작 ------------\r\n" + 
+				"(1) mariadb 원격 접속 허용및 대소문자 구별 없애기 설정\r\n" + 
+				"(1-1) /etc/mysql/mariadb.conf.d/50-server.cnf 파일에서 bind-address = 127.0.0.1 앞에 # 을 붙여 주석 처리하기\r\n" + 
+				"(1-2) 바로 아래줄에 lower_case_table_names = 1 추가\r\n" + 
+				"(1-3) mariadb 리스타트 ==&gt; /etc/init.d/mysql restart\r\n" + 
+				"\r\n" + 
+				"(2) mariadb root 비밀번호 설정\r\n" + 
+				"\r\n" + 
+				"참고 주소 : https://sarc.io/index.php/mariadb/931-mysql-mariadb-update-root-password\r\n" + 
+				"\r\n" + 
+				"(2-1) mysql -u root\r\n" + 
+				"(2-2) DB root 계정 비밀번호 설정\r\n" + 
+				"\r\n" + 
+				"MariaDB [(none)]&gt; use mysql;\r\n" + 
+				"Reading table information for completion of table and column names\r\n" + 
+				"You can turn off this feature to get a quicker startup with -A\r\n" + 
+				"\r\n" + 
+				"Database changed\r\n" + 
+				"MariaDB [mysql]&gt; update user set password=password('root비밀번호') where user='root';\r\n" + 
+				"Query OK, 1 row affected (0.00 sec)\r\n" + 
+				"Rows matched: 1 Changed: 1 Warnings: 0\r\n" + 
+				"\r\n" + 
+				"MariaDB [mysql]&gt; flush privileges;\r\n" + 
+				"\r\n" + 
+				"(2-3) root 계정 원격에서 접속 허용하기\r\n" + 
+				"\r\n" + 
+				"MariaDB [(none)]&gt; GRANT ALL PRIVILEGES ON *.* TO 'root'@'172.30.1.15' IDENTIFIED BY 'root비밀번호' WITH GRANT OPTION;\r\n" + 
+				"Query OK, 0 rows affected (0.00 sec)\r\n" + 
+				"\r\n" + 
+				"\r\n" + 
+				"참고 주소 : https://mariadb.com/kb/en/library/configuring-mariadb-for-remote-client-access/\r\n" + 
+				"\r\n" + 
+				"\r\n" + 
+				"(3) workbench 설정\r\n" + 
+				"(3-1) workbench 초기 화면\r\n" + 
+				"<img src=\"/img/howto/workbench_screenshot01.png\" style=\"width: 50%;\">\r\n" + 
+				"</span></p><p><span style=\"color: rgb(51, 51, 51); white-space: pre-line;\">(3-2) 기본적으로 있는 \"Local instance 3306\" 에 마우스 우클릭으로 펼쳐진 메뉴에서 \"Edit Connection...\" 선택\r\n" + 
+				"<img src=\"/img/howto/workbench_screenshot02.png\" style=\"width: 50%;\">\r\n" + 
+				"</span></p><p><span style=\"color: rgb(51, 51, 51); white-space: pre-line;\">(3-3) \"Connection\" tab -&gt; \"Parameters\" tab 에서 Hostname 항목에 172.30.1.15 입력후 \"Store in Keychain ...\" 버튼 클릭하여 비밀번호 설정후 \"Test Connection\" 버튼 클릭하여 연결 테스트하여 정상 연결되면 \"close\" 버튼 클릭\r\n" + 
+				"<img src=\"/img/howto/workbench_screenshot03.png\" style=\"width: 50%;\">\r\n" + 
+				"</span></p><p><span style=\"color: rgb(51, 51, 51); white-space: pre-line;\">(3-4) \"Local instance 3306\" 버튼 클릭후 \"Connection Warning\" 경고창에서 \"Continue Anyway\" 버튼 클릭\r\n" + 
+				"<img src=\"/img/howto/workbench_screenshot04.png\" style=\"width: 50%;\">\r\n" + 
+				"(3-5) workbench 정상 접속 화면\r\n" + 
+				"<img src=\"/img/howto/workbench_screenshot05.png\" style=\"width: 50%;\">\r\n" + 
+				"(3-6) \"sample_base_db_erd.mwb\" 파일을 열어 Databse -&gt; Synchronize Model 메뉴을 선택하여 'sb_db', 'gt_sb_db', 'lt_sb_db' 각 스키마 생성후 madangshoe01 계정을 새로 만들때 select, insert, update, delete 권한을 줄것\r\n" + 
+				"\r\n" + 
+				"\r\n" + 
+				"(4) /home/madang01/gitmadang/codda/project/sample_base/server_build 경로로 들어가서\r\n" + 
+				"src/main/java/main/SeverMain.java 에 하드코딩된 admin 계정의 비밀번호를 바꾼후\r\n" + 
+				"컴파일 한후 sh sample_baseServer.sh 을 실행하여 DB 설정이 잘되어 서버 실행이 잘되는지를 확인합니다.\r\n" + 
+				"\r\n" + 
+				"------------ db 서버 설치및 환경 설정 종료 ------------\r\n" + 
+				"\r\n" + 
+				"\r\n" + 
+				"------------ 아파치 &amp; tomcat 설정 시작 ------------\r\n" + 
+				"(1) 아파치 &amp; tomcat 설정\r\n" + 
+				"(1-1) 아파치에 가상 호스트 등록\r\n" + 
+				"/home/madang01/gitmadang/codda/resources/tomcat/debian/vhost1.conf 파일을 /etc/apache2/sites-available/ 로 복사후 자기 환경에 맞게 수정\r\n" + 
+				"cp /home/madang01/gitmadang/codda/resources/tomcat/debian/vhost1.conf /etc/apache2/sites-available/\r\n" + 
+				"\r\n" + 
+				"### vhost1.conf file 내용 시작 ###\r\n" + 
+				"&lt;virtualhost www.sinnori.pe.kr&gt;\r\n" + 
+				"JkMount /*.jsp ajp13_worker\r\n" + 
+				"JkMount /servlet/* ajp13_worker\r\n" + 
+				"ServerName www.codda.pe.kr\r\n" + 
+				"ServerAdmin k9200544@hanmail.net\r\n" + 
+				"DocumentRoot /home/madang01/gitmadang/codda/project/sample_base/user_web_app_base/ROOT\r\n" + 
+				"ErrorLog /home/madang01/gitmadang/codda/project/sample_base/log/apache/error.log\r\n" + 
+				"CustomLog /home/madang01/gitmadang/codda/project/sample_base/log/apache/access.log common\r\n" + 
+				"&lt;directory /home/madang01/gitmadang/codda/project/sample_base/user_web_app_base/ROOT&gt;\r\n" + 
+				"Require all granted\r\n" + 
+				"&lt;/directory&gt;\r\n" + 
+				"&lt;/virtualhost&gt;\r\n" + 
+				"### vhost1 file 내용 종료 ###\r\n" + 
+				"\r\n" + 
+				"(1-2) tomcat bin 경로(ex /usr/share/tomcat8/bin/)에 /home/madang01/gitmadang/codda/resources/tomcat/debian/ 경로에 있는 setenv.sh 을 복사호 chmod a+x 해 줍니다.\r\n" + 
+				"\r\n" + 
+				"### setenv.sh file 내용 시작 ###\r\n" + 
+				"#!/bin/sh\r\n" + 
+				"export CODDA_HOME=/home/madang01/gitmadang/codda\r\n" + 
+				"export PROJECT_NAME=sample_base\r\n" + 
+				"export WEB_BUILD_HOME=$CODDA_HOME/project/$PROJECT_NAME/client_build/web_build\r\n" + 
+				"export WEB_CORELIB_PATH=$WEB_BUILD_HOME/corelib/ex\r\n" + 
+				"export WEB_MAINLIB_PATH=$WEB_BUILD_HOME/lib/main/ex\r\n" + 
+				"export CLASSPATH=$CATALINA_HOME/lib/servlet-api.jar;$CATALINA_HOME/lib/jsp-api.jar;$WEB_BUILD_HOME/dist/CoddaWebLib.jar\r\n" + 
+				"\r\n" + 
+				"for jarfile in $WEB_CORELIB_PATH/*.jar\r\n" + 
+				"do\r\n" + 
+				"export CLASSPATH=$CLASSPATH:${jarfile}\r\n" + 
+				"done\r\n" + 
+				"\r\n" + 
+				"for jarfile in $WEB_MAINLIB_PATH/*.jar\r\n" + 
+				"do\r\n" + 
+				"export CLASSPATH=$CLASSPATH:${jarfile}\r\n" + 
+				"done\r\n" + 
+				"\r\n" + 
+				"echo $CLASSPATH\r\n" + 
+				"\r\n" + 
+				"export JAVA_OPTS=\"$JAVA_OPTS \\\r\n" + 
+				"-Dfile.encoding=UTF-8 \\\r\n" + 
+				"-Dlogback.configurationFile=$CODDA_HOME/project/$PROJECT_NAME/config/logback.xml \\\r\n" + 
+				"-Dcodda.logPath=$CODDA_HOME/project/$PROJECT_NAME/log/tomcat \\\r\n" + 
+				"-Dcodda.installedPath=$CODDA_HOME \\\r\n" + 
+				"-Dcodda.projectName=$PROJECT_NAME\"\r\n" + 
+				"### setenv.sh file 내용 종료 ###\r\n" + 
+				"\r\n" + 
+				"(1-3) tomcat 에서 AJP 활성화\r\n" + 
+				"아파치 server.xml(=&gt; /etc/tomcat8/server.xml) 파일에서 AJP 활성화\r\n" + 
+				"server.xml 를 보면 “Define an AJP 1.3 Connector on port 8009” 이\r\n" + 
+				"부분이 있다. &lt;Connector port=\"8009\" protocol=\"AJP/1.3\"\r\n" + 
+				"redirectPort=\"8443\" /&gt; 부분의 주석을 풀어 준다.\r\n" + 
+				"\r\n" + 
+				"(1-4) 아파치 신규 등록한 vhost 활성화\r\n" + 
+				"a2ensite vhost1\r\n" + 
+				"\r\n" + 
+				"(1-5) tomcat UTF8 세팅\r\n" + 
+				"web.xml(ex D:\\apache-tomcat-8.5.32\\conf\\web.xml, /etc/tomcat8/web.xml) 파일 에서\r\n" + 
+				"웹 파라미터 값을 UTF8 문자열로 다루기 위한 조취로\r\n" + 
+				"아래 처럼 2 군데 주석(첫번째 : 첫번째 UTF8 을 갖는 문자열 인코딩 필터 정의 부,\r\n" + 
+				"두번째 : 두번째 UTF8 문자열 인코딩 필터 URL 매칭 정의 부)을 풀어준다.\r\n" + 
+				"\r\n" + 
+				"# 첫번째 UTF8 을 갖는 문자열 인코딩 필터 정의 부\r\n" + 
+				"&lt;filter&gt;\r\n" + 
+				"&lt;filter-name&gt;setCharacterEncodingFilter&lt;/filter-name&gt;\r\n" + 
+				"&lt;filter-class&gt;org.apache.catalina.filters.SetCharacterEncodingFilter&lt;/filter-class&gt;\r\n" + 
+				"&lt;init-param&gt;\r\n" + 
+				"&lt;param-name&gt;encoding&lt;/param-name&gt;\r\n" + 
+				"&lt;param-value&gt;UTF-8&lt;/param-value&gt;\r\n" + 
+				"&lt;/init-param&gt;\r\n" + 
+				"&lt;async-supported&gt;true&lt;/async-supported&gt;\r\n" + 
+				"&lt;/filter&gt;\r\n" + 
+				"\r\n" + 
+				"# 두번째 UTF8 문자열 인코딩 필터 URL 매칭 정의 부\r\n" + 
+				"&lt;filter-mapping&gt;\r\n" + 
+				"&lt;filter-name&gt;setCharacterEncodingFilter&lt;/filter-name&gt;\r\n" + 
+				"&lt;url-pattern&gt;/*&lt;/url-pattern&gt;\r\n" + 
+				"&lt;/filter-mapping&gt;\r\n" + 
+				"\r\n" + 
+				"\r\n" + 
+				"(1-6) tomcat 에서 호스트 등록\r\n" + 
+				"아파치 server.xml(=&gt; /etc/tomcat8/server.xml) 파일에서 아래 2개 호스트 등록\r\n" + 
+				"Host 태그로 문자열 찾아 들어가면 그곳에 기본으로 설정된 로컬 호스트가 등록되어 있습니다. 그 아래에 추가하시면 됩니다.\r\n" + 
+				"\r\n" + 
+				"&lt;!-- 일반 사용자 사이트 --&gt;\r\n" + 
+				"&lt;Host name=\"www.sinnori.pe.kr\" appBase=\"/home/madang01/gitmadang/codda/project/sample_base/user_web_app_base\" unpackWARs=\"true\" autoDeploy=\"true\"&gt;\r\n" + 
+				"&lt;Context path=\"\" docBase=\"ROOT\" debug=\"0\" reloadable=\"true\"/&gt;\r\n" + 
+				"&lt;Valve className=\"org.apache.catalina.valves.AccessLogValve\" directory=\"/home/madang01/gitmadang/codda/project/sample_base/log/tomcat\" prefix=\"tomcat_access_www_\" suffix=\".log\" pattern=\"%h %l %u %t &amp;quot;%r&amp;quot; %s %b\" resolveHosts=\"false\"/&gt;\r\n" + 
+				"&lt;/Host&gt;\r\n" + 
+				"\r\n" + 
+				"&lt;!-- 관리자 사이트 --&gt;\r\n" + 
+				"&lt;Host name=\"admin.sinnori.pe.kr\" appBase=\"/home/madang01/gitmadang/codda/project/sample_base/admin_web_app_base\" unpackWARs=\"true\" autoDeploy=\"true\"&gt;\r\n" + 
+				"&lt;Context path=\"\" docBase=\"ROOT\" debug=\"0\" reloadable=\"true\"/&gt;\r\n" + 
+				"&lt;Valve className=\"org.apache.catalina.valves.AccessLogValve\" directory=\"/home/madang01/gitmadang/codda/project/sample_base/log/tomcat\" prefix=\"tomcat_access_admin_\" suffix=\".log\" pattern=\"%h %l %u %t &amp;quot;%r&amp;quot; %s %b\" resolveHosts=\"false\"/&gt;\r\n" + 
+				"&lt;/Host&gt;</span><br></p>";
+		
+		class NewImgTagSrcAttributeValueGetter implements ImageFileURLGetterIF {
+
+			@Override
+			public String getImageFileURL(BoardImageFileInformation boardImageFileInformation)
+					throws WhiteParserException {
+				return "/servlet/DownloadImage?yyyyMMdd=20191229&daySequence=6";
+			}
+		}
+		
+		
+		try {
+			String acutalContents = BoardContentsWhiteParserMananger
+					.getInstance().checkWhiteValue(new NewImgTagSrcAttributeValueGetter(), contents);
+
+			assertEquals(contents, acutalContents);
+			// log.info(acutalContents);
+		} catch (Exception e) {
+			log.log(Level.WARNING, "error", e);
+
+			fail("화이트 값 검사 실패, errmsg=" + e.getMessage());
+		}
+	}
+	
+	
 }
