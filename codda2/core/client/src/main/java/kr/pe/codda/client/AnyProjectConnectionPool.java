@@ -166,8 +166,8 @@ public final class AnyProjectConnectionPool implements AnyProjectConnectionPoolI
 		} else {
 			
 			// FIXME! 환경 변수에 클래스로더 종류에 따라 설정하는 로직 필요함
-			ClassloaderType clientClassloaderType = ClassloaderType.Static;		
-			if (ClassloaderType.Static.equals(clientClassloaderType)) {
+			ClassloaderType clientClassloaderType = ClassloaderType.SYSTEM;		
+			if (ClassloaderType.SYSTEM.equals(clientClassloaderType)) {
 				clientTaskManger = new ClientStaticTaskManger();
 			} else {
 				CoddaConfiguration runningProjectConfiguration = CoddaConfigurationManager.getInstance()

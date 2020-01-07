@@ -63,7 +63,7 @@ public class PathSwingAction extends AbstractAction {
 
 		File sourcePath = null;
 		try {
-			sourcePath =CommonStaticUtil.getValidPath(sourcePathString, readWriteMode);
+			sourcePath =CommonStaticUtil.createValidPath(sourcePathString, readWriteMode);
 		} catch(RuntimeException e) {
 			String errorMessage = e.toString();
 			throw new RuntimeException(String.format("parameter sourcePathTextField[%s]'s value is not a valid path::%s", sourcePathTextField.getName(), errorMessage));

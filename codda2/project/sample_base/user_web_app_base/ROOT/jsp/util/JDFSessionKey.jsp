@@ -37,7 +37,7 @@
 		
 		var privateKey = CryptoJS.enc.Base64.parse(sessionStorage.getItem('<%= WebCommonStaticFinalVars.SESSIONSTORAGE_KEY_NAME_OF_PRIVATEKEY %>'));
 		
-		var messageTxt = CryptoJS.AES.decrypt("<%= getCipheredBase64String(request, 
+		var messageTxt = CryptoJS.<%= WebCommonStaticFinalVars.WEBSITE_JAVASCRIPT_SYMMETRIC_KEY_ALGORITHM_NAME %>.decrypt("<%= getCipheredBase64String(request, 
 				StringEscapeActorUtil.replace(orignalMessage, 
 				STRING_REPLACEMENT_ACTOR_TYPE.ESCAPEHTML4,
 				STRING_REPLACEMENT_ACTOR_TYPE.LINE2BR)) %>", privateKey, { mode: CryptoJS.mode.CBC, padding: CryptoJS.pad.Pkcs7, iv: pageIV });

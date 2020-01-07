@@ -34,11 +34,22 @@ import javax.crypto.NoSuchPaddingException;
 import kr.pe.codda.common.etc.CommonStaticFinalVars;
 import kr.pe.codda.common.exception.SymmetricException;
 
+/**
+ * 클라이언트용 RSA
+ * 
+ * @author Won Jonghoon
+ *
+ */
 public class ClientRSA implements ClientRSAIF {
 	private Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);	
 	
 	private final byte[] publicKeyBytes;	
 	
+	/**
+	 * 생성자
+	 * @param publicKeyBytes 공개키 바이트 배열
+	 * @throws SymmetricException 암호화 관련 처리중 에러 발생시 던지는 예외
+	 */
 	public ClientRSA(byte[] publicKeyBytes) throws SymmetricException {
 		if (null == publicKeyBytes) {
 			throw new IllegalArgumentException("the parameter publicKeyBytes is null");
@@ -46,11 +57,13 @@ public class ClientRSA implements ClientRSAIF {
 		
 		this.publicKeyBytes = publicKeyBytes;		
 	}
-	
+
+	@Override
 	public byte[] getDupPublicKeyBytes() {		
 		return Arrays.copyOf(publicKeyBytes, publicKeyBytes.length);
 	}
 	
+	@Override
 	public byte[] encrypt(byte plainTextBytes[]) throws SymmetricException {
 		if (null == plainTextBytes) {
 			throw new IllegalArgumentException("the parameter plainTextBytes is null");

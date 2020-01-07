@@ -149,7 +149,7 @@ public class IOFIleSetBuilderPanel extends JPanel implements FileFunctionManager
 	 * @return the valid path
 	 * @throws RuntimeException if the file is not a valid path. then throw it
 	 */
-	private File getValidPathFromTextField(JTextField sourcePathTextField, ReadWriteMode readWriteMode) throws RuntimeException {
+	private File createValidPathFromTextField(JTextField sourcePathTextField, ReadWriteMode readWriteMode) throws RuntimeException {
 		String sourcePathString = sourcePathTextField.getText();
 		if (null == sourcePathString) {
 			String errorMessage = String.format("parameter sourcePathTextField[%s]'s value is null",
@@ -161,7 +161,7 @@ public class IOFIleSetBuilderPanel extends JPanel implements FileFunctionManager
 
 		File sourcePath = null;
 		try {
-			sourcePath =CommonStaticUtil.getValidPath(sourcePathString, readWriteMode);
+			sourcePath =CommonStaticUtil.createValidPath(sourcePathString, readWriteMode);
 		} catch(RuntimeException e) {
 			String errorMessage = e.toString();
 			throw new RuntimeException(String.format("parameter sourcePathTextField[%s]'s value is not a valid path::%s", sourcePathTextField.getName(), errorMessage));
@@ -183,7 +183,7 @@ public class IOFIleSetBuilderPanel extends JPanel implements FileFunctionManager
 			ArrayList<MessageInfo> messageInfoList = new ArrayList<MessageInfo>();
 			
 
-			File messageInfoPath = getValidPathFromTextField(messageInfoPathTextField,  ReadWriteMode.ONLY_READ);
+			File messageInfoPath = createValidPathFromTextField(messageInfoPathTextField,  ReadWriteMode.ONLY_READ);
 			
 			File messageInfoXMLFiles[] = messageInfoPath.listFiles(new XMLFileFilter());
 			
@@ -444,7 +444,7 @@ public class IOFIleSetBuilderPanel extends JPanel implements FileFunctionManager
 		if (firstPathSavingIOFileSetCheckBox.isSelected()) {
 			File firstPathSavingIOFileSet = null;
 			try {
-				firstPathSavingIOFileSet = getValidPathFromTextField(firstPathSavingIOFileSetTextField, ReadWriteMode.READ_WRITE);
+				firstPathSavingIOFileSet = createValidPathFromTextField(firstPathSavingIOFileSetTextField, ReadWriteMode.READ_WRITE);
 			} catch(RuntimeException e) {
 				String errorMessage  = e.toString();
 				log.warn(errorMessage, e);
@@ -459,7 +459,7 @@ public class IOFIleSetBuilderPanel extends JPanel implements FileFunctionManager
 		if (secondPathSavingIOFileSetCheckBox.isSelected()) {
 			File secondPathSavingIOFileSet = null;
 			try {
-				secondPathSavingIOFileSet = getValidPathFromTextField(secondPathSavingIOFileSetTextField, ReadWriteMode.READ_WRITE);
+				secondPathSavingIOFileSet = createValidPathFromTextField(secondPathSavingIOFileSetTextField, ReadWriteMode.READ_WRITE);
 			} catch(RuntimeException e) {
 				String errorMessage  = e.toString();
 				log.warn(errorMessage, e);				
@@ -473,7 +473,7 @@ public class IOFIleSetBuilderPanel extends JPanel implements FileFunctionManager
 		if (thirdPathSavingIOFileSetCheckBox.isSelected()) {
 			File thirdPathSavingIOFileSet = null;
 			try {
-				thirdPathSavingIOFileSet = getValidPathFromTextField(thirdPathSavingIOFileSetTextField,  ReadWriteMode.READ_WRITE);
+				thirdPathSavingIOFileSet = createValidPathFromTextField(thirdPathSavingIOFileSetTextField,  ReadWriteMode.READ_WRITE);
 			} catch(RuntimeException e) {
 				String errorMessage  = e.toString();
 				log.warn(errorMessage, e);				
@@ -499,7 +499,7 @@ public class IOFIleSetBuilderPanel extends JPanel implements FileFunctionManager
 		ArrayList<MessageInfo> messageInfoList = new ArrayList<MessageInfo>();
 		
 
-		File messageInfoPath = getValidPathFromTextField(messageInfoPathTextField,  ReadWriteMode.ONLY_READ);
+		File messageInfoPath = createValidPathFromTextField(messageInfoPathTextField,  ReadWriteMode.ONLY_READ);
 		
 		File messageInfoXMLFiles[] = messageInfoPath.listFiles(new XMLFileFilter());
 		

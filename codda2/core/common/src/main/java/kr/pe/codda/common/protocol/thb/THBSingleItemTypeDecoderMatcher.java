@@ -61,8 +61,8 @@ public class THBSingleItemTypeDecoderMatcher implements THBSingleItemTypeDecoder
 	 * @param streamCharsetFamily 문자셋, 문자셋 인코더 그리고 문자셋 디코더 묶음
 	 */
 	public THBSingleItemTypeDecoderMatcher(StreamCharsetFamily streamCharsetFamily) {
-		if (null == streamCharsetDecoder) {
-			throw new IllegalArgumentException("the parameter streamCharsetDecoder is null");
+		if (null == streamCharsetFamily) {
+			throw new IllegalArgumentException("the parameter streamCharsetFamily is null");
 		}
 		this.streamCharset = streamCharsetFamily.getCharset();
 		this.streamCharsetDecoder = streamCharsetFamily.getCharsetDecoder();

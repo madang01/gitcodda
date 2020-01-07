@@ -40,10 +40,21 @@ import kr.pe.codda.common.exception.SymmetricException;
 import kr.pe.codda.common.util.CommonStaticUtil;
 import kr.pe.codda.common.util.HexUtil;
 
-public abstract class ServerRSAKeypairGetter {
+/**
+ * RSA 키 쌍 유티 추상화 클래스, 키쌍을 만드는 정적 메소드와 키쌍을 저장하는 정적 메소드 제공을 목적으로 한다.
+ * 
+ * @author Won Jonghoon
+ *
+ */
+public abstract class ServerRSAKeypairUtil {
 
 
-	public static KeyPair getRSAKeyPairFromKeyGenerator(int rsaKeySize) throws SymmetricException {
+	/**
+	 * @param rsaKeySize 원하는 RSA 키 크기
+	 * @return 원하는 RSA 키 크기를 갖는 RSA 키 쌍
+	 * @throws SymmetricException 암복화 관련 에러 발생시 던지는 예외
+	 */
+	public static KeyPair createRSAKeyPairFromKeyGenerator(int rsaKeySize) throws SymmetricException {
 		if (rsaKeySize <= 0) {
 			String errorMessage = new StringBuilder()
 					.append("the parameter rsaKeySize[")
@@ -84,7 +95,13 @@ public abstract class ServerRSAKeypairGetter {
 		return rsaKeypair;
 	}
 
-	public static KeyPair getRSAKeyPairFromFile(File rsaPrivateKeyFile, File rsaPublicKeyFile)
+	/**
+	 * @param rsaPrivateKeyFile RSA 개인키가 저장된 파일
+	 * @param rsaPublicKeyFile RAS 공개키가 저장된 파일
+	 * @return 파라미터 'rsaPrivateKeyFile'(=개인키가 저장된 파일) 와 파라미터 'rsaPublicKeyFile'(=RAS 공개키가 저장된 파일) 로 부터 생성된 공개키 쌍 
+	 * @throws SymmetricException 암복화 관련 에러 발생시 던지는 예외
+	 */
+	public static KeyPair createRSAKeyPairFromFile(File rsaPrivateKeyFile, File rsaPublicKeyFile)
 			throws SymmetricException {
 		if (null == rsaPrivateKeyFile) {
 			throw new IllegalArgumentException("the parameter rsaPrivateKeyFile is null");
@@ -161,14 +178,19 @@ public abstract class ServerRSAKeypairGetter {
 		return new KeyPair(publicKey, privateKey);
 	}
 
-	public static void saveRSAKeyPairFile(int rsaKeySize, File rsaPrivateKeyFile, File rsaPublicKeyFile)
+	/**
+	 * 파라미터 'rsaKeypair'(=RSA 공개키 쌍) 을 파라미터 'rsaPrivateKeyFile'(=RSA 개인키 파일) 에는 RSA 개인키를 저장하고 
+	 * 파라미터 'rsaPublicKeyFile'(=RSA 공개키 파일) 에는 RSA 공개키를 저장한다.
+	 * 
+	 * @param rsaKeypair RSA 공개키 쌍
+	 * @param rsaPrivateKeyFile RSA 개인키 파일
+	 * @param rsaPublicKeyFile RSA 공개키 파일
+	 * @throws SymmetricException 암복화 관련 에러 발생시 던지는 예외
+	 */
+	public static void saveRSAKeyPairFile(KeyPair rsaKeypair, File rsaPrivateKeyFile, File rsaPublicKeyFile)
 			throws SymmetricException {
-		if (rsaKeySize <= 0) {
-			String errorMessage = new StringBuilder()
-					.append("the parameter rsaKeySize[")
-					.append(rsaKeySize)
-					.append("] is less than or equal to zero").toString();
-			throw new IllegalArgumentException(errorMessage);
+		if (null == rsaKeypair) {
+			throw new IllegalArgumentException("the parameter rsaKeypair is null");
 		}
 		
 		if (null == rsaPrivateKeyFile) {
@@ -179,53 +201,15 @@ public abstract class ServerRSAKeypairGetter {
 			throw new IllegalArgumentException("the parameter rsaPublicKeyFile is null");
 		}
 
-		KeyPairGenerator rsaKeyPairGenerator = null;
-		try {
-			rsaKeyPairGenerator = KeyPairGenerator.getInstance("RSA");
-		} catch (NoSuchAlgorithmException e) {
-			e.printStackTrace();
-			System.exit(1);
-		}
 		
 		final RSAPrivateKey rsaPrivateKey;
 		final RSAPublicKey rsaPublicKey;
 
 		try {
-			rsaKeyPairGenerator.initialize(rsaKeySize);
-			KeyPair keyPair = rsaKeyPairGenerator.generateKeyPair();
-			rsaPublicKey = (RSAPublicKey) keyPair.getPublic();
-			rsaPrivateKey = (RSAPrivateKey) keyPair.getPrivate();
-
-			/*
-			System.out.printf("rsaPublicKey[%s]\n", rsaPublicKey.toString());
-			System.out.printf("rsaPrivateKey[%s]\n", rsaPrivateKey.toString());
-
-			System.out.printf("******************* RSA staret ********************\n");
-			String rsaAlgorithm = rsaPublicKey.getAlgorithm();
-			System.out.printf("rsaAlgorithm[%s], rsaKeySize[%d]\n", rsaAlgorithm, rsaKeySize);
-			System.out.printf("******************* RSA end ********************\n");
-
-			System.out.printf("******************* Pulbic Key staret ********************\n");
-			String rsaPublicKeyFormat = rsaPublicKey.getFormat();
-			BigInteger rsaPublicKeyModulus = rsaPublicKey.getModulus();
-			BigInteger rsaPublicKeyExponent = rsaPublicKey.getPublicExponent();
-			System.out.printf("rsaPublicKeyFormat[%s], rsaPublicKeyExponent(hex)[%s], rsaPublicKeyModulus(hex)[%s]\n",
-					rsaPublicKeyFormat, rsaPublicKeyExponent.toString(16), rsaPublicKeyModulus.toString(16));
-			System.out.printf("******************* Pulbic Key end ********************\n");
-
-			System.out.printf("******************* Private Key staret ********************\n");
-			String rsaPrivateKeyFormat = rsaPrivateKey.getFormat();
-			BigInteger rsaPrivateKeyModulus = rsaPrivateKey.getModulus();
-			BigInteger rsaPrivateKeyExponent = rsaPrivateKey.getPrivateExponent();
-			System.out.printf(
-					"rsaPrivateKeyFormat[%s], rsaPrivateKeyExponent(hex)[%s], rsaPrivateKeyModulus(hex)[%s]\n",
-					rsaPrivateKeyFormat, rsaPrivateKeyExponent.toString(16), rsaPrivateKeyModulus.toString(16));
-			System.out.printf("******************* Private Key end ********************\n");
-			*/
-
+			rsaPublicKey = (RSAPublicKey) rsaKeypair.getPublic();
+			rsaPrivateKey = (RSAPrivateKey) rsaKeypair.getPrivate();
 		} catch (Exception e) {
-			String errorMessage = new StringBuilder().append("fail to create a RAS keypair having keysize[")
-					.append(rsaKeySize).append("]").toString();
+			String errorMessage = "the parameter 'rsaKeypair' is not a RSA key pair";
 
 			Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
 			log.log(Level.WARNING, errorMessage, e);

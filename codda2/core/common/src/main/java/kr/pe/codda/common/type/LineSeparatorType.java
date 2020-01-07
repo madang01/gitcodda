@@ -17,6 +17,12 @@
 
 package kr.pe.codda.common.type;
 
+/**
+ * 행 분리 종류 열겨형 타입
+ * 
+ * @author Won Jonghoon
+ *
+ */
 public enum LineSeparatorType {
 	BR, NEWLINE;
 }

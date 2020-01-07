@@ -17,33 +17,19 @@
 
 package kr.pe.codda.common.sessionkey;
 
-import kr.pe.codda.common.exception.SymmetricException;
-import kr.pe.codda.common.sessionkey.AbstractRSAPublickeyGetter;
-import kr.pe.codda.common.sessionkey.ServerSessionkeyIF;
-import kr.pe.codda.common.sessionkey.ServerSessionkeyManager;
-
-public class RSAPublickeyGetterBuilder extends AbstractRSAPublickeyGetter {
+public class RSAPublickeyReturnerManger {
 
 	/** 동기화 쓰지 않고 싱글턴 구현을 위한 비공개 클래스 */
 	private static final class RSAPublickeyGetterHolder {
-		static final AbstractRSAPublickeyGetter singleton = new RSAPublickeyGetterBuilder();
+		static final AbstractRSAPublickeyReturner singleton = new RSAPublickeyReturner();
 	}
 
 	/** 동기화 쓰지 않는 싱글턴 구현 메소드 */
-	public static AbstractRSAPublickeyGetter build() {
+	public static AbstractRSAPublickeyReturner getInstance() {
 		return RSAPublickeyGetterHolder.singleton;
 	}
 
-	private RSAPublickeyGetterBuilder() {
+	private RSAPublickeyReturnerManger() {
 	}
 
-	protected byte[] getPublickeyBytesFromMainProjectServer() throws SymmetricException {
-		ServerSessionkeyManager serverSessionkeyManager = ServerSessionkeyManager.getInstance();
-		ServerSessionkeyIF serverSessionkey = serverSessionkeyManager.getMainProjectServerSessionkey();
-		return serverSessionkey.getDupPublicKeyBytes();
-	}
-
-	public byte[] getSubProjectPublickeyBytes(String subProjectName) throws SymmetricException {
-		throw new SymmetricException("this function(=getSubProjectPublickeyBytes) dosn't be supported");
-	}
 }

@@ -48,6 +48,9 @@ public final class ServerSessionkeyManager {
 		return ServerSessionkeyManagerHolder.singleton;
 	}
 	
+	/**
+	 * 생성자
+	 */
 	private ServerSessionkeyManager() {
 		
 		try {
@@ -66,7 +69,7 @@ public final class ServerSessionkeyManager {
 			if (rsaKeyPairSoureOfSessionkey.equals(SessionKey.RSAKeypairSourceType.SERVER)) {
 				final int rsaKeySize = commonPart.getRsaKeySizeOfSessionKey();
 
-				rsaKeypair = ServerRSAKeypairGetter.getRSAKeyPairFromKeyGenerator(rsaKeySize);
+				rsaKeypair = ServerRSAKeypairUtil.createRSAKeyPairFromKeyGenerator(rsaKeySize);
 			} else if (rsaKeyPairSoureOfSessionkey.equals(SessionKey.RSAKeypairSourceType.FILE)) {
 				final File rsaPrivateKeyFile;
 				final File rsaPublicKeyFile;
@@ -80,7 +83,7 @@ public final class ServerSessionkeyManager {
 					throw new SymmetricException(e.getMessage());
 				}
 
-				rsaKeypair = ServerRSAKeypairGetter.getRSAKeyPairFromFile(rsaPrivateKeyFile, rsaPublicKeyFile);
+				rsaKeypair = ServerRSAKeypairUtil.createRSAKeyPairFromFile(rsaPrivateKeyFile, rsaPublicKeyFile);
 			} else {
 				throw new SymmetricException(new StringBuilder("unknown rsa keypair source[")
 						.append(rsaKeyPairSoureOfSessionkey.toString()).append("]").toString());
@@ -93,6 +96,10 @@ public final class ServerSessionkeyManager {
 		}
 	}
 	
+	/**
+	 * @return 메인 프로젝트의 서버 세션키
+	 * @throws SymmetricException 암복화 관련 에러 발생시 던지는 예외
+	 */
 	public ServerSessionkeyIF getMainProjectServerSessionkey() throws SymmetricException {
 		if (null != savedSymmetricException) {
 			throw savedSymmetricException;

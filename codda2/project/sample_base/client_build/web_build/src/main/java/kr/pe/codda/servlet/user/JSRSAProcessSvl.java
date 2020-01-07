@@ -57,7 +57,7 @@ public class JSRSAProcessSvl extends AbstractServlet {
 		 * 따라서 원문과 복혹문 정상적인 비교를 위해서 원문도 똑같이 \n 으로 변경해 주어야 한다. 
 		 */
 		String plainHexText = HexUtil
-				.getHexStringFromByteArray(paramPlainText.replaceAll("\r\n", "\n").getBytes(CommonStaticFinalVars.CIPHER_CHARSET));		
+				.getHexStringFromByteArray(paramPlainText.replace("\r\n", "\n").getBytes(CommonStaticFinalVars.CIPHER_CHARSET));		
 		//log.info("plainText hex[%s]", plainTextHex);
 		// String sessionKeyHex =  new String(HexUtil.hexToByteArray(sessionKeyDoubleHex));
 		//log.info("sessionKeyHex=[%s]", sessionKeyHex);

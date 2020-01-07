@@ -52,7 +52,7 @@ public class InstalledPathPanel extends JPanel {
 	 * @param sourcePathTextField TextField whose value is path  
 	 * @return the writable and readable path. but if parameter sourceTextField's value is not a valid path then return null.
 	 */
-	private File getValidPathFromTextField(JTextField sourcePathTextField, ReadWriteMode	readWriteMode) throws RuntimeException {
+	private File createValidPathFromTextField(JTextField sourcePathTextField, ReadWriteMode	readWriteMode) throws RuntimeException {
 		String sourcePathString = sourcePathTextField.getText();
 		if (null == sourcePathString) {
 			String errorMessage = String.format("parameter sourcePathTextField[%s]'s value is nul",
@@ -64,7 +64,7 @@ public class InstalledPathPanel extends JPanel {
 
 		File sourcePath = null;
 		try {
-			sourcePath =CommonStaticUtil.getValidPath(sourcePathString, readWriteMode);
+			sourcePath =CommonStaticUtil.createValidPath(sourcePathString, readWriteMode);
 		} catch(RuntimeException e) {
 			String errorMessage = e.toString();
 			throw new RuntimeException(String.format("parameter sourcePathTextField[%s]'s value is not a valid path::%s", sourcePathTextField.getName(), errorMessage));
@@ -181,7 +181,7 @@ public class InstalledPathPanel extends JPanel {
 	private void nextStepButtonActionPerformed(ActionEvent e) {
 		File installedPath = null;
 		try {
-			installedPath = getValidPathFromTextField(installedPathTextField, ReadWriteMode.READ_WRITE);
+			installedPath = createValidPathFromTextField(installedPathTextField, ReadWriteMode.READ_WRITE);
 		} catch(RuntimeException e1) {
 			String errorMessage = String.format("fail to get the valid installed path::%s", e1.getMessage());
 			log.warn(errorMessage);

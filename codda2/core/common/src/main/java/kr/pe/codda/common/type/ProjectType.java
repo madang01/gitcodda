@@ -17,6 +17,11 @@
 
 package kr.pe.codda.common.type;
 
+/**
+ * 프로젝트 종류 열거형 타입
+ * @author Won Jonghoon
+ *
+ */
 public enum ProjectType {
 	MAIN, SUB
 }

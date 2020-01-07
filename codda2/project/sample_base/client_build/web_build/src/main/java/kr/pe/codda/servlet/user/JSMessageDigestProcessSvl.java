@@ -70,7 +70,7 @@ public class JSMessageDigestProcessSvl extends AbstractServlet {
 			return;
 		}
 		
-		md.update(paramPlainText.replaceAll("\r\n", "\n").getBytes());
+		md.update(paramPlainText.replace("\r\n", "\n").getBytes());
 		
 		byte serverMD[] =  md.digest();
 		

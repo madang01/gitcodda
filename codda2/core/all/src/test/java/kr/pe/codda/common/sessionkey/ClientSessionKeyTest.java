@@ -107,7 +107,7 @@ public class ClientSessionKeyTest {
 		KeyPair rsaKeypair = null;
 		
 		try {
-			rsaKeypair = ServerRSAKeypairGetter.getRSAKeyPairFromKeyGenerator(rsaKeySize);
+			rsaKeypair = ServerRSAKeypairUtil.createRSAKeyPairFromKeyGenerator(rsaKeySize);
 		} catch (Exception e) {
 			log.log(Level.WARNING, "unknown error", e);
 			
@@ -164,7 +164,7 @@ public class ClientSessionKeyTest {
 		KeyPair rsaKeypair = null;
 		
 		try {
-			rsaKeypair = ServerRSAKeypairGetter.getRSAKeyPairFromKeyGenerator(rsaKeySize);
+			rsaKeypair = ServerRSAKeypairUtil.createRSAKeyPairFromKeyGenerator(rsaKeySize);
 		} catch (Exception e) {
 			log.log(Level.WARNING, "unknown error", e);
 			
@@ -221,7 +221,7 @@ public class ClientSessionKeyTest {
 		KeyPair rsaKeypair = null;
 		
 		try {
-			rsaKeypair = ServerRSAKeypairGetter.getRSAKeyPairFromKeyGenerator(rsaKeySize);
+			rsaKeypair = ServerRSAKeypairUtil.createRSAKeyPairFromKeyGenerator(rsaKeySize);
 		} catch (Exception e) {
 			log.log(Level.WARNING, "unknown error", e);
 			
@@ -279,7 +279,7 @@ public class ClientSessionKeyTest {
 		KeyPair rsaKeypair = null;
 		
 		try {
-			rsaKeypair = ServerRSAKeypairGetter.getRSAKeyPairFromKeyGenerator(rsaKeySize);
+			rsaKeypair = ServerRSAKeypairUtil.createRSAKeyPairFromKeyGenerator(rsaKeySize);
 		} catch (Exception e) {
 			log.log(Level.WARNING, "unknown error", e);
 			
@@ -363,7 +363,7 @@ public class ClientSessionKeyTest {
 		KeyPair rsaKeypair = null;
 		
 		try {
-			rsaKeypair = ServerRSAKeypairGetter.getRSAKeyPairFromKeyGenerator(rsaKeySize);
+			rsaKeypair = ServerRSAKeypairUtil.createRSAKeyPairFromKeyGenerator(rsaKeySize);
 		} catch (Exception e) {
 			log.log(Level.WARNING, "unknown error", e);
 			

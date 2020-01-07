@@ -371,7 +371,7 @@ public class ProjectIOFileSetBuilderPopup extends JDialog implements FileFunctio
 
 		File sourcePath = null;
 		try {
-			sourcePath =CommonStaticUtil.getValidPath(sourcePathString, readWriteMode);
+			sourcePath =CommonStaticUtil.createValidPath(sourcePathString, readWriteMode);
 		} catch(RuntimeException e) {
 			String errorMessage = e.toString();
 			throw new RuntimeException(String.format("parameter sourcePathTextField[%s]'s value is not a valid path::%s", sourcePathTextField.getName(), errorMessage));
@@ -503,7 +503,7 @@ public class ProjectIOFileSetBuilderPopup extends JDialog implements FileFunctio
 		String serverIOSourcePathString = ServerBuildSytemPathSupporter.getServerIOSourcePath(installedPathString, selectedMainProjectName);
 		File serverIOSourcePath = null;
 		try {
-			serverIOSourcePath = CommonStaticUtil.getValidPath(serverIOSourcePathString, ReadWriteMode.ONLY_WRITE);
+			serverIOSourcePath = CommonStaticUtil.createValidPath(serverIOSourcePathString, ReadWriteMode.ONLY_WRITE);
 			listOfPathSavingIOFileSet.add(serverIOSourcePath);
 		} catch (RuntimeException e) {
 			log.debug("the project[{}] has no the valid server IO source path::{}", selectedMainProjectName, e.getMessage());
@@ -513,7 +513,7 @@ public class ProjectIOFileSetBuilderPopup extends JDialog implements FileFunctio
 				.getAppClientIOSourcePath(installedPathString, selectedMainProjectName);
 		File appClientIOSourcePath = null;
 		try {
-			appClientIOSourcePath = CommonStaticUtil.getValidPath(appClientIOSourcePathString,
+			appClientIOSourcePath = CommonStaticUtil.createValidPath(appClientIOSourcePathString,
 					ReadWriteMode.ONLY_WRITE);
 
 			listOfPathSavingIOFileSet.add(appClientIOSourcePath);
@@ -525,7 +525,7 @@ public class ProjectIOFileSetBuilderPopup extends JDialog implements FileFunctio
 				.getWebClinetIOSourcePath(installedPathString, selectedMainProjectName);
 		File webClientIOSourcePath = null;
 		try {
-			webClientIOSourcePath = CommonStaticUtil.getValidPath(webClientIOSourcePathString,
+			webClientIOSourcePath = CommonStaticUtil.createValidPath(webClientIOSourcePathString,
 					ReadWriteMode.ONLY_WRITE);
 			listOfPathSavingIOFileSet.add(webClientIOSourcePath);
 		} catch (RuntimeException e) {
@@ -1080,7 +1080,7 @@ public class ProjectIOFileSetBuilderPopup extends JDialog implements FileFunctio
 		File messageInfoSourcePath =null;
 		
 		try {
-			messageInfoSourcePath = CommonStaticUtil.getValidPath(messageInfoSourcePathString, ReadWriteMode.ONLY_READ);
+			messageInfoSourcePath = CommonStaticUtil.createValidPath(messageInfoSourcePathString, ReadWriteMode.ONLY_READ);
 		} catch(RuntimeException e1) {
 			String errorMessage = String.format("fail to get a valid path that is the main project[%s]'s message information path[%s]",
 					mainProjectName, messageInfoSourcePathString);

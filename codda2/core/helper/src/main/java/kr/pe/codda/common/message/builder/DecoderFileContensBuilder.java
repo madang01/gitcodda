@@ -29,104 +29,104 @@ public class DecoderFileContensBuilder extends AbstractSourceFileBuildre {
 	}
 
 	public String getArrayMiddleObjVarName(int depth, String arrayName) {
-		StringBuilder contetnsStringBuilder = new StringBuilder();
-		contetnsStringBuilder.append(arrayName);
-		contetnsStringBuilder.append("$");
-		contetnsStringBuilder.append(depth);
-		contetnsStringBuilder.append("ArrayMiddleObject");
-		return contetnsStringBuilder.toString();
+		StringBuilder contentsStringBuilder = new StringBuilder();
+		contentsStringBuilder.append(arrayName);
+		contentsStringBuilder.append("$");
+		contentsStringBuilder.append(depth);
+		contentsStringBuilder.append("ArrayMiddleObject");
+		return contentsStringBuilder.toString();
 	}
 
 	public String getElementObjVarNameOfArrayMiddleObject(int depth, String arrayName) {
-		StringBuilder contetnsStringBuilder = new StringBuilder();
-		contetnsStringBuilder.append(arrayName);
-		contetnsStringBuilder.append("$");
-		contetnsStringBuilder.append(depth);
-		contetnsStringBuilder.append("MiddleWritableObject");
-		return contetnsStringBuilder.toString();
+		StringBuilder contentsStringBuilder = new StringBuilder();
+		contentsStringBuilder.append(arrayName);
+		contentsStringBuilder.append("$");
+		contentsStringBuilder.append(depth);
+		contentsStringBuilder.append("MiddleWritableObject");
+		return contentsStringBuilder.toString();
 	}	
 
 	public String getArrayVarObjName(int depth, String arrayName) {
-		StringBuilder contetnsStringBuilder = new StringBuilder(arrayName);
-		contetnsStringBuilder.append("$");
-		contetnsStringBuilder.append(depth);
-		return contetnsStringBuilder.toString();
+		StringBuilder contentsStringBuilder = new StringBuilder(arrayName);
+		contentsStringBuilder.append("$");
+		contentsStringBuilder.append(depth);
+		return contentsStringBuilder.toString();
 	}
 
 	public String getArrayListVarObjName(int depth, String arrayName) {
-		StringBuilder contetnsStringBuilder = new StringBuilder(getArrayVarObjName(depth, arrayName));		
-		contetnsStringBuilder.append("List");
-		return contetnsStringBuilder.toString();
+		StringBuilder contentsStringBuilder = new StringBuilder(getArrayVarObjName(depth, arrayName));		
+		contentsStringBuilder.append("List");
+		return contentsStringBuilder.toString();
 	}
 
 	public String getArrayListSizeVarObjName(int depth, String arrayName) {
-		StringBuilder contetnsStringBuilder = new StringBuilder(getArrayListVarObjName(depth, arrayName));
-		contetnsStringBuilder.append("Size");
-		return contetnsStringBuilder.toString();
+		StringBuilder contentsStringBuilder = new StringBuilder(getArrayListVarObjName(depth, arrayName));
+		contentsStringBuilder.append("Size");
+		return contentsStringBuilder.toString();
 	}
 
 	public String getGroupMiddleObjVarName(int depth, String groupName) {
-		StringBuilder contetnsStringBuilder = new StringBuilder();
-		contetnsStringBuilder.append(groupName);
-		contetnsStringBuilder.append("$");
-		contetnsStringBuilder.append(depth);
-		contetnsStringBuilder.append("WritableMiddleObject");
-		return contetnsStringBuilder.toString();
+		StringBuilder contentsStringBuilder = new StringBuilder();
+		contentsStringBuilder.append(groupName);
+		contentsStringBuilder.append("$");
+		contentsStringBuilder.append(depth);
+		contentsStringBuilder.append("WritableMiddleObject");
+		return contentsStringBuilder.toString();
 	}
 	
 	public String getGroupVarObjName(int depth, String groupName) {
-		StringBuilder contetnsStringBuilder = new StringBuilder(groupName);
-		contetnsStringBuilder.append("$");
-		contetnsStringBuilder.append(depth);
-		return contetnsStringBuilder.toString();
+		StringBuilder contentsStringBuilder = new StringBuilder(groupName);
+		contentsStringBuilder.append("$");
+		contentsStringBuilder.append(depth);
+		return contentsStringBuilder.toString();
 	}
 
-	public void addSingleItemInfoPart(StringBuilder contetnsStringBuilder, int depth, String path, String varNameOfSetOwner, String middleObjVarName,
+	public void addSingleItemInfoPart(StringBuilder contentsStringBuilder, int depth, String path, String varNameOfSetOwner, String middleObjVarName,
 			SingleItemInfo singleItemInfo) {		
-		contetnsStringBuilder.append(CommonStaticFinalVars.NEWLINE);
-		contetnsStringBuilder.append(CommonStaticUtil.getPrefixWithTabCharacters(depth, 0));
-		contetnsStringBuilder.append(varNameOfSetOwner);
-		contetnsStringBuilder.append(".set");
-		contetnsStringBuilder.append(singleItemInfo.getFirstUpperItemName());
-		contetnsStringBuilder.append("((");
-		contetnsStringBuilder.append(singleItemInfo.getJavaLangClassCastingTypeOfItemType());
-		contetnsStringBuilder.append(")");
+		contentsStringBuilder.append(CommonStaticFinalVars.NEWLINE);
+		CommonStaticUtil.addPrefixWithTabCharacters(contentsStringBuilder, depth, 0);
+		contentsStringBuilder.append(varNameOfSetOwner);
+		contentsStringBuilder.append(".set");
+		contentsStringBuilder.append(singleItemInfo.getFirstUpperItemName());
+		contentsStringBuilder.append("((");
+		contentsStringBuilder.append(singleItemInfo.getJavaLangClassCastingTypeOfItemType());
+		contentsStringBuilder.append(")");
 		
 		// singleItemDecoder.getValue(sigleItemPath0
-		contetnsStringBuilder.append(CommonStaticFinalVars.NEWLINE);
-		contetnsStringBuilder.append(CommonStaticUtil.getPrefixWithTabCharacters(depth, 0));
-		contetnsStringBuilder.append("singleItemDecoder.getValue(pathStack.peek()");		
+		contentsStringBuilder.append(CommonStaticFinalVars.NEWLINE);
+		CommonStaticUtil.addPrefixWithTabCharacters(contentsStringBuilder, depth, 0);
+		contentsStringBuilder.append("singleItemDecoder.getValue(pathStack.peek()");		
 		
 		// , "byteVar1" // itemName
-		contetnsStringBuilder.append(CommonStaticFinalVars.NEWLINE);
-		contetnsStringBuilder.append(CommonStaticUtil.getPrefixWithTabCharacters(depth, 1));
-		contetnsStringBuilder.append(", \"");
-		contetnsStringBuilder.append(singleItemInfo.getItemName());
-		contetnsStringBuilder.append("\" // itemName");
+		contentsStringBuilder.append(CommonStaticFinalVars.NEWLINE);
+		CommonStaticUtil.addPrefixWithTabCharacters(contentsStringBuilder, depth, 1);
+		contentsStringBuilder.append(", \"");
+		contentsStringBuilder.append(singleItemInfo.getItemName());
+		contentsStringBuilder.append("\" // itemName");
 		
 		// itemType
-		contetnsStringBuilder.append(CommonStaticFinalVars.NEWLINE);
-		contetnsStringBuilder.append(CommonStaticUtil.getPrefixWithTabCharacters(depth, 1));
-		contetnsStringBuilder.append(", ");
-		contetnsStringBuilder.append(SingleItemType.class.getName());
-		contetnsStringBuilder.append(".");
+		contentsStringBuilder.append(CommonStaticFinalVars.NEWLINE);
+		CommonStaticUtil.addPrefixWithTabCharacters(contentsStringBuilder, depth, 1);
+		contentsStringBuilder.append(", ");
+		contentsStringBuilder.append(SingleItemType.class.getName());
+		contentsStringBuilder.append(".");
 		
-		contetnsStringBuilder.append(SingleItemTypeManger.getInstance()
+		contentsStringBuilder.append(SingleItemTypeManger.getInstance()
 				.getSingleItemType(singleItemInfo.getItemTypeID()).name());
-		contetnsStringBuilder.append(" // itemType");
+		contentsStringBuilder.append(" // itemType");
 		// , SingleItemType.UB_PASCAL_STRING
 		
 		// itemSize
-		contetnsStringBuilder.append(CommonStaticFinalVars.NEWLINE);
-		contetnsStringBuilder.append(CommonStaticUtil.getPrefixWithTabCharacters(depth, 1));
-		contetnsStringBuilder.append(", ");
-		contetnsStringBuilder.append(singleItemInfo.getItemSize());
-		contetnsStringBuilder.append(" // itemSize");
+		contentsStringBuilder.append(CommonStaticFinalVars.NEWLINE);
+		CommonStaticUtil.addPrefixWithTabCharacters(contentsStringBuilder, depth, 1);
+		contentsStringBuilder.append(", ");
+		contentsStringBuilder.append(singleItemInfo.getItemSize());
+		contentsStringBuilder.append(" // itemSize");
 		
 		// itemCharset
-		contetnsStringBuilder.append(CommonStaticFinalVars.NEWLINE);
-		contetnsStringBuilder.append(CommonStaticUtil.getPrefixWithTabCharacters(depth, 1));
-		contetnsStringBuilder.append(", ");				
+		contentsStringBuilder.append(CommonStaticFinalVars.NEWLINE);
+		CommonStaticUtil.addPrefixWithTabCharacters(contentsStringBuilder, depth, 1);
+		contentsStringBuilder.append(", ");				
 		/*SingleItemType itemType = singleItemInfo.getItemType();
 		if (itemType.equals(SingleItemType.FIXED_LENGTH_STRING) ||
 				itemType.equals(SingleItemType.UB_PASCAL_STRING) ||
@@ -134,255 +134,255 @@ public class DecoderFileContensBuilder extends AbstractSourceFileBuildre {
 				itemType.equals(SingleItemType.SI_PASCAL_STRING)) {*/
 		String nativeItemCharset = singleItemInfo.getNativeItemCharset();
 		if (null == nativeItemCharset) {
-			contetnsStringBuilder.append("null");
+			contentsStringBuilder.append("null");
 		} else {
-			contetnsStringBuilder.append("\"");
-			contetnsStringBuilder.append(nativeItemCharset);
-			contetnsStringBuilder.append("\"");
+			contentsStringBuilder.append("\"");
+			contentsStringBuilder.append(nativeItemCharset);
+			contentsStringBuilder.append("\"");
 		}				
-		contetnsStringBuilder.append(" // nativeItemCharset");
+		contentsStringBuilder.append(" // nativeItemCharset");
 		
 		
 		// , middleReadableObject));
-		contetnsStringBuilder.append(CommonStaticFinalVars.NEWLINE);
-		contetnsStringBuilder.append(CommonStaticUtil.getPrefixWithTabCharacters(depth, 1));
-		contetnsStringBuilder.append(", ");
-		contetnsStringBuilder.append(middleObjVarName);
-		contetnsStringBuilder.append("));");
+		contentsStringBuilder.append(CommonStaticFinalVars.NEWLINE);
+		CommonStaticUtil.addPrefixWithTabCharacters(contentsStringBuilder, depth, 1);
+		contentsStringBuilder.append(", ");
+		contentsStringBuilder.append(middleObjVarName);
+		contentsStringBuilder.append("));");
 	}
 	
-	public void addArraySizeVarDeclarationPart(StringBuilder contetnsStringBuilder, int depth, String varNameOfSetOwner, ArrayInfo arrayInfo) {		
-		contetnsStringBuilder.append(CommonStaticUtil.getPrefixWithTabCharacters(depth, 0));
-		contetnsStringBuilder.append("int ");
-		contetnsStringBuilder.append(getArrayListSizeVarObjName(depth, arrayInfo.getItemName()));
-		contetnsStringBuilder.append(" = ");		
+	public void addArraySizeVarDeclarationPart(StringBuilder contentsStringBuilder, int depth, String varNameOfSetOwner, ArrayInfo arrayInfo) {
+		CommonStaticUtil.addPrefixWithTabCharacters(contentsStringBuilder, depth, 0);
+		contentsStringBuilder.append("int ");
+		contentsStringBuilder.append(getArrayListSizeVarObjName(depth, arrayInfo.getItemName()));
+		contentsStringBuilder.append(" = ");		
 		/** 배열 크기 지정 방식에 따른 배열 크기 지정 */
 		if (arrayInfo.getArrayCntType().equals("reference")) {
-			contetnsStringBuilder.append(varNameOfSetOwner);
-			contetnsStringBuilder.append(".get");
-			contetnsStringBuilder.append(arrayInfo.getArrayCntValue().substring(0, 1).toUpperCase());
-			contetnsStringBuilder.append(arrayInfo.getArrayCntValue().substring(1));
-			contetnsStringBuilder.append("();");
+			contentsStringBuilder.append(varNameOfSetOwner);
+			contentsStringBuilder.append(".get");
+			contentsStringBuilder.append(arrayInfo.getArrayCntValue().substring(0, 1).toUpperCase());
+			contentsStringBuilder.append(arrayInfo.getArrayCntValue().substring(1));
+			contentsStringBuilder.append("();");
 		} else {
-			contetnsStringBuilder.append(arrayInfo.getArrayCntValue());
-			contetnsStringBuilder.append(";");
+			contentsStringBuilder.append(arrayInfo.getArrayCntValue());
+			contentsStringBuilder.append(";");
 		}
 	}
 	
-	public void addArraySizeCheckPart(StringBuilder contetnsStringBuilder, int depth, String varNameOfSetOwner, ArrayInfo arrayInfo) {	
-		contetnsStringBuilder.append(CommonStaticUtil.getPrefixWithTabCharacters(depth, 0));
-		contetnsStringBuilder.append("if (");
-		contetnsStringBuilder.append(getArrayListSizeVarObjName(depth, arrayInfo.getItemName()));
-		contetnsStringBuilder.append(" < 0) {");
-		contetnsStringBuilder.append(CommonStaticFinalVars.NEWLINE);
+	public void addArraySizeCheckPart(StringBuilder contentsStringBuilder, int depth, String varNameOfSetOwner, ArrayInfo arrayInfo) {	
+		CommonStaticUtil.addPrefixWithTabCharacters(contentsStringBuilder, depth, 0);
+		contentsStringBuilder.append("if (");
+		contentsStringBuilder.append(getArrayListSizeVarObjName(depth, arrayInfo.getItemName()));
+		contentsStringBuilder.append(" < 0) {");
+		contentsStringBuilder.append(CommonStaticFinalVars.NEWLINE);
 		
-		contetnsStringBuilder.append(CommonStaticUtil.getPrefixWithTabCharacters(depth, 1));	
-		contetnsStringBuilder.append("String errorMessage = new StringBuilder(\"the var ");
-		contetnsStringBuilder.append(getArrayListSizeVarObjName(depth, arrayInfo.getItemName()));
-		contetnsStringBuilder.append(" is less than zero\").toString();");
+		CommonStaticUtil.addPrefixWithTabCharacters(contentsStringBuilder, depth, 1);	
+		contentsStringBuilder.append("String errorMessage = new StringBuilder(\"the var ");
+		contentsStringBuilder.append(getArrayListSizeVarObjName(depth, arrayInfo.getItemName()));
+		contentsStringBuilder.append(" is less than zero\").toString();");
 
 		// throw new BodyFormatException(errorMessage);
-		contetnsStringBuilder.append(CommonStaticFinalVars.NEWLINE);
-		contetnsStringBuilder.append(CommonStaticUtil.getPrefixWithTabCharacters(depth, 1));
-		contetnsStringBuilder.append("throw new ");
-		contetnsStringBuilder.append(BodyFormatException.class.getName());
-		contetnsStringBuilder.append("(errorMessage);");
+		contentsStringBuilder.append(CommonStaticFinalVars.NEWLINE);
+		CommonStaticUtil.addPrefixWithTabCharacters(contentsStringBuilder, depth, 1);
+		contentsStringBuilder.append("throw new ");
+		contentsStringBuilder.append(BodyFormatException.class.getName());
+		contentsStringBuilder.append("(errorMessage);");
 		
-		contetnsStringBuilder.append(CommonStaticFinalVars.NEWLINE);
-		contetnsStringBuilder.append(CommonStaticUtil.getPrefixWithTabCharacters(depth, 0));
-		contetnsStringBuilder.append("}");
+		contentsStringBuilder.append(CommonStaticFinalVars.NEWLINE);
+		CommonStaticUtil.addPrefixWithTabCharacters(contentsStringBuilder, depth, 0);
+		contentsStringBuilder.append("}");
 	}
 	
-	public void addArrayInfoPart(StringBuilder contetnsStringBuilder, int depth, String path, 
+	public void addArrayInfoPart(StringBuilder contentsStringBuilder, int depth, String path, 
 			String varvarNameOfSetOwner, String middleObjVarName,
 			ArrayInfo arrayInfo) {
 		String newPath = new StringBuilder(path).append(".").append(arrayInfo.getFirstUpperItemName()).toString();
 		
 		/** 배열 크기 변수 선언및 정의 */
-		contetnsStringBuilder.append(CommonStaticFinalVars.NEWLINE);		
-		addArraySizeVarDeclarationPart(contetnsStringBuilder, depth, varvarNameOfSetOwner, arrayInfo);
+		contentsStringBuilder.append(CommonStaticFinalVars.NEWLINE);		
+		addArraySizeVarDeclarationPart(contentsStringBuilder, depth, varvarNameOfSetOwner, arrayInfo);
 		
 		/** 양수인 배열 크기 검사 */
-		contetnsStringBuilder.append(CommonStaticFinalVars.NEWLINE);
-		addArraySizeCheckPart(contetnsStringBuilder, depth, varvarNameOfSetOwner, arrayInfo);
-		contetnsStringBuilder.append(CommonStaticFinalVars.NEWLINE);
+		contentsStringBuilder.append(CommonStaticFinalVars.NEWLINE);
+		addArraySizeCheckPart(contentsStringBuilder, depth, varvarNameOfSetOwner, arrayInfo);
+		contentsStringBuilder.append(CommonStaticFinalVars.NEWLINE);
 		
 		// Object memberMiddleReadArray = singleItemDecoder.getArrayMiddleObject(sigleItemPath0, "member", memberListSize, middleReadableObject);
-		contetnsStringBuilder.append(CommonStaticFinalVars.NEWLINE);
-		contetnsStringBuilder.append(CommonStaticUtil.getPrefixWithTabCharacters(depth, 0));
-		contetnsStringBuilder.append("Object ");
-		contetnsStringBuilder.append(getArrayMiddleObjVarName(depth, arrayInfo.getItemName()));
+		contentsStringBuilder.append(CommonStaticFinalVars.NEWLINE);
+		CommonStaticUtil.addPrefixWithTabCharacters(contentsStringBuilder, depth, 0);
+		contentsStringBuilder.append("Object ");
+		contentsStringBuilder.append(getArrayMiddleObjVarName(depth, arrayInfo.getItemName()));
 		
-		contetnsStringBuilder.append(" = singleItemDecoder.getArrayMiddleObject(");
+		contentsStringBuilder.append(" = singleItemDecoder.getArrayMiddleObject(");
 		// the parameter path
-		contetnsStringBuilder.append("pathStack.peek()");
-		contetnsStringBuilder.append(", ");
+		contentsStringBuilder.append("pathStack.peek()");
+		contentsStringBuilder.append(", ");
 		// the parameter arrayName
-		contetnsStringBuilder.append("\"");
-		contetnsStringBuilder.append(arrayInfo.getItemName());		
-		contetnsStringBuilder.append("\"");
-		contetnsStringBuilder.append(", ");
+		contentsStringBuilder.append("\"");
+		contentsStringBuilder.append(arrayInfo.getItemName());		
+		contentsStringBuilder.append("\"");
+		contentsStringBuilder.append(", ");
 		// the parameter arrayCntValue		
-		contetnsStringBuilder.append(getArrayListSizeVarObjName(depth, arrayInfo.getItemName()));				
-		contetnsStringBuilder.append(", ");
+		contentsStringBuilder.append(getArrayListSizeVarObjName(depth, arrayInfo.getItemName()));				
+		contentsStringBuilder.append(", ");
 		// the parameter receivedMiddleObject
-		contetnsStringBuilder.append(middleObjVarName);
-		contetnsStringBuilder.append(");");
+		contentsStringBuilder.append(middleObjVarName);
+		contentsStringBuilder.append(");");
 		
 		/** 배열 변수 선언및 정의 */
 		// List<AllDataType.Member> memberList = new ArrayList<AllDataType.Member>();
-		contetnsStringBuilder.append(CommonStaticFinalVars.NEWLINE);
-		contetnsStringBuilder.append(CommonStaticUtil.getPrefixWithTabCharacters(depth, 0));
-		contetnsStringBuilder.append("java.util.List<");
-		contetnsStringBuilder.append(newPath);
-		contetnsStringBuilder.append("> ");
-		contetnsStringBuilder.append(getArrayListVarObjName(depth, arrayInfo.getItemName()));
-		contetnsStringBuilder.append(" = new java.util.ArrayList<");
-		contetnsStringBuilder.append(newPath);
-		contetnsStringBuilder.append(">();");
+		contentsStringBuilder.append(CommonStaticFinalVars.NEWLINE);
+		CommonStaticUtil.addPrefixWithTabCharacters(contentsStringBuilder, depth, 0);
+		contentsStringBuilder.append("java.util.List<");
+		contentsStringBuilder.append(newPath);
+		contentsStringBuilder.append("> ");
+		contentsStringBuilder.append(getArrayListVarObjName(depth, arrayInfo.getItemName()));
+		contentsStringBuilder.append(" = new java.util.ArrayList<");
+		contentsStringBuilder.append(newPath);
+		contentsStringBuilder.append(">();");
 		
 		// for (int i=0; i < memberListSize; i++) {
-		contetnsStringBuilder.append(CommonStaticFinalVars.NEWLINE);
-		contetnsStringBuilder.append(CommonStaticUtil.getPrefixWithTabCharacters(depth, 0));
-		contetnsStringBuilder.append("for (int ");
-		contetnsStringBuilder.append(getCountVarName(depth));
-		contetnsStringBuilder.append("=0; ");
-		contetnsStringBuilder.append(getCountVarName(depth));
-		contetnsStringBuilder.append(" < ");
-		contetnsStringBuilder.append(getArrayListSizeVarObjName(depth, arrayInfo.getItemName()));
-		contetnsStringBuilder.append("; ");
-		contetnsStringBuilder.append(getCountVarName(depth));
-		contetnsStringBuilder.append("++) {");
+		contentsStringBuilder.append(CommonStaticFinalVars.NEWLINE);
+		CommonStaticUtil.addPrefixWithTabCharacters(contentsStringBuilder, depth, 0);
+		contentsStringBuilder.append("for (int ");
+		contentsStringBuilder.append(getCountVarName(depth));
+		contentsStringBuilder.append("=0; ");
+		contentsStringBuilder.append(getCountVarName(depth));
+		contentsStringBuilder.append(" < ");
+		contentsStringBuilder.append(getArrayListSizeVarObjName(depth, arrayInfo.getItemName()));
+		contentsStringBuilder.append("; ");
+		contentsStringBuilder.append(getCountVarName(depth));
+		contentsStringBuilder.append("++) {");
 		
 		
-		contetnsStringBuilder.append(CommonStaticFinalVars.NEWLINE);
-		contetnsStringBuilder.append(CommonStaticUtil.getPrefixWithTabCharacters(depth, 1));
-		contetnsStringBuilder.append("pathStack.push(new StringBuilder(pathStack.peek()).append(\".\").append(\"")
+		contentsStringBuilder.append(CommonStaticFinalVars.NEWLINE);
+		CommonStaticUtil.addPrefixWithTabCharacters(contentsStringBuilder, depth, 1);
+		contentsStringBuilder.append("pathStack.push(new StringBuilder(pathStack.peek()).append(\".\").append(\"")
 				.append(arrayInfo.getFirstUpperItemName())
 				.append("\").append(\"[\").append(")
 				.append(getCountVarName(depth))
 				.append(").append(\"]\").toString());");
 		
 		// Object memberMiddleReadObj = singleItemDecoder.getMiddleObjectFromArrayMiddleObject(sigleItemPath1, memberMiddleReadArray, i);
-		contetnsStringBuilder.append(CommonStaticFinalVars.NEWLINE);
-		contetnsStringBuilder.append(CommonStaticUtil.getPrefixWithTabCharacters(depth, 1));
-		contetnsStringBuilder.append("Object ");
-		contetnsStringBuilder.append(getElementObjVarNameOfArrayMiddleObject(depth, arrayInfo.getItemName()));
-		contetnsStringBuilder.append("= singleItemDecoder.getMiddleObjectFromArrayMiddleObject(pathStack.peek()");		
-		contetnsStringBuilder.append(", ");
-		contetnsStringBuilder.append(getArrayMiddleObjVarName(depth, arrayInfo.getItemName()));
-		contetnsStringBuilder.append(", ");
-		contetnsStringBuilder.append(getCountVarName(depth));
-		contetnsStringBuilder.append(");");
+		contentsStringBuilder.append(CommonStaticFinalVars.NEWLINE);
+		CommonStaticUtil.addPrefixWithTabCharacters(contentsStringBuilder, depth, 1);
+		contentsStringBuilder.append("Object ");
+		contentsStringBuilder.append(getElementObjVarNameOfArrayMiddleObject(depth, arrayInfo.getItemName()));
+		contentsStringBuilder.append("= singleItemDecoder.getMiddleObjectFromArrayMiddleObject(pathStack.peek()");		
+		contentsStringBuilder.append(", ");
+		contentsStringBuilder.append(getArrayMiddleObjVarName(depth, arrayInfo.getItemName()));
+		contentsStringBuilder.append(", ");
+		contentsStringBuilder.append(getCountVarName(depth));
+		contentsStringBuilder.append(");");
 		
 		// AllDataType.Member member = new AllDataType.Member();
-		contetnsStringBuilder.append(CommonStaticFinalVars.NEWLINE);
-		contetnsStringBuilder.append(CommonStaticUtil.getPrefixWithTabCharacters(depth, 1));
-		contetnsStringBuilder.append(newPath);
-		contetnsStringBuilder.append(" ");
-		contetnsStringBuilder.append(getArrayVarObjName(depth, arrayInfo.getItemName()));
-		contetnsStringBuilder.append(" = new ");
-		contetnsStringBuilder.append(newPath);
-		contetnsStringBuilder.append("();");
+		contentsStringBuilder.append(CommonStaticFinalVars.NEWLINE);
+		CommonStaticUtil.addPrefixWithTabCharacters(contentsStringBuilder, depth, 1);
+		contentsStringBuilder.append(newPath);
+		contentsStringBuilder.append(" ");
+		contentsStringBuilder.append(getArrayVarObjName(depth, arrayInfo.getItemName()));
+		contentsStringBuilder.append(" = new ");
+		contentsStringBuilder.append(newPath);
+		contentsStringBuilder.append("();");
 		
 		// memberList.add(member);
-		contetnsStringBuilder.append(CommonStaticFinalVars.NEWLINE);
-		contetnsStringBuilder.append(CommonStaticUtil.getPrefixWithTabCharacters(depth, 1));
-		contetnsStringBuilder.append(getArrayListVarObjName(depth, arrayInfo.getItemName()));
-		contetnsStringBuilder.append(".add(");
-		contetnsStringBuilder.append(getArrayVarObjName(depth, arrayInfo.getItemName()));
-		contetnsStringBuilder.append(");");				
+		contentsStringBuilder.append(CommonStaticFinalVars.NEWLINE);
+		CommonStaticUtil.addPrefixWithTabCharacters(contentsStringBuilder, depth, 1);
+		contentsStringBuilder.append(getArrayListVarObjName(depth, arrayInfo.getItemName()));
+		contentsStringBuilder.append(".add(");
+		contentsStringBuilder.append(getArrayVarObjName(depth, arrayInfo.getItemName()));
+		contentsStringBuilder.append(");");				
 		
-		addOrderedItemSetPart(contetnsStringBuilder, depth+1
+		addOrderedItemSetPart(contentsStringBuilder, depth+1
 				, newPath
 				, getArrayVarObjName(depth, arrayInfo.getItemName())
 				, getElementObjVarNameOfArrayMiddleObject(depth, arrayInfo.getItemName())
 				, arrayInfo.getOrderedItemSet());	
 		
-		contetnsStringBuilder.append(CommonStaticFinalVars.NEWLINE);
-		contetnsStringBuilder.append(CommonStaticFinalVars.NEWLINE);
-		contetnsStringBuilder.append(CommonStaticUtil.getPrefixWithTabCharacters(depth, 1));
-		contetnsStringBuilder.append("pathStack.pop();");		
+		contentsStringBuilder.append(CommonStaticFinalVars.NEWLINE);
+		contentsStringBuilder.append(CommonStaticFinalVars.NEWLINE);
+		CommonStaticUtil.addPrefixWithTabCharacters(contentsStringBuilder, depth, 1);
+		contentsStringBuilder.append("pathStack.pop();");		
 						
 		// }
-		contetnsStringBuilder.append(CommonStaticFinalVars.NEWLINE);
-		contetnsStringBuilder.append(CommonStaticUtil.getPrefixWithTabCharacters(depth, 0));
-		contetnsStringBuilder.append("}");
+		contentsStringBuilder.append(CommonStaticFinalVars.NEWLINE);
+		CommonStaticUtil.addPrefixWithTabCharacters(contentsStringBuilder, depth, 0);
+		contentsStringBuilder.append("}");
 		
 		// allDataType.setMemberList(memberList);
-		contetnsStringBuilder.append(CommonStaticFinalVars.NEWLINE);
-		contetnsStringBuilder.append(CommonStaticFinalVars.NEWLINE);
-		contetnsStringBuilder.append(CommonStaticUtil.getPrefixWithTabCharacters(depth, 0));
-		contetnsStringBuilder.append(varvarNameOfSetOwner);
-		contetnsStringBuilder.append(".set");
-		contetnsStringBuilder.append(arrayInfo.getFirstUpperItemName());
-		contetnsStringBuilder.append("List(");
-		contetnsStringBuilder.append(getArrayListVarObjName(depth, arrayInfo.getItemName()));
-		contetnsStringBuilder.append(");");
+		contentsStringBuilder.append(CommonStaticFinalVars.NEWLINE);
+		contentsStringBuilder.append(CommonStaticFinalVars.NEWLINE);
+		CommonStaticUtil.addPrefixWithTabCharacters(contentsStringBuilder, depth, 0);
+		contentsStringBuilder.append(varvarNameOfSetOwner);
+		contentsStringBuilder.append(".set");
+		contentsStringBuilder.append(arrayInfo.getFirstUpperItemName());
+		contentsStringBuilder.append("List(");
+		contentsStringBuilder.append(getArrayListVarObjName(depth, arrayInfo.getItemName()));
+		contentsStringBuilder.append(");");
 	}
 	
-	public void addGroupInfoPart(StringBuilder contetnsStringBuilder, int depth, String path, String varNameOfSetOwner, String middleObjVarName,
+	public void addGroupInfoPart(StringBuilder contentsStringBuilder, int depth, String path, String varNameOfSetOwner, String middleObjVarName,
 			GroupInfo groupInfo) {
 		String newPath = new StringBuilder(path).append(".").append(groupInfo.getFirstUpperItemName()).toString();
 		
 		/** 그룹 변수 선언  */
-		contetnsStringBuilder.append(CommonStaticFinalVars.NEWLINE);
-		contetnsStringBuilder.append(CommonStaticUtil.getPrefixWithTabCharacters(depth, 0));
-		contetnsStringBuilder.append(newPath);
-		contetnsStringBuilder.append(" ");
-		contetnsStringBuilder.append(getGroupVarObjName(depth, groupInfo.getItemName()));
-		contetnsStringBuilder.append(" = new ");
-		contetnsStringBuilder.append(newPath);
-		contetnsStringBuilder.append("();");
+		contentsStringBuilder.append(CommonStaticFinalVars.NEWLINE);
+		CommonStaticUtil.addPrefixWithTabCharacters(contentsStringBuilder, depth, 0);
+		contentsStringBuilder.append(newPath);
+		contentsStringBuilder.append(" ");
+		contentsStringBuilder.append(getGroupVarObjName(depth, groupInfo.getItemName()));
+		contentsStringBuilder.append(" = new ");
+		contentsStringBuilder.append(newPath);
+		contentsStringBuilder.append("();");
 		
 		/** 그룹 중간 객체 변수 선언 */
-		contetnsStringBuilder.append(CommonStaticFinalVars.NEWLINE);
-		contetnsStringBuilder.append(CommonStaticUtil.getPrefixWithTabCharacters(depth, 0));
-		contetnsStringBuilder.append("Object ");
-		contetnsStringBuilder.append(getGroupMiddleObjVarName(depth, groupInfo.getItemName()));		
-		contetnsStringBuilder.append(" = singleItemDecoder.getGroupMiddleObject(");
+		contentsStringBuilder.append(CommonStaticFinalVars.NEWLINE);
+		CommonStaticUtil.addPrefixWithTabCharacters(contentsStringBuilder, depth, 0);
+		contentsStringBuilder.append("Object ");
+		contentsStringBuilder.append(getGroupMiddleObjVarName(depth, groupInfo.getItemName()));		
+		contentsStringBuilder.append(" = singleItemDecoder.getGroupMiddleObject(");
 		// the parameter path
-		contetnsStringBuilder.append("pathStack.peek()");
-		contetnsStringBuilder.append(", ");
+		contentsStringBuilder.append("pathStack.peek()");
+		contentsStringBuilder.append(", ");
 		// the parameter groupName
-		contetnsStringBuilder.append("\"");
-		contetnsStringBuilder.append(groupInfo.getItemName());		
-		contetnsStringBuilder.append("\"");
-		contetnsStringBuilder.append(", ");		
+		contentsStringBuilder.append("\"");
+		contentsStringBuilder.append(groupInfo.getItemName());		
+		contentsStringBuilder.append("\"");
+		contentsStringBuilder.append(", ");		
 		// the parameter receivedMiddleObject
-		contetnsStringBuilder.append(middleObjVarName);
-		contetnsStringBuilder.append(");");
+		contentsStringBuilder.append(middleObjVarName);
+		contentsStringBuilder.append(");");
 		
 		/** path stack push */
-		contetnsStringBuilder.append(CommonStaticFinalVars.NEWLINE);
-		contetnsStringBuilder.append(CommonStaticUtil.getPrefixWithTabCharacters(depth, 0));
-		contetnsStringBuilder.append("pathStack.push(new StringBuilder(pathStack.peek()).append(\".\").append(\"")
+		contentsStringBuilder.append(CommonStaticFinalVars.NEWLINE);
+		CommonStaticUtil.addPrefixWithTabCharacters(contentsStringBuilder, depth, 0);
+		contentsStringBuilder.append("pathStack.push(new StringBuilder(pathStack.peek()).append(\".\").append(\"")
 				.append(groupInfo.getFirstUpperItemName())
 				.append("\").toString());");
 		
-		addOrderedItemSetPart(contetnsStringBuilder, depth
+		addOrderedItemSetPart(contentsStringBuilder, depth
 				, newPath
 				, getGroupVarObjName(depth, groupInfo.getItemName())
 				, getGroupMiddleObjVarName(depth, groupInfo.getItemName())
 				, groupInfo.getOrderedItemSet());
 		
 		/** path stack pop */
-		contetnsStringBuilder.append(CommonStaticFinalVars.NEWLINE);
-		contetnsStringBuilder.append(CommonStaticFinalVars.NEWLINE);
-		contetnsStringBuilder.append(CommonStaticUtil.getPrefixWithTabCharacters(depth, 0));
-		contetnsStringBuilder.append("pathStack.pop();");
+		contentsStringBuilder.append(CommonStaticFinalVars.NEWLINE);
+		contentsStringBuilder.append(CommonStaticFinalVars.NEWLINE);
+		CommonStaticUtil.addPrefixWithTabCharacters(contentsStringBuilder, depth, 0);
+		contentsStringBuilder.append("pathStack.pop();");
 		
-		contetnsStringBuilder.append(CommonStaticFinalVars.NEWLINE);
-		contetnsStringBuilder.append(CommonStaticUtil.getPrefixWithTabCharacters(depth, 0));
-		contetnsStringBuilder.append(varNameOfSetOwner);
-		contetnsStringBuilder.append(".set");
-		contetnsStringBuilder.append(groupInfo.getFirstUpperItemName());
-		contetnsStringBuilder.append("(");
-		contetnsStringBuilder.append(getGroupVarObjName(depth, groupInfo.getItemName()));
-		contetnsStringBuilder.append(");");
+		contentsStringBuilder.append(CommonStaticFinalVars.NEWLINE);
+		CommonStaticUtil.addPrefixWithTabCharacters(contentsStringBuilder, depth, 0);
+		contentsStringBuilder.append(varNameOfSetOwner);
+		contentsStringBuilder.append(".set");
+		contentsStringBuilder.append(groupInfo.getFirstUpperItemName());
+		contentsStringBuilder.append("(");
+		contentsStringBuilder.append(getGroupVarObjName(depth, groupInfo.getItemName()));
+		contentsStringBuilder.append(");");
 	}
 	
-	public void addOrderedItemSetPart(StringBuilder contetnsStringBuilder, int depth, String path, String varNameOfSetOwner, String middleObjVarName, OrderedItemSet orderedItemSet) {
+	public void addOrderedItemSetPart(StringBuilder contentsStringBuilder, int depth, String path, String varNameOfSetOwner, String middleObjVarName, OrderedItemSet orderedItemSet) {
 		if (depth < 0) {
 			String errorMessage = String.format("the parameter depth[%d] is less than zero", depth);
 			throw new IllegalArgumentException(errorMessage);
@@ -410,24 +410,24 @@ public class DecoderFileContensBuilder extends AbstractSourceFileBuildre {
 		
 		List<AbstractItemInfo> itemInfoList = orderedItemSet.getItemInfoList();
 		for (AbstractItemInfo itemInfo:itemInfoList) {
-			contetnsStringBuilder.append(CommonStaticFinalVars.NEWLINE);
+			contentsStringBuilder.append(CommonStaticFinalVars.NEWLINE);
 			
 			ItemInfoType itemInfoType = itemInfo.getItemInfoType();
 			
 			switch (itemInfoType) {
 				case SINGLE: {
 					SingleItemInfo singleItemInfo = (SingleItemInfo) itemInfo;
-					addSingleItemInfoPart(contetnsStringBuilder, depth, path, varNameOfSetOwner, middleObjVarName, singleItemInfo);
+					addSingleItemInfoPart(contentsStringBuilder, depth, path, varNameOfSetOwner, middleObjVarName, singleItemInfo);
 					break;
 				}
 				case ARRAY: {
 					ArrayInfo arrayInfo = (ArrayInfo) itemInfo;
-					addArrayInfoPart(contetnsStringBuilder, depth, path, varNameOfSetOwner, middleObjVarName, arrayInfo);
+					addArrayInfoPart(contentsStringBuilder, depth, path, varNameOfSetOwner, middleObjVarName, arrayInfo);
 					break;
 				}
 				case GROUP: {
 					GroupInfo groupInfo = (GroupInfo) itemInfo;
-					addGroupInfoPart(contetnsStringBuilder, depth, path, varNameOfSetOwner, middleObjVarName, groupInfo);
+					addGroupInfoPart(contentsStringBuilder, depth, path, varNameOfSetOwner, middleObjVarName, groupInfo);
 					break;
 				}
 				default: {
@@ -447,92 +447,92 @@ public class DecoderFileContensBuilder extends AbstractSourceFileBuildre {
 		String messageID = messageInfo.getMessageID();
 		String firstLowerMessageID = messageInfo.getFirstLowerMessageID();		
 		
-		StringBuilder contetnsStringBuilder = new StringBuilder();
+		StringBuilder contentsStringBuilder = new StringBuilder();
 		
-		// contetnsStringBuilder.append(buildStringOfLincensePart());
-		addLincensePart(contetnsStringBuilder);
+		// contentsStringBuilder.append(buildStringOfLincensePart());
+		addLincensePart(contentsStringBuilder);
 		
-		contetnsStringBuilder.append(CommonStaticFinalVars.NEWLINE);
-		addPackageDeclarationPart(contetnsStringBuilder, messageID);		
+		contentsStringBuilder.append(CommonStaticFinalVars.NEWLINE);
+		addPackageDeclarationPart(contentsStringBuilder, messageID);		
 		
-		contetnsStringBuilder.append(CommonStaticFinalVars.NEWLINE);		
+		contentsStringBuilder.append(CommonStaticFinalVars.NEWLINE);		
 		Class<?> importClazzes[] = {
 				BodyFormatException.class,
 				AbstractMessage.class,
 				AbstractMessageDecoder.class,
 				SingleItemDecoderIF.class
 		};
-		addImportDeclarationsPart(contetnsStringBuilder, importClazzes);		
+		addImportDeclarationsPart(contentsStringBuilder, importClazzes);		
 		
-		contetnsStringBuilder.append(CommonStaticFinalVars.NEWLINE);
-		addSourceFileDescriptionPart(contetnsStringBuilder, messageID, author, "message decoder");
+		contentsStringBuilder.append(CommonStaticFinalVars.NEWLINE);
+		addSourceFileDescriptionPart(contentsStringBuilder, messageID, author, "message decoder");
 		
-		contetnsStringBuilder.append(CommonStaticFinalVars.NEWLINE);
-		contetnsStringBuilder.append("public final class ");
-		contetnsStringBuilder.append(messageID);
-		contetnsStringBuilder.append("Decoder extends AbstractMessageDecoder {");
+		contentsStringBuilder.append(CommonStaticFinalVars.NEWLINE);
+		contentsStringBuilder.append("public final class ");
+		contentsStringBuilder.append(messageID);
+		contentsStringBuilder.append("Decoder extends AbstractMessageDecoder {");
 		
-		contetnsStringBuilder.append(CommonStaticFinalVars.NEWLINE);
+		contentsStringBuilder.append(CommonStaticFinalVars.NEWLINE);
 		
-		contetnsStringBuilder.append(CommonStaticFinalVars.NEWLINE);
-		contetnsStringBuilder.append(CommonStaticUtil.getPrefixWithTabCharacters(depth, 1));
-		contetnsStringBuilder.append("@Override");
-		contetnsStringBuilder.append(CommonStaticFinalVars.NEWLINE);
-		contetnsStringBuilder.append(CommonStaticUtil.getPrefixWithTabCharacters(depth, 1));
-		contetnsStringBuilder.append("protected AbstractMessage decodeBody(SingleItemDecoderIF singleItemDecoder, Object ");
-		contetnsStringBuilder.append(middleObjVarName);
-		contetnsStringBuilder.append(") throws BodyFormatException {");
+		contentsStringBuilder.append(CommonStaticFinalVars.NEWLINE);
+		CommonStaticUtil.addPrefixWithTabCharacters(contentsStringBuilder, depth, 1);
+		contentsStringBuilder.append("@Override");
+		contentsStringBuilder.append(CommonStaticFinalVars.NEWLINE);
+		CommonStaticUtil.addPrefixWithTabCharacters(contentsStringBuilder, depth, 1);
+		contentsStringBuilder.append("protected AbstractMessage decodeBody(SingleItemDecoderIF singleItemDecoder, Object ");
+		contentsStringBuilder.append(middleObjVarName);
+		contentsStringBuilder.append(") throws BodyFormatException {");
 		
 		// AllDataType allDataType = new AllDataType();
-		contetnsStringBuilder.append(CommonStaticFinalVars.NEWLINE);
-		contetnsStringBuilder.append(CommonStaticUtil.getPrefixWithTabCharacters(depth, 2));
-		contetnsStringBuilder.append(messageID);
-		contetnsStringBuilder.append(" ");
-		contetnsStringBuilder.append(firstLowerMessageID);
-		contetnsStringBuilder.append(" = new ");
-		contetnsStringBuilder.append(messageID);
-		contetnsStringBuilder.append("();");
+		contentsStringBuilder.append(CommonStaticFinalVars.NEWLINE);
+		CommonStaticUtil.addPrefixWithTabCharacters(contentsStringBuilder, depth, 2);
+		contentsStringBuilder.append(messageID);
+		contentsStringBuilder.append(" ");
+		contentsStringBuilder.append(firstLowerMessageID);
+		contentsStringBuilder.append(" = new ");
+		contentsStringBuilder.append(messageID);
+		contentsStringBuilder.append("();");
 		
 		if (! messageInfo.getOrderedItemSet().getItemInfoList().isEmpty()) {
-			contetnsStringBuilder.append(CommonStaticFinalVars.NEWLINE);
-			contetnsStringBuilder.append(CommonStaticUtil.getPrefixWithTabCharacters(depth, 2));
+			contentsStringBuilder.append(CommonStaticFinalVars.NEWLINE);
+			CommonStaticUtil.addPrefixWithTabCharacters(contentsStringBuilder, depth, 2);
 			/** java.util.Stack is thread-safe but LinkedList is not thread-safe */
-			contetnsStringBuilder.append("java.util.LinkedList<String> pathStack = new java.util.LinkedList<String>();");
+			contentsStringBuilder.append("java.util.LinkedList<String> pathStack = new java.util.LinkedList<String>();");
 
-			contetnsStringBuilder.append(CommonStaticFinalVars.NEWLINE);
-			contetnsStringBuilder.append(CommonStaticUtil.getPrefixWithTabCharacters(depth, 2));
-			contetnsStringBuilder.append("pathStack.push(");
-			contetnsStringBuilder.append("\"");
-			contetnsStringBuilder.append(messageID);
-			contetnsStringBuilder.append("\");");
+			contentsStringBuilder.append(CommonStaticFinalVars.NEWLINE);
+			CommonStaticUtil.addPrefixWithTabCharacters(contentsStringBuilder, depth, 2);
+			contentsStringBuilder.append("pathStack.push(");
+			contentsStringBuilder.append("\"");
+			contentsStringBuilder.append(messageID);
+			contentsStringBuilder.append("\");");
 			
-			addOrderedItemSetPart(contetnsStringBuilder, 2, messageID, firstLowerMessageID, middleObjVarName, messageInfo.getOrderedItemSet());
+			addOrderedItemSetPart(contentsStringBuilder, 2, messageID, firstLowerMessageID, middleObjVarName, messageInfo.getOrderedItemSet());
 			
-			contetnsStringBuilder.append(CommonStaticFinalVars.NEWLINE);			
-			contetnsStringBuilder.append(CommonStaticFinalVars.NEWLINE);
-			contetnsStringBuilder.append(CommonStaticUtil.getPrefixWithTabCharacters(depth, 2));
-			contetnsStringBuilder.append("pathStack.pop();");
+			contentsStringBuilder.append(CommonStaticFinalVars.NEWLINE);			
+			contentsStringBuilder.append(CommonStaticFinalVars.NEWLINE);
+			CommonStaticUtil.addPrefixWithTabCharacters(contentsStringBuilder, depth, 2);
+			contentsStringBuilder.append("pathStack.pop();");
 		}		
 		
-		contetnsStringBuilder.append(CommonStaticFinalVars.NEWLINE);
+		contentsStringBuilder.append(CommonStaticFinalVars.NEWLINE);
 		
 		// return allDataType;
-		contetnsStringBuilder.append(CommonStaticFinalVars.NEWLINE);
-		contetnsStringBuilder.append(CommonStaticUtil.getPrefixWithTabCharacters(depth, 2));
-		contetnsStringBuilder.append("return ");
-		contetnsStringBuilder.append(firstLowerMessageID);
-		contetnsStringBuilder.append(";");
+		contentsStringBuilder.append(CommonStaticFinalVars.NEWLINE);
+		CommonStaticUtil.addPrefixWithTabCharacters(contentsStringBuilder, depth, 2);
+		contentsStringBuilder.append("return ");
+		contentsStringBuilder.append(firstLowerMessageID);
+		contentsStringBuilder.append(";");
 		
 		
-		contetnsStringBuilder.append(CommonStaticFinalVars.NEWLINE);
-		contetnsStringBuilder.append(CommonStaticUtil.getPrefixWithTabCharacters(depth, 1));
-		contetnsStringBuilder.append("}");
+		contentsStringBuilder.append(CommonStaticFinalVars.NEWLINE);
+		CommonStaticUtil.addPrefixWithTabCharacters(contentsStringBuilder, depth, 1);
+		contentsStringBuilder.append("}");
 		
-		contetnsStringBuilder.append(CommonStaticFinalVars.NEWLINE);
-		contetnsStringBuilder.append(CommonStaticUtil.getPrefixWithTabCharacters(depth, 0));
-		contetnsStringBuilder.append("}");
+		contentsStringBuilder.append(CommonStaticFinalVars.NEWLINE);
+		CommonStaticUtil.addPrefixWithTabCharacters(contentsStringBuilder, depth, 0);
+		contentsStringBuilder.append("}");
 		
-		return contetnsStringBuilder.toString();
+		return contentsStringBuilder.toString();
 	}
 
 }

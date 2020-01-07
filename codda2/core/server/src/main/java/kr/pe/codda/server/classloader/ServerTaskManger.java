@@ -46,7 +46,7 @@ public class ServerTaskManger implements ServerTaskMangerIF {
 			throws DynamicClassCallException {
 		String serverTaskClassFullName = IOPartDynamicClassNameUtil.getServerTaskClassFullName(messageID);
 		
-		Object retObject = CommonStaticUtil.getNewObjectFromClassloader(currentWorkingServerClassLoader, serverTaskClassFullName);
+		Object retObject = CommonStaticUtil.createtNewInstance(currentWorkingServerClassLoader, serverTaskClassFullName);
 		
 		if (! (retObject instanceof AbstractServerTask)) {
 			String errorMessage = new StringBuilder()

@@ -19,8 +19,26 @@ package kr.pe.codda.common.sessionkey;
 
 import kr.pe.codda.common.exception.SymmetricException;
 
+/**
+ * 서버 RSA 인터페이스
+ * @author Won Jonghoon
+ *
+ */
 public interface ServerRSAIF {
+	/**
+	 * @return 공개키 값 복사본
+	 */
 	public byte[] getDupPublicKeyBytes();
-	public byte[] decrypt(byte[] sessionKeyBytes) throws SymmetricException;
+	
+	/**
+	 * @param encryptedBytes 공개키로 암호화된 암호문 
+	 * @return 파라미터 'encryptedBytes'(=공개키로 암호화된 암호문) 를 개인키로 푼 복호문
+	 * @throws SymmetricException 암호화 관련 처리중 에러 발생시 던지는 예외
+	 */
+	public byte[] decrypt(byte[] encryptedBytes) throws SymmetricException;
+	
+	/**
+	 * @return 웹을 위한 모듈러스 헥사 문자열
+	 */
 	public String getModulusHexStrForWeb();
 }

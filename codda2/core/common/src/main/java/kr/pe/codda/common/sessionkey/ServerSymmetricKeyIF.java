@@ -25,6 +25,20 @@ import kr.pe.codda.common.exception.SymmetricException;
  *
  */
 public interface ServerSymmetricKeyIF {
+	/**
+	 * @param plainTextBytes 평문
+	 * @return 암호문
+	 * @throws IllegalArgumentException 파라미터 'plainTextBytes' 가 null 일 경우 던지는 예외
+	 * @throws SymmetricException 암복화 관련 에러 발생시 던지는 예외
+	 */
 	public byte[] encrypt(byte[] plainTextBytes) throws IllegalArgumentException, SymmetricException;
+	
+	/**
+	 * 
+	 * @param encryptedBytes 암호문
+	 * @return 복호문
+	 * @throws IllegalArgumentException 파라미터 'encryptedBytes' 가 null 일 경우 던지는 예외
+	 * @throws SymmetricException 암복화 관련 에러 발생시 던지는 예외
+	 */
 	public byte[] decrypt(byte[] encryptedBytes) throws IllegalArgumentException, SymmetricException;
 }

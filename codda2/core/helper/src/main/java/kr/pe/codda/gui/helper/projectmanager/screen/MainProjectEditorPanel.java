@@ -383,6 +383,17 @@ public class MainProjectEditorPanel extends JPanel {
 		mainProjectPartEditorTable.setVisible(true);
 	}
 	
+	private String getMultiLineToolTip(String message, int colSize) {
+		if (null == message) {
+			throw new IllegalArgumentException("the parameter 'message' is null");
+		}
+
+		String tooltip = new StringBuilder("<html>")
+				.append(CommonStaticUtil.splitString(message, LineSeparatorType.BR, colSize)).append("</html>")
+				.toString();
+		return tooltip;
+	}
+	
 	private class ProjectConfigurationSequencedProperties extends
 			SequencedProperties {
 		/**
@@ -462,8 +473,7 @@ public class MainProjectEditorPanel extends JPanel {
 					log.warn("fail to get native value", e1);
 					showMessageDialog(e1.getMessage());
 					itemValuePanel.setSelected(true);
-					itemValuePanel.setToolTipText(CommonStaticUtil
-							.getMultiLineToolTip(e1.getMessage(), 100));
+					itemValuePanel.setToolTipText(getMultiLineToolTip(e1.getMessage(), 100));
 					commonPartEditorTable.changeSelection(indexOfTableModel, 1,
 							false, false);
 					commonPartEditorTable.editCellAt(indexOfTableModel, 1);
@@ -514,8 +524,7 @@ public class MainProjectEditorPanel extends JPanel {
 						log.warn("fail to get native value", e1);
 						showMessageDialog(e1.getMessage());
 						itemValuePanel.setSelected(true);
-						itemValuePanel.setToolTipText(CommonStaticUtil
-								.getMultiLineToolTip(e1.getMessage(), 100));
+						itemValuePanel.setToolTipText(getMultiLineToolTip(e1.getMessage(), 100));
 						openDBCPPartEditor(dbcpName,
 								itemValuePanel.getIndexOfTableModel(), itemKey);
 						return false;
@@ -565,8 +574,7 @@ public class MainProjectEditorPanel extends JPanel {
 					log.warn("fail to get native value", e1);
 					showMessageDialog(e1.getMessage());
 					itemValuePanel.setSelected(true);
-					itemValuePanel.setToolTipText(CommonStaticUtil
-							.getMultiLineToolTip(e1.getMessage(), 100));
+					itemValuePanel.setToolTipText(getMultiLineToolTip(e1.getMessage(), 100));
 					mainProjectPartEditorTable.changeSelection(
 							indexOfTableModel, 1, false, false);
 					mainProjectPartEditorTable.editCellAt(indexOfTableModel, 1);
@@ -614,8 +622,7 @@ public class MainProjectEditorPanel extends JPanel {
 						log.warn("fail to get native value", e1);
 						showMessageDialog(e1.getMessage());
 						itemValuePanel.setSelected(true);
-						itemValuePanel.setToolTipText(CommonStaticUtil
-								.getMultiLineToolTip(e1.getMessage(), 100));
+						itemValuePanel.setToolTipText(getMultiLineToolTip(e1.getMessage(), 100));
 						openSubProjectPopup(subProjectName,
 								itemValuePanel.getIndexOfTableModel(), itemKey);
 						return false;

@@ -37,6 +37,11 @@ import kr.pe.codda.common.etc.CommonStaticFinalVars;
 import kr.pe.codda.common.exception.SymmetricException;
 import kr.pe.codda.common.util.HexUtil;
 
+/**
+ * 서버 RSA
+ * @author Won Jonghoon
+ *
+ */
 public final class ServerRSA implements ServerRSAIF {
 	private Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
 
@@ -44,6 +49,11 @@ public final class ServerRSA implements ServerRSAIF {
 	private final String rsaPrivateKeyModulesHexString;
 	// private final BigInteger modulusOfRSAPrivateCrtKeySpec;
 	
+	/**
+	 * 생성자
+	 * @param rsaKeypair RSA 키 쌍
+	 * @throws SymmetricException 암호화 관련 처리중 에러 발생시 던지는 예외
+	 */
 	public ServerRSA(KeyPair rsaKeypair) throws SymmetricException {
 		if (null == rsaKeypair) {
 			throw new IllegalArgumentException("the parameter rsaKeypair is null");
@@ -78,11 +88,13 @@ public final class ServerRSA implements ServerRSAIF {
 		rsaPrivateKeyModulesHexString = HexUtil.getHexStringFromByteArray(modulusOfRSAPrivateCrtKeySpec.toByteArray());
 	}
 
+	@Override
 	public byte[] getDupPublicKeyBytes() {
 		byte[] publickKeyBytes = rsaKeypair.getPublic().getEncoded();
 		return Arrays.copyOf(publickKeyBytes, publickKeyBytes.length);
 	}
 
+	@Override
 	public byte[] decrypt(byte[] encryptedBytes) throws SymmetricException {
 		if (null == encryptedBytes) {
 			throw new IllegalArgumentException("the parameter encryptedBytes is null");
@@ -141,6 +153,7 @@ public final class ServerRSA implements ServerRSAIF {
 		return decryptedBytes;
 	}
 
+	@Override
 	public String getModulusHexStrForWeb() {
 		return rsaPrivateKeyModulesHexString;
 	}

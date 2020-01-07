@@ -38,7 +38,7 @@ public class ClientStaticTaskManger implements ClientTaskMangerIF {
 			if (null == clientTask) {
 				String clientTaskClassFullName = IOPartDynamicClassNameUtil.getClientTaskClassFullName(messageID);
 				
-				Object retObject = CommonStaticUtil.getNewObjectFromClassloader(systemClassLoader, clientTaskClassFullName);
+				Object retObject = CommonStaticUtil.createtNewInstance(systemClassLoader, clientTaskClassFullName);
 				
 				if (! (retObject instanceof AbstractClientTask)) {
 					String errorMessage = new StringBuilder()

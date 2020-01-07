@@ -17,6 +17,11 @@
 
 package kr.pe.codda.common.type;
 
+/**
+ * 클래스 로더 종류 열거형 타입, '시스템 클래스 로더'와 '동적 클래스 로더' 가 있다. 
+ * @author Won Jonghoon
+ *
+ */
 public enum ClassloaderType {
-	Static, Dynamic;
+	SYSTEM, DYNAMIC;
 }

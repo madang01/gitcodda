@@ -19,7 +19,27 @@ package kr.pe.codda.common.sessionkey;
 
 import kr.pe.codda.common.exception.SymmetricException;
 
+/**
+ * 클라이언트 대칭키 인터페이스
+ * @author Won Jonghoon
+ *
+ */
 public interface ClientSymmetricKeyIF {
+	
+	/**
+	 * @param plainTextBytes 원문
+	 * @return 암호문
+	 * @throws IllegalArgumentException 파라미터 값이 잘못되었을 경우 던지는 예외
+	 * @throws SymmetricException 암호화 관련 처리중 에러 발생시 던지는 예외
+	 */
 	public byte[] encrypt(byte[] plainTextBytes) throws IllegalArgumentException, SymmetricException;
+	
+	/**
+	 * 
+	 * @param encryptedBytes 암호문
+	 * @return 복호문
+	 * @throws IllegalArgumentException 파라미터 값이 잘못되었을 경우 던지는 예외
+	 * @throws SymmetricException 암호화 관련 처리중 에러 발생시 던지는 예외
+	 */
 	public byte[] decrypt(byte[] encryptedBytes) throws IllegalArgumentException, SymmetricException;
 }

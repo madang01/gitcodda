@@ -36,9 +36,13 @@ import kr.pe.codda.common.util.CommonStaticUtil;
  * @author Won Jonghoon
  *
  */
-public abstract class AbstractRSAPublickeyGetter {
+public abstract class AbstractRSAPublickeyReturner {
 	
-	public final byte[] getMainProjectPublickeyBytes() throws SymmetricException, InterruptedException {
+	/**
+	 * @return 메인 프로젝트의 공개키 바이트 배열
+	 * @throws SymmetricException 암호화 관련 처리중 에러 발생시 던지는 예외
+	 */
+	public final byte[] getMainProjectPublickeyBytes() throws SymmetricException {
 		byte[] publicKeyBytes = null;
 		CoddaConfiguration runningProjectConfiguration = CoddaConfigurationManager.getInstance()
 				.getRunningProjectConfiguration();
@@ -59,7 +63,13 @@ public abstract class AbstractRSAPublickeyGetter {
 		return publicKeyBytes;
 	}
 	
-	abstract protected byte[] getPublickeyBytesFromMainProjectServer() throws SymmetricException, InterruptedException;
+	/**
+	 * 메인 프로젝트의 공개키 바이트 배열을 반환하는 추상화 메소드
+	 * 
+	 * @return 메인 프로젝트의 공개키 바이트 배열
+	 * @throws SymmetricException 암호화 관련 처리중 에러 발생시 던지는 예외
+	 */
+	abstract protected byte[] getPublickeyBytesFromMainProjectServer() throws SymmetricException;
 	
 	/*private static final byte[] getPublickeyBytesFromMainProjectServer() throws SymmetricException {
 		Logger log = LoggerFactory.getLogger(ClientRSAPublickeyGetter.class);
@@ -80,18 +90,20 @@ public abstract class AbstractRSAPublickeyGetter {
 	}*/
 	
 	/**
-	 * return public key bytes getting from sub project server
+	 * 파라미터 'subProjectName'(=서브 프로젝트 이름) 예 1:1 대응하는 서브 프로젝트의 공개키 바이트 배열을 반환하는 추상화 메소드
 	 * 
-	 * @param subProjectName The subproject name from which to obtain the bytes of the public key.
-	 * @return public key bytes getting from sub project server
+	 * @param subProjectName 서브 프로젝트 이름
+	 * @return 파라미터 'subProjectName'(=서브 프로젝트 이름) 예 1:1 대응하는 서브 프로젝트의 공개키 바이트 배열
 	 * @throws SymmetricException 암복화 관련 에러 발생시 던지는 예외
 	 */
-	abstract public byte[] getSubProjectPublickeyBytes(
-			String subProjectName) throws SymmetricException;
+	abstract public byte[] getSubProjectPublickeyBytes(String subProjectName) throws SymmetricException;
 	
 	
+	/**
+	 * @return 코다 환경 설정 파일에서 지정한 공개키 파일로 부터 얻은 공개키 바이트 배열
+	 * @throws SymmetricException 암복화 관련 에러 발생시 던지는 예외
+	 */
 	private final byte[] getPublickeyBytesFromFile() throws SymmetricException {
-		
 		
 		byte[] publicKeyBytes = null;
 

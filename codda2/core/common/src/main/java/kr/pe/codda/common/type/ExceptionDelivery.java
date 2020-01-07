@@ -26,7 +26,19 @@ import kr.pe.codda.common.exception.ServerTaskException;
 import kr.pe.codda.common.exception.ServerTaskPermissionException;
 import kr.pe.codda.impl.message.ExceptionDeliveryRes.ExceptionDeliveryRes;
 
+/**
+ * 에러 장소와 에러 종류 열거형 타입을 정의하는 '예외 전달 추상화 클래스'
+ * 
+ * 
+ * @author Won Jonghoon
+ *
+ */
 public abstract class ExceptionDelivery {
+	/**
+	 * 예외 장소 열거형 타입, 서버와 클라이언트가 있음.
+	 * @author Won Jonghoon
+	 *
+	 */
 	public enum ErrorPlace {
 		SERVER((byte)'S'), CLIENT((byte)'C');
 		
@@ -51,13 +63,17 @@ public abstract class ExceptionDelivery {
 		}
 	}
 	
+	/**
+	 * 에러 종류 열거형 타입
+	 * @author Won Jonghoon
+	 *
+	 */
 	public enum ErrorType {
 		BodyFormatException((byte)'B'), 
 		DynamicClassCallException((byte)'D'), 
 		NoMoreDataPacketBufferException((byte)'N'),
 		ServerTaskException((byte)'S'),
-		ServerTaskPermissionException((byte)'A'),
-		ClientIOException((byte)'E');
+		ServerTaskPermissionException((byte)'A');
 		
 		private byte errorTypeByte;
 		
@@ -94,9 +110,7 @@ public abstract class ExceptionDelivery {
 			} else if (errorTypeClass.equals(ServerTaskException.class)) {
 				return ServerTaskException;
 			} else if (errorTypeClass.equals(ServerTaskPermissionException.class)) {
-				return ServerTaskPermissionException;
-			} else if (errorTypeClass.equals(IOException.class)) {
-				return ClientIOException;
+				return ServerTaskPermissionException;			
 			} else {
 				String errorMessage = new StringBuilder()
 						.append("the parameter errorTypeClass[")
@@ -124,8 +138,6 @@ public abstract class ExceptionDelivery {
 				throw new ServerTaskException(errorMessage);
 			case ServerTaskPermissionException :
 				throw new ServerTaskPermissionException(errorMessage);
-			case ClientIOException :
-				throw new IOException(errorMessage);
 		
 			default:
 				throw new IllegalArgumentException("unknown error type["+throwExceptionRes.toString()+"]");

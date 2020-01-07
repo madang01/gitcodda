@@ -1,6 +1,5 @@
 package kr.pe.codda.common.message.builder;
 
-import kr.pe.codda.common.exception.NoMoreDataPacketBufferException;
 import kr.pe.codda.common.message.builder.info.MessageInfo;
 import kr.pe.codda.common.type.MessageTransferDirectionType;
 
@@ -23,8 +22,7 @@ public class IOPartDynamicClassFileContentsBuilderManager {
 	}
 
 	/**
-	 * 동기화 쓰지 않고 싱글턴 구현을 위한 생성자
-	 * @throws NoMoreDataPacketBufferException 
+	 * 동기화 쓰지 않고 싱글턴 구현을 위한 생성자 
 	 */
 	private IOPartDynamicClassFileContentsBuilderManager() {
 		messageFileContensBuilder = new MessageFileContensBuilder();

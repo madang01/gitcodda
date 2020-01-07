@@ -90,7 +90,7 @@ public class ClientRSATest {
 	@Test
 	public void testEncrypt_theParameterPlainTextBytesIsNull() {
 		try {
-			ServerRSA serverRSA = new ServerRSA(ServerRSAKeypairGetter.getRSAKeyPairFromKeyGenerator(1024));
+			ServerRSA serverRSA = new ServerRSA(ServerRSAKeypairUtil.createRSAKeyPairFromKeyGenerator(1024));
 			
 			ClientRSA clientRSA = new ClientRSA(serverRSA.getDupPublicKeyBytes());
 			

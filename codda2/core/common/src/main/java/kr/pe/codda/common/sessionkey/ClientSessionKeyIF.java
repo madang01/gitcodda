@@ -17,10 +17,30 @@
 
 package kr.pe.codda.common.sessionkey;
 
+
+/**
+ * 클라이언트 세션키 인터페이스
+ * @author Won Jonghoon
+ *
+ */
 public interface ClientSessionKeyIF {
+	/**
+	 * @return 클라이언트 대칭키
+	 */
 	public ClientSymmetricKeyIF getClientSymmetricKey();
+	
+	/**
+	 * @return 세션키 복사본
+	 */
 	public byte[] getDupSessionKeyBytes();
+	
+	/**
+	 * @return 공개키 복사본
+	 */
 	public byte[] getDupPublicKeyBytes();
 	
+	/**
+	 * @return IV 값 복사본
+	 */
 	public byte[] getDupIVBytes();
 }

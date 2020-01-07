@@ -68,7 +68,7 @@ public class DownloadImageSvl extends AbstractServlet {
 		// 브라우저별 한글 인코딩
 		if (getBrowser(req).equals("MSIE")) {
 			// URLEncode하고 +문자만 공백으로 바꾸는 경우
-			imageFileName = URLEncoder.encode(imageFileName, "UTF-8").replaceAll("\\+", "%20");
+			imageFileName = URLEncoder.encode(imageFileName, "UTF-8").replace("\\+", "%20");
 		} else if (getBrowser(req).equals("Chrome")) {
 			// char단위로 검색하여 ~표시보다 char값이 높을 때(ascii코드값이 아닌경우)만 URLEncode한다.
 			StringBuffer sb = new StringBuffer();

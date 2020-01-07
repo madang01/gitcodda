@@ -97,6 +97,15 @@ public final class SymmetricKeyManager {
 		symmetricKeyTransformationHash.put("DESede", "DESede/CBC/PKCS5Padding");
 	}	
 
+	/**
+	 * @param symmetricKeyAlgorithm 대칭키 알고리즘
+	 * @param symmetricKeyBytes 대칭키 값
+	 * @param encryptedBytes 암호문
+	 * @param ivBytes iv 값
+	 * @return 복호문
+	 * @throws IllegalArgumentException 파라미터 값이 잘못되었을 경우 던지는 예외
+	 * @throws SymmetricException 암복화 관련 에러 발생시 던지는 예외
+	 */
 	public byte[] decrypt(String symmetricKeyAlgorithm, byte[] symmetricKeyBytes, byte[] encryptedBytes, byte[] ivBytes)
 			throws IllegalArgumentException, SymmetricException {
 
@@ -224,6 +233,15 @@ public final class SymmetricKeyManager {
 		return decryptedBytes;
 	}
 
+	/**
+	 * @param symmetricKeyAlgorithm 대칭키 알고리즘
+	 * @param symmetricKeyBytes 대칭키 값
+	 * @param plainTextBytes 평문
+	 * @param ivBytes iv 값
+	 * @return 암호문
+	 * @throws IllegalArgumentException 파라미터 값이 잘못되었을 경우 던지는 예외
+	 * @throws SymmetricException 암복화 관련 에러 발생시 던지는 예외
+	 */
 	public byte[] encrypt(String symmetricKeyAlgorithm, byte[] symmetricKeyBytes, byte[] plainTextBytes, byte[] ivBytes)
 			throws IllegalArgumentException, SymmetricException {
 

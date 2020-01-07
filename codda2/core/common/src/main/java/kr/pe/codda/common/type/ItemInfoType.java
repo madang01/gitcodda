@@ -17,6 +17,12 @@
 
 package kr.pe.codda.common.type;
 
+/**
+ * 항목 정보 종류 열거형 타입
+ * 
+ * @author Won Jonghoon
+ *
+ */
 public enum ItemInfoType {
 	MESSAGE,
 	SINGLE,

@@ -639,7 +639,7 @@ public class ProjectBuilder {
 				.getWebClientBuildPathString(installedPathString, mainProjectName);
 		
 		String messageIOSetBasedirectoryPathString = CommonStaticUtil
-					.getFilePathStringFromResourcePathAndRelativePathOfFile
+					.buildFilePathStringFromResourcePathAndRelativePathOfFile
 					(webClientBuildPathString, ProjectBuildSytemPathSupporter.getMessageIOSourceBaseDirectoryRelativePath("/"));
 		
 		
@@ -922,7 +922,7 @@ public class ProjectBuilder {
 				.getAppClientBuildPathString(installedPathString, mainProjectName);
 		
 		String messageIOSetBasedirectoryPathString = CommonStaticUtil
-					.getFilePathStringFromResourcePathAndRelativePathOfFile
+					.buildFilePathStringFromResourcePathAndRelativePathOfFile
 					(appClientBuildPathString, ProjectBuildSytemPathSupporter.getMessageIOSourceBaseDirectoryRelativePath("/"));
 			
 		for (String messageID : messageIDList) {
@@ -1052,7 +1052,7 @@ public class ProjectBuilder {
 
 		String serverBuildPathString = ServerBuildSytemPathSupporter.getServerBuildPathString(installedPathString, mainProjectName);
 		String messageIOSetBasedirectoryPathString = CommonStaticUtil
-					.getFilePathStringFromResourcePathAndRelativePathOfFile
+					.buildFilePathStringFromResourcePathAndRelativePathOfFile
 					(serverBuildPathString, ProjectBuildSytemPathSupporter.getMessageIOSourceBaseDirectoryRelativePath("/"));
 		
 

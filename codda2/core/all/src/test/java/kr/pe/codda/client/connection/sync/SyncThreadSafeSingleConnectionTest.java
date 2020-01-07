@@ -97,7 +97,7 @@ public class SyncThreadSafeSingleConnectionTest {
 			fail(errorMessage);
 		}
 		
-		File coddaAPPINFClassDirectory = new File(CommonStaticUtil.changeRelativePathStringToOSPathString(CODDA_TEMP_ROOT_PATH_STRING + "/project/sample_base/server_build/APP-INF/classes"));
+		File coddaAPPINFClassDirectory = new File(CommonStaticUtil.toOSPathString(CODDA_TEMP_ROOT_PATH_STRING + "/project/sample_base/server_build/APP-INF/classes"));
 		
 		log.info(coddaAPPINFClassDirectory.getAbsolutePath());		
 		
@@ -113,7 +113,7 @@ public class SyncThreadSafeSingleConnectionTest {
 			fail("가짜 프로젝트 서버 동적 클래스 경로 만들기 실패");
 		}
 		
-		File coddaResoruceDirectory = new File(CommonStaticUtil.changeRelativePathStringToOSPathString(CODDA_TEMP_ROOT_PATH_STRING + "/project/sample_base/resources"));
+		File coddaResoruceDirectory = new File(CommonStaticUtil.toOSPathString(CODDA_TEMP_ROOT_PATH_STRING + "/project/sample_base/resources"));
 		
 		log.info(coddaResoruceDirectory.getAbsolutePath());		
 		

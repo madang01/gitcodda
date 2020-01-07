@@ -3,7 +3,6 @@ package kr.pe.codda.weblib.sitemenu;
 import java.util.List;
 
 import kr.pe.codda.common.etc.CommonStaticFinalVars;
-import kr.pe.codda.common.exception.NoMoreDataPacketBufferException;
 import kr.pe.codda.impl.message.TreeSiteMenuRes.TreeSiteMenuRes;
 
 public class AdminSiteMenuManger {
@@ -23,8 +22,7 @@ public class AdminSiteMenuManger {
 	}
 	
 	/**
-	 * 동기화 쓰지 않고 싱글턴 구현을 위한 생성자
-	 * @throws NoMoreDataPacketBufferException 
+	 * 동기화 쓰지 않고 싱글턴 구현을 위한 생성자 
 	 */
 	private AdminSiteMenuManger() {
 		java.util.List<TreeSiteMenuRes.Menu> rootMenuList = new java.util.ArrayList<TreeSiteMenuRes.Menu>();

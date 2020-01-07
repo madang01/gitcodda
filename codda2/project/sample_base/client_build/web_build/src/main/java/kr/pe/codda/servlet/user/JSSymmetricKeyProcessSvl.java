@@ -120,7 +120,7 @@ public class JSSymmetricKeyProcessSvl extends AbstractServlet {
 		*/
 
 		String decryptedPlainText = new String(decryptedBytes);
-		String isSame = String.valueOf(decryptedPlainText.equals(paramPlainText.replaceAll("\r\n", "\n")));
+		String isSame = String.valueOf(decryptedPlainText.equals(paramPlainText.replace("\r\n", "\n")));
 
 		req.setAttribute("plainText", paramPlainText);
 		req.setAttribute("algorithm", paramAlgorithm);

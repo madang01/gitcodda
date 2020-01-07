@@ -225,7 +225,7 @@ public class DHBMessageProtocolTest {
 				String clientMessageCodecClassFullName = IOPartDynamicClassNameUtil
 						.getClientMessageCodecClassFullName(messageID);
 				try {
-					Object retObject = CommonStaticUtil.getNewObjectFromClassloader(classloader,
+					Object retObject = CommonStaticUtil.createtNewInstance(classloader,
 							clientMessageCodecClassFullName);
 
 					if (!(retObject instanceof MessageCodecIF)) {

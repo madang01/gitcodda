@@ -33,6 +33,13 @@ public class ServerSymmetricKey implements ServerSymmetricKeyIF {
 	private byte ivBytes[] = null;
 	// private final int symmetricIVSize;
 	
+	/**
+	 * 생성자
+	 * @param symmetricKeyAlgorithm 대칭키 알고리즘
+	 * @param symmetricKeyBytes 대칭키 값
+	 * @param ivBytes iv 값
+	 * @throws SymmetricException 암복화 관련 에러 발생시 던지는 예외
+	 */
 	public ServerSymmetricKey(String symmetricKeyAlgorithm, byte[] symmetricKeyBytes, byte[] ivBytes) throws SymmetricException {
 		if (null == symmetricKeyAlgorithm) {
 			throw new IllegalArgumentException("the parameter symmetricKeyAlgorithm is null");
@@ -51,11 +58,12 @@ public class ServerSymmetricKey implements ServerSymmetricKeyIF {
 		this.ivBytes = ivBytes;
 	}
 	
-	
+	@Override
 	public byte[] encrypt(byte[] plainTextBytes) throws IllegalArgumentException, SymmetricException {
 		return symmetricKeyManager.encrypt(symmetricKeyAlgorithm, symmetricKeyBytes, plainTextBytes, ivBytes);
 	}
 	
+	@Override
 	public byte[] decrypt(byte[] encryptedBytes) throws IllegalArgumentException, SymmetricException {		
 		return symmetricKeyManager.decrypt(symmetricKeyAlgorithm, symmetricKeyBytes, encryptedBytes, ivBytes);
 	}

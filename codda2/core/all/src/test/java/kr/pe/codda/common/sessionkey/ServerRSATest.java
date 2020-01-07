@@ -91,7 +91,7 @@ public class ServerRSATest {
 	@Test
 	public void testDecrypt_theParameterEncryptedBytesIsNull() {
 		try {
-			ServerRSA serverRSA = new ServerRSA(ServerRSAKeypairGetter.getRSAKeyPairFromKeyGenerator(1024));
+			ServerRSA serverRSA = new ServerRSA(ServerRSAKeypairUtil.createRSAKeyPairFromKeyGenerator(1024));
 			
 			serverRSA.decrypt(null);
 		} catch(IllegalArgumentException e) {

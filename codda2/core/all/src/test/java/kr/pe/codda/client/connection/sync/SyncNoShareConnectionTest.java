@@ -93,7 +93,7 @@ public class SyncNoShareConnectionTest {
 		}
 
 		File coddaAPPINFClassDirectory = new File(CommonStaticUtil
-				.changeRelativePathStringToOSPathString(CODDA_TEMP_ROOT_PATH_STRING + "/project/sample_base/server_build/APP-INF/classes"));
+				.toOSPathString(CODDA_TEMP_ROOT_PATH_STRING + "/project/sample_base/server_build/APP-INF/classes"));
 
 		log.info(coddaAPPINFClassDirectory.getAbsolutePath());
 
@@ -109,7 +109,7 @@ public class SyncNoShareConnectionTest {
 		}
 
 		File coddaResoruceDirectory = new File(
-				CommonStaticUtil.changeRelativePathStringToOSPathString(CODDA_TEMP_ROOT_PATH_STRING + "/project/sample_base/resources"));
+				CommonStaticUtil.toOSPathString(CODDA_TEMP_ROOT_PATH_STRING + "/project/sample_base/resources"));
 
 		log.info(coddaResoruceDirectory.getAbsolutePath());
 

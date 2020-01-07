@@ -87,7 +87,7 @@ public class ServerRSAKeypairGetterTest {
 		for (int rsaKeySize : rsaKeySizes) {
 			try {
 				
-				KeyPair rsaKeyPair = ServerRSAKeypairGetter.getRSAKeyPairFromKeyGenerator(rsaKeySize);
+				KeyPair rsaKeyPair = ServerRSAKeypairUtil.createRSAKeyPairFromKeyGenerator(rsaKeySize);
 				
 				ServerRSA serverRSA = new ServerRSA(rsaKeyPair);
 				ClientRSA clientRSA = new ClientRSA(serverRSA.getDupPublicKeyBytes());
@@ -130,9 +130,11 @@ public class ServerRSAKeypairGetterTest {
 				File rsaPublicKeyFile = File.createTempFile("rsaPublicKey", ".tmp");
 				rsaPublicKeyFile.deleteOnExit();
 				
-				ServerRSAKeypairGetter.saveRSAKeyPairFile(rsaKeySize, rsaPrivateKeyFile, rsaPublicKeyFile);
+				KeyPair originalRSAKeyPair = ServerRSAKeypairUtil.createRSAKeyPairFromKeyGenerator(rsaKeySize);
 				
-				KeyPair rsaKeyPair = ServerRSAKeypairGetter.getRSAKeyPairFromFile(rsaPrivateKeyFile, rsaPublicKeyFile);
+				ServerRSAKeypairUtil.saveRSAKeyPairFile(originalRSAKeyPair, rsaPrivateKeyFile, rsaPublicKeyFile);
+				
+				KeyPair rsaKeyPair = ServerRSAKeypairUtil.createRSAKeyPairFromFile(rsaPrivateKeyFile, rsaPublicKeyFile);
 				
 				ServerRSA serverRSA = new ServerRSA(rsaKeyPair);
 				ClientRSA clientRSA = new ClientRSA(serverRSA.getDupPublicKeyBytes());

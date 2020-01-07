@@ -19,7 +19,7 @@ public class IOPartDynamicClassFileContentsBuilderManagerTest extends AbstractJu
 	@Test
 	public void test_설치경로에있는임시디렉토리에메시지정보파일로부터메시지IO관련파일만들기() {
 		String[] targetMessageIDList = {
-			"SelfExnRes",
+			"ExceptionDeliveryRes",
 			"AllItemType",
 			"Echo",
 			"Empty"

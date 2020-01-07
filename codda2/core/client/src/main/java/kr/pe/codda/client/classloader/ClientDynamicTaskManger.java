@@ -44,7 +44,7 @@ public class ClientDynamicTaskManger implements ClientTaskMangerIF {
 			throws DynamicClassCallException {
 		String clientTaskClassFullName = IOPartDynamicClassNameUtil.getClientTaskClassFullName(messageID);
 		
-		Object retObject = CommonStaticUtil.getNewObjectFromClassloader(currentWorkingClientClassLoader, clientTaskClassFullName);
+		Object retObject = CommonStaticUtil.createtNewInstance(currentWorkingClientClassLoader, clientTaskClassFullName);
 		
 		if (! (retObject instanceof AbstractClientTask)) {
 			String errorMessage = new StringBuilder()

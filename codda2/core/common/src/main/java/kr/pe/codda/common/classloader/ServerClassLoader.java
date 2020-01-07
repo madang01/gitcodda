@@ -203,7 +203,7 @@ public class ServerClassLoader extends ClassLoader implements MessageEncoderMana
 		InputStream is = null;
 
 		String realResourceFilePathString = CommonStaticUtil
-				.getFilePathStringFromResourcePathAndRelativePathOfFile(classloaderReousrcesPathString, name);
+				.buildFilePathStringFromResourcePathAndRelativePathOfFile(classloaderReousrcesPathString, name);
 		
 		// log.info("realResourceFilePathString=[{}]", realResourceFilePathString);
 		

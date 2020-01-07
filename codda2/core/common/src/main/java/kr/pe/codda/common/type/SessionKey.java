@@ -18,13 +18,13 @@
 package kr.pe.codda.common.type;
 
 /**
- * 세션키
+ * 공개키 쌍이 저장된 장소 종류 열거형 타입을 정의하는 '세션키 추상화 클래스'
  * @author Won Jonghoon
  *
  */
 public abstract class SessionKey {
 	/**
-	 * 공개키 쌍이 저장된 장소 타입 {서버, 파일}, 참고로 서버이면 프로그램 내부에서 공개키 쌍을 생성하여 이용한다는것을 말함.   
+	 * 공개키 쌍이 저장된 장소 종류 열거형 타입, 서버와 파일이 있다.   
 	 * @author Won Jonghoon
 	 *
 	 */

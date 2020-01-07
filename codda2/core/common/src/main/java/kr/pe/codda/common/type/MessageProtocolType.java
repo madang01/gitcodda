@@ -18,7 +18,7 @@
 package kr.pe.codda.common.type;
 
 /**
- * 메시지 프로토콜 타입, {'DHB', 'JSON', 'THB' } 로 구성 
+ * 메시지 프로토콜 타입 열거형 타입, {'DHB', 'DJSON', 'THB' } 로 구성 
  * @author Won Jonghoon
  *
  */

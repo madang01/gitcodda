@@ -24,6 +24,11 @@ import kr.pe.codda.common.etc.CommonStaticFinalVars;
 import kr.pe.codda.common.exception.SymmetricException;
 import kr.pe.codda.common.util.CommonStaticUtil;
 
+/**
+ * 서버 세션키
+ * @author Won Jonghoon
+ *
+ */
 public class ServerSessionkey implements ServerSessionkeyIF {
 	
 	private final ServerRSAIF serverRSA;
@@ -31,6 +36,13 @@ public class ServerSessionkey implements ServerSessionkeyIF {
 	private final int symmetricKeySize;
 	private final int symmetricIVSize;
 	
+	/**
+	 * 생성자
+	 * @param serverRSA 서버 RSA
+	 * @param symmetricKeyAlgorithm 대칭키 알고리즘
+	 * @param symmetricKeySize 대칭키 크기
+	 * @param symmetricIVSize iv 크기
+	 */
 	public ServerSessionkey(ServerRSAIF serverRSA, String symmetricKeyAlgorithm, int symmetricKeySize, int symmetricIVSize) {
 		if (null == serverRSA) {
 			throw new IllegalArgumentException("the parameter serverRSA is null");
@@ -45,15 +57,15 @@ public class ServerSessionkey implements ServerSessionkeyIF {
 		this.symmetricKeySize = symmetricKeySize;
 		this.symmetricIVSize = symmetricIVSize; 
 	}
-
+	
+	@Override
 	public ServerSymmetricKeyIF createNewInstanceOfServerSymmetricKey(byte[] sessionkeyBytes, byte[] ivBytes) throws SymmetricException {
 		return this.createNewInstanceOfServerSymmetricKey(false, sessionkeyBytes, ivBytes);
 	}
 	
-	/**
-	 * 참고) 웹에서는 RAS 관련 javascript API 가 이진 데이터를 다룰 수 없기때문에 부득이 base64 인코딩하여 문자열로 만들어 사용하였다. 하여 대칭키를 얻고자 한다면 base64 디코딩 해야한다. 
-	 */
-	public ServerSymmetricKeyIF createNewInstanceOfServerSymmetricKey(boolean isBase64, byte[] sessionkeyBytes, byte[] ivBytes) throws SymmetricException {
+	
+	@Override
+	public ServerSymmetricKeyIF createNewInstanceOfServerSymmetricKey(boolean whetherToApplyBase64ToSymmetricKeyForSssionKey, byte[] sessionkeyBytes, byte[] ivBytes) throws SymmetricException {
 		// log.info("isBase64={}", isBase64);
 		
 		if (null == sessionkeyBytes) {
@@ -76,12 +88,12 @@ public class ServerSessionkey implements ServerSessionkeyIF {
 			throw new SymmetricException(errorMessage);
 		}		
 		
-		final byte[] realSymmetricKeyBytes;
+		final byte[] symmetricKeyBytes;
 		
-		if (isBase64) {
+		if (whetherToApplyBase64ToSymmetricKeyForSssionKey) {
 			byte[] base64EncodedStringBytes = serverRSA.decrypt(sessionkeyBytes);
 			try {
-				realSymmetricKeyBytes = CommonStaticUtil.Base64Decoder.decode(base64EncodedStringBytes);
+				symmetricKeyBytes = CommonStaticUtil.Base64Decoder.decode(base64EncodedStringBytes);
 			} catch (Exception e) {
 				String errorMessage = "fail to decode the parameter sessionkeyBytes using base64";
 				
@@ -93,13 +105,13 @@ public class ServerSessionkey implements ServerSessionkeyIF {
 			
 			
 		} else {
-			realSymmetricKeyBytes = serverRSA.decrypt(sessionkeyBytes);
+			symmetricKeyBytes = serverRSA.decrypt(sessionkeyBytes);
 		}
 		
-		if (symmetricKeySize != realSymmetricKeyBytes.length) {
+		if (symmetricKeySize != symmetricKeyBytes.length) {
 			String errorMessage = new StringBuilder()
 					.append("the parameter sessionkeyBytes's length[")
-					.append(realSymmetricKeyBytes.length)
+					.append(symmetricKeyBytes.length)
 					.append("] is differenct from symmetric key size[")
 					.append(symmetricKeySize)
 					.append("] of configuration").toString();
@@ -107,17 +119,20 @@ public class ServerSessionkey implements ServerSessionkeyIF {
 			throw new SymmetricException(errorMessage);
 		}
 		
-		return new ServerSymmetricKey(symmetricKeyAlgorithm, realSymmetricKeyBytes, ivBytes);
+		return new ServerSymmetricKey(symmetricKeyAlgorithm, symmetricKeyBytes, ivBytes);
 	}	
-		
+	
+	@Override
 	public String getModulusHexStrForWeb() {
 		return serverRSA.getModulusHexStrForWeb();
 	}
 	
+	@Override
 	public final byte[] getDupPublicKeyBytes() {
 		return serverRSA.getDupPublicKeyBytes();
 	}
 	
+	@Override
 	public byte[] decryptUsingPrivateKey(byte[] encryptedBytesWithPublicKey) throws SymmetricException {		
 		return serverRSA.decrypt(encryptedBytesWithPublicKey);
 	}

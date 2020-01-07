@@ -43,7 +43,7 @@ public abstract class AbstractClientTask {
 		String messageID = className.substring(startIndex, endIndex);
 		
 		String classFullName = IOPartDynamicClassNameUtil.getClientMessageCodecClassFullName(messageID);
-		Object retObject = CommonStaticUtil.getNewObjectFromClassloader(taskClassLoader, classFullName);		
+		Object retObject = CommonStaticUtil.createtNewInstance(taskClassLoader, classFullName);		
 		
 		if (! (retObject instanceof MessageCodecIF)) {
 			String warnMessage = new StringBuilder()

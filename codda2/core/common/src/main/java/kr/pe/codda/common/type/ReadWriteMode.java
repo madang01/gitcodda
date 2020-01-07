@@ -17,6 +17,11 @@
 
 package kr.pe.codda.common.type;
 
+/**
+ * 읽기 쓰기 모드 열거형 타입, 읽기 전용, 쓰기 전용 그리고 읽기 쓰기 모두 가능이 있다.
+ * @author Won Jonghoon
+ *
+ */
 public enum ReadWriteMode {
 	ONLY_READ, ONLY_WRITE, READ_WRITE;
 }

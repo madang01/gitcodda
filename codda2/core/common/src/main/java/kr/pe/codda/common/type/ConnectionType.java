@@ -17,7 +17,7 @@
 package kr.pe.codda.common.type;
 
 /**
- * 연결 종류, {ASYN, SYNC} 로 구성.
+ * 연결 종류 열거형 타입, 비동기와 동기형이 있다.
  * @author Won Jonghoon
  *
  */

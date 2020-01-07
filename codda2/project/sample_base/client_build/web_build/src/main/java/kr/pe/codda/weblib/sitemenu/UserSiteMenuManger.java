@@ -7,7 +7,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import kr.pe.codda.common.etc.CommonStaticFinalVars;
-import kr.pe.codda.common.exception.NoMoreDataPacketBufferException;
 import kr.pe.codda.weblib.htmlstring.StringEscapeActorUtil;
 
 public class UserSiteMenuManger {
@@ -27,8 +26,6 @@ public class UserSiteMenuManger {
 
 	/**
 	 * 동기화 쓰지 않고 싱글턴 구현을 위한 생성자
-	 * 
-	 * @throws NoMoreDataPacketBufferException
 	 */
 	private UserSiteMenuManger() {
 		websiteMenuPartStringFileWatcher = new WebsiteMenuInfoFileWatcher();
