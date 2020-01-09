@@ -200,6 +200,10 @@ public final class DBCPManager {
 		}
 	}
 
+	/**
+	 * @param dataSource 데이터 소스
+	 * @return dbcp 연결 폴 이름
+	 */
 	public String getDBCPConnectionPoolName(DataSource dataSource) {
 		if (!(dataSource instanceof BasicDataSource)) {
 			String classNameOfTheParamterDataSource = dataSource.getClass().getName();
@@ -250,6 +254,9 @@ public final class DBCPManager {
 		return basicDataSource;
 	}
 
+	/**
+	 * 등록된 모든 데이터 소스의 자원을 해제합니다.
+	 */
 	public void closeAllDataSource() {
 		Enumeration<BasicDataSource> basicDataSourceEnum = dbcpName2BasicDataSourceHash.elements();
 		while (basicDataSourceEnum.hasMoreElements()) {

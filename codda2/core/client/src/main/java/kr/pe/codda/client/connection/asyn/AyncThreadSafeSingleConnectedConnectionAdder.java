@@ -21,6 +21,12 @@ import java.util.logging.Logger;
 
 import kr.pe.codda.common.etc.CommonStaticFinalVars;
 
+
+/**
+ * 쓰레드 세이프하고 연결 확립한 비동기 단일 연결 추가자 
+ * @author Won Jonghoon
+ *
+ */
 public class AyncThreadSafeSingleConnectedConnectionAdder implements AsynConnectedConnectionAdderIF {
 	private Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
 	
@@ -57,6 +63,12 @@ public class AyncThreadSafeSingleConnectedConnectionAdder implements AsynConnect
 		log.warning(warnMessage);
 	}	
 	
+	/**
+	 * @param socketTimeout 소켓 타임 아웃 시간
+	 * @return 쓰레드 세이프하고 연결 확립한 비동기 단일 연결
+	 * @throws InterruptedException 인터럽트 발생시 던지는 예외
+	 * @throws SocketTimeoutException 소켓 타임 아웃 발생시 던지는 예외
+	 */
 	public AsynConnectionIF poll(long socketTimeout) throws InterruptedException, SocketTimeoutException {
 		synchronized (monitor) {
 			if (null == connectedAsynConnection) {

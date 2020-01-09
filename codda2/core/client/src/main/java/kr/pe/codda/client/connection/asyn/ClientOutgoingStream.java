@@ -26,6 +26,11 @@ import kr.pe.codda.common.exception.NoMoreWrapBufferException;
 import kr.pe.codda.common.io.ClientOutgoingStreamIF;
 import kr.pe.codda.common.io.StreamBuffer;
 
+/**
+ * 클라이언트용 송신 스트림, 내부적으로는 스트립 버퍼 환영 큐(=ArrayDeque)로 관리한다.
+ * @author Won Jonghoon
+ *
+ */
 public class ClientOutgoingStream implements ClientOutgoingStreamIF {
 	private final Object monitor = new Object();
 	// private Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
@@ -38,6 +43,12 @@ public class ClientOutgoingStream implements ClientOutgoingStreamIF {
 	private transient int streamBufferCount = 0;
 	private transient StreamBuffer workingStreamBuffer = null;
 
+	/**
+	 * 생성자
+	 * @param asynClientIOEventController 비동기 클라이언트 입출력 이벤트 제어자
+	 * @param ownerSelectionKey 소유 세렉션 키
+	 * @param outputStreamBufferQueueCapacity 메시지가 담기는 '스트림 버퍼'를 원소로 갖는 환영 큐 크기
+	 */
 	public ClientOutgoingStream(ClientIOEventControllerIF asynClientIOEventController, 
 			SelectionKey ownerSelectionKey, int outputStreamBufferQueueCapacity) {
 		if (null == asynClientIOEventController) {
@@ -59,40 +70,7 @@ public class ClientOutgoingStream implements ClientOutgoingStreamIF {
 		streamBufferArrayDeque = new ArrayDeque<StreamBuffer>(outputStreamBufferQueueCapacity);
 	}
 
-	/*
-	public boolean offer(StreamBuffer messageStreamBuffer) throws InterruptedException {
-		if (null == messageStreamBuffer) {
-			throw new IllegalArgumentException("the parameter messageStreamBuffer is null");
-		}
-
-		// FIXME!				
-		// log.info("call offer in server");
-
-		synchronized (monitor) {
-			if (streamBufferCount > streamBufferQueueCapacity) {
-
-				String errorMessage = new StringBuilder().append("최대 출력 스트림 갯수[").append(streamBufferQueueCapacity)
-						.append("]를 초과").toString();
-				log.warning(errorMessage);
-
-				return false;
-			}
-
-			messageStreamBuffer.setLastBufferLimitUsingLimit();
-			streamBufferCount++;
-			streamBufferArrayDeque.addLast(messageStreamBuffer);
-
-			if (null == workingStreamBuffer) {
-				workingStreamBuffer = messageStreamBuffer;
-			}
-
-			turnOnSocketWriteMode();
-
-			return true;
-		}
-	}
-	*/
-
+	@Override
 	public boolean offer(StreamBuffer messageStreamBuffer, long timeout) throws InterruptedException {
 		if (null == messageStreamBuffer) {
 			throw new IllegalArgumentException("the parameter messageStreamBuffer is null");
@@ -130,6 +108,7 @@ public class ClientOutgoingStream implements ClientOutgoingStreamIF {
 		}
 	}
 	
+	@Override
 	public void decreaseOutputMessageCount() {
 		synchronized (monitor) {
 			if (streamBufferCount > 0) {
@@ -140,6 +119,7 @@ public class ClientOutgoingStream implements ClientOutgoingStreamIF {
 		}
 	}
 
+	@Override
 	public int write(SocketChannel writableSocketChannel) throws IOException, NoMoreWrapBufferException {
 		if (null == workingStreamBuffer) {
 			return 0;
@@ -174,35 +154,27 @@ public class ClientOutgoingStream implements ClientOutgoingStreamIF {
 		return ret;
 
 	}
-	/*
-	 * public boolean hasRemaing() { boolean hasRemaing = false;
-	 * 
-	 * synchronized (monitor) { hasRemaing = outputStreamBufferArrayDeque.isEmpty();
-	 * }
-	 * 
-	 * return hasRemaing; }
-	 */
+	
 
+	/**
+	 * SelectionKey.OP_WRITE 등록
+	 * @throws CancelledKeyException 멤버 변수 'ownerSelectionKey' 가 접속 종료등으로 등록 취소 되었을 경우 던지는 예외 
+	 */
 	private void turnOnSocketWriteMode() throws CancelledKeyException {
 		ownerSelectionKey.interestOps(ownerSelectionKey.interestOps() | SelectionKey.OP_WRITE);
 		
 		asynClientIOEventController.wakeup();
 	}
 
+	/**
+	 * SelectionKey.OP_WRITE 취소
+	 * @throws CancelledKeyException 멤버 변수 'ownerSelectionKey' 가 접속 종료등으로 등록 취소 되었을 경우 던지는 예외
+	 */
 	private void turnOffSocketWriteMode() throws CancelledKeyException {
 		ownerSelectionKey.interestOps(ownerSelectionKey.interestOps() & ~SelectionKey.OP_WRITE);
 	}
 
-	/*
-	 * private void turnOnSocketReadMode() throws CancelledKeyException {
-	 * ownerSelectionKey.interestOps(ownerSelectionKey.interestOps() |
-	 * SelectionKey.OP_READ); }
-	 * 
-	 * private void turnOffSocketReadMode() throws CancelledKeyException {
-	 * ownerSelectionKey.interestOps(ownerSelectionKey.interestOps() &
-	 * ~SelectionKey.OP_READ); }
-	 */
-
+	@Override
 	public void close() {
 		while (!streamBufferArrayDeque.isEmpty()) {
 			streamBufferArrayDeque.removeFirst().releaseAllWrapBuffers();

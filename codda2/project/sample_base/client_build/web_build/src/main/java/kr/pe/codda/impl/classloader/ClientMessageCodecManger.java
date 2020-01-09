@@ -38,7 +38,7 @@ public class ClientMessageCodecManger implements MessageCodecMangerIF {
 				if (null == clientMessageCodec) {
 					String clientMessageCodecClassFullName = IOPartDynamicClassNameUtil.getClientMessageCodecClassFullName(messageID);
 					
-					Object retObject = CommonStaticUtil.getNewObjectFromClassloader(classloader, clientMessageCodecClassFullName);
+					Object retObject = CommonStaticUtil.createtNewObject(classloader, clientMessageCodecClassFullName);
 					
 					if (! (retObject instanceof MessageCodecIF)) {
 						String errorMessage = new StringBuilder()
@@ -68,7 +68,7 @@ public class ClientMessageCodecManger implements MessageCodecMangerIF {
 				if (null == clientMessageCodec) {
 					String clientMessageCodecClassFullName = IOPartDynamicClassNameUtil.getClientMessageCodecClassFullName(messageID);
 					
-					Object retObject = CommonStaticUtil.getNewObjectFromClassloader(classloader, clientMessageCodecClassFullName);
+					Object retObject = CommonStaticUtil.createtNewObject(classloader, clientMessageCodecClassFullName);
 					
 					if (! (retObject instanceof MessageCodecIF)) {
 						String errorMessage = new StringBuilder()

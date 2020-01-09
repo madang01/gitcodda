@@ -27,6 +27,11 @@ import kr.pe.codda.common.exception.NoMoreWrapBufferException;
 import kr.pe.codda.common.io.ServerOutgoingStreamIF;
 import kr.pe.codda.common.io.StreamBuffer;
 
+/**
+ * 서버용 출력 스트림
+ * @author Won Jonghoon
+ *
+ */
 public class ServerOutgoingStream implements ServerOutgoingStreamIF {
 	private Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
 
@@ -37,6 +42,11 @@ public class ServerOutgoingStream implements ServerOutgoingStreamIF {
 	private transient int streamBufferCount = 0;
 	private transient StreamBuffer workingStreamBuffer = null;
 
+	/**
+	 * 생성자
+	 * @param ownerSelectionKey 서버용 출력 스트림을 갖는 셀렉션 키 
+	 * @param outputStreamBufferQueueCapacity 출력 메시지가 담기는 스트림 버퍼 큐 크기
+	 */
 	public ServerOutgoingStream(SelectionKey ownerSelectionKey, int outputStreamBufferQueueCapacity) {
 		if (null == ownerSelectionKey) {
 			throw new IllegalArgumentException("the parameter ownerSelectionKey is null");
@@ -52,6 +62,7 @@ public class ServerOutgoingStream implements ServerOutgoingStreamIF {
 		streamBufferArrayDeque = new ArrayDeque<StreamBuffer>(outputStreamBufferQueueCapacity);
 	}
 
+	@Override
 	public boolean offer(StreamBuffer messageStreamBuffer) throws InterruptedException {
 		if (null == messageStreamBuffer) {
 			throw new IllegalArgumentException("the parameter messageStreamBuffer is null");
@@ -83,6 +94,7 @@ public class ServerOutgoingStream implements ServerOutgoingStreamIF {
 
 	}
 
+	@Override
 	public int write(SocketChannel writableSocketChannel) throws IOException, NoMoreWrapBufferException {
 		int ret;
 
@@ -158,6 +170,7 @@ public class ServerOutgoingStream implements ServerOutgoingStreamIF {
 	 * ~SelectionKey.OP_READ); }
 	 */
 
+	@Override
 	public void close() {
 		while (!streamBufferArrayDeque.isEmpty()) {
 			streamBufferArrayDeque.removeFirst().releaseAllWrapBuffers();

@@ -26,10 +26,12 @@ import kr.pe.codda.server.task.AbstractServerTask;
  */
 public interface ServerTaskMangerIF {
 	/**
-	 * 지정된 메시지 식별자와 1:1 대응하는 서버 타스크를 얻어 반환한다.
+	 * 파라미터 'messageID'(=메시지 식별자) 와 1:1 대응하는 유효한 서버 타스크를 반환한다.
+	 * 유효한 서버 타스크란 서버 타스크 클래스 파일을 적재한 시간과 서버 타스크 클래스 파일이 변경된 시간이 일치되는 서버 타스크를 말한다.
+	 * 
 	 * @param messageID 메시지 식별자
-	 * @return 지정된 메시지 식별자와 1:1 대응하는 서버 타스크
+	 * @return 지정된 메시지 식별자와 1:1 대응하는 유효한 서버 타스크
 	 * @throws DynamicClassCallException 동적 클래스를 다룰때 에러 발생시 던지는 예외
 	 */
-	public AbstractServerTask getServerTask(String messageID) throws DynamicClassCallException;
+	public AbstractServerTask getValidServerTask(String messageID) throws DynamicClassCallException;
 }

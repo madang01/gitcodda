@@ -20,6 +20,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import kr.pe.codda.common.classloader.ServerClassLoader;
+import kr.pe.codda.common.classloader.SystemClassDeterminer;
 import kr.pe.codda.common.etc.CommonStaticFinalVars;
 import kr.pe.codda.common.exception.BodyFormatException;
 import kr.pe.codda.common.exception.DynamicClassCallException;
@@ -49,10 +50,14 @@ import kr.pe.codda.server.ProjectLoginManagerIF;
 public abstract class AbstractServerTask {
 	// protected Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
 	
-	private final ServerClassLoader taskClassLoader = (ServerClassLoader)this.getClass().getClassLoader();
+	private final ServerClassLoader taskClassLoader;
 	private final AbstractMessageDecoder inputMessageDecoder;
 	// private HashMap<String, MessageCodecIF> messageID2ServerMessageCodecHash = new HashMap<String, MessageCodecIF>();
 	
+	/**
+	 * 생성자
+	 * @throws DynamicClassCallException 동적 클래스 처리중 에러 발생시 던지는 예외
+	 */
 	public AbstractServerTask() throws DynamicClassCallException {
 		
 		String classFullName = this.getClass().getName();
@@ -99,6 +104,29 @@ public abstract class AbstractServerTask {
 		
 		messageID2ServerMessageCodecHash.put(messageID, serverMessageCodec);
 		*/
+		
+		ClassLoader thisClassLoader = this.getClass().getClassLoader();
+		
+		if ((thisClassLoader instanceof ServerClassLoader)) {
+			taskClassLoader = (ServerClassLoader)thisClassLoader;
+		} else {
+			/**
+			 * <pre>
+			 * WARNING! 이 서버 타스크는 클래스 전체 이름이 동적 클래스를 뜻하지만 
+			 * 시스템 클래스 로더에 올라가는 대상 클래스로 지정되어 있어 시스템 클래스 로더에 적재되어 사용된다.
+			 * 하여 이 서버 타스크는 시스템 클래스로 동적 클래스와 연관이 없기때문에 
+			 * 동적 클래스와 관련잇는 파라미터 'classloaderClassPathString' 와 파라미터 'lassloaderReousrcesPathString' 를  임의 지정하여
+			 * 생성한 신규 ServerClassLoader 클래스 인스턴스 값을 멤버 변수 taskClassLoader 의 값으로 지정한다. 
+			 * 
+			 * 참고1) 시스템 클래스 로더에 올라가는 서버 타스크는 싱글턴 처럼 단 1번만 생성 된다. 반면에 동적 클래스는 동적 클래스 로더가 바뀔때 마다 생성된다.
+			 * 
+			 * 참고2) 서버 클래스 로더는 클래스 전체 이름이 동적 클래스를 뜻하더라도 시스템 클래스 로더에 올라가는 대상으로 지정된 클래스들은 시스템 클래스 로더에 위임한다.
+			 * </pre> 
+			 */
+			SystemClassDeterminer systemClassDeterminer = new SystemClassDeterminer();
+			taskClassLoader = new ServerClassLoader(".", ".", systemClassDeterminer);
+		}
+		
 		
 		MessageCodecIF messageCodec = taskClassLoader.getServerMessageCodec(messageID);
 		
@@ -258,7 +286,16 @@ public abstract class AbstractServerTask {
 	}
 	
 	
-	abstract public void doTask(String projectName, LoginManagerIF personalLoginManager, ToLetterCarrier toLetterCarrier,
+	/**
+	 * 개발자가 정의 해야할 타스크 작업 추상화 메소드
+	 * 
+	 * @param projectName 프로젝트 이름
+	 * @param loginManager 로그인 관리자
+	 * @param toLetterCarrier 클라이언트로 보낼 메시지 배달부
+	 * @param inputMessage 입력 메시지
+	 * @throws Exception 처리중 에러 발생시 던지는 예외
+	 */
+	abstract public void doTask(String projectName, LoginManagerIF loginManager, ToLetterCarrier toLetterCarrier,
 			AbstractMessage inputMessage) throws Exception;
 	
 	

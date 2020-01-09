@@ -20,11 +20,22 @@ import java.io.File;
 
 import kr.pe.codda.server.task.AbstractServerTask;
 
+/**
+ * 서버 타스크 정보.
+ *  
+ * @author Won Jonghoon
+ *
+ */
 public class ServerTaskInfomation {
 	private File serverTaskClassFile = null;
 	private long loadedTime = 0;
 	private AbstractServerTask serverTask = null;
 	
+	/**
+	 * 생성자
+	 * @param serverTaskClassFile 서버 타스크 클래스 파일
+	 * @param serverTask 서버 타스트
+	 */
 	public ServerTaskInfomation(File serverTaskClassFile, AbstractServerTask serverTask) {
 		if (null == serverTaskClassFile) {
 			String errorMessage = "the parmater serverTaskClassFile is null";			

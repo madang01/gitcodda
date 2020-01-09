@@ -18,6 +18,11 @@ package kr.pe.codda.server;
 
 import java.nio.channels.SelectionKey;
 
+/**
+ * 서버 입출력 이벤트 제어기 핸들러 인터페이스 
+ * @author Won Jonghoon
+ *
+ */
 public interface ServerIOEventHandlerIF {
 	/**
 	 * 연결 객체의 OP_READ 이벤트 발생시 호출되는 메소드, 예외를 던지지 않도록 구현되었지만 예외를 멋어난 예외는 발생할 수 있다
@@ -33,6 +38,14 @@ public interface ServerIOEventHandlerIF {
 	 */
 	public void onWrite(SelectionKey selectedKey) throws Exception;
 	
+	
+	/**
+	 * 자원 해제시킨다.
+	 */
 	public void close();
+	
+	/**
+	 * @return 해쉬 코드
+	 */
 	public int hashCode();
 }

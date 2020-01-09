@@ -26,6 +26,11 @@ import kr.pe.codda.common.message.AbstractMessage;
 import kr.pe.codda.common.protocol.MessageProtocolIF;
 import kr.pe.codda.common.protocol.ReceivedMiddleObjectForwarderIF;
 
+/**
+ * 동기 출력 메시지 수신자
+ * @author Won Jonghoon
+ *
+ */
 public class SyncOutputMessageReceiver implements ReceivedMiddleObjectForwarderIF {
 	private Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
 
@@ -81,24 +86,40 @@ public class SyncOutputMessageReceiver implements ReceivedMiddleObjectForwarderI
 				mailID, messageID, readableMiddleObject);
 	}
 
+	/**
+	 * 출력 메시지를 받을 준비 상태로 만든다.
+	 * @param messageCodecManger 메시지 코덱 관리자
+	 */
 	public void ready(MessageCodecMangerIF messageCodecManger) {
 		this.messageCodecManger = messageCodecManger;
 		receivedMessage = null;
 		isError = false;
 	}
 
+	/**
+	 * @return 수신한 출력 메시지
+	 */
 	public AbstractMessage getReceiveMessage() {
 		return receivedMessage;
 	}
 
+	/**
+	 * @return 출력 메시지 수신 여부
+	 */
 	public boolean isReceivedMessage() {
 		return (null != receivedMessage);
 	}
 
+	/**
+	 * @return 에러 여부
+	 */
 	public boolean isError() {
 		return isError;
 	}
 	
+	/**
+	 * @return 에러 메시지, 단 에러 여부가 참인 경우에만 유효
+	 */
 	public String getErrorMessage() {
 		return errorMessage;
 	}

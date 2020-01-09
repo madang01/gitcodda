@@ -23,11 +23,22 @@ import kr.pe.codda.common.classloader.SystemClassVerifierIF;
 import kr.pe.codda.common.classloader.ServerClassLoader;
 import kr.pe.codda.common.exception.CoddaConfigurationException;
 
+/**
+ * 서버 클래스 로더 팩토리
+ * @author Won Jonghoon
+ *
+ */
 public class ServerClassLoaderFactory {
 	private String serverAPPINFClassPathString = null;
 	private String projectResourcesPathString = null;
 	private SystemClassVerifierIF excludedDynamicClassManager = new SystemClassDeterminer();
 	
+	/**
+	 * 생성자
+	 * @param serverAPPINFClassPathString 서버 클래스의 동적 클래스 경로 문자열
+	 * @param projectResourcesPathString 서버 클래스의 리소스 경로 문자열
+	 * @throws CoddaConfigurationException 설정 관련 에러 발생시 던지는 예외
+	 */
 	public ServerClassLoaderFactory(String serverAPPINFClassPathString,
 			String projectResourcesPathString) throws CoddaConfigurationException {
 		if (null == serverAPPINFClassPathString) {
@@ -78,6 +89,9 @@ public class ServerClassLoaderFactory {
 		this.projectResourcesPathString = projectResourcesPathString;
 	}
 	
+	/**
+	 * @return 신규 서버 클래스 로더 객체
+	 */
 	public ServerClassLoader createServerClassLoader() {
 		return new ServerClassLoader(serverAPPINFClassPathString, projectResourcesPathString, excludedDynamicClassManager);
 	}

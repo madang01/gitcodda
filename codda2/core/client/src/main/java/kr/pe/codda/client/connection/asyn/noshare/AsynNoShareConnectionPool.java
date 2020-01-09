@@ -39,6 +39,11 @@ import kr.pe.codda.common.exception.NoMoreWrapBufferException;
 import kr.pe.codda.common.io.WrapBufferPoolIF;
 import kr.pe.codda.common.protocol.MessageProtocolIF;
 
+/**
+ * 비동기 비공유 연결 폴
+ * @author Won Jonghoon
+ *
+ */
 public class AsynNoShareConnectionPool implements ConnectionPoolIF, AsynConnectedConnectionAdderIF {
 	private Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
 	private final Object monitor = new Object();
@@ -48,7 +53,7 @@ public class AsynNoShareConnectionPool implements ConnectionPoolIF, AsynConnecte
 	private final int serverPort;
 	private final long socketTimeout;
 	private final StreamCharsetFamily streamCharsetFamily;
-	private final int clientDataPacketBufferMaxCntPerMessage;
+	private final int maxNumberOfWrapBufferPerMessage;
 	private final int clientAsynOutputMessageQueueCapacity;
 	private final int clientConnectionCount; 
 	
@@ -66,6 +71,25 @@ public class AsynNoShareConnectionPool implements ConnectionPoolIF, AsynConnecte
 
 	private ClientIOEventControllerIF asynClientIOEventController = null;
 
+	/**
+	 * 생성자
+	 * 
+	 * @param projectName 프로젝트 이름
+	 * @param serverHost 서버 호스트 주소
+	 * @param serverPort 서버 포트 번호
+	 * @param socketTimeout  소켓 타임 아웃 시간
+	 * @param streamCharsetFamily 문자셋, 문자셋 디코더 그리고 문자셋 인코더 묶음
+	 * @param clientDataPacketBufferMaxCntPerMessage 메시지 1개당 랩 버퍼 최대 갯수
+	 * @param clientAsynOutputMessageQueueCapacity 출력 메시지 큐 크기
+	 * @param clientConnectionCount 클라이언트 연결 갯수
+	 * @param messageProtocol 메시지 프로토콜
+	 * @param clientTaskManger 클라이언트 타스크 관리자
+	 * @param wrapBufferPool 래 버퍼 폴
+	 * @param connectionPoolSupporter 연결 폴 도우미
+	 * @param asynClientIOEventController 비동기 클라이언트 입출력 이벤트 제어자
+	 * @throws NoMoreWrapBufferException 랩버퍼 폴에 랩버퍼 요구하였는데 없는 경우 던지는 예외
+	 * @throws IOException 입출력 에러 발생시 던지는 예외
+	 */
 	public AsynNoShareConnectionPool(String projectName, String serverHost, int serverPort, long socketTimeout,
 			StreamCharsetFamily streamCharsetFamily,
 			int clientDataPacketBufferMaxCntPerMessage,
@@ -100,7 +124,7 @@ public class AsynNoShareConnectionPool implements ConnectionPoolIF, AsynConnecte
 		this.serverPort = serverPort;
 		this.socketTimeout = socketTimeout;
 		this.streamCharsetFamily = streamCharsetFamily;
-		this.clientDataPacketBufferMaxCntPerMessage = clientDataPacketBufferMaxCntPerMessage;
+		this.maxNumberOfWrapBufferPerMessage = clientDataPacketBufferMaxCntPerMessage;
 		this.clientAsynOutputMessageQueueCapacity = clientAsynOutputMessageQueueCapacity;		
 		this.clientConnectionCount = clientConnectionCount;
 		
@@ -257,6 +281,7 @@ public class AsynNoShareConnectionPool implements ConnectionPoolIF, AsynConnecte
 		
 	}
 	
+	@Override
 	public void fillAllConnection() throws NoMoreWrapBufferException, IOException, InterruptedException {
 		/*
 		log.info("numberOfUnregisteredConnection={}, numberOfConnection={}," +
@@ -292,6 +317,11 @@ public class AsynNoShareConnectionPool implements ConnectionPoolIF, AsynConnecte
 		log.info(infoMessage);
 	}
 
+	/**
+	 * @return 연결 확립 되지 않은 신규 연결
+	 * @throws NoMoreWrapBufferException 랩버퍼 폴에 랩버퍼 요구하였는데 없는 경우 던지는 예외
+	 * @throws IOException 입출력 에러 발생시 던지는 예외
+	 */
 	private ClientIOEventHandlerIF newUnregisteredConnection() throws NoMoreWrapBufferException, IOException {
 		
 
@@ -300,7 +330,7 @@ public class AsynNoShareConnectionPool implements ConnectionPoolIF, AsynConnecte
 				serverPort,
 				socketTimeout,
 				streamCharsetFamily,				
-				clientDataPacketBufferMaxCntPerMessage,
+				maxNumberOfWrapBufferPerMessage,
 				clientAsynOutputMessageQueueCapacity,
 				messageProtocol, wrapBufferPool, clientTaskManger, this, 
 				asynClientIOEventController);

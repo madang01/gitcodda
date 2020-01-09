@@ -18,9 +18,29 @@ package kr.pe.codda.client.connection.asyn;
 
 import java.nio.channels.SelectionKey;
 
+/**
+ * 클라이언트 입출력 이벤트 제어기 인터페이스
+ * @author Won Jonghoon
+ *
+ */
 public interface ClientIOEventControllerIF {
+	
+	/**
+	 * 연결을 하고 싶은 연결이 아직 확립되지 않은 비동기 연결을  {@link SelectionKey#OP_CONNECT} 를 관심 사항으로 selctor 에 등록한다.
+	 * 
+	 * @param asynInterestedConnection 연결을 하고 싶은 연결이 아직 확립되지 않은 비동기 연결
+	 */
 	public void addUnregisteredAsynConnection(ClientIOEventHandlerIF asynInterestedConnection);
 	
-	public void wakeup();	
+	/**
+	 * 클라이언트 입출력 이벤트 제어기의 selctor 를 깨운다.
+	 */
+	public void wakeup();
+	
+	/**
+	 * 파라미터 'selectedKey'(취소를 원하는 세렉션 키) 를 selctor 에서 등록 취소한다. 
+	 * 
+	 * @param selectedKey 취소를 원하는 세렉션 키
+	 */
 	public void cancel(SelectionKey selectedKey);
 }

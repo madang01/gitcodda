@@ -136,7 +136,7 @@ public class THBMessageProtocolTest {
 				String clientMessageCodecClassFullName = IOPartDynamicClassNameUtil
 						.getClientMessageCodecClassFullName(messageID);
 				try {
-					Object retObject = CommonStaticUtil.createtNewInstance(classloader,
+					Object retObject = CommonStaticUtil.createtNewObject(classloader,
 							clientMessageCodecClassFullName);
 
 					if (!(retObject instanceof MessageCodecIF)) {

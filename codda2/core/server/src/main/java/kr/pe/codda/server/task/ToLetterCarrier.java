@@ -37,7 +37,7 @@ import kr.pe.codda.server.AcceptedConnection;
 import kr.pe.codda.server.ProjectLoginManagerIF;
 
 /**
- * 클라이언트로 보내는 편지 배달부. 서버 비지니스 로직 호출할때 마다 할당 된다. 
+ * 클라이언트로 보낼 메시지 배달부. 서버 비지니스 로직 호출할때 마다 할당 된다. 
  * @author Won Jonghoon
  *
  */

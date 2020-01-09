@@ -33,6 +33,11 @@ import kr.pe.codda.common.exception.NoMoreWrapBufferException;
 import kr.pe.codda.common.io.WrapBufferPoolIF;
 import kr.pe.codda.common.protocol.MessageProtocolIF;
 
+/**
+ * 동기 비공유 연결 폴
+ * @author Won Jonghoon
+ *
+ */
 public class SyncNoShareConnectionPool implements ConnectionPoolIF {
 	private Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
 	
@@ -45,7 +50,6 @@ public class SyncNoShareConnectionPool implements ConnectionPoolIF {
 	private final StreamCharsetFamily streamCharsetFamily;
 	private final int clientConnectionCount; 
 	private final int clientDataPacketBufferMaxCntPerMessage;
-	private final int clientDataPacketBufferSize;
 	
 	
 	private MessageProtocolIF messageProtocol = null; 
@@ -56,6 +60,21 @@ public class SyncNoShareConnectionPool implements ConnectionPoolIF {
 	private ArrayDeque<SyncNoShareConnection> connectionQueue = null;
 	private int numberOfConnection = 0;
 	
+	/**
+	 * 생성자
+	 * @param serverHost 서버 호스트 주소
+	 * @param serverPort 서버 포트 번호
+	 * @param socketTimeout 소켓 타임 아웃 시간
+	 * @param streamCharsetFamily 문자셋, 문자셋 디코더 그리고 문자셋 인코더 묶음
+	 * @param clientDataPacketBufferMaxCntPerMessage 메시지 1개당 랩 버퍼 최대 갯수
+	 * @param clientConnectionCount 연결 갯수
+	 * @param messageProtocol 메시지 프로토콜
+	 * @param wrapBufferPool 랩 버퍼 폴
+	 * @param connectionPoolSupporter 연결 폴 도우미
+	 * @throws NoMoreWrapBufferException 랩버퍼 폴에서 랩 버퍼가 없을때 던지는 예외
+	 * @throws IOException 입출력 에러 발생시 던지는 예외
+	 * @throws ConnectionPoolException 연결 폴 조작중 에러 발생시 던지는 예외
+	 */
 	public SyncNoShareConnectionPool(String serverHost,
 			int serverPort,
 			long socketTimeout,
@@ -95,7 +114,6 @@ public class SyncNoShareConnectionPool implements ConnectionPoolIF {
 				
 		
 		connectionQueue = new ArrayDeque<SyncNoShareConnection>(clientConnectionCount);
-		clientDataPacketBufferSize = wrapBufferPool.getDataPacketBufferSize();
 		
 		try {			
 			fillAllConnection();
@@ -294,7 +312,6 @@ public class SyncNoShareConnectionPool implements ConnectionPoolIF {
 							socketTimeout,
 							streamCharsetFamily, 
 							clientDataPacketBufferMaxCntPerMessage, 
-							clientDataPacketBufferSize,
 							messageProtocol, wrapBufferPool);
 						
 				

@@ -16,6 +16,11 @@
  *******************************************************************************/
 package kr.pe.codda.client.connection.asyn;
 
+/**
+ * 연결 확립된 비동기 연결 추가자 인터페이스
+ * @author Won Jonghoon
+ *
+ */
 public interface AsynConnectedConnectionAdderIF {
 	/**
 	 * 메시지 송수신이 가능한 연결 확립된 연결을 파라미티러 받아 등록 시킨다

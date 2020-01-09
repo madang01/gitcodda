@@ -28,24 +28,33 @@ import kr.pe.codda.common.etc.CommonStaticFinalVars;
 import kr.pe.codda.common.message.AbstractMessage;
 import kr.pe.codda.common.protocol.MessageProtocolIF;
 
+/**
+ * 동기 메시지용 메일 박스
+ * @author Won Jonghoon
+ *
+ */
 public final class SyncMessageMailbox {
 	private Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
 	private final Object monitor = new Object();
 	
-	private ConnectionIF conn;	
-
-	private long socketTimeOut;
-
-	private int mailboxID;
+	private final ConnectionIF conn;
+	private final int mailboxID;
+	private final long socketTimeOut;
+	private final MessageProtocolIF messageProtocol;
+	
 	private transient int mailID = Integer.MIN_VALUE;
-	private MessageProtocolIF messageProtocol = null;
-	
-	
-	private String receviedMessageID = null;
+	private transient String receviedMessageID = null;
 	private transient Object receviedReadableMiddleObject = null;
 
-	private MessageCodecMangerIF messageCodecManger = null;
+	// private MessageCodecMangerIF messageCodecManger = null;
 
+	/**
+	 * 생성자
+	 * @param conn 연결
+	 * @param mailboxID 메일 박스 식별자
+	 * @param socketTimeOut 소켓 타음 아웃 시간
+	 * @param messageProtocol 메시지 프로토콜
+	 */
 	public SyncMessageMailbox(ConnectionIF conn, int mailboxID, long socketTimeOut, MessageProtocolIF messageProtocol) {
 		if (0 == mailboxID) {
 			String errorMessage = new StringBuilder()
@@ -87,51 +96,68 @@ public final class SyncMessageMailbox {
 		this.messageProtocol = messageProtocol;
 	}
 
+	/*
 	public void setMessageCodecManger(MessageCodecMangerIF messageCodecManger) {
 		this.messageCodecManger = messageCodecManger;
 	}
+	*/
 	
 	/*
 	 * private int getMailboxID() { return mailboxID; }
 	 */
 
 	
-
+	/**
+	 * @return 메일 박스 식별자
+	 */
 	public int getMailboxID() {
 		return mailboxID;
 	}
 
+	/**
+	 * @return 메일 식별자
+	 */
 	public int getMailID() {
 		return mailID;
 	}
 	
 
-	public void putSyncOutputMessage(int fromMailboxID, int fromMailID, String messageID, Object receviedMiddleObject)
+	/**
+	 * 스트림에서 추출한 중간 객체를 저장하여 수신을 기다리는 측에 알려 받아 가도록 한다.
+	 * 
+	 * @param fromMailboxID 수신한 메시지의 메일 박스 식별자
+	 * @param fromMailID 수신한 메시지의 메일 식별자
+	 * @param messageID 메시지 식별자
+	 * @param receivedMiddleObject 스트림에서 추출한 중간 객체
+	 * @throws InterruptedException 인터럽트 발생시 던지는 예외
+	 */
+	public void putSyncOutputMessage(int fromMailboxID, int fromMailID, String messageID, Object receivedMiddleObject)
 			throws InterruptedException {
-		if (null == receviedMiddleObject) {
-			throw new IllegalArgumentException("the parameter receviedMiddleObject is null");
+		if (null == receivedMiddleObject) {
+			throw new IllegalArgumentException("the parameter receivedMiddleObject is null");
+		}
+		
+		if (mailboxID != fromMailboxID) {
+			messageProtocol.closeReadableMiddleObject(fromMailboxID, fromMailID, messageID, receivedMiddleObject);			
+			
+			String warnMessage = new StringBuilder()
+					.append("drop the received letter[")
+					.append(receivedMiddleObject.toString())
+					.append("] because it's mailbox id is different form this mailbox id[")
+					.append(mailboxID)
+					.append("]").toString();
+			log.warning(warnMessage);				
+			return;
 		}
 		
 		synchronized (monitor) {
-			if (mailboxID != fromMailboxID) {
-				AbstractMessage outputMessage = ClientMessageUtility.buildOutputMessage("discarded", messageCodecManger, messageProtocol, fromMailboxID, fromMailID, messageID, receviedMiddleObject);
-				
-				String warnMessage = new StringBuilder()
-						.append("drop the received letter[")
-						.append(outputMessage.toString())
-						.append("] because it's mailbox id is different form this mailbox id[")
-						.append(mailboxID)
-						.append("]").toString();
-				log.warning(warnMessage);				
-				return;
-			}
 			
 			if (mailID != fromMailID) {
-				AbstractMessage outputMessage = ClientMessageUtility.buildOutputMessage("discarded", messageCodecManger, messageProtocol, fromMailboxID, fromMailID, messageID, receviedMiddleObject);
+				messageProtocol.closeReadableMiddleObject(fromMailboxID, fromMailID, messageID, receivedMiddleObject);
 				
 				String warnMessage = new StringBuilder()
 						.append("drop the received letter[")
-						.append(outputMessage.toString())
+						.append(receivedMiddleObject.toString())
 						.append("] because it's mail id is different form this mailbox's mail id[")
 						.append(mailID)
 						.append("]").toString();
@@ -143,11 +169,11 @@ public final class SyncMessageMailbox {
 			
 			if (null != this.receviedReadableMiddleObject) {
 				/** 서버단에서 메일 식별자가 같은 동기과 메시지를 연속하여 2번 보내지 않도록 안정 장치가 있지만 혹시 동일 메시지 식별자로 동기 메시지가 2번이상 도착했을 경우 이전에 받은 메시지를 버리고 이전 받은 메시를 버리고 마지막으로 받은 메시지를 취한다 */
-				AbstractMessage prevOutputMessage = ClientMessageUtility.buildOutputMessage("discarded", messageCodecManger, messageProtocol, fromMailboxID, fromMailID, this.receviedMessageID, this.receviedReadableMiddleObject);
+				messageProtocol.closeReadableMiddleObject(fromMailboxID, fromMailID, messageID, receivedMiddleObject);
 				
 				String warnMessage = new StringBuilder()
 						.append("drop the previous received letter[")
-						.append(prevOutputMessage.toString())
+						.append(receivedMiddleObject.toString())
 						.append("] because it's mail id is different form this mailbox's mail id[")
 						.append(mailID)
 						.append("]").toString();
@@ -158,12 +184,18 @@ public final class SyncMessageMailbox {
 			}
 			
 			this.receviedMessageID = messageID;
-			this.receviedReadableMiddleObject = receviedMiddleObject;
+			this.receviedReadableMiddleObject = receivedMiddleObject;
 			monitor.notify();
 		}
 	}
 
-	public AbstractMessage getSyncOutputMessage() throws IOException, InterruptedException {
+	/**
+	 * @param messageCodecManger 메시지 코덱 관리자 
+	 * @return 스트림에서 추출한 중간 객체로 부터 변환된 메시지
+	 * @throws IOException 소켓 타임 아웃 포함하여 입출력 에러 발생시 던지는 예외
+	 * @throws InterruptedException 인터럽트 발생시 던지는 예외
+	 */
+	public AbstractMessage getSyncOutputMessage(MessageCodecMangerIF messageCodecManger) throws IOException, InterruptedException {
 		AbstractMessage returnedObject = null;
 		synchronized (monitor) {
 			if (null == receviedReadableMiddleObject) {

@@ -25,6 +25,11 @@ import kr.pe.codda.common.exception.DynamicClassCallException;
 import kr.pe.codda.common.util.CommonStaticUtil;
 import kr.pe.codda.server.task.AbstractServerTask;
 
+/**
+ * 서버 타스크 관리자
+ * @author Won Jonghoon
+ *
+ */
 public class ServerTaskManger implements ServerTaskMangerIF {
 	// private InternalLogger log = InternalLoggerFactory.getInstance(ServerDynamicObjectManger.class);
 
@@ -42,11 +47,16 @@ public class ServerTaskManger implements ServerTaskMangerIF {
 		this.currentWorkingServerClassLoader = serverClassLoaderFactory.createServerClassLoader();
 	}
 
-	private ServerTaskInfomation getNewServerTaskFromWorkBaseClassload(String messageID)
+	/**
+	 * @param messageID 메시지 식별자
+	 * @return 파라미터 'messageID'(=메시지 식별자) 에 1:1 대응하는 신규 서버 타스크 정보 객체
+	 * @throws DynamicClassCallException 동적 클래스 관련 처리중 에러 발생시 던지는 예외
+	 */
+	private ServerTaskInfomation createNewServerTaskInformation(String messageID)
 			throws DynamicClassCallException {
 		String serverTaskClassFullName = IOPartDynamicClassNameUtil.getServerTaskClassFullName(messageID);
 		
-		Object retObject = CommonStaticUtil.createtNewInstance(currentWorkingServerClassLoader, serverTaskClassFullName);
+		Object retObject = CommonStaticUtil.createtNewObject(currentWorkingServerClassLoader, serverTaskClassFullName);
 		
 		if (! (retObject instanceof AbstractServerTask)) {
 			String errorMessage = new StringBuilder()
@@ -71,19 +81,31 @@ public class ServerTaskManger implements ServerTaskMangerIF {
 	}
 	
 	
-	private ServerTaskInfomation getServerTaskInfomation(String messageID)
+	/**
+	 * 유효한 서버 타스크 정보를 반환한다.
+	 * 
+	 * 유효한 서버 타스크 정보란 서버 타스크 클래스 파일을 적재한 시간과 서버 타스크 클래스 파일이 변경된 시간이 일치되는 서버 타스크를 갖는 '서버 타스크 정보' 를 뜻한다.
+	 * 내부적으로는 해쉬를 이용하여 파라미터 'messageID'(=메시지 식별자) 에 1:1 대응하는 '서버 타스크 정보' 를 넘겨주는데
+	 * 만약 1:1 대응하는 '서버 타스크 정보'가 없거나 적재한 시간과 서버 타스크 파일 수정 시간이 틀린 경우에는 
+	 * 신규 '서버 타스크 정보' 를 만들어 해쉬에 등록 후 반환해 준다.
+	 * 
+	 * @param messageID 메시지 식별자
+	 * @return 유효한 서버 타스크 정보
+	 * @throws DynamicClassCallException 동적 클래스 관련 처리중 에러 발생시 던지는 예외
+	 */
+	private ServerTaskInfomation getVadlinServerTaskInfomation(String messageID)
 			throws DynamicClassCallException {
 		ServerTaskInfomation serverTaskInfomation = messageID2ServerTaskInformationHash.get(messageID);
 		if (null == serverTaskInfomation) {
 			// lock.lock();			
-			serverTaskInfomation = getNewServerTaskFromWorkBaseClassload(messageID);
+			serverTaskInfomation = createNewServerTaskInformation(messageID);
 
 			messageID2ServerTaskInformationHash.put(messageID, serverTaskInfomation);
 						
 		} else if (serverTaskInfomation.isModifed()) {
 			/** 새로운 서버 클래스 로더로 교체 */
 			currentWorkingServerClassLoader = serverClassLoaderFactory.createServerClassLoader();
-			serverTaskInfomation = getNewServerTaskFromWorkBaseClassload(messageID);
+			serverTaskInfomation = createNewServerTaskInformation(messageID);
 			messageID2ServerTaskInformationHash.put(messageID, serverTaskInfomation);
 				
 		}
@@ -91,8 +113,8 @@ public class ServerTaskManger implements ServerTaskMangerIF {
 	}
 	
 	@Override
-	public AbstractServerTask getServerTask(String messageID) throws DynamicClassCallException {
-		ServerTaskInfomation serverTaskInfomation = getServerTaskInfomation(messageID);
+	public AbstractServerTask getValidServerTask(String messageID) throws DynamicClassCallException {
+		ServerTaskInfomation serverTaskInfomation = getVadlinServerTaskInfomation(messageID);
 	
 		return serverTaskInfomation.getServerTask();
 	}

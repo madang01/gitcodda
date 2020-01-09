@@ -71,6 +71,21 @@ public class AcceptedConnection implements ServerIOEventHandlerIF, ReceivedMiddl
 	/** 클라이언트에 할당되는 서버 편지 식별자 */
 	private int serverMailID = Integer.MIN_VALUE;
 
+	/**
+	 * 생성자
+	 * @param personalSelectionKey 접속을 허락받은 셀렉션 키
+	 * @param acceptedSocketChannel 접속을 허락받은 소켓 채널
+	 * @param projectName 프로젝트 이름
+	 * @param socketTimeout 소켓 타임 아웃 시간
+	 * @param streamCharsetFamily 문자셋, 문자셋 디코더 그리고 문자셋 인코더 묶음
+	 * @param serverDataPacketBufferMaxCntPerMessage 메시지 1개당 랩 버퍼 최대 갯수
+	 * @param serverOutputMessageQueueCapacity 출력 메시지 큐 크기
+	 * @param projectLoginManager 로그린 관리자
+	 * @param messageProtocol 메시지 프로토콜
+	 * @param wrapBufferPool 랩 버퍼 폴
+	 * @param serverIOEvenetController 서버 입출력 이벤트 제어자
+	 * @param serverTaskManager 서버 타스크 관리자
+	 */
 	public AcceptedConnection(SelectionKey personalSelectionKey, SocketChannel acceptedSocketChannel,
 			String projectName, long socketTimeout, StreamCharsetFamily streamCharsetFamily, 
 			int serverDataPacketBufferMaxCntPerMessage, 
@@ -264,7 +279,7 @@ public class AcceptedConnection implements ServerIOEventHandlerIF, ReceivedMiddl
 
 		AbstractServerTask serverTask = null;
 		try {
-			serverTask = serverTaskManager.getServerTask(messageID);
+			serverTask = serverTaskManager.getValidServerTask(messageID);
 		} catch (DynamicClassCallException e) {
 			log.warning(e.getMessage());
 
@@ -333,6 +348,9 @@ public class AcceptedConnection implements ServerIOEventHandlerIF, ReceivedMiddl
 		return loginID;
 	}
 
+	/**
+	 * @return 간단하게 줄인 연결 정보가 담긴 문자열
+	 */
 	public String toSimpleInfomation() {
 		StringBuilder builder = new StringBuilder();
 		builder.append("personalSelectionKey=");

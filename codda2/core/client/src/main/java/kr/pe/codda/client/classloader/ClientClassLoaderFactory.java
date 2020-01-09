@@ -19,16 +19,27 @@ package kr.pe.codda.client.classloader;
 
 import java.io.File;
 
+import kr.pe.codda.common.classloader.ClientClassLoader;
 import kr.pe.codda.common.classloader.SystemClassDeterminer;
 import kr.pe.codda.common.classloader.SystemClassVerifierIF;
-import kr.pe.codda.common.classloader.ServerClassLoader;
 import kr.pe.codda.common.exception.CoddaConfigurationException;
 
+/**
+ * 클라이언트 클래스 로더 팩토리
+ * @author Won Jonghoon
+ *
+ */
 public class ClientClassLoaderFactory {
 	private String clientClassloaderClassPathString = null;
 	private String clientClassloaderReousrcesPathString = null;
 	private SystemClassVerifierIF excludedDynamicClassManager = new SystemClassDeterminer();
 	
+	/**
+	 * 생성자
+	 * @param clientClassloaderClassPathString 클래스 로더의 동적 클래스가 있는 경로
+	 * @param clientClassloaderReousrcesPathString 클래스 로더의 리소스 경로
+	 * @throws CoddaConfigurationException 설정 관련 처리중 에러 발생시 던지는 예외
+	 */
 	public ClientClassLoaderFactory(String clientClassloaderClassPathString,
 			String clientClassloaderReousrcesPathString) throws CoddaConfigurationException {
 		if (null == clientClassloaderClassPathString) {
@@ -79,7 +90,10 @@ public class ClientClassLoaderFactory {
 		this.clientClassloaderReousrcesPathString = clientClassloaderReousrcesPathString;		
 	}
 	
-	public ServerClassLoader createClientClassLoader() {
-		return new ServerClassLoader(clientClassloaderClassPathString, clientClassloaderReousrcesPathString, excludedDynamicClassManager);
+	/**
+	 * @return 신규 클라이언트 클래스 로더
+	 */
+	public ClientClassLoader createNewClientClassLoader() {
+		return new ClientClassLoader(clientClassloaderClassPathString, clientClassloaderReousrcesPathString, excludedDynamicClassManager);
 	}
 }

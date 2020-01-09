@@ -28,6 +28,11 @@ import java.util.logging.Logger;
 import kr.pe.codda.common.etc.CommonStaticFinalVars;
 import kr.pe.codda.common.exception.NoMoreWrapBufferException;
 
+/**
+ * 클라이언트 입출력 이벤트 제어기
+ * @author Won Jonghoon
+ *
+ */
 public class ClientIOEventController extends Thread implements
 		ClientIOEventControllerIF {
 	private Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
@@ -37,6 +42,12 @@ public class ClientIOEventController extends Thread implements
 	private Selector ioEventSelector = null;
 	private LinkedBlockingDeque<ClientIOEventHandlerIF> unregisteredAsynConnectionQueue = new LinkedBlockingDeque<ClientIOEventHandlerIF>();
 
+	/**
+	 * 생성자
+	 * @param clientSelectorWakeupInterval  클라이언트 입출력 이벤트 제어기의 selector 깨우는 간격
+	 * @throws IOException 입출력 에러 발생시 던지는 예외
+	 * @throws NoMoreWrapBufferException 래 버퍼 폴에 랩 버퍼가 없을 경우 던지는 예외
+	 */
 	public ClientIOEventController(long clientSelectorWakeupInterval) throws IOException,
 			NoMoreWrapBufferException {
 		this.clientSelectorWakeupInterval = clientSelectorWakeupInterval;
@@ -55,6 +66,13 @@ public class ClientIOEventController extends Thread implements
 		log.info(infoMessage);
 	}
 
+	/**
+	 * <pre>
+	 * 아직 연결 확립이 되지 않았지만 연결 확립을 원하는 연결을 연결 시도 후 연결시 에는 
+	 * selector 에 {@link SelectionKey#OP_READ} 를 관심 사항으로 등록하고
+	 * 연결 실패시에는  selector 에 {@link SelectionKey#OP_CONNECT} 를 관심 사항으로 등록한다.
+	 * </pre>
+	 */
 	private void processNewConnection() {
 		while (! unregisteredAsynConnectionQueue.isEmpty()) {
 			ClientIOEventHandlerIF unregisteredAsynConnection = unregisteredAsynConnectionQueue

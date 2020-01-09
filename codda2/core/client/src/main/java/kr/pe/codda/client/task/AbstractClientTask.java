@@ -30,12 +30,21 @@ import kr.pe.codda.common.protocol.MessageCodecIF;
 import kr.pe.codda.common.protocol.MessageProtocolIF;
 import kr.pe.codda.common.util.CommonStaticUtil;
 
+/**
+ * 클라이언트 타스크 추상화 클래스
+ * @author Won Jonghoon
+ *
+ */
 public abstract class AbstractClientTask {
 	protected Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
 	
 	private ClassLoader taskClassLoader = this.getClass().getClassLoader();
 	private final AbstractMessageDecoder outputMessageDecoder;
 	
+	/**
+	 * 생성자
+	 * @throws DynamicClassCallException 동적 클래스 작업중 에러 발생시 던지는 예외
+	 */
 	public AbstractClientTask() throws DynamicClassCallException {
 		String className = this.getClass().getName();
 		int startIndex = className.lastIndexOf(".") + 1;		
@@ -43,7 +52,7 @@ public abstract class AbstractClientTask {
 		String messageID = className.substring(startIndex, endIndex);
 		
 		String classFullName = IOPartDynamicClassNameUtil.getClientMessageCodecClassFullName(messageID);
-		Object retObject = CommonStaticUtil.createtNewInstance(taskClassLoader, classFullName);		
+		Object retObject = CommonStaticUtil.createtNewObject(taskClassLoader, classFullName);		
 		
 		if (! (retObject instanceof MessageCodecIF)) {
 			String warnMessage = new StringBuilder()
@@ -60,14 +69,27 @@ public abstract class AbstractClientTask {
 		outputMessageDecoder = clientOutputMessageCodec.getMessageDecoder();
 	}
 
+	/**
+	 * 타스크 작업 수행, 내부적으로는 {@link #doTask(String, AsynConnectionIF, AbstractMessage)} 를 호출한다.
+	 * 
+	 * @param index 인덱스
+	 * @param projectName 프로젝트 이름
+	 * @param asynConnection 비동기 연결
+	 * @param mailboxID 메일 박스 식별자
+	 * @param mailID 메일 식별자
+	 * @param messageID 메시지 식별자
+	 * @param receivedMiddleObject 스트림에서 추출한 중간 객체
+	 * @param messageProtocol 메시지 프로토콜
+	 * @throws InterruptedException 인터럽트 발생시 던지는 예외
+	 */
 	public void execute(int index, String projectName, AsynConnectionIF asynConnection,
-			int mailboxID, int mailID, String messageID, Object readableMiddleObject, 
+			int mailboxID, int mailID, String messageID, Object receivedMiddleObject, 
 			MessageProtocolIF messageProtocol)
 			throws InterruptedException {
 
 		AbstractMessage outputMessage = null;
 		try {
-			outputMessage = messageProtocol.O2M(outputMessageDecoder, mailboxID, mailID, messageID, readableMiddleObject);
+			outputMessage = messageProtocol.O2M(outputMessageDecoder, mailboxID, mailID, messageID, receivedMiddleObject);
 		} catch (BodyFormatException e) {
 			log.warning("fail to get a output message, errmsg=" + e.getMessage());
 			return;
@@ -112,6 +134,14 @@ public abstract class AbstractClientTask {
 		
 	}
 
+	/**
+	 * 개발자가 정의 해야할 타스크 작업 추상화 메소드
+	 * 
+	 * @param projectName 프로제트 이름
+	 * @param asynConnection 비동기 연결
+	 * @param outputMessage 출력 메시지
+	 * @throws Exception 처리중 에러 발생시 던지는 예외
+	 */
 	abstract public void doTask(String projectName, AsynConnectionIF asynConnection, AbstractMessage outputMessage)
 			throws Exception;
 }

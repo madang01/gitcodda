@@ -30,6 +30,12 @@ import java.util.logging.Logger;
 import kr.pe.codda.common.etc.CommonStaticFinalVars;
 import kr.pe.codda.common.util.JarFileFilter;
 
+/**
+ * 동적 클래스관련 jar 유틸
+ *  
+ * @author Won Jonghoon
+ *
+ */
 public class JarUtil {	
 	public static ConcurrentHashMap<String, JarClassEntryContents> getJarClassEntryContensHash(String jarLibrayPathString) throws FileNotFoundException {
 		if (null == jarLibrayPathString) {
@@ -180,6 +186,11 @@ public class JarUtil {
 		return jarClassEntryContentsHash;
 	}
 
+	/**
+	 * @param jarLibrayPathString jar 파일들이 있는 경로 문자열
+	 * @return jar 파일 목록
+	 * @throws FileNotFoundException 파라미터 'jarLibrayPathString'(=파일들이 있는 경로 문자열) 경로가 존재하지 않으면 던지는 예외 
+	 */
 	private static File[] getJarExtensionFileList(String jarLibrayPathString) throws FileNotFoundException {		
 		File jarLibrayPath = new File(jarLibrayPathString);
 		if (!jarLibrayPath.exists()) {

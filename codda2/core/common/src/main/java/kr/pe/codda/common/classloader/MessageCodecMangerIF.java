@@ -22,5 +22,5 @@ package kr.pe.codda.common.classloader;
  * @author Won Jonghoon
  *
  */
-public interface MessageCodecMangerIF extends MessageDecoderMangerIF, MessageEncoderManagerIF {
+public interface MessageCodecMangerIF extends MessageDecoderManagerIF, MessageEncoderManagerIF {
 }

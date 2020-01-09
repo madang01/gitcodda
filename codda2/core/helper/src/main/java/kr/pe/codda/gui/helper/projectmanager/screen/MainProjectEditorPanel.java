@@ -63,21 +63,37 @@ import kr.pe.codda.gui.helper.projectmanager.table.configurationpart.ItemValueRe
 import kr.pe.codda.gui.util.PathSwingAction;
 
 /**
+ * 메인 프로젝트 화면
+ * 
  * @author Won Jonghoon
  */
-@SuppressWarnings("serial")
+@SuppressWarnings("unchecked")
 public class MainProjectEditorPanel extends JPanel {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -2884478265791098821L;
+
+
 	private Logger log = LoggerFactory.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
 	
 
 	private final String titlesOfPropertiesTableModel[] = { "key", "value" };
+	
+	
 	private final Class<?>[] columnTypesOfPropertiesTableModel = new Class[] {
 			ItemKeyLabel.class, ItemValuePanel.class };
+	
+	
 	private ItemIDInfoManger itemIDInfoManger = ItemIDInfoManger
 			.getInstance();
+	
+	
 	private List<ItemIDInfo<?>> dbcpItemIDInfoList = itemIDInfoManger
 			.getUnmodifiableDBCPPartItemIDInfoList();
 	private int dbcpItemIDInfoListSize = dbcpItemIDInfoList.size();
+	
+	
 	private List<ItemIDInfo<?>> subProjectPartItemIDInfoList = itemIDInfoManger
 			.getUnmodifiableProjectPartItemIDInfoList();
 	private int subProjectPartItemIDInfoListSize = subProjectPartItemIDInfoList
@@ -105,6 +121,7 @@ public class MainProjectEditorPanel extends JPanel {
 	private HashMap<String, ConfigurationPartTableModel> subProjectName2subProjectPartTableModelHash = new HashMap<String, ConfigurationPartTableModel>();
 	private HashMap<String, ItemValuePanel> itemKey2ItemValuePanelHash = new HashMap<String, ItemValuePanel>();
 
+	
 	public void updateScreenWithMainProjectBuildSystemState(
 			MainProjectBuildSystemState mainProjectBuildSystemState) {
 		this.mainProjectName = mainProjectBuildSystemState.getMainProjectName();
@@ -396,6 +413,11 @@ public class MainProjectEditorPanel extends JPanel {
 	
 	private class ProjectConfigurationSequencedProperties extends
 			SequencedProperties {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = -1328012570222962336L;
+
 		/**
 		 * 주어진 신놀이 시퀀스 프로퍼티에 지정한 dbcp 이름 목록을 갖는 'dbcp 이름 목록' 항목을 추가한다.
 		 * 
@@ -732,6 +754,7 @@ public class MainProjectEditorPanel extends JPanel {
 		screenManagerIF.moveToAllMainProjectManagerScreen(installedPathString);
 	}
 
+	
 	private void newSubProjectAddButtonActionPerformed(ActionEvent e) {
 		String newSubProjectName = newSubProjectNameTextField.getText();
 		if (subProjectNameList.contains(newSubProjectName)) {
@@ -750,6 +773,7 @@ public class MainProjectEditorPanel extends JPanel {
 		
 		Object[][] valuesOfSubProjectPropertiesTableModel = new Object[subProjectPartItemIDInfoListSize][titlesOfPropertiesTableModel.length];
 		for (int i = 0; i < subProjectPartItemIDInfoListSize; i++) {
+			
 			ItemIDInfo<?> subProjectPartItemIDInfo = subProjectPartItemIDInfoList.get(i);
 			String itemID = subProjectPartItemIDInfo.getItemID();
 			String itemKey = new StringBuilder("subproject.")
@@ -903,6 +927,7 @@ public class MainProjectEditorPanel extends JPanel {
 		}
 	}
 
+	
 	private void addNewDBCP(ActionEvent e) {
 		String newDBCPName = newDBCPNameTextField.getText();
 
@@ -1182,6 +1207,7 @@ public class MainProjectEditorPanel extends JPanel {
 		servletSystemLibraryPathButton.setAction(pathAction);
 	}
 
+	
 	private void initComponents() {
 		// JFormDesigner - Component initialization - DO NOT MODIFY
 		// //GEN-BEGIN:initComponents
@@ -1531,6 +1557,10 @@ public class MainProjectEditorPanel extends JPanel {
 					"key", "value"
 				}
 			) {
+				/**
+				 * 
+				 */
+				private static final long serialVersionUID = -4334425531492084350L;
 				Class<?>[] columnTypes = new Class<?>[] {
 					String.class, Object.class
 				};
@@ -1573,6 +1603,10 @@ public class MainProjectEditorPanel extends JPanel {
 					"key", "value"
 				}
 			) {
+				/**
+				 * 
+				 */
+				private static final long serialVersionUID = 4739917773241287519L;
 				Class<?>[] columnTypes = new Class<?>[] {
 					String.class, Object.class
 				};

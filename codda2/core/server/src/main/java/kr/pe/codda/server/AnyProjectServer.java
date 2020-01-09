@@ -35,6 +35,11 @@ import kr.pe.codda.server.classloader.ServerClassLoaderFactory;
 import kr.pe.codda.server.classloader.ServerTaskManger;
 
 
+/**
+ * 프로젝트 서버
+ * @author Won Jonghoon
+ *
+ */
 public class AnyProjectServer {
 	private Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
 	
@@ -56,6 +61,14 @@ public class AnyProjectServer {
 	private ServerTaskManger serverTaskManager = null;	
 	private ServerIOEventController serverIOEventController = null;
 	
+	/**
+	 * 생성자
+	 * @param serverAPPINFClassPathString 서버 클래스로더의 동적 클래스 경로 문자열
+	 * @param projectResourcesPathString 서버 클래스로더의 리소스 경로 문자열
+	 * @param projectPartConfiguration 프로젝트 설정
+	 * @throws NoMoreWrapBufferException 랩 버퍼 폴에 랩 버퍼가 없을 경우 던지는 예외
+	 * @throws CoddaConfigurationException 설정 관련 작업중 에러 발생시 던지는 예외
+	 */
 	public AnyProjectServer(String serverAPPINFClassPathString,
 			String projectResourcesPathString, ProjectPartConfiguration projectPartConfiguration)
 			throws NoMoreWrapBufferException, CoddaConfigurationException {
@@ -156,7 +169,9 @@ public class AnyProjectServer {
 	}	
 
 	
-	
+	/**
+	 * @return 서버 프로젝트 상태 문자열
+	 */
 	public String getProjectServerState() {
 		StringBuilder pollStateStringBuilder = new StringBuilder();		
 		pollStateStringBuilder.append("dataPacketBufferPool.activeSize=");

@@ -46,6 +46,12 @@ import kr.pe.codda.common.message.AbstractMessage;
 import kr.pe.codda.common.message.codec.AbstractMessageEncoder;
 import kr.pe.codda.common.protocol.MessageProtocolIF;
 
+/**
+ * 쓰레드 세이프 한 동기 단일 연결, 폴에 소속되지 않고 개별적 요청시 생성된다. 
+ * 
+ * @author Won Jonghoon
+ *
+ */
 public final class SyncThreadSafeSingleConnection implements SyncConnectionIF {
 	private Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
 	
@@ -71,6 +77,19 @@ public final class SyncThreadSafeSingleConnection implements SyncConnectionIF {
 	private final SyncOutputMessageReceiver syncOutputMessageReceiver;
 	
 
+	/**
+	 * 생성자
+	 * 
+	 * @param serverHost 서버 호스트 주소
+	 * @param serverPort 서버 포트 번호
+	 * @param socketTimeout 소켓 타임 아웃 시간
+	 * @param streamCharsetFamily 문자셋, 문자셋 디코더 그리고 문자셋 인코더 묶음
+	 * @param clientDataPacketBufferMaxCntPerMessage 메시지당 랩 버퍼 최대 갯수
+	 * @param clientDataPacketBufferSize 메시지 1개당 랩 버퍼 최대 갯수
+	 * @param messageProtocol 메시지 프로토콜
+	 * @param wrapBufferPool 랩 버퍼 폴
+	 * @throws IOException 입출력 에러 발생시 던지는 예외
+	 */
 	public SyncThreadSafeSingleConnection(String serverHost, int serverPort, long socketTimeout, 
 			StreamCharsetFamily streamCharsetFamily,
 			int clientDataPacketBufferMaxCntPerMessage,
@@ -129,10 +148,23 @@ public final class SyncThreadSafeSingleConnection implements SyncConnectionIF {
 	}
 
 
+	/**
+	 * 마지막으로 읽은 시간을 현재 시간으로 갱신한다.
+	 */
 	private void setFinalReadTime() {
 		finalReadTime = new java.util.Date();
 	}
-
+	
+	/**
+	 * @return 마지막으로 읽은 시간
+	 */
+	public java.util.Date getFinalReadTime() {
+		return finalReadTime;
+	}
+	
+	/**
+	 * 연결이 가진 자원을 해제한다.
+	 */
 	private void releaseResources() {
 		if (null != clientInputStream) {
 			try {
@@ -339,7 +371,5 @@ public final class SyncThreadSafeSingleConnection implements SyncConnectionIF {
 		return clientSocket.isConnected();
 	}
 
-	public java.util.Date getFinalReadTime() {
-		return finalReadTime;
-	}
+	
 }

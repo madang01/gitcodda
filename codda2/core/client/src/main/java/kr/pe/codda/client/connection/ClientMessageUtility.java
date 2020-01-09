@@ -20,7 +20,7 @@ package kr.pe.codda.client.connection;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import kr.pe.codda.common.classloader.MessageDecoderMangerIF;
+import kr.pe.codda.common.classloader.MessageDecoderManagerIF;
 import kr.pe.codda.common.etc.CommonStaticFinalVars;
 import kr.pe.codda.common.exception.BodyFormatException;
 import kr.pe.codda.common.exception.DynamicClassCallException;
@@ -30,6 +30,11 @@ import kr.pe.codda.common.protocol.MessageProtocolIF;
 import kr.pe.codda.common.type.ExceptionDelivery;
 import kr.pe.codda.impl.message.ExceptionDeliveryRes.ExceptionDeliveryRes;
 
+/**
+ * 클라이언트 메시지 유틸 추상화 클래스
+ * @author Won Jonghoon
+ *
+ */
 public abstract class ClientMessageUtility {
 
 	/**
@@ -51,7 +56,7 @@ public abstract class ClientMessageUtility {
 	 * @return 지정한 '수신한 중간 객체'로 부터 변환된 지정한 메일 박스 식별자와 메일 식별자 그리고 메시지 식별자를 갖는 출력 메시지
 	 */
 	public static AbstractMessage buildOutputMessage(String title,
-			MessageDecoderMangerIF messageCodecManger, 
+			MessageDecoderManagerIF messageCodecManger, 
 			MessageProtocolIF messageProtocol,
 			int mailboxID, int mailID, String messageID, Object receviedMiddleObject) {
 		

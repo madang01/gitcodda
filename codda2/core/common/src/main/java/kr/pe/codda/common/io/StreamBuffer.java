@@ -2224,7 +2224,6 @@ public class StreamBuffer {
 
 	@Override
 	public String toString() {
-		final int maxLen = 5;
 		StringBuilder builder = new StringBuilder();
 		builder.append("StreamBuffer [defaultCharset=");
 		builder.append(defaultCharset.name());
@@ -2238,14 +2237,16 @@ public class StreamBuffer {
 		builder.append(limit);
 		builder.append(", capacity=");
 		builder.append(capacity);
-		builder.append(", wrapBufferArray=");
-		builder.append(wrapBufferArray != null
-				? Arrays.asList(wrapBufferArray).subList(0, Math.min(wrapBufferArray.length, maxLen))
-				: null);
 		builder.append(", byteBufferArray=");
-		builder.append(byteBufferArray != null
-				? Arrays.asList(byteBufferArray).subList(0, Math.min(byteBufferArray.length, maxLen))
-				: null);
+		
+		ByteBuffer firstByteBuffer = byteBufferArray[0];
+		
+		if (null == firstByteBuffer) {
+			builder.append("empty");
+		} else {
+			builder.append(HexUtil.getHexStringForRemaingOfByteBuffer(firstByteBuffer));
+		}
+		
 		builder.append(", lastIndex=");
 		builder.append(lastBufferIndex);
 		builder.append("]");

@@ -638,7 +638,7 @@ public abstract class CommonStaticUtil {
 	 * @return 파라미터 'targetClassLoader'(=생성할 객체를 만들어줄 클래스 로더) 에서 생성한 파라마티 'classFullName'(=생성할 객체의 클래스 전체 이름) 을 갖는 클래스 객체 
 	 * @throws DynamicClassCallException 동적 클래스 객체 생성시 에러가 있을 경우 던지는 예외
 	 */
-	public static Object createtNewInstance(ClassLoader targetClassLoader, String classFullName)
+	public static Object createtNewObject(ClassLoader targetClassLoader, String classFullName)
 			throws DynamicClassCallException {
 		Class<?> retClass = null;
 
@@ -762,7 +762,7 @@ public abstract class CommonStaticUtil {
 	 * @param mailboxID            메일 박스 식별자
 	 * @param mailID               메일 식별자
 	 * @param messageID            메시지 식별자
-	 * @param recievedMiddleObject 수신한 메시지 내용이 담긴 중간 객체
+	 * @param receivedMiddleObject 수신한 메시지 내용이 담긴 중간 객체
 	 * @return 중간 객체에서 변환된 메시지
 	 * @throws BodyFormatException      수신한 메시지 내용이 담긴 중간 객체를 메시지로 변환하는 과정에서 에러 발생시
 	 *                                  던지는 예외
@@ -770,7 +770,7 @@ public abstract class CommonStaticUtil {
 	 */
 	public static AbstractMessage O2M(MessageProtocolIF messageProtocol, AbstractMessageDecoder messageDecoder,
 			SingleItemDecoderIF singleItemDecoder, int mailboxID, int mailID, String messageID,
-			Object recievedMiddleObject) throws IllegalArgumentException, BodyFormatException {
+			Object receivedMiddleObject) throws IllegalArgumentException, BodyFormatException {
 		try {
 			if (null == messageProtocol) {
 				throw new IllegalArgumentException("the parameter messageProtocol is null");
@@ -788,11 +788,11 @@ public abstract class CommonStaticUtil {
 				throw new IllegalArgumentException("the parameter messageID is null");
 			}
 
-			if (null == recievedMiddleObject) {
+			if (null == receivedMiddleObject) {
 				throw new IllegalArgumentException("the parameter readableMiddleObject is null");
 			}
-
-			AbstractMessage outputMessage = messageDecoder.decode(singleItemDecoder, recievedMiddleObject);
+			
+			AbstractMessage outputMessage = messageDecoder.decode(singleItemDecoder, receivedMiddleObject);
 			outputMessage.setMailboxID(mailboxID);
 			outputMessage.setMailID(mailID);
 
@@ -812,7 +812,7 @@ public abstract class CommonStaticUtil {
 			throw new BodyFormatException(errorMessage);
 		} finally {
 			try {
-				messageProtocol.closeReadableMiddleObject(mailboxID, mailID, messageID, recievedMiddleObject);
+				messageProtocol.closeReadableMiddleObject(mailboxID, mailID, messageID, receivedMiddleObject);
 			} catch (Exception e1) {
 				String errorMessage = new StringBuilder().append("fail to close the message body stream[messageID=")
 						.append(messageID).append(", mailboxID=").append(mailboxID).append(", mailID=").append(mailID)

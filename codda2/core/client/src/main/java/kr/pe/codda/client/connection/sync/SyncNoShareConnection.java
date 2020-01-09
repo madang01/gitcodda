@@ -46,7 +46,11 @@ import kr.pe.codda.common.message.codec.AbstractMessageEncoder;
 import kr.pe.codda.common.protocol.MessageProtocolIF;
 
 /**
- * Note that this implementation is not synchronized.
+ * <pre>
+ * 동기 공유 연결.
+ *  
+ * WARNING! this implementation is not synchronized.
+ * </pre>
  * 
  * @author Won jonghoon
  *
@@ -56,7 +60,7 @@ public final class SyncNoShareConnection implements SyncConnectionIF {
 
 	
 	private final MessageProtocolIF messageProtocol;
-	private final int clientDataPacketBufferSize;
+	
 	// private WrapBufferPoolIF wrapBufferPool = null;
 
 	// private final String serverHost;
@@ -66,6 +70,7 @@ public final class SyncNoShareConnection implements SyncConnectionIF {
 	// private final int clientDataPacketBufferMaxCntPerMessage;
 	// private final StreamCharsetFamily streamCharsetFamily;	
 	// private final WrapBufferPoolIF wrapBufferPool;
+	private final int clientDataPacketBufferSize;
 	private final StreamBuffer inputMessageStreamBuffer;
 	private final byte[] socketBuffer;
 
@@ -81,10 +86,20 @@ public final class SyncNoShareConnection implements SyncConnectionIF {
 	private final IncomingStream incomingStream;
 	
 
+	/**
+	 * 생성자
+	 * @param serverHost 서버 호스트 주소
+	 * @param serverPort 서버 포트 번호
+	 * @param socketTimeout 소켓 타임 아웃 시간
+	 * @param streamCharsetFamily 문자셋, 문자셋 디코더 그리고 문자셋 인코더 묶음
+	 * @param clientDataPacketBufferMaxCntPerMessage 메시지 1개당 랩 버퍼 최대 갯수
+	 * @param messageProtocol 메시지 프로토콜
+	 * @param wrapBufferPool 랩 버퍼 폴
+	 * @throws IOException 입출력 에러 발생시 던지는 예외
+	 */
 	public SyncNoShareConnection(String serverHost, int serverPort, long socketTimeout, 
 			StreamCharsetFamily streamCharsetFamily,
 			int clientDataPacketBufferMaxCntPerMessage,
-			int clientDataPacketBufferSize,
 			MessageProtocolIF messageProtocol,
 			WrapBufferPoolIF wrapBufferPool)
 			throws IOException {
@@ -94,11 +109,12 @@ public final class SyncNoShareConnection implements SyncConnectionIF {
 		// this.streamCharsetFamily = streamCharsetFamily;
 		// this.clientDataPacketBufferSize = clientDataPacketBufferSize;
 		this.messageProtocol = messageProtocol;
-		this.clientDataPacketBufferSize = clientDataPacketBufferSize;
+		
 		// this.clientDataPacketBufferMaxCntPerMessage = clientDataPacketBufferMaxCntPerMessage;
 		// this.streamCharsetFamily = streamCharsetFamily;
 		// this.wrapBufferPool = wrapBufferPool;
 
+		clientDataPacketBufferSize = wrapBufferPool.getDataPacketBufferSize();
 		inputMessageStreamBuffer = messageProtocol.createNewMessageStreamBuffer();
 		socketBuffer = new byte[clientDataPacketBufferSize];		
 		syncOutputMessageReceiver = new SyncOutputMessageReceiver(messageProtocol);
@@ -356,14 +372,23 @@ public final class SyncNoShareConnection implements SyncConnectionIF {
 		isQueueIn = false;
 	}
 
+	/**
+	 * @return 큐 안에 있는지 여부
+	 */
 	public boolean isInQueue() {
 		return isQueueIn;
 	}
 
+	/**
+	 * 마지막으로 읽은 시간을 현재 시간으로 갱신한다.
+	 */
 	private void setFinalReadTime() {
 		finalReadTime = new java.util.Date();
 	}
 
+	/**
+	 * @return 마지막으로 읽은 시간
+	 */
 	public java.util.Date getFinalReadTime() {
 		return finalReadTime;
 	}

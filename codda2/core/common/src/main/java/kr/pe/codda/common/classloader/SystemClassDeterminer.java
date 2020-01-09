@@ -22,9 +22,8 @@ import java.util.HashSet;
 import kr.pe.codda.common.etc.CommonStaticFinalVars;
 
 /**
- * 내장하고 있는 시스템 클래스 판단자 구현체
- * WARNING! 이 클래스는 쓰레드에 안전하지 않음.
- * 
+ * 시스템 클래스 로더 대상 판단자,  WARNING! 이 클래스는 쓰레드에 안전하지 않음.
+ *  
  * @author Won Jonghoon
  *
  */
@@ -37,7 +36,7 @@ public class SystemClassDeterminer implements SystemClassVerifierIF {
 	 */
 	public SystemClassDeterminer() {
 		
-		String[] messageIDListOfDTOHavingDynamicClassName = { "SelfExnRes", "Empty" };
+		String[] messageIDListOfDTOHavingDynamicClassName = { "ExceptionDeliveryRes", "Empty" };
 
 		for (String messageIDOfDTOHavingDynamicClassName : messageIDListOfDTOHavingDynamicClassName) {
 			sytemClassFullNameSetHavingDynamicClassName

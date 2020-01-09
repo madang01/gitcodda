@@ -127,6 +127,10 @@ public final class ConnectionPoolManager {
 		return subProjectConnectionPool;
 	}
 
+	/**
+	 * @return 메인 프로젝트 연결 폴
+	 * @throws IllegalStateException 메인 프로젝트가 없을 경우 만드는 과정에서 에러 발생시 던지는 예외
+	 */
 	public AnyProjectConnectionPoolIF getMainProjectConnectionPool() throws IllegalStateException {
 		if (null == mainProjectConnectionPool) {
 			try {
@@ -148,9 +152,16 @@ public final class ConnectionPoolManager {
 		return mainProjectConnectionPool;
 	}
 
+	/**
+	 * 프롲게트 연결 폴 모니터 쓰레드
+	 */
 	private class AnyProjectConnectionPoolMonitor extends Thread {
 		private long monitorTimeInterval;
 
+		/**
+		 * 생성자
+		 * @param monitorTimeInterval 모니터 간격, 단위 ms.
+		 */
 		public AnyProjectConnectionPoolMonitor(long monitorTimeInterval) {
 			this.monitorTimeInterval = monitorTimeInterval;
 		}
@@ -173,6 +184,9 @@ public final class ConnectionPoolManager {
 
 	}
 
+	/**
+	 * @return 폴 상태 문자열
+	 */
 	private String getPoolState() {
 		StringBuilder pollStateStringBuilder = new StringBuilder();
 		pollStateStringBuilder.append("main projectName[");

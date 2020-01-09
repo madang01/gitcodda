@@ -64,7 +64,7 @@ public class ServerClassLoader extends ClassLoader implements MessageEncoderMana
 		this.classloaderReousrcesPathString = classloaderReousrcesPathString;
 		this.systemClassVerifier = systemClassVerifier;		
 
-		log.log(Level.INFO, "SimpleClassLoader hashCode=[" + this.hashCode() + "] create");
+		log.log(Level.INFO, "ServerClassLoader hashCode=[" + this.hashCode() + "] create");
 	}
 
 	/**
@@ -249,6 +249,11 @@ public class ServerClassLoader extends ClassLoader implements MessageEncoderMana
 		return url;
 	}*/
 	
+	/**
+	 * @param messageID 메시지 식별자
+	 * @return 파라미터 'messageID' 에 1:1 대응하는 서버 메시지 코덱
+	 * @throws DynamicClassCallException 동적 클래스 관련 처리중 에러 발생시 던지는 예외
+	 */
 	public MessageCodecIF getServerMessageCodec(String messageID) throws DynamicClassCallException {
 		MessageCodecIF messageCodec = messageCodecHash.get(messageID);
 		
@@ -266,6 +271,11 @@ public class ServerClassLoader extends ClassLoader implements MessageEncoderMana
 		return messageCodec;
 	}
 	
+	/**
+	 * @param messageID 메시지 식별자
+	 * @return 파라미터 'messageID' 에 1:1 대응하는 신규 서버 메시지 코덱
+	 * @throws DynamicClassCallException 동적 클래스 관련 처리중 에러 발생시 던지는 예외
+	 */
 	private MessageCodecIF createNewServerMessageCodec(String messageID) throws DynamicClassCallException {
 		String classFullName = IOPartDynamicClassNameUtil.getServerMessageCodecClassFullName(messageID);
 		
@@ -331,6 +341,6 @@ public class ServerClassLoader extends ClassLoader implements MessageEncoderMana
 	@Override
 	protected void finalize() throws Throwable {
 		// FIXME! 메모리 회수 확인용으로 삭제하지 마세요!
-		log.log(Level.INFO, "SimpleClassLoader[" + this.hashCode() + "] destroy");
+		log.log(Level.INFO, "ServerClassLoader[" + this.hashCode() + "] destroy");
 	}
 }

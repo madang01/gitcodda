@@ -18,5 +18,10 @@ package kr.pe.codda.client.connection.asyn;
 
 import kr.pe.codda.client.ConnectionIF;
 
+/**
+ * 비동기 연결 인터페이스
+ * @author Won Jonghoon
+ *
+ */
 public interface AsynConnectionIF extends ConnectionIF {
 }

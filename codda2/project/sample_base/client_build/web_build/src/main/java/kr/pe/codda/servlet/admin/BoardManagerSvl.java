@@ -5,6 +5,12 @@ import javax.servlet.http.HttpServletResponse;
 
 import kr.pe.codda.weblib.jdf.AbstractAdminLoginServlet;
 
+/**
+ * 게시판 관리
+ * 
+ * @author Won Jonghoon
+ *
+ */
 public class BoardManagerSvl extends AbstractAdminLoginServlet {
 
 	private static final long serialVersionUID = -8949718293331700735L;

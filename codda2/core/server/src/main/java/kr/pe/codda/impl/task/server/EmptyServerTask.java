@@ -24,8 +24,17 @@ import kr.pe.codda.server.LoginManagerIF;
 import kr.pe.codda.server.task.AbstractServerTask;
 import kr.pe.codda.server.task.ToLetterCarrier;
 
+/**
+ * 클래스 풀 이름이 동적 클래스이지만 시스템 클래스 로더로 지정되어 내장된 'Empty' 메시지 서버 타스트 
+ * @author Won Jonghoon
+ *
+ */
 public class EmptyServerTask extends AbstractServerTask {
 
+	/**
+	 * 생성자
+	 * @throws DynamicClassCallException 동적 클래스 작업중 에러 발생시 던지는 예외
+	 */
 	public EmptyServerTask() throws DynamicClassCallException {
 		super();
 	}

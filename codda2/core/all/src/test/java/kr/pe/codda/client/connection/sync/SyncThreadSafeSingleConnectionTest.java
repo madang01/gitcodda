@@ -309,7 +309,7 @@ public class SyncThreadSafeSingleConnectionTest {
 		
 		ConnectionIF connection = null;
 		try {
-			connection = anyProjectConnectionPool.createSyncThreadSafeConnection(serverHost, serverPort);
+			connection = anyProjectConnectionPool.createSyncThreadSafeSingleConnection(serverHost, serverPort);
 		} catch (Exception e) {
 			log.log(Level.WARNING, "fail to create a sync thread safe connection", e);
 			fail("fail to create a sync thread safe connection");

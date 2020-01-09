@@ -18,6 +18,11 @@ package kr.pe.codda.client.connection.sync;
 
 import kr.pe.codda.client.ConnectionIF;
 
+/**
+ * 동기 연결 인터페이스
+ * @author Won Jonghoon
+ *
+ */
 public interface SyncConnectionIF extends ConnectionIF {
 
 }

@@ -16,22 +16,46 @@
  *******************************************************************************/
 package kr.pe.codda.server.classloader;
 
+/**
+ * jar 파일에 포함된 클래스 파일에 관한 (1) 파일 경로 문자열 (2) 클래스 전체 이름 (3) 클래스 파일 내용 묶음 클래스 
+ * 
+ * @author Won Jonghoon
+ *
+ */
 public class JarClassEntryContents {
 	private String ownerJarFilePathString;
 	private String classFullName;
 	private byte[] classFileContents;	
 	
+	/**
+	 * 생성자
+	 * @param ownerJarFilePathString jar 파일 경로 문자열
+	 * @param classFullName 클래스 전체 이름
+	 * @param classFileContents 클래스 파일 파일 내용
+	 */
 	public JarClassEntryContents(String ownerJarFilePathString, String classFullName, byte[] classFileContents) {
 		this.ownerJarFilePathString = ownerJarFilePathString;
 		this.classFullName = classFullName;
 		this.classFileContents = classFileContents;
 	}	
+	
+	/**
+	 * @return 파일 경로 문자열
+	 */
 	public String getOwnerJarFilePathString() {
 		return ownerJarFilePathString;
 	}
+	
+	/**
+	 * @return 클래스 전체 이름
+	 */
 	public String getClassFullName() {
 		return classFullName;
 	}
+	
+	/**
+	 * @return 클래스 파일 파일 내용
+	 */
 	public byte[] getClassFileContents() {
 		return classFileContents;
 	}	

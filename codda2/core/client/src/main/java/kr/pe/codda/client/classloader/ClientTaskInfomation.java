@@ -21,11 +21,23 @@ import java.io.File;
 
 import kr.pe.codda.client.task.AbstractClientTask;
 
+/**
+ * 클라이언트 타스크와 클라이언트 타스크 클래스 파일을 속성으로 갖는 '클라이언트 타스크 정보'
+ * 
+ * @author Won Jonghoon
+ *
+ */
 public class ClientTaskInfomation {
 	private File clientTaskClassFile = null;
 	private long loadedTime = 0;
 	private AbstractClientTask clientTask = null;
 	
+	/**
+	 * 생성자, WARNING! 파라미터 'clientTaskClassFile'(=클라이언트 타스크 클래스 파일) 로 부터 파라미터 'clientTask'(=클라이언트 타스크) 가 생성된것을 기본 전제로 한다. 
+	 * 
+	 * @param clientTaskClassFile 클라이언트 타스크 클래스 파일
+	 * @param clientTask 클라이언트 타스크
+	 */
 	public ClientTaskInfomation(File clientTaskClassFile, AbstractClientTask clientTask) {
 		if (null == clientTaskClassFile) {
 			String errorMessage = "the parmater clientTaskClassFile is null";			
@@ -51,11 +63,17 @@ public class ClientTaskInfomation {
 		this.loadedTime = clientTaskClassFile.lastModified();
 	}
 	
+	/**
+	 * @return 클라이언트 타스크 클래스 파일 수정 여부
+	 */
 	public boolean isModifed() {
 		long lastModifedTime = clientTaskClassFile.lastModified();
 		return (loadedTime != lastModifedTime);
 	}
 
+	/**
+	 * @return 클라이언트 타스크
+	 */
 	public AbstractClientTask getClientTask() {
 		return clientTask;
 	}

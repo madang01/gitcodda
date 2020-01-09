@@ -17,7 +17,21 @@
 
 package kr.pe.codda.client.connection;
 
+/**
+ * 연결 폴 도우미 인터페이스, 소실된 연결 발생시 신규 연결을 폴에 등록하도록 도와주는 역활을 담당한다. 
+ * 
+ * @author Won Jonghoon
+ *
+ */
 public interface ConnectionPoolSupporterIF {
+	/**
+	 * 연결이 소실 되었을 경우 호출되는 메소드
+	 * @param reasonForLoss 깨우는 사유
+	 */
 	public void notice(String reasonForLoss);
+	/**
+	 * 연결 폴 도우미에 연결 폴 등록
+	 * @param connectionPool 연결 폴
+	 */
 	public void registerPool(ConnectionPoolIF connectionPool);
 }

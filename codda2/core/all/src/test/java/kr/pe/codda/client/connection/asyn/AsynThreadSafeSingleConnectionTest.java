@@ -310,7 +310,7 @@ private static Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME
 		
 		ConnectionIF connection = null;
 		try {
-			connection = anyProjectConnectionPool.createAsynThreadSafeConnection(serverHost, serverPort);
+			connection = anyProjectConnectionPool.createAsynThreadSafeSingleConnection(serverHost, serverPort);
 		} catch (Exception e) {
 			log.log(Level.WARNING, "fail to create a asyn thread safe connection", e);
 			fail("fail to create a asyn thread safe connection");

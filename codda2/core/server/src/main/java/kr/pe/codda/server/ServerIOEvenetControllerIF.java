@@ -18,6 +18,15 @@ package kr.pe.codda.server;
 
 import java.nio.channels.SelectionKey;
 
-public interface ServerIOEvenetControllerIF {	
+/**
+ * 서버 입출력 이벤트 제어자 인터페이스
+ * @author Won Jonghoon
+ *
+ */
+public interface ServerIOEvenetControllerIF {
+	/**
+	 * 서버 입출력 이벤트 제어자의 selector 에 등록된 셀렉션 키를 등록 취소 시킵니다.
+	 * @param selectedKey 서버 입출력 이벤트 제어자의 selector 에 등록된 셀렉션 키 
+	 */
 	public void cancel(SelectionKey selectedKey);
 }

@@ -36,6 +36,11 @@ import kr.pe.codda.common.io.WrapBufferPoolIF;
 import kr.pe.codda.common.protocol.MessageProtocolIF;
 import kr.pe.codda.server.classloader.ServerTaskMangerIF;
 
+/**
+ * 서버 입출력 이벤트 제어기
+ * @author Won Jonghoon
+ *
+ */
 public class ServerIOEventController extends Thread implements ServerIOEvenetControllerIF, ProjectLoginManagerIF {
 	private Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
 
@@ -45,7 +50,7 @@ public class ServerIOEventController extends Thread implements ServerIOEvenetCon
 	private final int maxClients;
 	private final StreamCharsetFamily streamCharsetFamily;
 	private final long socketTimeOut;
-	private final int serverDataPacketBufferMaxCntPerMessage;
+	private final int maxNumberOfWrapBufferPerMessage;
 	private final int serverOutputMessageQueueCapacity;
 
 	private MessageProtocolIF messageProtocol = null;
@@ -58,6 +63,20 @@ public class ServerIOEventController extends Thread implements ServerIOEvenetCon
 	private HashMap<SelectionKey, String> selectedKey2LonginIDHash = new HashMap<SelectionKey, String>();
 	private HashMap<String, SelectionKey> longinID2SelectedKeyHash = new HashMap<String, SelectionKey>();
 
+	/**
+	 * 생성자
+	 * @param projectName 프로젝트 이름
+	 * @param serverHost 서버 호스트 주소
+	 * @param serverPort 서버 포트 번호
+	 * @param maxClients 최대 허용할 클라이언트 수
+	 * @param socketTimeOut 소켓 타임 아웃 시간
+	 * @param streamCharsetFamily 문자셋, 문자셋 디코더 그리고 문자셋 인코더 묶음
+	 * @param serverDataPacketBufferMaxCntPerMessage 메시지 1개당 랩 버퍼 최대 갯수
+	 * @param serverOutputMessageQueueCapacity 출력 메시지 큐 크기
+	 * @param messageProtocol 메시지 프로토콜
+	 * @param wrapBufferPool 래 버퍼 폴
+	 * @param serverTaskManager 서버 타스크 관리자
+	 */
 	public ServerIOEventController(String projectName, String serverHost, int serverPort, int maxClients,
 			long socketTimeOut, StreamCharsetFamily streamCharsetFamily, int serverDataPacketBufferMaxCntPerMessage,
 			int serverOutputMessageQueueCapacity, MessageProtocolIF messageProtocol, WrapBufferPoolIF wrapBufferPool,
@@ -69,7 +88,7 @@ public class ServerIOEventController extends Thread implements ServerIOEvenetCon
 		this.maxClients = maxClients;
 		this.socketTimeOut = socketTimeOut;
 		this.streamCharsetFamily = streamCharsetFamily;
-		this.serverDataPacketBufferMaxCntPerMessage = serverDataPacketBufferMaxCntPerMessage;
+		this.maxNumberOfWrapBufferPerMessage = serverDataPacketBufferMaxCntPerMessage;
 		this.serverOutputMessageQueueCapacity = serverOutputMessageQueueCapacity;
 
 		this.messageProtocol = messageProtocol;
@@ -103,6 +122,10 @@ public class ServerIOEventController extends Thread implements ServerIOEvenetCon
 
 	}
 
+	/**
+	 * 파라미터 'acceptableSocketChannel'(=접속 허용한 소켓 채널) 의 자원을 해제한다.
+	 * @param acceptableSocketChannel 접속 허용한 소켓 채널
+	 */
 	private void closeAcceptedSocketChannel(SocketChannel acceptableSocketChannel) {
 		try {
 			acceptableSocketChannel.setOption(StandardSocketOptions.SO_LINGER, 0);
@@ -200,7 +223,7 @@ public class ServerIOEventController extends Thread implements ServerIOEvenetCon
 
 									AcceptedConnection acceptedConnection = new AcceptedConnection(acceptedKey,
 											acceptedSocketChannel, projectName, socketTimeOut, streamCharsetFamily,
-											serverDataPacketBufferMaxCntPerMessage, serverOutputMessageQueueCapacity,
+											maxNumberOfWrapBufferPerMessage, serverOutputMessageQueueCapacity,
 											this, messageProtocol, wrapBufferPool, this, serverTaskManager);
 
 									/** 소켓 자원 등록 작업 */
@@ -377,6 +400,11 @@ public class ServerIOEventController extends Thread implements ServerIOEvenetCon
 		}
 	}
 
+	/**
+	 * 접속 허용한 소켓 채널의 상태를 설정한다.
+	 * @param acceptedSocketChannel 접속 허용한 소켓 채널
+	 * @throws Exception 에러 발생시 던지는 예외
+	 */
 	private void setupAcceptedSocketChannel(SocketChannel acceptedSocketChannel) throws Exception {
 		acceptedSocketChannel.configureBlocking(false);
 		acceptedSocketChannel.setOption(StandardSocketOptions.SO_KEEPALIVE, true);
@@ -395,6 +423,9 @@ public class ServerIOEventController extends Thread implements ServerIOEvenetCon
 		selectedKey.attach(null);
 	}
 
+	/**
+	 * @return 접속 허용한 연결 갯수
+	 */
 	public int getNumberOfAcceptedConnection() {
 		Set<SelectionKey> selectionKeySet = ioEventSelector.keys();
 		return selectionKeySet.size() - 1;
@@ -433,6 +464,11 @@ public class ServerIOEventController extends Thread implements ServerIOEvenetCon
 				.append(loginID).toString());
 	}
 
+	/**
+	 * 실질적인 로그 아웃 처리
+	 * @param selectedKey
+	 * @param loginID
+	 */
 	private void doRemoveLoginUser(SelectionKey selectedKey, String loginID) {
 		selectedKey2LonginIDHash.remove(selectedKey);
 		longinID2SelectedKeyHash.remove(loginID);

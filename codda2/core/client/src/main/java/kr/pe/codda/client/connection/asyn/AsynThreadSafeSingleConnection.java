@@ -53,6 +53,12 @@ import kr.pe.codda.common.message.codec.AbstractMessageEncoder;
 import kr.pe.codda.common.protocol.MessageProtocolIF;
 import kr.pe.codda.common.protocol.ReceivedMiddleObjectForwarderIF;
 
+/**
+ * 쓰레드 세이프한 비동기 단일 연결, 폴에 소속되지 않고 개별적 요청시 생성된다. 
+ * 
+ * @author Won Jonghoon
+ *
+ */
 public class AsynThreadSafeSingleConnection
 		implements AsynConnectionIF, ClientIOEventHandlerIF, ReceivedMiddleObjectForwarderIF {
 	private Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
@@ -61,7 +67,7 @@ public class AsynThreadSafeSingleConnection
 	private final String serverHost;
 	private final int serverPort;
 	private final long socketTimeout;
-	private final int clientDataPacketBufferMaxCntPerMessage;
+	private final int maxNumberOfWrapBufferPerMessage;
 	private final int clientAsynOutputMessageQueueCapacity;
 	private final StreamCharsetFamily streamCharsetFamily;	
 	private final WrapBufferPoolIF wrapBufferPool;
@@ -82,6 +88,23 @@ public class AsynThreadSafeSingleConnection
 	private IncomingStream incomingStream = null;
 	private ClientOutgoingStreamIF outgoingStream = null;
 
+	/**
+	 * 생성자
+	 * @param projectName 프로젝트 이름
+	 * @param serverHost 서버 호스트 주소
+	 * @param serverPort 서버 포트 번호
+	 * @param socketTimeout 소켓 타임 아웃 시간
+	 * @param streamCharsetFamily 문자셋, 문자셋 디코더 그리고 문자셋 인코더 묶음
+	 * @param clientDataPacketBufferMaxCntPerMessage 메시지 1개당 랩 버퍼 최대 갯수
+	 * @param clientAsynOutputMessageQueueCapacity 출력 메시지 큐 크기
+	 * @param clientSyncMessageMailboxCountPerAsynShareConnection 소켓 공유할 메시지 박스 최대 갯수 
+	 * @param messageProtocol 메시지 프로토콜
+	 * @param wrapBufferPool 랩 버퍼 폴
+	 * @param clientTaskManger 클라이언트 타스크 관리자
+	 * @param asynConnectedConnectionAdder 비동기 연결 추가자
+	 * @param asynClientIOEventController 비동기 클라이언트 입출력 이벤트 제어자
+	 * @throws IOException 입출력 에러 발생시 던지는 예외
+	 */
 	public AsynThreadSafeSingleConnection(String projectName, String serverHost, int serverPort, long socketTimeout,
 			StreamCharsetFamily streamCharsetFamily, int clientDataPacketBufferMaxCntPerMessage,
 			int clientAsynOutputMessageQueueCapacity, int clientSyncMessageMailboxCountPerAsynShareConnection,
@@ -92,7 +115,7 @@ public class AsynThreadSafeSingleConnection
 		this.serverHost = serverHost;
 		this.serverPort = serverPort;
 		this.socketTimeout = socketTimeout;		
-		this.clientDataPacketBufferMaxCntPerMessage = clientDataPacketBufferMaxCntPerMessage;
+		this.maxNumberOfWrapBufferPerMessage = clientDataPacketBufferMaxCntPerMessage;
 		this.clientAsynOutputMessageQueueCapacity = clientAsynOutputMessageQueueCapacity;
 		this.streamCharsetFamily = streamCharsetFamily;
 		this.wrapBufferPool = wrapBufferPool;
@@ -124,14 +147,32 @@ public class AsynThreadSafeSingleConnection
 		
 	}
 
+	/**
+	 * 마지막으로 읽은 시간을 현재 시간으로 갱신한다.
+	 */
 	private void setFinalReadTime() {
 		finalReadTime = new java.util.Date();
 	}
 
+	/**
+	 * @return 마지막으로 읽은 시간
+	 */
 	public java.util.Date getFinalReadTime() {
 		return finalReadTime;
 	}
 	
+	/**
+	 * 송신 스트림에 입력 메시지를 추가한다.
+	 * 
+	 * @param messageCodecManger 메시지 코덱 관리자
+	 * @param inputMessage 입력 메시지
+	 * @throws DynamicClassCallException 동적 클래스 처리중 에러 발생디 던지는 예외
+	 * @throws NoMoreWrapBufferException 랩버퍼 폴에 랩버퍼 요구하였는데 없는 경우 던지는 예외
+	 * @throws BodyFormatException 바디 구성에 문제가 있을 경우 던지는 예외
+	 * @throws HeaderFormatException 헤더 구성에 문제가 있을 경우 던지는 예외
+	 * @throws IOException 소켓 타임 아웃 포함 입출력 에러 발생시 던지는 예외
+	 * @throws InterruptedException 인터럽트 발생시 던지는 예외
+	 */
 	private void addInputMessage(MessageCodecMangerIF messageCodecManger, AbstractMessage inputMessage)
 			throws DynamicClassCallException, NoMoreWrapBufferException, BodyFormatException,
 			HeaderFormatException, IOException, InterruptedException {
@@ -149,7 +190,7 @@ public class AsynThreadSafeSingleConnection
 			throw new DynamicClassCallException(errorMessage);
 		}
 
-		StreamBuffer inputMessageStreamBuffer = new StreamBuffer(streamCharsetFamily, clientDataPacketBufferMaxCntPerMessage, wrapBufferPool);
+		StreamBuffer inputMessageStreamBuffer = new StreamBuffer(streamCharsetFamily, maxNumberOfWrapBufferPerMessage, wrapBufferPool);
 		try {
 			messageProtocol.M2S(inputMessage, messageEncoder, inputMessageStreamBuffer);
 			
@@ -210,13 +251,12 @@ public class AsynThreadSafeSingleConnection
 		AbstractMessage outputMessage = null;
 
 		try {
-			syncMessageMailbox.setMessageCodecManger(messageCodecManger);
 			inputMessage.setMailboxID(syncMessageMailbox.getMailboxID());
 			inputMessage.setMailID(syncMessageMailbox.getMailID());			
 
 			addInputMessage(messageCodecManger, inputMessage);
 
-			outputMessage = syncMessageMailbox.getSyncOutputMessage();
+			outputMessage = syncMessageMailbox.getSyncOutputMessage(messageCodecManger);
 		} finally {
 			syncMessageMailboxQueue.offer(syncMessageMailbox);
 		}
@@ -284,7 +324,7 @@ public class AsynThreadSafeSingleConnection
 		personalSelectionKey = selectedKey;
 		asynConnectedConnectionAdder.addConnectedConnection(this);
 		
-		incomingStream = new IncomingStream(streamCharsetFamily, clientDataPacketBufferMaxCntPerMessage, wrapBufferPool);
+		incomingStream = new IncomingStream(streamCharsetFamily, maxNumberOfWrapBufferPerMessage, wrapBufferPool);
 		outgoingStream = new ClientOutgoingStream(asynClientIOEventController, personalSelectionKey, clientAsynOutputMessageQueueCapacity);
 	}
 
@@ -314,7 +354,7 @@ public class AsynThreadSafeSingleConnection
 		
 		if (CommonStaticFinalVars.SERVER_ASYN_MAILBOX_ID == mailboxID) {
 			try {
-				AbstractClientTask clientTask = clientTaskManger.getClientTask(messageID);
+				AbstractClientTask clientTask = clientTaskManger.getValidClientTask(messageID);
 				clientTask.execute(hashCode(), projectName, this, mailboxID, mailID, messageID, readableMiddleObject,
 						messageProtocol);
 			} catch (InterruptedException e) {
@@ -331,7 +371,7 @@ public class AsynThreadSafeSingleConnection
 			outgoingStream.decreaseOutputMessageCount();
 			
 			try {
-				AbstractClientTask clientTask = clientTaskManger.getClientTask(messageID);
+				AbstractClientTask clientTask = clientTaskManger.getValidClientTask(messageID);
 				clientTask.execute(hashCode(), projectName, this, mailboxID, mailID, messageID, readableMiddleObject,
 						messageProtocol);
 			} catch (InterruptedException e) {
@@ -391,10 +431,12 @@ public class AsynThreadSafeSingleConnection
 		} while (numberOfWriteBytes > 0);
 	}
 
+	@Override
 	public boolean isConnected() {
 		return clientSC.isConnected();
 	}
 
+	@Override
 	public int hashCode() {
 		return clientSC.hashCode();
 	}

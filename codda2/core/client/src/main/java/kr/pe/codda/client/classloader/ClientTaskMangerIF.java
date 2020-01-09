@@ -20,6 +20,21 @@ package kr.pe.codda.client.classloader;
 import kr.pe.codda.client.task.AbstractClientTask;
 import kr.pe.codda.common.exception.DynamicClassCallException;
 
+/**
+ * 클라이언트 타스크 관리자 인터페이스
+ * 
+ * @author Won Jonghoon
+ *
+ */
 public interface ClientTaskMangerIF {
-	public AbstractClientTask getClientTask(String messageID) throws DynamicClassCallException;
+	
+	/**
+	 * 파라미터 'messageID'(=메시지 식별자) 와 1:1 대응하는 유효한 클라이언트 타스크를 반환한다.
+	 * 유효한 클라이언트 타스크란 클라이언트 타스크 클래스 파일을 적재한 시간과 클라이언트 타스크 클래스 파일이 변경된 시간이 일치되는 클라이언트 타스크를 말한다.
+	 * 
+	 * @param messageID 메시지 식별자
+	 * @return 파라미터 'messageID'(=메시지 식별자) 와 1:1 대응하는 유효한 클라이언트 타스트
+	 * @throws DynamicClassCallException 동적 클래스 관련 처리중 에러 발생시 던지는 예외
+	 */
+	public AbstractClientTask getValidClientTask(String messageID) throws DynamicClassCallException;
 }

@@ -16,6 +16,11 @@
  *******************************************************************************/
 package kr.pe.codda.server;
 
+/**
+ * 로그인 관리자 인터페이스
+ * @author Won Jonghoon
+ *
+ */
 public interface LoginManagerIF {
 	/**
 	 * @return 로그인 여부

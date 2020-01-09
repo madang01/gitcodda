@@ -25,8 +25,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import kr.pe.codda.client.classloader.ClientClassLoaderFactory;
-import kr.pe.codda.client.classloader.ClientDynamicTaskManger;
-import kr.pe.codda.client.classloader.ClientStaticTaskManger;
+import kr.pe.codda.client.classloader.ClientTaskManger;
+import kr.pe.codda.client.classloader.ClientTaskMangerUsingSystemClassLoader;
 import kr.pe.codda.client.classloader.ClientTaskMangerIF;
 import kr.pe.codda.client.connection.ConnectionPoolIF;
 import kr.pe.codda.client.connection.ConnectionPoolSupporter;
@@ -62,6 +62,11 @@ import kr.pe.codda.common.type.ClassloaderType;
 import kr.pe.codda.common.type.ConnectionType;
 import kr.pe.codda.common.type.MessageProtocolType;
 
+/**
+ * 프로젝트 연결 폴
+ * @author Won Jonghoon
+ *
+ */
 public final class AnyProjectConnectionPool implements AnyProjectConnectionPoolIF {
 	private Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
 	
@@ -168,7 +173,7 @@ public final class AnyProjectConnectionPool implements AnyProjectConnectionPoolI
 			// FIXME! 환경 변수에 클래스로더 종류에 따라 설정하는 로직 필요함
 			ClassloaderType clientClassloaderType = ClassloaderType.SYSTEM;		
 			if (ClassloaderType.SYSTEM.equals(clientClassloaderType)) {
-				clientTaskManger = new ClientStaticTaskManger();
+				clientTaskManger = new ClientTaskMangerUsingSystemClassLoader();
 			} else {
 				CoddaConfiguration runningProjectConfiguration = CoddaConfigurationManager.getInstance()
 						.getRunningProjectConfiguration();
@@ -187,7 +192,7 @@ public final class AnyProjectConnectionPool implements AnyProjectConnectionPoolI
 					log.severe("fail to create a instance of ClientClassLoaderFactory class, errmsg=" + e.getMessage());
 					System.exit(1);
 				}
-				clientTaskManger = new ClientDynamicTaskManger(clientClassLoaderFactory);
+				clientTaskManger = new ClientTaskManger(clientClassLoaderFactory);
 			}
 			
 			asynClientIOEventController = new ClientIOEventController(
@@ -276,7 +281,7 @@ public final class AnyProjectConnectionPool implements AnyProjectConnectionPoolI
 	}
 
 	@Override
-	public ConnectionIF createAsynThreadSafeConnection(String serverHost, int serverPort) throws InterruptedException, IOException, NoMoreWrapBufferException, NotSupportedException {
+	public ConnectionIF createAsynThreadSafeSingleConnection(String serverHost, int serverPort) throws InterruptedException, IOException, NoMoreWrapBufferException, NotSupportedException {
 		if (connectionType.equals(ConnectionType.SYNC)) {
 			throw new NotSupportedException("the connection type is sync, it must be asyn, check the connection type in configuration");
 		}
@@ -318,7 +323,7 @@ public final class AnyProjectConnectionPool implements AnyProjectConnectionPoolI
 	}
 	
 	@Override
-	public ConnectionIF createSyncThreadSafeConnection(String serverHost, int serverPort) throws InterruptedException, IOException, NoMoreWrapBufferException {
+	public ConnectionIF createSyncThreadSafeSingleConnection(String serverHost, int serverPort) throws InterruptedException, IOException, NoMoreWrapBufferException {
 		ConnectionIF connectedConnection = null;
 		
 		connectedConnection = new SyncThreadSafeSingleConnection(serverHost,

@@ -56,6 +56,11 @@ import kr.pe.codda.common.message.codec.AbstractMessageEncoder;
 import kr.pe.codda.common.protocol.MessageProtocolIF;
 import kr.pe.codda.common.protocol.ReceivedMiddleObjectForwarderIF;
 
+/**
+ * 비동기 비공유 연결
+ * @author Won Jonghoon
+ *
+ */
 public class AsynNoShareConnection implements AsynConnectionIF, ClientIOEventHandlerIF, ReceivedMiddleObjectForwarderIF {
 	private Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
 
@@ -67,7 +72,7 @@ public class AsynNoShareConnection implements AsynConnectionIF, ClientIOEventHan
 	private final String serverHost;
 	private final int serverPort;
 	private final long socketTimeout;	
-	private final int clientDataPacketBufferMaxCntPerMessage;
+	private final int maxNumberOfWrapBufferPerMessage;
 	private final int clientAsynOutputMessageQueueCapacity;
 	private final StreamCharsetFamily streamCharsetFamily;	
 	private final WrapBufferPoolIF wrapBufferPool;
@@ -87,6 +92,22 @@ public class AsynNoShareConnection implements AsynConnectionIF, ClientIOEventHan
 
 	
 
+	/**
+	 * 생성자
+	 * @param projectName 프로젝트 이름
+	 * @param serverHost 서버 호스트
+	 * @param serverPort 서버 포트
+	 * @param socketTimeout 소켓 타임 아웃 시간
+	 * @param streamCharsetFamily 문자셋, 문자셋 디코더 그리고 문자셋 인코더 묶음
+	 * @param clientDataPacketBufferMaxCntPerMessage 메시지 1개당 랩 버퍼 최대 갯수
+	 * @param clientAsynOutputMessageQueueCapacity 출력 메시지 큐 크기
+	 * @param messageProtocol 메시지 프로토콜
+	 * @param wrapBufferPool 랩 버퍼 폴
+	 * @param clientTaskManger 클라이언트 타스크 관리자
+	 * @param asynConnectedConnectionAdder 비동기 연결 추가자
+	 * @param asynClientIOEventController 비동기 클라이언트 입출력 이벤트 제어자
+	 * @throws IOException 입출력 에러 발생시 던지는 예외
+	 */
 	public AsynNoShareConnection(String projectName, String serverHost, int serverPort, long socketTimeout,
 			StreamCharsetFamily streamCharsetFamily,
 			int clientDataPacketBufferMaxCntPerMessage,
@@ -100,7 +121,7 @@ public class AsynNoShareConnection implements AsynConnectionIF, ClientIOEventHan
 		this.serverHost = serverHost;
 		this.serverPort = serverPort;
 		this.socketTimeout = socketTimeout;
-		this.clientDataPacketBufferMaxCntPerMessage = clientDataPacketBufferMaxCntPerMessage;
+		this.maxNumberOfWrapBufferPerMessage = clientDataPacketBufferMaxCntPerMessage;
 		this.clientAsynOutputMessageQueueCapacity = clientAsynOutputMessageQueueCapacity;
 		this.streamCharsetFamily = streamCharsetFamily;
 		this.wrapBufferPool = wrapBufferPool;
@@ -135,19 +156,40 @@ public class AsynNoShareConnection implements AsynConnectionIF, ClientIOEventHan
 		isQueueIn = false;
 	}
 
+	/**
+	 * @return 큐 안에 있는지 여부
+	 */
 	public boolean isInQueue() {
 		return isQueueIn;
 	}
 
 
+	/**
+	 * 마지막으로 읽은 시간을 현재 시간으로 갱신한다.
+	 */
 	private void setFinalReadTime() {
 		finalReadTime = new java.util.Date();
 	}
 
+	/**
+	 * @return 마지막으로 읽은 시간
+	 */
 	public java.util.Date getFinalReadTime() {
 		return finalReadTime;
 	}
 	
+	/**
+	 * 송신 스트림에 입력 메시지를 추가한다.
+	 * 
+	 * @param messageCodecManger 메시지 코덱 관리자
+	 * @param inputMessage 입력 메시지
+	 * @throws DynamicClassCallException 동적 클래스 처리중 에러 발생디 던지는 예외
+	 * @throws NoMoreWrapBufferException 랩버퍼 폴에 랩버퍼 요구하였는데 없는 경우 던지는 예외
+	 * @throws BodyFormatException 바디 구성에 문제가 있을 경우 던지는 예외
+	 * @throws HeaderFormatException 헤더 구성에 문제가 있을 경우 던지는 예외
+	 * @throws IOException 소켓 타임 아웃 포함 입출력 에러 발생시 던지는 예외
+	 * @throws InterruptedException 인터럽트 발생시 던지는 예외
+	 */
 	private void addInputMessage(MessageCodecMangerIF messageCodecManger, AbstractMessage inputMessage)
 			throws DynamicClassCallException, NoMoreWrapBufferException, BodyFormatException,
 			HeaderFormatException, IOException, InterruptedException {
@@ -165,7 +207,7 @@ public class AsynNoShareConnection implements AsynConnectionIF, ClientIOEventHan
 			throw new DynamicClassCallException(errorMessage);
 		}
 
-		StreamBuffer inputMessageStreamBuffer = new StreamBuffer(streamCharsetFamily, clientDataPacketBufferMaxCntPerMessage, wrapBufferPool);;
+		StreamBuffer inputMessageStreamBuffer = new StreamBuffer(streamCharsetFamily, maxNumberOfWrapBufferPerMessage, wrapBufferPool);;
 		try {
 			messageProtocol.M2S(inputMessage, messageEncoder, inputMessageStreamBuffer);
 			
@@ -216,13 +258,12 @@ public class AsynNoShareConnection implements AsynConnectionIF, ClientIOEventHan
 			BodyFormatException, ServerTaskException, ServerTaskPermissionException {
 
 		// synchronized (clientSC) {
-		syncMessageMailbox.setMessageCodecManger(messageCodecManger);
 		inputMessage.setMailboxID(syncMessageMailbox.getMailboxID());
 		inputMessage.setMailID(syncMessageMailbox.getMailID());
 
 		addInputMessage(messageCodecManger, inputMessage);
 
-		AbstractMessage outputMessage = syncMessageMailbox.getSyncOutputMessage();
+		AbstractMessage outputMessage = syncMessageMailbox.getSyncOutputMessage(messageCodecManger);
 		// }
 
 		return outputMessage;
@@ -291,7 +332,7 @@ public class AsynNoShareConnection implements AsynConnectionIF, ClientIOEventHan
 		personalSelectionKey = selectedKey;
 		asynConnectedConnectionAdder.addConnectedConnection(this);
 		
-		incomingStream = new IncomingStream(streamCharsetFamily, clientDataPacketBufferMaxCntPerMessage, wrapBufferPool);
+		incomingStream = new IncomingStream(streamCharsetFamily, maxNumberOfWrapBufferPerMessage, wrapBufferPool);
 		outgoingStream = new ClientOutgoingStream(asynClientIOEventController, personalSelectionKey, clientAsynOutputMessageQueueCapacity);
 	}
 
@@ -337,7 +378,7 @@ public class AsynNoShareConnection implements AsynConnectionIF, ClientIOEventHan
 
 		if (CommonStaticFinalVars.SERVER_ASYN_MAILBOX_ID == mailboxID) {
 			try {
-				AbstractClientTask clientTask = clientTaskManger.getClientTask(messageID);
+				AbstractClientTask clientTask = clientTaskManger.getValidClientTask(messageID);
 				clientTask.execute(hashCode(), projectName, this, mailboxID, mailID, messageID, readableMiddleObject,
 						messageProtocol);
 			} catch (InterruptedException e) {
@@ -352,7 +393,7 @@ public class AsynNoShareConnection implements AsynConnectionIF, ClientIOEventHan
 			outgoingStream.decreaseOutputMessageCount();
 			
 			try {
-				AbstractClientTask clientTask = clientTaskManger.getClientTask(messageID);
+				AbstractClientTask clientTask = clientTaskManger.getValidClientTask(messageID);
 				clientTask.execute(hashCode(), projectName, this, mailboxID, mailID, messageID, readableMiddleObject,
 						messageProtocol);
 			} catch (InterruptedException e) {
