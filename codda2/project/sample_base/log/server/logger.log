@@ -1,0 +1,33 @@
+2020-01-09 08:16:27.229 INFO  [main] 
+                                      
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@@@@@@@@@@@@@@@@  @@        @@@@@@@@@@
+@@@@@@@@@@@@@@@@@@@@        @@@@@@@@@@
+@@@@@@@@@@@@@@@@  @@  @@    @@@@@@@@@@
+@@@@@@@@@@  @@@@  @@  @@    @@@@@@@@@@
+@@@@@@@@@@        @@        @@@@@@@@@@
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@@@@@@@@@@        @@        @@@@@@@@@@
+@@@@@@@@@@    @@  @@  @@@@  @@@@@@@@@@
+@@@@@@@@@@    @@  @@  @@@@  @@@@@@@@@@
+@@@@@@@@@@        @@  @  @  @@@@@@@@@@
+@@@@@@@@@@        @@        @@@@@@@@@@
+@@@@@@@@@@@@@@@@@@@@@@@  @@@@@@@@@@@@@
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@  Thank you for using jOOQ 3.10.6
+                                       (JooqLogger.java:338)
+2020-01-09 08:50:55.426 INFO  [Thread-1] memberLoginReq[idCipherBase64=zZ8VtEL7ftdB/YYERiix7A==, pwdCipherBase64=YeqPoc+jkYxTNrsj5OEk+A==, sessionKeyBase64=kXpNoC8YKv0h/OL6a9SLoLuDcCYZCYx7y1XMnl3Du3ClBSVKX/ewcHUD+YRYXd9/doZz5A+sCrcgUS7jYAqxOmCClozD0aFnxKqJeMGCHbv7PByxAkGOQEhozE4ZEuxNMBY16sB3yZalwQ31iU589Pb4+xys2HwKCY7W2N1HPpc=, ivBase64=dnBe9Ynar+DgqigM34bAPg==, ip=127.0.0.1] (MemberLoginReqServerTask.java:83)
+2020-01-09 08:50:55.842 WARN  [Thread-1] errmsg==1 회 비밀 번호가 틀렸습니다, inObj=memberLoginReq[idCipherBase64=zZ8VtEL7ftdB/YYERiix7A==, pwdCipherBase64=YeqPoc+jkYxTNrsj5OEk+A==, sessionKeyBase64=kXpNoC8YKv0h/OL6a9SLoLuDcCYZCYx7y1XMnl3Du3ClBSVKX/ewcHUD+YRYXd9/doZz5A+sCrcgUS7jYAqxOmCClozD0aFnxKqJeMGCHbv7PByxAkGOQEhozE4ZEuxNMBY16sB3yZalwQ31iU589Pb4+xys2HwKCY7W2N1HPpc=, ivBase64=dnBe9Ynar+DgqigM34bAPg==, ip=127.0.0.1] (MemberLoginReqServerTask.java:66)
+2020-01-09 08:50:55.884 WARN  [Thread-1] 1 회 비밀 번호가 틀렸습니다, inObj= (MemberLoginReqServerTask.java:41)
+2020-01-09 08:51:09.513 INFO  [Thread-1] memberLoginReq[idCipherBase64=42xfmPw/CDyJiWQPMD5Gjw==, pwdCipherBase64=l/2MOhEV6zc8E35ArtQcXw==, sessionKeyBase64=jpjIIZeTEIm/iYb3klW+0H/f9gktSPpLiML8pLglrWsrzmlx+rBBpp1NhD9WMbQXV+gflfZsJUdxj7dRtD8UdPbsXbX8UrPLeHu3fp2duqh7P4S1OjmVbfhfcx8KSCVO0zvnAuAVdnV7xXqFuU8hggHeyXkO4DuRNxFjg2G8gms=, ivBase64=oWDTa4Fm0FWRPqocQFkekw==, ip=127.0.0.1] (MemberLoginReqServerTask.java:83)
+2020-01-09 08:51:11.798 INFO  [Thread-1] arraySiteMenuReq[requestedUserID=admin] (ArraySiteMenuReqServerTask.java:77)
+2020-01-09 08:53:46.396 INFO  [Thread-1] boardInfoListReq[requestedUserID=admin] (BoardInfoListReqServerTask.java:72)
+2020-01-09 09:03:32.873 INFO  [Thread-1] arraySiteMenuReq[requestedUserID=admin] (ArraySiteMenuReqServerTask.java:77)
+2020-01-09 09:03:35.726 INFO  [Thread-1] boardInfoListReq[requestedUserID=admin] (BoardInfoListReqServerTask.java:72)
+2020-01-09 09:05:31.151 INFO  [Thread-1] boardInfoAddReq[requestedUserID=admin, boardName=기술 문서, boardListType=0, boardReplyPolicyType=0, boardWritePermissionType=0, boardReplyPermissionType=0] (BoardInfoAddReqServerTask.java:72)
+2020-01-09 09:05:32.953 INFO  [Thread-1] boardInfoListReq[requestedUserID=admin] (BoardInfoListReqServerTask.java:72)
+2020-01-09 09:57:47.626 INFO  [Thread-1] memberLoginReq[idCipherBase64=NNJGa/hJgbkkcPvrAFlN/Q==, pwdCipherBase64=o7OhzSIQNPZQu7W4QjMJSQ==, sessionKeyBase64=fvdGQ/pQNsj+/w9jkY0gc2uHVfI069USdTcM3lVnArNFnxJW4vnqCEIhFLTuy7gRIv8xYV/R5YzkdX4F0kCi0UWa+B70fzV99ckvyo7yvqePhlGnj40JmxxtsgArs2LAuEVjiOLF9Bq1BcuZ1qBUzZ/Fsb7RPxyBbyXft1MHA7c=, ivBase64=tjWIOfMjdlJom362Kk45xg==, ip=127.0.0.1] (MemberLoginReqServerTask.java:83)
+2020-01-09 09:57:47.704 INFO  [Thread-1] arraySiteMenuReq[requestedUserID=admin] (ArraySiteMenuReqServerTask.java:77)
+2020-01-09 09:57:54.903 INFO  [Thread-1] arraySiteMenuReq[requestedUserID=admin] (ArraySiteMenuReqServerTask.java:77)
