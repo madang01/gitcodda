@@ -189,6 +189,6 @@ public class UserWebsiteMenuInfoFileUpdaterSvl extends
     		}
     	} 
     	
-    	printJspPage(req, res, "/jsp/menu/UserWebsiteMenuInfoFileUpdater.jsp");
+    	printJspPage(req, res, "/sitemenu/menu/UserWebsiteMenuInfoFileUpdater.jsp");
 	}
 }

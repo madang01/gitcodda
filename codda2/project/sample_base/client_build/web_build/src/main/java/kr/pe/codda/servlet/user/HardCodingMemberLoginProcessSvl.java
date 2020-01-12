@@ -254,7 +254,7 @@ public class HardCodingMemberLoginProcessSvl extends AbstractServlet {
 		req.setAttribute(WebCommonStaticFinalVars.REQUEST_KEY_NAME_OF_MODULUS_HEX_STRING,
 				webServerSessionkey.getModulusHexStrForWeb());
 
-		printJspPage(req, res, "/jsp/member/UserLoginOKCallBack.jsp");
+		printJspPage(req, res, "/sitemenu/member/UserLoginOKCallBack.jsp");
 		return;		
 	}
 

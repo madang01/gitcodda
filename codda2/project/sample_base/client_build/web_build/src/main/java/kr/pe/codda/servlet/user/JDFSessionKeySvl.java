@@ -12,7 +12,7 @@ public class JDFSessionKeySvl extends AbstractSessionKeyServlet {
 	protected void performTask(HttpServletRequest req, HttpServletResponse res)
 			throws Exception {
 		
-		String goPage = "/jsp/util/JDFSessionKey.jsp";
+		String goPage = "/sitemenu/util/JDFSessionKey.jsp";
 		printJspPage(req, res, goPage);	
 	}
 }

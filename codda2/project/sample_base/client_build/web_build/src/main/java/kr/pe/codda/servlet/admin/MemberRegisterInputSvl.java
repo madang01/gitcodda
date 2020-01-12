@@ -55,7 +55,7 @@ public class MemberRegisterInputSvl extends AbstractServlet {
 		req.setAttribute(WebCommonStaticFinalVars.REQUEST_KEY_NAME_OF_MODULUS_HEX_STRING,
 				webServerSessionkey.getModulusHexStrForWeb());
 		
-		printJspPage(req, res, "/jsp/member/MemberRegisterInput.jsp");
+		printJspPage(req, res, "/sitemenu/member/MemberRegisterInput.jsp");
 		
 		/*SiteType siteType = SiteType.USER;
 		String nativeSiteType = getServletConfig().getInitParameter("siteType");
@@ -80,9 +80,9 @@ public class MemberRegisterInputSvl extends AbstractServlet {
 		}		
 		
 		if (siteType.equals(SiteType.ADMIN)) {
-			printJspPage(req, res, "/jsp/member/MemberRegistrationInputForAdminSite.jsp");
+			printJspPage(req, res, "/sitemenu/member/MemberRegistrationInputForAdminSite.jsp");
 		} else {
-			printJspPage(req, res, "/jsp/member/MemberRegistrationInputForUserSite.jsp");
+			printJspPage(req, res, "/sitemenu/member/MemberRegistrationInputForUserSite.jsp");
 		}*/
 	}
 }

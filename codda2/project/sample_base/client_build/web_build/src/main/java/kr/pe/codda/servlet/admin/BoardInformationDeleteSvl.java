@@ -99,7 +99,7 @@ public class BoardInformationDeleteSvl extends AbstractAdminLoginServlet {
 		}
 		
 		req.setAttribute("boardID", paramBoardID);
-		printJspPage(req, res, "/jsp/board/BoardInformationDelete.jsp");
+		printJspPage(req, res, "/sitemenu/board/BoardInformationDelete.jsp");
 		return;
 	}
 

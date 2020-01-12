@@ -222,7 +222,7 @@ public class BoardDeleteProcessSvl extends AbstractServlet {
 		}
 
 		req.setAttribute("boardNo", paramBoardNo);
-		printJspPage(req, res, "/jsp/community/BoardDeleteProcess.jsp");
+		printJspPage(req, res, "/sitemenu/community/BoardDeleteProcess.jsp");
 		return;
 	}
 

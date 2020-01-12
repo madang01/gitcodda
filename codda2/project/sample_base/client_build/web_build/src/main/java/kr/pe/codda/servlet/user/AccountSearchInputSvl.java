@@ -219,7 +219,7 @@ public class AccountSearchInputSvl extends AbstractServlet {
 		
 		req.setAttribute("accountSearchType", accountSearchType);
 		req.setAttribute("email", email);
-		printJspPage(req, res, "/jsp/member/AccountSearchInput.jsp");
+		printJspPage(req, res, "/sitemenu/member/AccountSearchInput.jsp");
 	}
 
 }

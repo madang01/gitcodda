@@ -60,7 +60,7 @@ public class UploadImageProcessSvl extends AbstractMultipartServlet {
 		res.getWriter().write(uploadImageResJsonString);
 
 		// req.setAttribute("uploadImageRes", uploadImageRes);
-		// printJspPage(req, res, "/jsp/community/UploadImageProcess.jsp");
+		// printJspPage(req, res, "/sitemenu/community/UploadImageProcess.jsp");
 		
 		
 		return;

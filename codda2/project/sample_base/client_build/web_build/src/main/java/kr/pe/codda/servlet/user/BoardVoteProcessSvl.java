@@ -39,7 +39,7 @@ public class BoardVoteProcessSvl extends AbstractUserLoginServlet {
 			printErrorMessagePage(req, res, errorMessage, debugMessage);
 			return;
 		}
-
+		
 
 		long boardNo = 0L;
 		try {
@@ -89,7 +89,7 @@ public class BoardVoteProcessSvl extends AbstractUserLoginServlet {
 		}
 
 		req.setAttribute("boardNo", paramBoardNo);
-		printJspPage(req, res, "/jsp/community/BoardVoteProcess.jsp");
+		printJspPage(req, res, "/sitemenu/community/BoardVoteProcess.jsp");
 		return;
 	}
 

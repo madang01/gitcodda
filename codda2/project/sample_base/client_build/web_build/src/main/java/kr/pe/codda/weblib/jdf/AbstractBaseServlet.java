@@ -19,8 +19,6 @@ public abstract class AbstractBaseServlet extends HttpServlet {
 	public AccessedUserInformation getAccessedUserInformationFromSession(HttpServletRequest req) {
 		HttpSession httpSession = req.getSession();
 		
-		
-		
 		Object accessedUserformationOfHttpSession = httpSession
 				.getAttribute(WebCommonStaticFinalVars.HTTPSESSION_KEY_NAME_OF_LOGINED_USER_INFORMATION);
 		
@@ -31,20 +29,5 @@ public abstract class AbstractBaseServlet extends HttpServlet {
 		AccessedUserInformation  accessedUserformation= (AccessedUserInformation) accessedUserformationOfHttpSession;
 		
 		return accessedUserformation;
-	}
-	
-	
-	/**
-	 * <pre>
-	 * 서블릿 초기화 파라미터 메뉴그룹(=menuGroupURL) 존재 여부를 반환한다. 
-	 * 참고) 서블릿 초기화 파라미터 메뉴그룹(=menuGroupURL)은 @{@link JDFBaseServlet#performBasePreTask} 에서 
-	 *      request 의 속성에 메뉴그룹(=@{link {@link WebCommonStaticFinalVars#REQUEST_KEY_NAME_OF_MENU_GROUP_URL})으로 저장된다
-	 * </pre>
-	 * @param req
-	 * @return 서블릿 초기화 파라미터 메뉴그룹(=menuGroupURL) 존재 여부 
-	 */
-	public boolean isMenuGroupURL(HttpServletRequest req) {
-		Object menuGroupURL = req.getAttribute(WebCommonStaticFinalVars.REQUEST_KEY_NAME_OF_MENU_GROUP_URL);
-		return (null != menuGroupURL);
 	}
 }

@@ -18,7 +18,7 @@ public class JDFLoginSvl extends AbstractUserLoginServlet {
 			throws Exception {
 		
 		
-		String goPage="/jsp/util/JDFLogin.jsp";
+		String goPage="/sitemenu/util/JDFLogin.jsp";
 		
 		printJspPage(req, res, goPage);			
 	}

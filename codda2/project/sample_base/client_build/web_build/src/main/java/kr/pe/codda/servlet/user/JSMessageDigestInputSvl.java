@@ -19,7 +19,7 @@ public class JSMessageDigestInputSvl extends AbstractServlet {
 	protected void performTask(HttpServletRequest req, HttpServletResponse res)
 			throws Exception {		
 		
-		printJspPage(req, res, "/jsp/util/JSMessageDigestInput.jsp");
+		printJspPage(req, res, "/sitemenu/util/JSMessageDigestInput.jsp");
 	}
 	
 }

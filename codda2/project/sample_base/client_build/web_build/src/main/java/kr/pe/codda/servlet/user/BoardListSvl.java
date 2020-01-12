@@ -34,8 +34,8 @@ public class BoardListSvl extends AbstractServlet {
 			String debugMessage = null;
 			printErrorMessagePage(req, res, errorMessage, debugMessage);
 			return;
-		}		
-		
+		}
+				
 		int pageNo = -1;
 		try {
 			pageNo = ValueChecker.checkValidPageNoAndPageSize(paramPageNo, WebCommonStaticFinalVars.WEBSITE_BOARD_LIST_SIZE_PER_PAGE);
@@ -81,6 +81,6 @@ public class BoardListSvl extends AbstractServlet {
 		
 		BoardListRes boardListRes = (BoardListRes)outputMessage;
 		req.setAttribute("boardListRes", boardListRes);
-		printJspPage(req, res, "/jsp/community/BoardList.jsp");
+		printJspPage(req, res, "/sitemenu/community/BoardList.jsp");
 	}
 }

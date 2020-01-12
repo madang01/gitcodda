@@ -40,7 +40,7 @@ public class JavaGCCallerSvl extends AbstractServlet {
 			return;
 		}
 		
-		printJspPage(req, res, "/jsp/util/JavaGCCaller.jsp");
+		printJspPage(req, res, "/sitemenu/util/JavaGCCaller.jsp");
 	}
 
 }

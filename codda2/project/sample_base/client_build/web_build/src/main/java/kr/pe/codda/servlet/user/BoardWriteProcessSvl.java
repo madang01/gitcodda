@@ -50,8 +50,8 @@ public class BoardWriteProcessSvl extends AbstractMultipartServlet implements Im
 
 	private static final long serialVersionUID = 6954552927880470265L;
 
-	private String installedPathString = null;
-	private String mainProjectName = null;
+	private final String installedPathString;
+	private final String mainProjectName;
 	
 	public BoardWriteProcessSvl() {
 		super();
@@ -71,7 +71,7 @@ public class BoardWriteProcessSvl extends AbstractMultipartServlet implements Im
 
 		req.setAttribute("boardWriteRes", boardWriteRes);
 
-		final String goPage = "/jsp/community/BoardWriteProcess.jsp";
+		final String goPage = "/sitemenu/community/BoardWriteProcess.jsp";
 		printJspPage(req, res, goPage);
 		return;
 	}
@@ -529,6 +529,7 @@ public class BoardWriteProcessSvl extends AbstractMultipartServlet implements Im
 		return boardWriteRes;
 	}
 	
+	@Override
 	public String getImageFileURL(BoardImageFileInformation boardImageFileInformation) throws WhiteParserException {
 		
 		try {

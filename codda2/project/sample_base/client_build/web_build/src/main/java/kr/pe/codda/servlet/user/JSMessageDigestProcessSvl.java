@@ -85,7 +85,7 @@ public class JSMessageDigestProcessSvl extends AbstractServlet {
 		req.setAttribute("isSame", isSame);
 		
 		
-		printJspPage(req, res, "/jsp/util/JSMessageDigestProcess.jsp");
+		printJspPage(req, res, "/sitemenu/util/JSMessageDigestProcess.jsp");
 		
 	}
 

@@ -297,7 +297,7 @@ public class MemberLoginProcessSvl extends AbstractServlet {
 		req.setAttribute(WebCommonStaticFinalVars.REQUEST_KEY_NAME_OF_SYMMETRIC_KEY_FROM_SESSIONKEY, webServerSymmetricKey);
 		req.setAttribute(WebCommonStaticFinalVars.REQUEST_KEY_NAME_OF_MODULUS_HEX_STRING,
 				webServerSessionkey.getModulusHexStrForWeb());
-		printJspPage(req, res, "/jsp/member/MemberLoginProcess.jsp");
+		printJspPage(req, res, "/sitemenu/member/MemberLoginProcess.jsp");
 		return;
 
 	}

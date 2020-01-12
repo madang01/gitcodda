@@ -51,6 +51,7 @@ public class BoardMoveProcessSvl extends AbstractUserLoginServlet {
 		final short targetBoardID;
 		try {
 			sourceBoardID = ValueChecker.checkValidSourceBoardID(paramSourceBoardID);
+			
 			sourceBoardNo = ValueChecker.checkValidSourceBoardNo(paramSourceBoardNo);
 			targetBoardID = ValueChecker.checkValidTargetBoardID(paramTargetBoardID);
 			
@@ -186,7 +187,7 @@ public class BoardMoveProcessSvl extends AbstractUserLoginServlet {
 		}
 		
 		// req.setAttribute("boardMoveRes", boardMoveRes);
-		printJspPage(req, res, "/jsp/community/BoardMoveProcess.jsp");
+		printJspPage(req, res, "/sitemenu/community/BoardMoveProcess.jsp");
 		return;
 	}
 }

@@ -85,7 +85,7 @@ public class BoardBlockProcessSvl extends AbstractUserLoginServlet {
 		}
 
 		req.setAttribute("boardNo", paramBoardNo);
-		printJspPage(req, res, "/jsp/community/BoardBlockProcess.jsp");
+		printJspPage(req, res, "/sitemenu/community/BoardBlockProcess.jsp");
 		return;
 	}
 	

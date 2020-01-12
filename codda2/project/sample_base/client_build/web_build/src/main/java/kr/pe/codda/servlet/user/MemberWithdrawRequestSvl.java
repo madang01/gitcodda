@@ -11,7 +11,7 @@ public class MemberWithdrawRequestSvl extends AbstractUserLoginServlet {
 
 	@Override
 	protected void performTask(HttpServletRequest req, HttpServletResponse res) throws Exception {
-		printJspPage(req, res, "/jsp/my/MemberWithdrawRequest.jsp");
+		printJspPage(req, res, "/sitemenu/my/MemberWithdrawRequest.jsp");
 	}
 
 }

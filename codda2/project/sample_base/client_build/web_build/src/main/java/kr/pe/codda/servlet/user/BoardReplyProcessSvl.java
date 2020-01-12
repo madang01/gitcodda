@@ -71,7 +71,7 @@ public class BoardReplyProcessSvl extends AbstractMultipartServlet implements Im
 
 		req.setAttribute("boardReplyRes", boardReplyRes);
 
-		final String goPage = "/jsp/community/BoardReplyProcess.jsp";
+		final String goPage = "/sitemenu/community/BoardReplyProcess.jsp";
 		printJspPage(req, res, goPage);
 		return;
 	}

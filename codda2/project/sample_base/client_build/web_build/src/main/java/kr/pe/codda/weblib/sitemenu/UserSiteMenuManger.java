@@ -292,7 +292,7 @@ public class UserSiteMenuManger {
 			menuNavbarStringBuilder
 					.append(getTabStrings(tapStep + 4))
 					.append("<li><a href=\"")
-					.append("/jsp/member/logout.jsp")
+					.append("/sitemenu/member/logout.jsp")
 					.append("\" title=\"")
 					.append(StringEscapeActorUtil.replace(userName,
 							StringEscapeActorUtil.STRING_REPLACEMENT_ACTOR_TYPE.ESCAPEHTML4))

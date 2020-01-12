@@ -34,6 +34,6 @@ public class JDFNotLoginSvl extends AbstractServlet {
         }
 	
 		req.setAttribute("headerInformationHash", headerInformationHash);		
-		printJspPage(req, res, "/jsp/util/JDFNotLogin.jsp");
+		printJspPage(req, res, "/sitemenu/util/JDFNotLogin.jsp");
 	}
 }

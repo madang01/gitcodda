@@ -178,7 +178,7 @@ public class BoardInformationModifySvl extends AbstractAdminLoginServlet {
 		}
 		
 		req.setAttribute("boardID", paramBoardID);
-		printJspPage(req, res, "/jsp/board/BoardInformationModify.jsp");
+		printJspPage(req, res, "/sitemenu/board/BoardInformationModify.jsp");
 		return;
 	}
 }

@@ -65,7 +65,7 @@ public class MenuManagementSvl extends AbstractAdminLoginServlet {
 		ArraySiteMenuRes arraySiteMenuRes = (ArraySiteMenuRes)outputMessage;
 		
 		req.setAttribute("arraySiteMenuRes", arraySiteMenuRes);
-		printJspPage(req, res, "/jsp/menu/MenuManagement.jsp");
+		printJspPage(req, res, "/sitemenu/menu/MenuManagement.jsp");
 		return;
 	}
 

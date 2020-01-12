@@ -95,7 +95,7 @@ public class BoardModifyProcessSvl extends AbstractMultipartServlet implements I
 
 		req.setAttribute("boardModifyRes", boardModifyRes);
 
-		final String goPage = "/jsp/community/BoardModifyProcess.jsp";
+		final String goPage = "/sitemenu/community/BoardModifyProcess.jsp";
 		printJspPage(req, res, goPage);
 		return;
 	}
@@ -150,7 +150,7 @@ public class BoardModifyProcessSvl extends AbstractMultipartServlet implements I
 						String debugMessage = null;
 						throw new WebClientException(errorMessage, debugMessage);
 					}
-
+					
 					// paramBoardID = formFieldValue;
 				} else if (formFieldName.equals("boardNo")) {
 					try {

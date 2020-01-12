@@ -12,7 +12,7 @@ public class MemberPasswordChangeInputSvl extends AbstractUserLoginServlet {
 	@Override
 	protected void performTask(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		
-		printJspPage(req, res, "/jsp/my/MemberPasswordChangeInput.jsp");
+		printJspPage(req, res, "/sitemenu/my/MemberPasswordChangeInput.jsp");
 		return;
 	}
 

@@ -64,7 +64,7 @@ public class MemberUnBlockProcessSvl extends AbstractAdminLoginServlet {
 		
 		
 		req.setAttribute("targetUserID", paramTargetUserID);
-		printJspPage(req, res, "/jsp/member/MemberUnBlockProcess.jsp");
+		printJspPage(req, res, "/sitemenu/member/MemberUnBlockProcess.jsp");
 		
 	}
 

@@ -29,6 +29,6 @@ public class JSRSAInputSvl extends AbstractServlet {
 			throws Exception {		
 		
 		
-		printJspPage(req, res, "/jsp/util/JSRSAInput.jsp");
+		printJspPage(req, res, "/sitemenu/util/JSRSAInput.jsp");
 	}
 }

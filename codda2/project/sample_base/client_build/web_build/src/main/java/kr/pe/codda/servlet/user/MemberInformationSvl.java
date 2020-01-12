@@ -78,7 +78,7 @@ public class MemberInformationSvl extends AbstractServlet {
 		}
 		
 		
-		printJspPage(req, res, "/jsp/my/MemberInformation.jsp");
+		printJspPage(req, res, "/sitemenu/my/MemberInformation.jsp");
 	}
 
 }

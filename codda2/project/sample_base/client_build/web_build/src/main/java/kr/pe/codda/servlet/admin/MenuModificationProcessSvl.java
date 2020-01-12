@@ -136,7 +136,7 @@ public class MenuModificationProcessSvl extends AbstractAdminLoginServlet {
 			return;
 		}
 		
-		printJspPage(req, res, "/jsp/menu/MenuModificationProcess.jsp");
+		printJspPage(req, res, "/sitemenu/menu/MenuModificationProcess.jsp");
 		return;
 	}
 }

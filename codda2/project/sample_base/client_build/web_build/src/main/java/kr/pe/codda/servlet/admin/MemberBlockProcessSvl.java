@@ -65,7 +65,7 @@ public class MemberBlockProcessSvl extends AbstractAdminLoginServlet {
 		
 		
 		req.setAttribute("targetUserID", paramTargetUserID);
-		printJspPage(req, res, "/jsp/member/MemberBlockProcess.jsp");
+		printJspPage(req, res, "/sitemenu/member/MemberBlockProcess.jsp");
 	}
 
 }

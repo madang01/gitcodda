@@ -302,7 +302,7 @@ public class AdminLoginProcessSvl extends AbstractServlet {
 		req.setAttribute(WebCommonStaticFinalVars.REQUEST_KEY_NAME_OF_MODULUS_HEX_STRING,
 				webServerSessionkey.getModulusHexStrForWeb());
 
-		printJspPage(req, res, "/jsp/member/AdminLoginProcess.jsp");
+		printJspPage(req, res, "/sitemenu/member/AdminLoginProcess.jsp");
 		return;		
 	}
 }

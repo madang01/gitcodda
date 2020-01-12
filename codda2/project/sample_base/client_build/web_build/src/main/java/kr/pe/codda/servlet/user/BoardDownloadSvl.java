@@ -56,6 +56,7 @@ public class BoardDownloadSvl extends AbstractUserLoginServlet {
 			printErrorMessagePage(req, res, errorMessage, debugMessage);
 			return;
 		}
+		
 
 		if (null == paramBoardNo) {
 			String errorMessage = "게시판 번호 값을 넣어 주세요";
@@ -270,7 +271,7 @@ public class BoardDownloadSvl extends AbstractUserLoginServlet {
 	private void printBoardProcessFailureCallBackPage(HttpServletRequest req, HttpServletResponse res,
 			String errorMessage) {
 		req.setAttribute("errorMessage", errorMessage);
-		printJspPage(req, res, "/jsp/community/BoardProcessFailureCallBack.jsp");
+		printJspPage(req, res, "/sitemenu/community/BoardProcessFailureCallBack.jsp");
 	}
 
 	// HTTP/1.1 헤더로부터 브라우저를 가져온다.

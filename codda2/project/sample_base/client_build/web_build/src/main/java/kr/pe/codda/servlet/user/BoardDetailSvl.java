@@ -87,7 +87,7 @@ public class BoardDetailSvl extends AbstractServlet {
 		BoardDetailRes boardDetailRes = (BoardDetailRes)outputMessage;
 		req.setAttribute("boardDetailRes", boardDetailRes);		
 		
-		printJspPage(req, res, "/jsp/community/BoardDetail.jsp");
+		printJspPage(req, res, "/sitemenu/community/BoardDetail.jsp");
 		
 		return;
 		 	

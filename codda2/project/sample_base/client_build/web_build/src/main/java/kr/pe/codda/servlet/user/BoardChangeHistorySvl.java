@@ -79,7 +79,7 @@ public class BoardChangeHistorySvl extends AbstractServlet {
 		BoardChangeHistoryRes boardChangeHistoryRes = (BoardChangeHistoryRes)outputMessage;
 		req.setAttribute("boardChangeHistoryRes", boardChangeHistoryRes);		
 		
-		printJspPage(req, res, "/jsp/community/BoardChangeHistory.jsp");
+		printJspPage(req, res, "/sitemenu/community/BoardChangeHistory.jsp");
 		
 		return;
 		 	

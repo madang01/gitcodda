@@ -19,7 +19,7 @@ public class BoardManagerSvl extends AbstractAdminLoginServlet {
 	protected void performTask(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		// TODO Auto-generated method stub
 		
-		printJspPage(req, res, "/jsp/board/BoardManager.jsp");
+		printJspPage(req, res, "/sitemenu/board/BoardManager.jsp");
 	}
 
 }

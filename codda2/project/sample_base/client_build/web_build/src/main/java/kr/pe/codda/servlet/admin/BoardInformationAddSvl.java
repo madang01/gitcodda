@@ -169,7 +169,7 @@ public class BoardInformationAddSvl extends AbstractAdminLoginServlet {
 		
 		BoardInfoAddRes boardInfoAddRes = (BoardInfoAddRes)outputMessage;
 		req.setAttribute("boardID", String.valueOf(boardInfoAddRes.getBoardID()));		
-		printJspPage(req, res, "/jsp/board/BoardInformationAdd.jsp");
+		printJspPage(req, res, "/sitemenu/board/BoardInformationAdd.jsp");
 		return;
 	}
 }

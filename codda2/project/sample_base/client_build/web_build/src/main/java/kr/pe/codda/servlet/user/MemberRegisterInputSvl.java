@@ -12,6 +12,6 @@ public class MemberRegisterInputSvl extends AbstractServlet {
 	@Override
 	protected void performTask(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		
-		printJspPage(req, res, "/jsp/member/MemberRegisterInput.jsp");
+		printJspPage(req, res, "/sitemenu/member/MemberRegisterInput.jsp");
 	}
 }

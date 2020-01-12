@@ -92,7 +92,7 @@ public class MemberRegisterProcessSvl extends AbstractServlet {
 			return;
 		}
 		
-		printJspPage(req, res, "/jsp/member/MemberRegisterProcess.jsp");
+		printJspPage(req, res, "/sitemenu/member/MemberRegisterProcess.jsp");
 		return;
 	}
 	

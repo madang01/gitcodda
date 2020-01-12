@@ -56,7 +56,7 @@ public class MemberLoginInputSvl extends AbstractServlet {
 		req.setAttribute("requestURI", "/");
 		req.setAttribute("userID", paramUserID);
 		
-		/** /jsp/member/MemberLoginInput.jsp */
+		/** /sitemenu/member/MemberLoginInput.jsp */
 		
 		printJspPage(req, res, JDF_MEMBER_LOGIN_INPUT_PAGE);
 	}

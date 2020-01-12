@@ -187,7 +187,7 @@
 		<url-pattern>/servlet/UserWebsiteMenuInfoFileUpdater</url-pattern>
 	</servlet-mapping>
 	
-	<!-- 게시판 정보 관리자 -->
+	<!-- 게시판 정보 관리 -->
 	<servlet>
 		<servlet-name>BoardInformationManager</servlet-name>
 		<servlet-class>kr.pe.codda.servlet.admin.BoardInformationManagerSvl</servlet-class>
@@ -244,7 +244,7 @@
 		<url-pattern>/servlet/BoardInformationModify</url-pattern>
 	</servlet-mapping>
 	
-	<!-- 게시판 관리자 -->
+	<!-- 게시판 관리 -->
 	<servlet>
 		<servlet-name>BoardManager</servlet-name>
 		<servlet-class>kr.pe.codda.servlet.admin.BoardManagerSvl</servlet-class>
@@ -256,6 +256,62 @@
 	<servlet-mapping>
 		<servlet-name>BoardManager</servlet-name>
 		<url-pattern>/servlet/BoardManager</url-pattern>
+	</servlet-mapping>
+	
+	<!-- 문서 관리 -->
+	<servlet>
+		<servlet-name>DocumentManager</servlet-name>
+		<servlet-class>kr.pe.codda.servlet.admin.DocumentManagerSvl</servlet-class>
+		<init-param>
+			<param-name>menuGroupURL</param-name>
+			<param-value>/servlet/DocumentManager</param-value>
+		</init-param>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>DocumentManager</servlet-name>
+		<url-pattern>/servlet/DocumentManager</url-pattern>
+	</servlet-mapping>
+	
+	<!-- 문서 등록 처리 -->
+	<servlet>
+		<servlet-name>DocumentRegistrationProcess</servlet-name>
+		<servlet-class>kr.pe.codda.servlet.admin.DocumentRegistrationProcessSvl</servlet-class>
+		<init-param>
+			<param-name>menuGroupURL</param-name>
+			<param-value>/servlet/DocumentManager</param-value>
+		</init-param>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>DocumentRegistrationProcess</servlet-name>
+		<url-pattern>/servlet/DocumentRegistrationProcess</url-pattern>
+	</servlet-mapping>
+	
+	<!-- 문서 보기 -->
+	<servlet>
+		<servlet-name>DocumentView</servlet-name>
+		<servlet-class>kr.pe.codda.servlet.admin.DocumentViewSvl</servlet-class>
+		<init-param>
+			<param-name>menuGroupURL</param-name>
+			<param-value>/servlet/DocumentManager</param-value>
+		</init-param>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>DocumentView</servlet-name>
+		<url-pattern>/servlet/DocumentView</url-pattern>
+	</servlet-mapping>	
+	
+	<!-- 문서 수정 처리 -->
+	<servlet>
+		<servlet-name>DocumentModifyProcess</servlet-name>
+		<servlet-class>kr.pe.codda.servlet.admin.DocumentModifyProcessSvl</servlet-class>
+		<init-param>
+			<param-name>menuGroupURL</param-name>
+			<param-value>/servlet/DocumentManager</param-value>
+		</init-param>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>DocumentModifyProcess</servlet-name>
+		<url-pattern>/servlet/DocumentModifyProcess</url-pattern>
 	</servlet-mapping>
 	
 	<!-- 회원 관리자 -->

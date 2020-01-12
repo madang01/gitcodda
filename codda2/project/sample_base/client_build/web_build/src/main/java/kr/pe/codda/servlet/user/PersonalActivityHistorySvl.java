@@ -70,7 +70,7 @@ public class PersonalActivityHistorySvl extends AbstractServlet {
 		
 		PersonalActivityHistoryRes personalActivityHistoryRes = (PersonalActivityHistoryRes)outputMessage;
 		req.setAttribute("personalActivityHistoryRes", personalActivityHistoryRes);
-		printJspPage(req, res, "/jsp/my/PersonalActivityHistory.jsp");
+		printJspPage(req, res, "/sitemenu/my/PersonalActivityHistory.jsp");
 	}
 
 }

@@ -53,7 +53,7 @@ public class AdminLoginInputSvl extends AbstractServlet {
 		req.setAttribute("requestURI", "/");
 		req.setAttribute("userID", paramUserID);
 		
-		/** /jsp/member/AdminLoginInput.jsp */
+		/** /sitemenu/member/AdminLoginInput.jsp */
 		printJspPage(req, res, JDF_ADMIN_LOGIN_INPUT_PAGE);
 	}
 }

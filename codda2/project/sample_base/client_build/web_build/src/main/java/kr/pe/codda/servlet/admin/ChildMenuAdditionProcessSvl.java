@@ -139,6 +139,6 @@ public class ChildMenuAdditionProcessSvl extends AbstractAdminLoginServlet {
 		}
 
 		req.setAttribute("childMenuAddRes", outputMessage);
-		printJspPage(req, res, "/jsp/menu/ChildMenuAdditionProcess.jsp");
+		printJspPage(req, res, "/sitemenu/menu/ChildMenuAdditionProcess.jsp");
 	}
 }

@@ -84,7 +84,7 @@ public class MemberWithdrawProcessSvl extends AbstractUserLoginServlet {
 			return;
 		}
 		
-		printJspPage(req, res, "/jsp/my/MemberWithdrawProcess.jsp");
+		printJspPage(req, res, "/sitemenu/my/MemberWithdrawProcess.jsp");
 		return;
 		
 	}

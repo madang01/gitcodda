@@ -324,7 +324,7 @@ public class AccountSearchProcessSvl extends AbstractServlet {
 		AccountSearchProcessRes accountSearchProcessRes = (AccountSearchProcessRes) outputMessage;
 		req.setAttribute("accountSearchType", accountSearchType);
 		req.setAttribute("accountSearchProcessRes", accountSearchProcessRes);
-		printJspPage(req, res, "/jsp/member/AccountSearchProcess.jsp");
+		printJspPage(req, res, "/sitemenu/member/AccountSearchProcess.jsp");
 		
 	}
 

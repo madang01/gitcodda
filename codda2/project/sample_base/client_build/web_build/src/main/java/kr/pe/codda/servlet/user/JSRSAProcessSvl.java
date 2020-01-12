@@ -91,7 +91,7 @@ public class JSRSAProcessSvl extends AbstractServlet {
 		req.setAttribute("orignalPlainText", paramPlainText);
 		req.setAttribute("decryptedText", decryptedText);
 		req.setAttribute("isSame", String.valueOf(isSame));		
-		printJspPage(req, res, "/jsp/util/JSRSAProcess.jsp");
+		printJspPage(req, res, "/sitemenu/util/JSRSAProcess.jsp");
 	}
 
 }

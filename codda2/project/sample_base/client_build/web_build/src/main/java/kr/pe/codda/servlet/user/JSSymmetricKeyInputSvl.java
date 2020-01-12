@@ -35,6 +35,6 @@ public class JSSymmetricKeyInputSvl extends AbstractServlet {
 	protected void performTask(HttpServletRequest req, HttpServletResponse res)
 			throws Exception {		
 		
-		printJspPage(req, res, "/jsp/util/JSSymmetricKeyInput.jsp");
+		printJspPage(req, res, "/sitemenu/util/JSSymmetricKeyInput.jsp");
 	}
 }

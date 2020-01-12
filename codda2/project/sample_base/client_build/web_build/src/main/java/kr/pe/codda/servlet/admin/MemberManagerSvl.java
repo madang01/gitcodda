@@ -173,7 +173,7 @@ public class MemberManagerSvl extends AbstractAdminLoginServlet {
 		req.setAttribute("fromCalendar", fromCalendar);
 		req.setAttribute("toCalendar", toCalendar);
 		req.setAttribute("memberSearchRes", memberSearchRes);
-		printJspPage(req, res, "/jsp/member/MemberManager.jsp");
+		printJspPage(req, res, "/sitemenu/member/MemberManager.jsp");
 		
 	}
 

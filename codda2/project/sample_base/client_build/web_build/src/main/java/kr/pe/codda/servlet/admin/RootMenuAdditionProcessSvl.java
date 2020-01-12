@@ -75,6 +75,6 @@ public class RootMenuAdditionProcessSvl extends AbstractAdminLoginServlet {
 		}	
 
 		req.setAttribute("rootMenuAddRes", outputMessage);
-		printJspPage(req, res, "/jsp/menu/RootMenuAdditionProcess.jsp");
+		printJspPage(req, res, "/sitemenu/menu/RootMenuAdditionProcess.jsp");
 	}
 }

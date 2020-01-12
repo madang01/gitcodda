@@ -72,6 +72,7 @@ public class SpanTagStyleAttrWhiteValueChecker implements AttributeWhiteValueChe
 
 			String key = property[0].trim();
 			String value = property[1].trim();
+			
 
 			/**
 			 * <pre>
@@ -79,9 +80,17 @@ public class SpanTagStyleAttrWhiteValueChecker implements AttributeWhiteValueChe
 			 * 			background-color: rgb(0, 0, 0); white-space: pre-line;
 			 * </pre>
 			 */
-			if ("white-space".equals(key) && "pre-line".equals(value)) {
-				// OK
-				continue;
+			if ("white-space".equals(key)) {
+				if ("normal".equals(value) 
+						|| "nowrap".equals(value)
+						|| "pre".equals(value)
+						|| "pre-line".equals(value)
+						|| "pre-wrap".equals(value)
+						|| "initial".equals(value)
+						|| "inherit".equals(value)) {
+					// OK
+					continue;
+				}
 			}
 			
 			if ("font-weight".equals(key) && "bold".equals(value)) {
@@ -94,8 +103,43 @@ public class SpanTagStyleAttrWhiteValueChecker implements AttributeWhiteValueChe
 				// font-style: italic;
 				continue;
 			}
+			
+			if ("font-size".equals(key)) {
+				int len = value.length();
+				if (value.length() < 3) {
+					String errorMessage = new StringBuilder().append("the tag name[").append(tagName)
+							.append("]'s attribte[").append(attributeName).append("] has a bad value[")
+							.append(attributeValue).append("] becase number of its character is less than minum 3").toString();
+					throw new WhiteParserException(errorMessage);
+				}
+				
+				String prefix = value.substring(0,  len - 2);
+				String suffix = value.substring(len - 2);
+				
+				if (! "px".equals(suffix)) {
+					String errorMessage = new StringBuilder().append("the tag name[").append(tagName)
+							.append("]'s attribte[").append(attributeName).append("] has a bad value[")
+							.append(attributeValue).append("] becase its suffix is not 'px'").toString();
+					throw new WhiteParserException(errorMessage);
+				}
+ 				
+				try {
+					Integer.parseInt(prefix);
+
+					continue;
+				} catch (NumberFormatException e) {
+					String errorMessage = new StringBuilder().append("the tag name[").append(tagName)
+							.append("]'s attribte[").append(attributeName).append("] has a bad value[")
+							.append(attributeValue).append("] becase its prefix is not number").toString();
+					throw new WhiteParserException(errorMessage);
+				}
+			}
 
 			if ("font-family".equals(key)) {
+				
+				if ("inherit".equals(value)) {
+					continue;
+				}
 				// font-family: &quot;Arial Black&quot;;
 
 				SummerNoteConfiguration summerNoteConfiguration = SummerNoteConfigurationManger.getInstance();
@@ -104,7 +148,7 @@ public class SpanTagStyleAttrWhiteValueChecker implements AttributeWhiteValueChe
 					String errorMessage = new StringBuilder().append("the tag name[").append(tagName)
 							.append("]'s attribte[").append(attributeName).append("] has a bad value[")
 							.append(attributeValue)
-							.append("] becase 'font-family' is not allowed to the SummerNote Cconfiguration")
+							.append("] becase 'font-family' is not defined")
 							.toString();
 
 					throw new WhiteParserException(errorMessage);
@@ -176,6 +220,10 @@ public class SpanTagStyleAttrWhiteValueChecker implements AttributeWhiteValueChe
 			}
 
 			if ("background-color".equals(key) || "color".equals(key)) {
+				if ("inherit".equals(value)) {
+					continue;
+				}
+				
 				int i = 0;
 
 				char[] charArrayOfValue = value.toCharArray();

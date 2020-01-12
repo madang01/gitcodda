@@ -1,9 +1,9 @@
 #!/bin/bash
 
-echo "the diretory 'log/apache' needs group write permission and its group should be 'www-data'"
+echo "'www-data' group and 'www-data' group write permision work"
 chgrp www-data log/apache
 chmod g+w log/apache
 
-echo "the directory 'log/tomcat' and 'user_web_app_base/upload' need write permission and their group should be 'tomcat8'"
-chgrp tomcat8 log/tomcat user_web_app_base/upload
+echo "'tomcat8' group and 'tomcat8' group write permision work"
+chgrp tomcat8 log/tomcat user_web_app_base/upload user_web_app_base/ROOT/userWebsiteMenuInfo.txt
 chmod g+w log/tomcat user_web_app_base/upload

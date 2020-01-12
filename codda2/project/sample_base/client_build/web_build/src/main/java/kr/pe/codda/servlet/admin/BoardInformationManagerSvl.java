@@ -58,7 +58,7 @@ public class BoardInformationManagerSvl extends AbstractAdminLoginServlet {
 		BoardInfoListRes boardInfoListRes = (BoardInfoListRes)outputMessage;
 		
 		req.setAttribute("boardInfoListRes", boardInfoListRes);
-		printJspPage(req, res, "/jsp/board/BoardInformationManager.jsp");
+		printJspPage(req, res, "/sitemenu/board/BoardInformationManager.jsp");
 		return;
 	}
 }

@@ -54,7 +54,7 @@ public class AdminSiteMenuManger {
 			TreeSiteMenuRes.Menu menu = new TreeSiteMenuRes.Menu();
 			menu.setMenuNo(3);
 			menu.setDepth((short)0);
-			menu.setMenuName("게시판 정보 관리자");
+			menu.setMenuName("게시판 정보 관리");
 			menu.setLinkURL("/servlet/BoardInformationManager");
 			menu.setChildMenuListSize(0);
 			menu.setChildMenuList(new java.util.ArrayList<TreeSiteMenuRes.Menu>());
@@ -66,8 +66,20 @@ public class AdminSiteMenuManger {
 			TreeSiteMenuRes.Menu menu = new TreeSiteMenuRes.Menu();
 			menu.setMenuNo(3);
 			menu.setDepth((short)0);
-			menu.setMenuName("게시판 관리자");
+			menu.setMenuName("게시판 관리");
 			menu.setLinkURL("/servlet/BoardManager");
+			menu.setChildMenuListSize(0);
+			menu.setChildMenuList(new java.util.ArrayList<TreeSiteMenuRes.Menu>());
+			
+			rootMenuList.add(menu);
+		}
+		
+		{
+			TreeSiteMenuRes.Menu menu = new TreeSiteMenuRes.Menu();
+			menu.setMenuNo(3);
+			menu.setDepth((short)0);
+			menu.setMenuName("문서 관리");
+			menu.setLinkURL("/servlet/DocumentManager");
 			menu.setChildMenuListSize(0);
 			menu.setChildMenuList(new java.util.ArrayList<TreeSiteMenuRes.Menu>());
 			
@@ -230,7 +242,7 @@ public class AdminSiteMenuManger {
 		if (isLogin) {			
 			menuNavbarStringBuilder.append(getTabStrings(tapStep+4))
 			.append("<li><a href=\"")
-			.append("/jsp/member/logout.jsp")
+			.append("/sitemenu/member/logout.jsp")
 			.append("\"><span class=\"glyphicon glyphicon-log-out\"></span> logout</a></li>")
 			.append(CommonStaticFinalVars.NEWLINE);
 		} else {

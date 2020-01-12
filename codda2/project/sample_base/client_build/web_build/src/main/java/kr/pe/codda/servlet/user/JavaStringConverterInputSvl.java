@@ -10,6 +10,6 @@ public class JavaStringConverterInputSvl extends AbstractServlet {
 
 	@Override
 	protected void performTask(HttpServletRequest req, HttpServletResponse res) throws Exception {
-		printJspPage(req, res, "/jsp/util/JavaStringConverterInput.jsp");
+		printJspPage(req, res, "/sitemenu/util/JavaStringConverterInput.jsp");
 	}
 }

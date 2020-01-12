@@ -50,6 +50,6 @@ public class JavaStringConverterProcessSvl extends AbstractServlet {
 		
 		req.setAttribute("sourceString", paramSourceString);
 		req.setAttribute("targetString", targetStringBuilder.toString());
-		printJspPage(req, res, "/jsp/util/JavaStringConverterProcess.jsp");		
+		printJspPage(req, res, "/sitemenu/util/JavaStringConverterProcess.jsp");		
 	}
 }

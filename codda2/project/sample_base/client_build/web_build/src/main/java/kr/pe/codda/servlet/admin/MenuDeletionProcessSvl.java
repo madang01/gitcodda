@@ -105,7 +105,7 @@ public class MenuDeletionProcessSvl extends AbstractAdminLoginServlet {
 			return;
 		}
 		
-		printJspPage(req, res, "/jsp/menu/MenuDeletionProcess.jsp");
+		printJspPage(req, res, "/sitemenu/menu/MenuDeletionProcess.jsp");
 		return;
 	}
 }

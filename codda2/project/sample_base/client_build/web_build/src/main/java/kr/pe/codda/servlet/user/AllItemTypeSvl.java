@@ -242,7 +242,7 @@ public class AllItemTypeSvl extends AbstractServlet {
 		req.setAttribute("allDataTypeReq", allDataTypeReq);
 		req.setAttribute("allItemTypeRes", allItemTypeRes);
 		req.setAttribute("isSame", String.valueOf(isSame));
-		printJspPage(req, res, "/jsp/util/AllItemType.jsp");
+		printJspPage(req, res, "/sitemenu/util/AllItemType.jsp");
 	}	
 	
 }

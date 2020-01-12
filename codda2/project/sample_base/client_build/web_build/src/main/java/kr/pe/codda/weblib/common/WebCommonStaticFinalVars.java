@@ -120,5 +120,6 @@ public abstract class WebCommonStaticFinalVars {
 	public static final AccessedUserInformation GUEST_USER_SESSION_INFORMATION = new AccessedUserInformation(false, "guest", "손님", MemberRoleType.GUEST);
 	
 	
+	public static final short DOCUMENT_MANAGER_BOARD_ID = 4;
 	
 }

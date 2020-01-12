@@ -84,7 +84,7 @@ public class MemberPasswordChangeProcessSvl extends AbstractUserLoginServlet {
 			return;
 		}
 		
-		printJspPage(req, res, "/jsp/my/MemberPasswordChangeProcess.jsp");
+		printJspPage(req, res, "/sitemenu/my/MemberPasswordChangeProcess.jsp");
 		return;
 	
 	}

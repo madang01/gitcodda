@@ -131,6 +131,6 @@ public class JSSymmetricKeyProcessSvl extends AbstractServlet {
 		req.setAttribute("decryptedHexText", decryptedHexText);
 		req.setAttribute("decryptedPlainText", decryptedPlainText);
 		req.setAttribute("isSame", isSame);
-		printJspPage(req, res, "/jsp/util/JSSymmetricKeyProcess.jsp");
+		printJspPage(req, res, "/sitemenu/util/JSSymmetricKeyProcess.jsp");
 	}
 }

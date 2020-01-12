@@ -93,7 +93,7 @@ public class MenuMoveUpProcessSvl extends AbstractAdminLoginServlet {
 				return;
 			}
 			
-			printJspPage(req, res, "/jsp/menu/MenuMoveUpProcess.jsp");
+			printJspPage(req, res, "/sitemenu/menu/MenuMoveUpProcess.jsp");
 			return;
 		} else {
 			String errorMessage = "메뉴 상단 이동이 실패하였습니다";
