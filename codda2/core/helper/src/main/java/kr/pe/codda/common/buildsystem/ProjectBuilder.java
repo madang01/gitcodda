@@ -1660,6 +1660,13 @@ public class ProjectBuilder {
 		
 
 	public void applyInstalledPath() throws BuildSystemException {
+		EclipseBuilder eclipseBuilder = new EclipseBuilder(installedPathString);
+		eclipseBuilder.saveCoddaCoreAllEclipeWorkbenchFiles();
+		eclipseBuilder.saveCoddaCoreHelperEclipeWorkbenchFiles();
+		eclipseBuilder.saveCoddaSampleBaseServerEclipeWorkbenchFiles();
+		eclipseBuilder.saveCoddaSampleBaseAppClientEclipeWorkbenchFiles();
+		eclipseBuilder.saveCoddaSampleBaseWebClientEclipeWorkbenchFiles();
+		
 		applyInstalledPathToConfigFile();
 		
 		if (File.separator.equals("/")) {				

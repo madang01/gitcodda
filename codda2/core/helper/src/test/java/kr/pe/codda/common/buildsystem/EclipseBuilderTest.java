@@ -10,10 +10,10 @@ import kr.pe.codda.common.exception.BuildSystemException;
 public class EclipseBuilderTest extends AbstractJunitTest 	{
 
 	@Test
-	public void testCreateCoddaCoreAllEclipeWorkbenchFiles() {
+	public void testSaveCoddaCoreAllEclipeWorkbenchFiles() {
 		try {
 			EclipseBuilder eclipseBuilder = new EclipseBuilder(installedPath.getAbsolutePath());
-			eclipseBuilder.createCoddaCoreAllEclipeWorkbenchFiles();
+			eclipseBuilder.saveCoddaCoreAllEclipeWorkbenchFiles();
 		} catch (BuildSystemException e) {
 			log.warn("error", e);
 			fail("실패");
@@ -22,7 +22,7 @@ public class EclipseBuilderTest extends AbstractJunitTest 	{
 	
 	/*
 	@Test	
-	public void testCreateCoddaCoreLoggerEclipeWorkbenchFiles() {
+	public void testSaveCoddaCoreLoggerEclipeWorkbenchFiles() {
 		try {
 			EclipseBuilder eclipseBuilder = new EclipseBuilder(installedPath.getAbsolutePath());
 			eclipseBuilder.createCoddaCoreLoggerEclipeWorkbenchFiles();
@@ -34,10 +34,10 @@ public class EclipseBuilderTest extends AbstractJunitTest 	{
 	*/
 
 	@Test
-	public void testCreateCoddaCoreHelperEclipeWorkbenchFiles() {
+	public void testSaveCoddaCoreHelperEclipeWorkbenchFiles() {
 		try {
 			EclipseBuilder eclipseBuilder = new EclipseBuilder(installedPath.getAbsolutePath());
-			eclipseBuilder.createCoddaCoreHelperEclipeWorkbenchFiles();
+			eclipseBuilder.saveCoddaCoreHelperEclipeWorkbenchFiles();
 		} catch (BuildSystemException e) {
 			log.warn("error", e);
 			fail("실패");
@@ -45,10 +45,10 @@ public class EclipseBuilderTest extends AbstractJunitTest 	{
 	}
 	
 	@Test
-	public void testCreateCoddaSampleBaseServerEclipeWorkbenchFiles() {
+	public void testSaveCoddaSampleBaseServerEclipeWorkbenchFiles() {
 		try {
 			EclipseBuilder eclipseBuilder = new EclipseBuilder(installedPath.getAbsolutePath());
-			eclipseBuilder.createCoddaSampleBaseServerEclipeWorkbenchFiles();
+			eclipseBuilder.saveCoddaSampleBaseServerEclipeWorkbenchFiles();
 		} catch (BuildSystemException e) {
 			log.warn("error", e);
 			fail("실패");
@@ -56,10 +56,10 @@ public class EclipseBuilderTest extends AbstractJunitTest 	{
 	}
 	
 	@Test
-	public void testCreateCoddaSampleBaseAppClientEclipeWorkbenchFiles() {
+	public void testSaveCoddaSampleBaseAppClientEclipeWorkbenchFiles() {
 		try {
 			EclipseBuilder eclipseBuilder = new EclipseBuilder(installedPath.getAbsolutePath());
-			eclipseBuilder.createCoddaSampleBaseAppClientEclipeWorkbenchFiles();
+			eclipseBuilder.saveCoddaSampleBaseAppClientEclipeWorkbenchFiles();
 		} catch (BuildSystemException e) {
 			log.warn("error", e);
 			fail("실패");
@@ -67,10 +67,10 @@ public class EclipseBuilderTest extends AbstractJunitTest 	{
 	}
 	
 	@Test
-	public void testCreateCoddaSampleBaseWebClientEclipeWorkbenchFiles() {
+	public void testSaveCoddaSampleBaseWebClientEclipeWorkbenchFiles() {
 		try {
 			EclipseBuilder eclipseBuilder = new EclipseBuilder(installedPath.getAbsolutePath());
-			eclipseBuilder.createCoddaSampleBaseWebClientEclipeWorkbenchFiles();
+			eclipseBuilder.saveCoddaSampleBaseWebClientEclipeWorkbenchFiles();
 		} catch (BuildSystemException e) {
 			log.warn("error", e);
 			fail("실패");

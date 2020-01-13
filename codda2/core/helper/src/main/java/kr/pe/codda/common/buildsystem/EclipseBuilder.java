@@ -40,7 +40,7 @@ public class EclipseBuilder {
 		}
 	}
 	
-	private void createCoddaAllEclipeProjectXMLFile(String eclipseProjectName, EclipsePath[] eclipsePathList)
+	private void saveCoddaAllEclipeProjectXMLFile(String eclipseProjectName, EclipsePath[] eclipsePathList)
 			throws BuildSystemException {
 		String commonResourcesPathString = CommonBuildSytemPathSupporter
 				.getCommonResourcesPathString(installedPathString);
@@ -110,7 +110,7 @@ public class EclipseBuilder {
 		}
 	}
 
-	private void createCoddaAllEclipeClasspathXMLFile(String eclipseProjectName, EclipsePath[] eclipsePathList,
+	private void saveCoddaAllEclipeClasspathXMLFile(String eclipseProjectName, EclipsePath[] eclipsePathList,
 			String[] eclipseLibiaryRelativePathStringList) throws BuildSystemException {
 		String commonResourcesPathString = CommonBuildSytemPathSupporter
 				.getCommonResourcesPathString(installedPathString);
@@ -170,7 +170,7 @@ public class EclipseBuilder {
 	}
 	
 
-	public void createCoddaCoreAllEclipeWorkbenchFiles() throws BuildSystemException {
+	public void saveCoddaCoreAllEclipeWorkbenchFiles() throws BuildSystemException {
 		String eclipseProjectName = "codda2_core_all";
 
 		EclipsePath[] eclipsePathList = { new EclipsePath("core_common_main_src", "core/common/src/main/java"),				
@@ -179,43 +179,22 @@ public class EclipseBuilder {
 				new EclipsePath("core_all_test_src", "core/all/src/test/java") };
 
 		String[] eclipseLibiaryRelativePathStringList = { 
+				"core/common/lib/main/ex/gson-2.8.5.jar",
 				"core/server/lib/main/ex/commons-dbcp2-2.0.1.jar",
-				"core/server/lib/main/ex/commons-pool2-2.5.0.jar", 
-				
-				"core/common/lib/test/commons-exec-1.3.jar",
+				"core/server/lib/main/ex/commons-pool2-2.5.0.jar",
 				
 				"core/common/lib/test/byte-buddy-1.7.9.jar", 
 				"core/common/lib/test/byte-buddy-agent-1.7.9.jar",
 				"core/common/lib/test/objenesis-2.6.jar", 
 				"core/common/lib/test/mockito-core-2.13.4.jar"};
 
-		createCoddaAllEclipeProjectXMLFile(eclipseProjectName, eclipsePathList);
+		saveCoddaAllEclipeProjectXMLFile(eclipseProjectName, eclipsePathList);
 
-		createCoddaAllEclipeClasspathXMLFile(eclipseProjectName, eclipsePathList, eclipseLibiaryRelativePathStringList);
+		saveCoddaAllEclipeClasspathXMLFile(eclipseProjectName, eclipsePathList, eclipseLibiaryRelativePathStringList);
 	}
 	
-	/*
-	public void createCoddaCoreLoggerEclipeWorkbenchFiles() throws BuildSystemException {
-		String eclipseProjectName = "codda_logger";
 
-		EclipsePath[] eclipsePathList = { new EclipsePath("main_src", "core/logger/src/main/java")};
-
-		String[] eclipseLibiaryRelativePathStringList = { "core/logger/lib/ex/commons-logging-1.2.jar",
-				"core/logger/lib/ex/log4j-1.2.17.jar", 
-				"core/logger/lib/ex/log4j-api-2.11.0.jar",
-				"core/logger/lib/ex/log4j-core-2.11.0.jar", 
-				"core/logger/lib/ex/logback-classic-1.2.3.jar",
-				"core/logger/lib/ex/logback-core-1.2.3.jar", 
-				"core/logger/lib/ex/slf4j-api-1.7.25.jar"
-		};
-
-		createCoddaAllEclipeProjectXMLFile(eclipseProjectName, eclipsePathList);
-
-		createCoddaAllEclipeClasspathXMLFile(eclipseProjectName, eclipsePathList, eclipseLibiaryRelativePathStringList);
-	}
-	*/
-
-	public void createCoddaCoreHelperEclipeWorkbenchFiles() throws BuildSystemException {
+	public void saveCoddaCoreHelperEclipeWorkbenchFiles() throws BuildSystemException {
 		String eclipseProjectName = "codda2_helper";
 
 		EclipsePath[] eclipsePathList = { new EclipsePath("main_src", "core/helper/src/main/java"),
@@ -243,12 +222,12 @@ public class EclipseBuilder {
 				"core/helper/lib/test/mockito-core-2.13.4.jar"
 		};
 
-		createCoddaAllEclipeProjectXMLFile(eclipseProjectName, eclipsePathList);
+		saveCoddaAllEclipeProjectXMLFile(eclipseProjectName, eclipsePathList);
 
-		createCoddaAllEclipeClasspathXMLFile(eclipseProjectName, eclipsePathList, eclipseLibiaryRelativePathStringList);
+		saveCoddaAllEclipeClasspathXMLFile(eclipseProjectName, eclipsePathList, eclipseLibiaryRelativePathStringList);
 	}
 	
-	public void createCoddaSampleBaseServerEclipeWorkbenchFiles() throws BuildSystemException {
+	public void saveCoddaSampleBaseServerEclipeWorkbenchFiles() throws BuildSystemException {
 		String eclipseProjectName = "codda2_sample_base_server";
 
 		EclipsePath[] eclipsePathList = { new EclipsePath("main_src", "project/sample_base/server_build/src/main/java"),
@@ -261,11 +240,11 @@ public class EclipseBuilder {
 				"project/sample_base/server_build/corelib/ex/commons-dbcp2-2.0.1.jar",
 				"project/sample_base/server_build/corelib/ex/commons-pool2-2.5.0.jar",
 				
-				"project/sample_base/server_build/corelib/ex/logback-classic-1.2.3.jar",
-				"project/sample_base/server_build/corelib/ex/logback-core-1.2.3.jar",
-				"project/sample_base/server_build/corelib/ex/slf4j-api-1.7.25.jar",
-				"project/sample_base/server_build/corelib/ex/jcl-over-slf4j-1.7.25.jar",
-				"project/sample_base/server_build/corelib/ex/jul-to-slf4j-1.7.26.jar",
+				"project/sample_base/server_build/lib/main/ex/logback-classic-1.2.3.jar",
+				"project/sample_base/server_build/lib/main/ex/logback-core-1.2.3.jar",
+				"project/sample_base/server_build/lib/main/ex/slf4j-api-1.7.25.jar",
+				"project/sample_base/server_build/lib/main/ex/jcl-over-slf4j-1.7.25.jar",
+				"project/sample_base/server_build/lib/main/ex/jul-to-slf4j-1.7.26.jar",
 				
 				
 				"project/sample_base/server_build/lib/main/ex/oracle-mail-1.4.7.jar",
@@ -278,17 +257,16 @@ public class EclipseBuilder {
 				"core/common/lib/test/byte-buddy-1.7.9.jar", 
 				"core/common/lib/test/byte-buddy-agent-1.7.9.jar",				
 				"core/common/lib/test/objenesis-2.6.jar",
-				"core/common/lib/test/mockito-core-2.13.4.jar", 
-				
-				"core/common/lib/test/commons-exec-1.3.jar"
+				"core/common/lib/test/mockito-core-2.13.4.jar",
+				"core/common/lib/test/greenmail-1.5.11.jar",
 		};
 
-		createCoddaAllEclipeProjectXMLFile(eclipseProjectName, eclipsePathList);
+		saveCoddaAllEclipeProjectXMLFile(eclipseProjectName, eclipsePathList);
 
-		createCoddaAllEclipeClasspathXMLFile(eclipseProjectName, eclipsePathList, eclipseLibiaryRelativePathStringList);
+		saveCoddaAllEclipeClasspathXMLFile(eclipseProjectName, eclipsePathList, eclipseLibiaryRelativePathStringList);
 	}
 	
-	public void createCoddaSampleBaseAppClientEclipeWorkbenchFiles() throws BuildSystemException {
+	public void saveCoddaSampleBaseAppClientEclipeWorkbenchFiles() throws BuildSystemException {
 		String eclipseProjectName = "codda2_sample_base_appclient";
 
 		EclipsePath[] eclipsePathList = { new EclipsePath("main_src", "project/sample_base/client_build/app_build/src/main/java"),
@@ -309,12 +287,12 @@ public class EclipseBuilder {
 				"project/sample_base/client_build/app_build/corelib/ex/jul-to-slf4j-1.7.26.jar"
 		};
 
-		createCoddaAllEclipeProjectXMLFile(eclipseProjectName, eclipsePathList);
+		saveCoddaAllEclipeProjectXMLFile(eclipseProjectName, eclipsePathList);
 
-		createCoddaAllEclipeClasspathXMLFile(eclipseProjectName, eclipsePathList, eclipseLibiaryRelativePathStringList);
+		saveCoddaAllEclipeClasspathXMLFile(eclipseProjectName, eclipsePathList, eclipseLibiaryRelativePathStringList);
 	}
 	
-	public void createCoddaSampleBaseWebClientEclipeWorkbenchFiles() throws BuildSystemException {
+	public void saveCoddaSampleBaseWebClientEclipeWorkbenchFiles() throws BuildSystemException {
 		String eclipseProjectName = "codda2_sample_base_webclient";
 
 		EclipsePath[] eclipsePathList = { new EclipsePath("main_src", "project/sample_base/client_build/web_build/src/main/java"),
@@ -331,12 +309,13 @@ public class EclipseBuilder {
 				"project/sample_base/client_build/web_build/corelib/ex/commons-pool2-2.5.0.jar",				
 				
 				"project/sample_base/client_build/web_build/lib/main/ex/commons-fileupload-1.3.2.jar",
+				"project/sample_base/client_build/web_build/lib/main/ex/commons-io-2.6.jar",
 				"project/sample_base/client_build/web_build/lib/main/ex/commons-lang3-3.7.jar",
 				"project/sample_base/client_build/web_build/lib/main/ex/commons-text-1.3.jar",				
-				"project/sample_base/client_build/web_build/lib/main/ex/commons-io-2.6.jar",
+				"project/sample_base/client_build/web_build/lib/main/ex/jsoup-1.12.1.jar",
 				"project/sample_base/client_build/web_build/lib/main/ex/simplecaptcha-1.2.1.jar",
 				
-				"project/sample_base/client_build/web_build/lib/test/commons-exec-1.3.jar",
+				
 				"project/sample_base/client_build/web_build/lib/test/httpcore-4.4.10.jar",
 				"project/sample_base/client_build/web_build/lib/test/httpmime-4.5.6.jar",
 				
@@ -344,11 +323,16 @@ public class EclipseBuilder {
 				"project/sample_base/client_build/web_build/lib/test/byte-buddy-agent-1.7.9.jar",				 
 				"project/sample_base/client_build/web_build/lib/test/objenesis-2.6.jar",
 				"project/sample_base/client_build/web_build/lib/test/mockito-core-2.13.4.jar",
-								
+				
+				"project/sample_base/client_build/web_build/lib/test/logback-classic-1.2.3.jar",
+				"project/sample_base/client_build/web_build/lib/test/logback-core-1.2.3.jar",
+				"project/sample_base/client_build/web_build/lib/test/slf4j-api-1.7.25.jar",
+				"project/sample_base/client_build/web_build/lib/test/jcl-over-slf4j-1.7.25.jar",
+				"project/sample_base/client_build/web_build/lib/test/jul-to-slf4j-1.7.26.jar"								
 		};
 
-		createCoddaAllEclipeProjectXMLFile(eclipseProjectName, eclipsePathList);
+		saveCoddaAllEclipeProjectXMLFile(eclipseProjectName, eclipsePathList);
 
-		createCoddaAllEclipeClasspathXMLFile(eclipseProjectName, eclipsePathList, eclipseLibiaryRelativePathStringList);
+		saveCoddaAllEclipeClasspathXMLFile(eclipseProjectName, eclipsePathList, eclipseLibiaryRelativePathStringList);
 	}
 }

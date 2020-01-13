@@ -7,9 +7,9 @@
 	<classpathentry kind="src" path="core_client_main_src"/>
 	<classpathentry kind="src" path="core_server_main_src"/>
 	<classpathentry kind="src" path="core_all_test_src"/>
+	<classpathentry kind="lib" path="D:/gitcodda/codda2/core/common/lib/main/ex/gson-2.8.5.jar"/>
 	<classpathentry kind="lib" path="D:/gitcodda/codda2/core/server/lib/main/ex/commons-dbcp2-2.0.1.jar"/>
 	<classpathentry kind="lib" path="D:/gitcodda/codda2/core/server/lib/main/ex/commons-pool2-2.5.0.jar"/>
-	<classpathentry kind="lib" path="D:/gitcodda/codda2/core/common/lib/test/commons-exec-1.3.jar"/>
 	<classpathentry kind="lib" path="D:/gitcodda/codda2/core/common/lib/test/byte-buddy-1.7.9.jar"/>
 	<classpathentry kind="lib" path="D:/gitcodda/codda2/core/common/lib/test/byte-buddy-agent-1.7.9.jar"/>
 	<classpathentry kind="lib" path="D:/gitcodda/codda2/core/common/lib/test/objenesis-2.6.jar"/>

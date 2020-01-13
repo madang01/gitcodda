@@ -31,7 +31,6 @@ import org.slf4j.LoggerFactory;
 import com.jgoodies.forms.factories.CC;
 import com.jgoodies.forms.layout.FormLayout;
 
-import kr.pe.codda.common.buildsystem.EclipseBuilder;
 import kr.pe.codda.common.buildsystem.MainProjectBuildSystemState;
 import kr.pe.codda.common.buildsystem.ProjectBuilder;
 import kr.pe.codda.common.buildsystem.pathsupporter.ProjectBuildSytemPathSupporter;
@@ -357,23 +356,6 @@ public class AllMainProjectManagerPanel extends JPanel {
 		}
 
 		String installedPathString = installedPathInfoValueLabel.getText();
-		
-		try {
-			EclipseBuilder eclipseBuilder = new EclipseBuilder(installedPathString);
-			
-			//eclipseBuilder.createCoddaCoreLoggerEclipeWorkbenchFiles();
-			eclipseBuilder.createCoddaCoreAllEclipeWorkbenchFiles();
-			eclipseBuilder.createCoddaCoreHelperEclipeWorkbenchFiles();
-			eclipseBuilder.createCoddaSampleBaseServerEclipeWorkbenchFiles();
-			eclipseBuilder.createCoddaSampleBaseAppClientEclipeWorkbenchFiles();
-			eclipseBuilder.createCoddaSampleBaseWebClientEclipeWorkbenchFiles();
-			
-		} catch (BuildSystemException e1) {
-			log.warn(e1.getMessage(), e1);
-			showMessageDialog(e1.getMessage());
-			return;
-		}
-		
 		
 		for (int i = 1; i < itemCount; i++) {
 			String mainProjectName = mainProjectNameListComboBox.getItemAt(i);
