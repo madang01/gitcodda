@@ -19,9 +19,9 @@
 	<classpathentry kind="lib" path="D:/gitcodda/codda2/project/sample_base/server_build/lib/main/ex/jooq-codegen-3.10.6.jar"/>
 	<classpathentry kind="lib" path="D:/gitcodda/codda2/project/sample_base/server_build/lib/main/ex/jooq-meta-3.10.6.jar"/>
 	<classpathentry kind="lib" path="D:/gitcodda/codda2/project/sample_base/server_build/lib/main/ex/mariadb-java-client-2.4.1.jar"/>
-	<classpathentry kind="lib" path="D:/gitcodda/codda2/core/common/lib/test/byte-buddy-1.7.9.jar"/>
-	<classpathentry kind="lib" path="D:/gitcodda/codda2/core/common/lib/test/byte-buddy-agent-1.7.9.jar"/>
-	<classpathentry kind="lib" path="D:/gitcodda/codda2/core/common/lib/test/objenesis-2.6.jar"/>
-	<classpathentry kind="lib" path="D:/gitcodda/codda2/core/common/lib/test/mockito-core-2.13.4.jar"/>
-	<classpathentry kind="lib" path="D:/gitcodda/codda2/core/common/lib/test/greenmail-1.5.11.jar"/>
+	<classpathentry kind="lib" path="D:/gitcodda/codda2/project/sample_base/server_build/lib/test/byte-buddy-1.7.9.jar"/>
+	<classpathentry kind="lib" path="D:/gitcodda/codda2/project/sample_base/server_build/lib/test/byte-buddy-agent-1.7.9.jar"/>
+	<classpathentry kind="lib" path="D:/gitcodda/codda2/project/sample_base/server_build/lib/test/objenesis-2.6.jar"/>
+	<classpathentry kind="lib" path="D:/gitcodda/codda2/project/sample_base/server_build/lib/test/mockito-core-2.13.4.jar"/>
+	<classpathentry kind="lib" path="D:/gitcodda/codda2/project/sample_base/server_build/lib/test/greenmail-1.5.11.jar"/>
 </classpath>

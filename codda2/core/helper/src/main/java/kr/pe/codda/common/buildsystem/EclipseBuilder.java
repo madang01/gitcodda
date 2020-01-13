@@ -254,11 +254,11 @@ public class EclipseBuilder {
 				"project/sample_base/server_build/lib/main/ex/jooq-meta-3.10.6.jar",
 				"project/sample_base/server_build/lib/main/ex/mariadb-java-client-2.4.1.jar",				
 				
-				"core/common/lib/test/byte-buddy-1.7.9.jar", 
-				"core/common/lib/test/byte-buddy-agent-1.7.9.jar",				
-				"core/common/lib/test/objenesis-2.6.jar",
-				"core/common/lib/test/mockito-core-2.13.4.jar",
-				"core/common/lib/test/greenmail-1.5.11.jar",
+				"project/sample_base/server_build/lib/test/byte-buddy-1.7.9.jar", 
+				"project/sample_base/server_build/lib/test/byte-buddy-agent-1.7.9.jar",				
+				"project/sample_base/server_build/lib/test/objenesis-2.6.jar",
+				"project/sample_base/server_build/lib/test/mockito-core-2.13.4.jar",
+				"project/sample_base/server_build/lib/test/greenmail-1.5.11.jar",
 		};
 
 		saveCoddaAllEclipeProjectXMLFile(eclipseProjectName, eclipsePathList);
@@ -275,16 +275,16 @@ public class EclipseBuilder {
 		String[] eclipseLibiaryRelativePathStringList = {
 				"project/sample_base/client_build/app_build/corelib/in/codda-core-all.jar",
 				
-				"project/sample_base/client_build/app_build/corelib/ex/gson-2.8.5.jar",
+				"project/sample_base/client_build/app_build/corelib/in/gson-2.8.5.jar",
 
-				"project/sample_base/client_build/app_build/corelib/ex/commons-dbcp2-2.0.1.jar",
-				"project/sample_base/client_build/app_build/corelib/ex/commons-pool2-2.5.0.jar",				
+				"project/sample_base/client_build/app_build/corelib/in/commons-dbcp2-2.0.1.jar",
+				"project/sample_base/client_build/app_build/corelib/in/commons-pool2-2.5.0.jar",				
 				
-				"project/sample_base/client_build/app_build/corelib/ex/logback-classic-1.2.3.jar",
-				"project/sample_base/client_build/app_build/corelib/ex/logback-core-1.2.3.jar",
-				"project/sample_base/client_build/app_build/corelib/ex/slf4j-api-1.7.25.jar",
-				"project/sample_base/client_build/app_build/corelib/ex/jcl-over-slf4j-1.7.25.jar",
-				"project/sample_base/client_build/app_build/corelib/ex/jul-to-slf4j-1.7.26.jar"
+				"project/sample_base/client_build/app_build/lib/main/in/logback-classic-1.2.3.jar",
+				"project/sample_base/client_build/app_build/lib/main/in/logback-core-1.2.3.jar",
+				"project/sample_base/client_build/app_build/lib/main/in/slf4j-api-1.7.25.jar",
+				"project/sample_base/client_build/app_build/lib/main/in/jcl-over-slf4j-1.7.25.jar",
+				"project/sample_base/client_build/app_build/lib/main/in/jul-to-slf4j-1.7.26.jar"
 		};
 
 		saveCoddaAllEclipeProjectXMLFile(eclipseProjectName, eclipsePathList);
