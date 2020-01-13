@@ -561,6 +561,16 @@ public abstract class CommonStaticUtil {
 
 		return true;
 	}
+	
+	/**
+	 * @param ch 검사 대상 문자
+	 * @return 영문이나 숫자 여부
+	 */
+	public static boolean isEnglishAndDigit(char ch) {
+		boolean isEnglishAndDigit = (isEnglish(ch) || Character.isDigit(ch));
+
+		return isEnglishAndDigit;
+	}
 
 	/**
 	 * WARNING! 정규식을 이용한 방식과 아닌 방식의 속도 차를 검증하기 위한 단위 테스트 용도로 만든 메소드로 실전에서는 쓰지 말것!  

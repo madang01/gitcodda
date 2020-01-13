@@ -593,28 +593,6 @@ public class ValueChecker {
 					.append("글자를 요구합니다").toString();
 			throw new IllegalArgumentException(errorMessage);
 		}
-		
-		char[] contentsChars = contents.toCharArray();
-		
-		for (int i=0; i < contentsChars.length; i++) {
-			char c = contentsChars[i];
-						
-			if (!isLineSeparator(c) && !isSpaceOrTab(c)  && !isPunct(c) && !Character.isLetterOrDigit(c)) {
-				int codePoint = Character.codePointAt(contentsChars, i);
-				
-				String errorMessage = new StringBuilder()
-						.append("게시글 내용에 허용되지 않는 문자[inx=")
-						.append(i)
-						.append(", type=")
-						.append(Character.getType(c))
-						.append(", code point=")
-						.append(codePoint)
-						.append(", name=")
-						.append(Character.getName(codePoint))
-						.append("]가 존재합니다, 게시글 내용은 문자, 숫자, 특수문자, 공백문자 그리고 개행문자만 허용됩니다").toString();
-				throw new IllegalArgumentException(errorMessage);
-			}
-		}	
 	}
 	
 	/**
