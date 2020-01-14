@@ -12,7 +12,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import kr.pe.codda.client.AnyProjectConnectionPoolIF;
 import kr.pe.codda.client.ConnectionPoolManager;
-import kr.pe.codda.common.buildsystem.pathsupporter.WebRootBuildSystemPathSupporter;
 import kr.pe.codda.common.config.CoddaConfiguration;
 import kr.pe.codda.common.config.CoddaConfigurationManager;
 import kr.pe.codda.common.etc.CommonStaticFinalVars;
@@ -22,7 +21,7 @@ import kr.pe.codda.impl.message.BoardDownloadFileReq.BoardDownloadFileReq;
 import kr.pe.codda.impl.message.BoardDownloadFileRes.BoardDownloadFileRes;
 import kr.pe.codda.impl.message.MessageResultRes.MessageResultRes;
 import kr.pe.codda.weblib.common.AccessedUserInformation;
-import kr.pe.codda.weblib.common.WebCommonStaticFinalVars;
+import kr.pe.codda.weblib.common.WebCommonStaticUtil;
 import kr.pe.codda.weblib.jdf.AbstractUserLoginServlet;
 
 @SuppressWarnings("serial")
@@ -142,8 +141,10 @@ public class BoardDownloadSvl extends AbstractUserLoginServlet {
 			printBoardProcessFailureCallBackPage(req, res, errorMessage);
 			return;
 		}
+		
 
 		BoardDownloadFileReq boardDownloadFileReq = new BoardDownloadFileReq();
+		boardDownloadFileReq.setRequestedUserID(accessedUserformation.getUserID());
 		boardDownloadFileReq.setBoardID(boardID);
 		boardDownloadFileReq.setBoardNo(boardNo);
 		boardDownloadFileReq.setAttachedFileSeq(attachedFileSeq);
@@ -193,17 +194,21 @@ public class BoardDownloadSvl extends AbstractUserLoginServlet {
 				.getRunningProjectConfiguration();
 		String mainProjectName = runningProjectConfiguration.getMainProjectName();
 		String installedPathString = runningProjectConfiguration.getInstalledPathString();
-		String attachedFileFullName = new StringBuilder(
-				WebRootBuildSystemPathSupporter.getUserWebUploadPathString(installedPathString, mainProjectName))
-						.append(File.separator).append(WebCommonStaticFinalVars.WEBSITE_ATTACHED_FILE_PREFIX)
-						.append("_BoardID").append(boardID).append("_BoardNo").append(boardNo).append("Seq")
-						.append(attachedFileSeq).append(WebCommonStaticFinalVars.WEBSITE_ATTACHED_FILE_SUFFIX)
-						.toString();
-		File downloadFile = new File(attachedFileFullName);
+		
+		
+		String downloadFilePathString = WebCommonStaticUtil
+				.buildAttachedFilePathString(installedPathString,
+						mainProjectName, boardID,
+						boardNo, attachedFileSeq);
+		
+		File downloadFile = new File(downloadFilePathString);
+		
+		
+		
 		// SecureCoding 파일명을 받는 경우 ../ 에 대한 체크가 필요하다.(지정디렉토리 이외의 디렉토리 금지 루틴)
 
 		if (!downloadFile.exists()) {
-			String errorMessage = new StringBuilder().append("다운 로드 할 대상 파일[").append(attachedFileFullName)
+			String errorMessage = new StringBuilder().append("다운 로드 할 대상 파일[").append(downloadFilePathString)
 					.append("]이 존재 하지 않습니다").toString();
 			String debugMessage = "";
 			printErrorMessagePage(req, res, errorMessage, debugMessage);

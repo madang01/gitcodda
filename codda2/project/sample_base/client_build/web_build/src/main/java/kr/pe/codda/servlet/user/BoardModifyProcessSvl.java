@@ -103,12 +103,12 @@ public class BoardModifyProcessSvl extends AbstractMultipartServlet implements I
 	public BoardModifyRes doWork(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		String paramSessionKeyBase64 = null;
 		String paramIVBase64 = null;
-		// String paramBoardID = null;
+		String paramBoardID = null;
 		String paramBoardPwdCipherBase64 = null;
-		// String paramBoardNo = null;
+		String paramBoardNo = null;
 		String paramSubject = null;
 		String paramContents = null;
-		// String paramNextAttachedFileSeq = null;
+		String paramNextAttachedFileSeq = null;
 		List<BoardModifyReq.OldAttachedFile> oldAttachedFileList = new ArrayList<BoardModifyReq.OldAttachedFile>();
 		List<BoardModifyReq.NewAttachedFile> newAttachedFileList = new ArrayList<BoardModifyReq.NewAttachedFile>();
 
@@ -143,78 +143,18 @@ public class BoardModifyProcessSvl extends AbstractMultipartServlet implements I
 				} else if (formFieldName.equals(WebCommonStaticFinalVars.PARAMETER_KEY_NAME_OF_SESSION_KEY_IV)) {
 					paramIVBase64 = formFieldValue;
 				} else if (formFieldName.equals("boardID")) {
-					try {
-						boardID = ValueChecker.checkValidBoardID(formFieldValue);
-					} catch (IllegalArgumentException e) {
-						String errorMessage = e.getMessage();
-						String debugMessage = null;
-						throw new WebClientException(errorMessage, debugMessage);
-					}
-					
-					// paramBoardID = formFieldValue;
+					paramBoardID = formFieldValue;
 				} else if (formFieldName.equals("boardNo")) {
-					try {
-						boardNo = ValueChecker.checkValidBoardNo(formFieldValue);
-					} catch (IllegalArgumentException e) {
-						String errorMessage = e.getMessage();
-						String debugMessage = null;
-						throw new WebClientException(errorMessage, debugMessage);
-					}
-
-					// paramBoardNo = formFieldValue;
+					paramBoardNo = formFieldValue;
 				} else if (formFieldName.equals("pwd")) {
 					paramBoardPwdCipherBase64 = formFieldValue;
 				} else if (formFieldName.equals("subject")) {
-					try {
-						if (null != formFieldValue) {
-							ValueChecker.checkValidSubject(formFieldValue);
-
-							paramSubject = formFieldValue;
-						} else {
-							paramSubject = "";
-						}
-					} catch (IllegalArgumentException e) {
-						String errorMessage = e.getMessage();
-						String debugMessage = null;
-						throw new WebClientException(errorMessage, debugMessage);
-					}
-
+					paramSubject = formFieldValue;
 				} else if (formFieldName.equals("contents")) {
-					try {
-						ValueChecker.checkValidContents(formFieldValue);
-					} catch (IllegalArgumentException e) {
-						String errorMessage = e.getMessage();
-						String debugMessage = null;
-						throw new WebClientException(errorMessage, debugMessage);
-					}
-
 					paramContents = formFieldValue;
 				} else if (formFieldName.equals("nextAttachedFileSeq")) {
-					if (null == formFieldValue) {
-						String errorMessage = "다음 첨부 파일 시퀀스 번호를 넣어주세요";
-						String debugMessage = "the web parameter 'content' is null";
-						throw new WebClientException(errorMessage, debugMessage);
-					}
 
-					try {
-						nextAttachedFileSeq = Short.parseShort(formFieldValue);
-					} catch (NumberFormatException e) {
-						String errorMessage = "잘못된 다음 첨부 파일 시퀀스 번호입니다";
-						String debugMessage = new StringBuilder("the web parameter 'nextAttachedFileSeq'[")
-								.append(formFieldValue).append("] is not a Short").toString();
-						throw new WebClientException(errorMessage, debugMessage);
-					}
-
-					if (nextAttachedFileSeq > CommonStaticFinalVars.UNSIGNED_BYTE_MAX) {
-						String errorMessage = "잘못된 '다음 첨부 파일 시퀀스 번호'입니다";
-						String debugMessage = new StringBuilder("the web parameter 'nextAttachedFileSeq'[")
-								.append(formFieldValue)
-								.append("] is greater than a maximum value(=255) tha an usniged byte can have")
-								.toString();
-						throw new WebClientException(errorMessage, debugMessage);
-					}
-
-					// paramNextAttachedFileSeq = formFieldValue;
+					paramNextAttachedFileSeq = formFieldValue;
 				} else if (formFieldName.equals("oldAttachedFileSeq")) {
 					String paramOldAttachedFileSeq = formFieldValue;
 
@@ -265,9 +205,6 @@ public class BoardModifyProcessSvl extends AbstractMultipartServlet implements I
 				}
 
 				/**************** 파라미터 종료 *******************/
-
-				// oldAttachedFileSeqList
-
 			} else {
 				String formFieldName = fileItem.getFieldName();
 				String newAttachedFileName = fileItem.getName();
@@ -383,7 +320,32 @@ public class BoardModifyProcessSvl extends AbstractMultipartServlet implements I
 				newAttachedFileList.add(newAttachedFile);
 			}
 		}
-
+		
+		// FIXME!
+		try {
+			boardID = ValueChecker.checkValidBoardID(paramBoardID);
+		
+			boardNo = ValueChecker.checkValidBoardNo(paramBoardNo);
+			
+			/**
+			 * 웹 브라우저에서 게시판 정의에 제목이 없어야 한다면 파라미터 '제목'을 생략하던가 빈 문자열로 넘겨야한다.   
+			 */
+			if (null == paramSubject || paramSubject.isEmpty()) {
+				paramSubject = "";
+			} else {
+				ValueChecker.checkValidSubject(paramSubject);
+			}
+			
+			ValueChecker.checkValidContents(paramContents);
+			
+			nextAttachedFileSeq = ValueChecker.checkValidNextAttachedFileSeq(paramNextAttachedFileSeq);			
+		} catch (IllegalArgumentException e) {
+			String errorMessage = e.getMessage();
+			String debugMessage = null;
+			throw new WebClientException(errorMessage, debugMessage);
+		}
+		
+		
 		if (null == paramSessionKeyBase64) {
 			String errorMessage = "세션키를 넣어 주세요";
 			String debugMessage = new StringBuilder("the web parameter '")

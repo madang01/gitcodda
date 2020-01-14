@@ -578,6 +578,33 @@ public class ValueChecker {
 		}
 	}
 	
+	public static short checkValidNextAttachedFileSeq(String nextAttachedFileSeq) throws IllegalArgumentException {
+		if (null == nextAttachedFileSeq) {
+			String errorMessage = "'다음 첨부 파일 시퀀스 번호'를 넣어주세요";
+			throw new IllegalArgumentException(errorMessage);
+		}
+
+		short nativeNextAttachedFileSeq = -1;
+		try {
+			nativeNextAttachedFileSeq = Short.parseShort(nextAttachedFileSeq);
+		} catch (NumberFormatException e) {
+			String errorMessage = new StringBuilder().append("잘못된 '다음 첨부 파일 시퀀스 번호'[")
+					.append(nextAttachedFileSeq)
+					.append("]입니다").toString();
+			throw new IllegalArgumentException(errorMessage);
+		}
+
+		if (nativeNextAttachedFileSeq > CommonStaticFinalVars.UNSIGNED_BYTE_MAX) {
+			String errorMessage = new StringBuilder("'다음 첨부 파일 시퀀스 번호'[")
+					.append(nextAttachedFileSeq)
+					.append("]가 Short.Max(=255) 보다 큽니다")
+					.toString();
+			throw new IllegalArgumentException(errorMessage);
+		}
+		
+		return nativeNextAttachedFileSeq;
+	}
+	
 	/**
 	 * IP4 주소에 대한 입력값 검사를 수행한다.
 	 * @param ip IP4 주소

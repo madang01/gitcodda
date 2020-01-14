@@ -1,7 +1,6 @@
 package kr.pe.codda.impl.task.server;
 
 import static kr.pe.codda.jooq.tables.SbBoardFilelistTb.SB_BOARD_FILELIST_TB;
-import static kr.pe.codda.jooq.tables.SbBoardHistoryTb.SB_BOARD_HISTORY_TB;
 import static kr.pe.codda.jooq.tables.SbBoardTb.SB_BOARD_TB;
 
 import org.jooq.Record1;
@@ -18,7 +17,6 @@ import kr.pe.codda.impl.message.BoardDownloadFileRes.BoardDownloadFileRes;
 import kr.pe.codda.impl.message.MessageResultRes.MessageResultRes;
 import kr.pe.codda.server.LoginManagerIF;
 import kr.pe.codda.server.lib.BoardStateType;
-import kr.pe.codda.server.lib.MemberRoleType;
 import kr.pe.codda.server.lib.PermissionType;
 import kr.pe.codda.server.lib.ServerCommonStaticFinalVars;
 import kr.pe.codda.server.lib.ServerDBUtil;
@@ -87,7 +85,7 @@ public class BoardDownloadFileReqServerTask extends AbstractServerTask {
 		
 		ServerDBUtil.execute(dbcpName, (conn, create) -> {
 			
-			MemberRoleType memberRoleTypeOfRequestedUserID = ServerDBUtil.checkUserAccessRights(conn, create, log, "게시글 첨부 파일 다운로드 서비스", PermissionType.MEMBER, boardDownloadFileReq.getRequestedUserID());
+			ServerDBUtil.checkUserAccessRights(conn, create, log, "게시글 첨부 파일 다운로드 서비스", PermissionType.MEMBER, boardDownloadFileReq.getRequestedUserID());
 
 			Record1<Byte> boardRecord = create.select(SB_BOARD_TB.BOARD_ST).from(SB_BOARD_TB)
 					.where(SB_BOARD_TB.BOARD_ID.eq(boardID)).and(SB_BOARD_TB.BOARD_NO.eq(boardNo)).forUpdate()
@@ -141,38 +139,7 @@ public class BoardDownloadFileReqServerTask extends AbstractServerTask {
 				throw new ServerTaskException(errorMessage);
 			}
 
-			if (! MemberRoleType.ADMIN.equals(memberRoleTypeOfRequestedUserID)) {
-				/** 관리자가 아닌 경우 최초 작성자 즉 소유자의 경우에만 다운 로드 허용  */
-				Record1<String> firstWriterBoardRecord = create.select(SB_BOARD_HISTORY_TB.REGISTRANT_ID)
-						.from(SB_BOARD_HISTORY_TB).where(SB_BOARD_HISTORY_TB.BOARD_ID.eq(boardID))
-						.and(SB_BOARD_HISTORY_TB.BOARD_NO.eq(boardNo))
-						.and(SB_BOARD_HISTORY_TB.HISTORY_SQ.eq(UByte.valueOf(0))).fetchOne();
-
-				if (null == firstWriterBoardRecord) {
-					try {
-						conn.rollback();
-					} catch (Exception e) {
-						log.warn("fail to rollback");
-					}
-
-					String errorMessage = new StringBuilder("해당 게시글의 최초 작성자 정보가 존재 하지 않습니다").toString();
-					throw new ServerTaskException(errorMessage);
-				}
-
-				String firstWriterID = firstWriterBoardRecord.getValue(SB_BOARD_HISTORY_TB.REGISTRANT_ID);
-
-				if (!boardDownloadFileReq.getRequestedUserID().equals(firstWriterID)) {
-					try {
-						conn.rollback();
-					} catch (Exception e) {
-						log.warn("fail to rollback");
-					}
-
-					String errorMessage = new StringBuilder("타인[").append(firstWriterID).append("] 게시글은 수정 할 수 없습니다")
-							.toString();
-					throw new ServerTaskException(errorMessage);
-				}
-			}
+			
 			
 			Record1<String>  fileListRecord = create.select(SB_BOARD_FILELIST_TB.ATTACHED_FNAME)
 					.from(SB_BOARD_FILELIST_TB)

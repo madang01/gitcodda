@@ -80,9 +80,9 @@ public class BoardReplyProcessSvl extends AbstractMultipartServlet implements Im
 			HttpServletResponse res) throws Exception {
 		String paramSessionKeyBase64 = null;
 		String paramIVBase64 = null;
-		// String paramBoardID = null;
+		String paramBoardID = null;
 		String paramBoardPwdCipherBase64 = null;
-		// String paramParentBoardNo = null;
+		String paramParentBoardNo = null;
 		String paramSubject = null;
 		String paramContents = null;
 		List<BoardReplyReq.NewAttachedFile> newAttachedFileList = new ArrayList<BoardReplyReq.NewAttachedFile>();
@@ -121,39 +121,17 @@ public class BoardReplyProcessSvl extends AbstractMultipartServlet implements Im
 						.equals(WebCommonStaticFinalVars.PARAMETER_KEY_NAME_OF_SESSION_KEY_IV)) {
 					paramIVBase64 = formFieldValue;
 				} else if (formFieldName.equals("boardID")) {
-					try {
-						boardID = ValueChecker.checkValidBoardID(formFieldValue);
-					} catch(IllegalArgumentException e) {
-						String errorMessage = e.getMessage();
-						String debugMessage = null;
-						throw new WebClientException(errorMessage, debugMessage);
-					}
-					
-					// paramBoardID = formFieldValue;
+					paramBoardID = formFieldValue;
 				} else if (formFieldName.equals("pwd")) {
 					paramBoardPwdCipherBase64 = formFieldValue;
 				} else if (formFieldName.equals("parentBoardNo")) {
-					try {
-						
-						parentBoardNo = ValueChecker.checkValidParentBoardNo(formFieldValue);
-						
-						
-						
-					} catch(IllegalArgumentException e) {
-						String errorMessage = e.getMessage();
-						String debugMessage = null;
-						throw new WebClientException(errorMessage, debugMessage);
-					}
 					
-					// paramParentBoardNo = formFieldValue;
+					
+					paramParentBoardNo = formFieldValue;
 				} else if (formFieldName.equals("subject")) {
-					if (null != formFieldValue) {
-						ValueChecker.checkValidSubject(formFieldValue);
-						
-						paramSubject = formFieldValue;
-					} else {
-						paramSubject = "";
-					}					
+							
+					
+					paramSubject = formFieldValue;
 				} else if (formFieldName.equals("contents")) {
 					try {
 						ValueChecker.checkValidContents(formFieldValue);						
@@ -314,6 +292,27 @@ public class BoardReplyProcessSvl extends AbstractMultipartServlet implements Im
 			}
 		}
 
+		// FIXME!
+		try {
+			boardID = ValueChecker.checkValidBoardID(paramBoardID);
+			
+			/**
+			 * 웹 브라우저에서 게시판 정의에 제목이 없어야 한다면 파라미터 '제목'을 생략하던가 빈 문자열로 넘겨야한다.   
+			 */
+			if (null == paramSubject || paramSubject.isEmpty()) {
+				paramSubject = "";
+			} else {
+				ValueChecker.checkValidSubject(paramSubject);
+			}
+		
+			parentBoardNo = ValueChecker.checkValidParentBoardNo(paramParentBoardNo);
+		} catch(IllegalArgumentException e) {
+			String errorMessage = e.getMessage();
+			String debugMessage = null;
+			throw new WebClientException(errorMessage, debugMessage);
+		}
+		
+		
 		if (null == paramSessionKeyBase64) {
 			String errorMessage = "세션키를 넣어 주세요";
 			String debugMessage = new StringBuilder("the web parameter '")

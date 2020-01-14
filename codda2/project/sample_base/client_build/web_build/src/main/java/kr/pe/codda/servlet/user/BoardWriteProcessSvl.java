@@ -80,7 +80,7 @@ public class BoardWriteProcessSvl extends AbstractMultipartServlet implements Im
 			throws Exception {
 		String paramSessionKeyBase64 = null;
 		String paramIVBase64 = null;
-		//String paramBoardID = null;
+		String paramBoardID = null;
 		String paramBoardPwdCipherBase64 = null;
 		String paramSubject = null;
 		String paramContents = null;
@@ -119,36 +119,12 @@ public class BoardWriteProcessSvl extends AbstractMultipartServlet implements Im
 						.equals(WebCommonStaticFinalVars.PARAMETER_KEY_NAME_OF_SESSION_KEY_IV)) {
 					paramIVBase64 = formFieldValue;
 				} else if (formFieldName.equals("boardID")) {
-					try {
-						boardID = ValueChecker.checkValidBoardID(formFieldValue);
-					} catch(IllegalArgumentException e) {
-						String errorMessage = e.getMessage();
-						String debugMessage = null;
-						throw new WebClientException(errorMessage, debugMessage);
-					}
-					
-					// paramBoardID = formFieldValue;
+					paramBoardID = formFieldValue;
 				} else if (formFieldName.equals("pwd")) {
 					paramBoardPwdCipherBase64 = formFieldValue;
-				} else if (formFieldName.equals("subject")) {	
-					try {					
-						ValueChecker.checkValidSubject(formFieldValue);						
-					} catch(IllegalArgumentException e) {
-						String errorMessage = e.getMessage();
-						String debugMessage = null;
-						throw new WebClientException(errorMessage, debugMessage);
-					}
-					
+				} else if (formFieldName.equals("subject")) {
 					paramSubject = formFieldValue;
 				} else if (formFieldName.equals("contents")) {
-					try {
-						ValueChecker.checkValidContents(formFieldValue);						
-					} catch(IllegalArgumentException e) {
-						String errorMessage = e.getMessage();
-						String debugMessage = null;
-						throw new WebClientException(errorMessage, debugMessage);
-					}
-					
 					paramContents = formFieldValue;
 				} else {
 					String errorMessage = new StringBuilder()
@@ -279,6 +255,19 @@ public class BoardWriteProcessSvl extends AbstractMultipartServlet implements Im
 				newAttachedFile.setAttachedFileSize(newAttachedFileSize);
 				newAttachedFileList.add(newAttachedFile);
 			}
+		}
+		
+		// FIXME!
+		try {
+			boardID = ValueChecker.checkValidBoardID(paramBoardID);
+			
+			ValueChecker.checkValidSubject(paramSubject);						
+		
+			ValueChecker.checkValidContents(paramContents);						
+		} catch(IllegalArgumentException e) {
+			String errorMessage = e.getMessage();
+			String debugMessage = null;
+			throw new WebClientException(errorMessage, debugMessage);
 		}
 
 		if (null == paramSessionKeyBase64) {
@@ -441,7 +430,10 @@ public class BoardWriteProcessSvl extends AbstractMultipartServlet implements Im
 		}
 		
 		
-		// FIXME!
+		
+		
+		
+		
 		/*
 		int startInxOfImgTag = paramContents.indexOf("<img");
 		int endInxOfMimeType = paramContents.indexOf(";base64,", startInxOfImgTag);
