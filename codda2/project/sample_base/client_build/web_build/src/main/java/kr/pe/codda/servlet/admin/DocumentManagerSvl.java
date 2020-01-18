@@ -24,9 +24,10 @@ import kr.pe.codda.client.AnyProjectConnectionPoolIF;
 import kr.pe.codda.client.ConnectionPoolManager;
 import kr.pe.codda.common.message.AbstractMessage;
 import kr.pe.codda.impl.classloader.ClientMessageCodecManger;
-import kr.pe.codda.impl.message.BoardListReq.BoardListReq;
-import kr.pe.codda.impl.message.BoardListRes.BoardListRes;
+import kr.pe.codda.impl.message.DocumentListReq.DocumentListReq;
+import kr.pe.codda.impl.message.DocumentListRes.DocumentListRes;
 import kr.pe.codda.impl.message.MessageResultRes.MessageResultRes;
+import kr.pe.codda.weblib.common.DocumentSateSearchType;
 import kr.pe.codda.weblib.common.ValueChecker;
 import kr.pe.codda.weblib.common.WebCommonStaticFinalVars;
 import kr.pe.codda.weblib.jdf.AbstractAdminLoginServlet;
@@ -44,30 +45,49 @@ public class DocumentManagerSvl extends AbstractAdminLoginServlet {
 		
 		/**************** 파라미터 시작 *******************/
 		String paramPageNo = req.getParameter("pageNo");
+		String paramDocumentSateSearchType = req.getParameter("documentSateSearchType");
 		/**************** 파라미터 종료 *******************/
 		
-		int pageNo = -1;
-		try {
-			pageNo = ValueChecker.checkValidPageNoAndPageSize(paramPageNo, WebCommonStaticFinalVars.WEBSITE_BOARD_LIST_SIZE_PER_PAGE);
-		} catch(IllegalArgumentException e) {
-			String errorMessage = e.getMessage();
-			String debugMessage = null;
-			printErrorMessagePage(req, res, errorMessage, debugMessage);
-			return;
+		final int pageNo;
+		
+		if (null == paramPageNo) {
+			pageNo = 1;
+		} else {
+			try {
+				pageNo = ValueChecker.checkValidPageNoAndPageSize(paramPageNo, WebCommonStaticFinalVars.WEBSITE_BOARD_LIST_SIZE_PER_PAGE);
+			} catch(IllegalArgumentException e) {
+				String errorMessage = e.getMessage();
+				String debugMessage = null;
+				printErrorMessagePage(req, res, errorMessage, debugMessage);
+				return;
+			}
 		}
 		
-		final short boardID = WebCommonStaticFinalVars.DOCUMENT_MANAGER_BOARD_ID;
 		
-		BoardListReq boardListReq = new BoardListReq();
-		boardListReq.setRequestedUserID(getAccessedUserInformationFromSession(req).getUserID());
-		boardListReq.setBoardID(boardID);
-		boardListReq.setPageNo(pageNo);
-		boardListReq.setPageSize(WebCommonStaticFinalVars.WEBSITE_BOARD_LIST_SIZE_PER_PAGE);
+		final DocumentSateSearchType documentSateSearchType;
+		if (null == paramDocumentSateSearchType) {
+			documentSateSearchType = DocumentSateSearchType.OK;
+		} else {
+			try {
+				documentSateSearchType = DocumentSateSearchType.valueOf(paramDocumentSateSearchType, String.class);
+			} catch(IllegalArgumentException e) {
+				String errorMessage = "the web parameter 'documentSateSearchType' is bad";
+				String debugMessage = null;
+				printErrorMessagePage(req, res, errorMessage, debugMessage);
+				return;
+			}
+		}
+		
+		DocumentListReq documentListReq = new DocumentListReq();
+		documentListReq.setRequestedUserID(getAccessedUserInformationFromSession(req).getUserID());
+		documentListReq.setPageNo(pageNo);
+		documentListReq.setPageSize(WebCommonStaticFinalVars.WEBSITE_BOARD_LIST_SIZE_PER_PAGE);
+		documentListReq.setDocumentSateSearchType(documentSateSearchType.getValue());
 				
 		AnyProjectConnectionPoolIF mainProjectConnectionPool = ConnectionPoolManager.getInstance().getMainProjectConnectionPool();
-		AbstractMessage outputMessage = mainProjectConnectionPool.sendSyncInputMessage(ClientMessageCodecManger.getInstance(), boardListReq);
+		AbstractMessage outputMessage = mainProjectConnectionPool.sendSyncInputMessage(ClientMessageCodecManger.getInstance(), documentListReq);
 		
-		if (!(outputMessage instanceof BoardListRes)) {
+		if (!(outputMessage instanceof DocumentListRes)) {
 			if (outputMessage instanceof MessageResultRes) {
 				MessageResultRes messageResultRes = (MessageResultRes)outputMessage;
 				String errorMessage = "게시판 목록 조회가 실패하였습니다";
@@ -77,7 +97,7 @@ public class DocumentManagerSvl extends AbstractAdminLoginServlet {
 			} else {
 				String errorMessage = "게시판 목록 조회가 실패했습니다";
 				String debugMessage = new StringBuilder("입력 메시지[")
-						.append(boardListReq.getMessageID())
+						.append(documentListReq.getMessageID())
 						.append("]에 대한 비 정상 출력 메시지[")
 						.append(outputMessage.toString())
 						.append("] 도착").toString();
@@ -89,8 +109,8 @@ public class DocumentManagerSvl extends AbstractAdminLoginServlet {
 			}
 		} 
 		
-		BoardListRes boardListRes = (BoardListRes)outputMessage;
-		req.setAttribute("boardListRes", boardListRes);
+		DocumentListRes documentListRes = (DocumentListRes)outputMessage;
+		req.setAttribute("documentListRes", documentListRes);
 		printJspPage(req, res, "/sitemenu/doc/DocumentManager.jsp");
 		
 	}

@@ -1,5 +1,5 @@
 #!/bin/sh
-export CODDA_HOME=/home/madang01/gitmadang/codda
+export CODDA_HOME=/home/madang01/gitcodda/codda2
 export PROJECT_NAME=sample_base
 export WEB_BUILD_HOME=$CODDA_HOME/project/$PROJECT_NAME/client_build/web_build
 export WEB_CORELIB_PATH=$WEB_BUILD_HOME/corelib/ex

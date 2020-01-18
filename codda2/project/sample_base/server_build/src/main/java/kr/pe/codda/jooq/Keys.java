@@ -12,6 +12,8 @@ import kr.pe.codda.jooq.tables.SbBoardHistoryTb;
 import kr.pe.codda.jooq.tables.SbBoardInfoTb;
 import kr.pe.codda.jooq.tables.SbBoardTb;
 import kr.pe.codda.jooq.tables.SbBoardVoteTb;
+import kr.pe.codda.jooq.tables.SbDocHistoryTb;
+import kr.pe.codda.jooq.tables.SbDocTb;
 import kr.pe.codda.jooq.tables.SbMemberActivityHistoryTb;
 import kr.pe.codda.jooq.tables.SbMemberTb;
 import kr.pe.codda.jooq.tables.SbSeqTb;
@@ -24,6 +26,8 @@ import kr.pe.codda.jooq.tables.records.SbBoardHistoryTbRecord;
 import kr.pe.codda.jooq.tables.records.SbBoardInfoTbRecord;
 import kr.pe.codda.jooq.tables.records.SbBoardTbRecord;
 import kr.pe.codda.jooq.tables.records.SbBoardVoteTbRecord;
+import kr.pe.codda.jooq.tables.records.SbDocHistoryTbRecord;
+import kr.pe.codda.jooq.tables.records.SbDocTbRecord;
 import kr.pe.codda.jooq.tables.records.SbMemberActivityHistoryTbRecord;
 import kr.pe.codda.jooq.tables.records.SbMemberTbRecord;
 import kr.pe.codda.jooq.tables.records.SbSeqTbRecord;
@@ -65,6 +69,8 @@ public class Keys {
     public static final UniqueKey<SbBoardInfoTbRecord> KEY_SB_BOARD_INFO_TB_PRIMARY = UniqueKeys0.KEY_SB_BOARD_INFO_TB_PRIMARY;
     public static final UniqueKey<SbBoardTbRecord> KEY_SB_BOARD_TB_PRIMARY = UniqueKeys0.KEY_SB_BOARD_TB_PRIMARY;
     public static final UniqueKey<SbBoardVoteTbRecord> KEY_SB_BOARD_VOTE_TB_PRIMARY = UniqueKeys0.KEY_SB_BOARD_VOTE_TB_PRIMARY;
+    public static final UniqueKey<SbDocHistoryTbRecord> KEY_SB_DOC_HISTORY_TB_PRIMARY = UniqueKeys0.KEY_SB_DOC_HISTORY_TB_PRIMARY;
+    public static final UniqueKey<SbDocTbRecord> KEY_SB_DOC_TB_PRIMARY = UniqueKeys0.KEY_SB_DOC_TB_PRIMARY;
     public static final UniqueKey<SbMemberActivityHistoryTbRecord> KEY_SB_MEMBER_ACTIVITY_HISTORY_TB_PRIMARY = UniqueKeys0.KEY_SB_MEMBER_ACTIVITY_HISTORY_TB_PRIMARY;
     public static final UniqueKey<SbMemberTbRecord> KEY_SB_MEMBER_TB_PRIMARY = UniqueKeys0.KEY_SB_MEMBER_TB_PRIMARY;
     public static final UniqueKey<SbMemberTbRecord> KEY_SB_MEMBER_TB_SB_MEMBER_IDX1 = UniqueKeys0.KEY_SB_MEMBER_TB_SB_MEMBER_IDX1;
@@ -85,6 +91,7 @@ public class Keys {
     public static final ForeignKey<SbBoardTbRecord, SbBoardInfoTbRecord> SB_BOARD_FK1 = ForeignKeys0.SB_BOARD_FK1;
     public static final ForeignKey<SbBoardVoteTbRecord, SbBoardTbRecord> SB_BOARD_VOTE_FK1 = ForeignKeys0.SB_BOARD_VOTE_FK1;
     public static final ForeignKey<SbBoardVoteTbRecord, SbMemberTbRecord> SB_BOARD_VOTE_FK2 = ForeignKeys0.SB_BOARD_VOTE_FK2;
+    public static final ForeignKey<SbDocHistoryTbRecord, SbDocTbRecord> SB_DOC_HISTORY_FK1 = ForeignKeys0.SB_DOC_HISTORY_FK1;
     public static final ForeignKey<SbMemberActivityHistoryTbRecord, SbMemberTbRecord> MEMBER_ACTIVITY_HISTORY_FK1 = ForeignKeys0.MEMBER_ACTIVITY_HISTORY_FK1;
     public static final ForeignKey<SbMemberActivityHistoryTbRecord, SbBoardTbRecord> MEMBER_ACTIVITY_HISOTRY_FK2 = ForeignKeys0.MEMBER_ACTIVITY_HISOTRY_FK2;
 
@@ -99,6 +106,8 @@ public class Keys {
         public static final UniqueKey<SbBoardInfoTbRecord> KEY_SB_BOARD_INFO_TB_PRIMARY = Internal.createUniqueKey(SbBoardInfoTb.SB_BOARD_INFO_TB, "KEY_sb_board_info_tb_PRIMARY", SbBoardInfoTb.SB_BOARD_INFO_TB.BOARD_ID);
         public static final UniqueKey<SbBoardTbRecord> KEY_SB_BOARD_TB_PRIMARY = Internal.createUniqueKey(SbBoardTb.SB_BOARD_TB, "KEY_sb_board_tb_PRIMARY", SbBoardTb.SB_BOARD_TB.BOARD_ID, SbBoardTb.SB_BOARD_TB.BOARD_NO);
         public static final UniqueKey<SbBoardVoteTbRecord> KEY_SB_BOARD_VOTE_TB_PRIMARY = Internal.createUniqueKey(SbBoardVoteTb.SB_BOARD_VOTE_TB, "KEY_sb_board_vote_tb_PRIMARY", SbBoardVoteTb.SB_BOARD_VOTE_TB.BOARD_NO, SbBoardVoteTb.SB_BOARD_VOTE_TB.USER_ID, SbBoardVoteTb.SB_BOARD_VOTE_TB.BOARD_ID);
+        public static final UniqueKey<SbDocHistoryTbRecord> KEY_SB_DOC_HISTORY_TB_PRIMARY = Internal.createUniqueKey(SbDocHistoryTb.SB_DOC_HISTORY_TB, "KEY_sb_doc_history_tb_PRIMARY", SbDocHistoryTb.SB_DOC_HISTORY_TB.DOC_NO, SbDocHistoryTb.SB_DOC_HISTORY_TB.DOC_SQ);
+        public static final UniqueKey<SbDocTbRecord> KEY_SB_DOC_TB_PRIMARY = Internal.createUniqueKey(SbDocTb.SB_DOC_TB, "KEY_sb_doc_tb_PRIMARY", SbDocTb.SB_DOC_TB.DOC_NO);
         public static final UniqueKey<SbMemberActivityHistoryTbRecord> KEY_SB_MEMBER_ACTIVITY_HISTORY_TB_PRIMARY = Internal.createUniqueKey(SbMemberActivityHistoryTb.SB_MEMBER_ACTIVITY_HISTORY_TB, "KEY_sb_member_activity_history_tb_PRIMARY", SbMemberActivityHistoryTb.SB_MEMBER_ACTIVITY_HISTORY_TB.USER_ID, SbMemberActivityHistoryTb.SB_MEMBER_ACTIVITY_HISTORY_TB.ACTIVITY_SQ);
         public static final UniqueKey<SbMemberTbRecord> KEY_SB_MEMBER_TB_PRIMARY = Internal.createUniqueKey(SbMemberTb.SB_MEMBER_TB, "KEY_sb_member_tb_PRIMARY", SbMemberTb.SB_MEMBER_TB.USER_ID);
         public static final UniqueKey<SbMemberTbRecord> KEY_SB_MEMBER_TB_SB_MEMBER_IDX1 = Internal.createUniqueKey(SbMemberTb.SB_MEMBER_TB, "KEY_sb_member_tb_sb_member_idx1", SbMemberTb.SB_MEMBER_TB.NICKNAME);
@@ -117,6 +126,7 @@ public class Keys {
         public static final ForeignKey<SbBoardTbRecord, SbBoardInfoTbRecord> SB_BOARD_FK1 = Internal.createForeignKey(kr.pe.codda.jooq.Keys.KEY_SB_BOARD_INFO_TB_PRIMARY, SbBoardTb.SB_BOARD_TB, "sb_board_fk1", SbBoardTb.SB_BOARD_TB.BOARD_ID);
         public static final ForeignKey<SbBoardVoteTbRecord, SbBoardTbRecord> SB_BOARD_VOTE_FK1 = Internal.createForeignKey(kr.pe.codda.jooq.Keys.KEY_SB_BOARD_TB_PRIMARY, SbBoardVoteTb.SB_BOARD_VOTE_TB, "sb_board_vote_fk1", SbBoardVoteTb.SB_BOARD_VOTE_TB.BOARD_ID, SbBoardVoteTb.SB_BOARD_VOTE_TB.BOARD_NO);
         public static final ForeignKey<SbBoardVoteTbRecord, SbMemberTbRecord> SB_BOARD_VOTE_FK2 = Internal.createForeignKey(kr.pe.codda.jooq.Keys.KEY_SB_MEMBER_TB_PRIMARY, SbBoardVoteTb.SB_BOARD_VOTE_TB, "sb_board_vote_fk2", SbBoardVoteTb.SB_BOARD_VOTE_TB.USER_ID);
+        public static final ForeignKey<SbDocHistoryTbRecord, SbDocTbRecord> SB_DOC_HISTORY_FK1 = Internal.createForeignKey(kr.pe.codda.jooq.Keys.KEY_SB_DOC_TB_PRIMARY, SbDocHistoryTb.SB_DOC_HISTORY_TB, "sb_doc_history_fk1", SbDocHistoryTb.SB_DOC_HISTORY_TB.DOC_NO);
         public static final ForeignKey<SbMemberActivityHistoryTbRecord, SbMemberTbRecord> MEMBER_ACTIVITY_HISTORY_FK1 = Internal.createForeignKey(kr.pe.codda.jooq.Keys.KEY_SB_MEMBER_TB_PRIMARY, SbMemberActivityHistoryTb.SB_MEMBER_ACTIVITY_HISTORY_TB, "member_activity_history_fk1", SbMemberActivityHistoryTb.SB_MEMBER_ACTIVITY_HISTORY_TB.USER_ID);
         public static final ForeignKey<SbMemberActivityHistoryTbRecord, SbBoardTbRecord> MEMBER_ACTIVITY_HISOTRY_FK2 = Internal.createForeignKey(kr.pe.codda.jooq.Keys.KEY_SB_BOARD_TB_PRIMARY, SbMemberActivityHistoryTb.SB_MEMBER_ACTIVITY_HISTORY_TB, "member_activity_hisotry_fk2", SbMemberActivityHistoryTb.SB_MEMBER_ACTIVITY_HISTORY_TB.BOARD_ID, SbMemberActivityHistoryTb.SB_MEMBER_ACTIVITY_HISTORY_TB.BOARD_NO);
     }

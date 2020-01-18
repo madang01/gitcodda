@@ -29,59 +29,59 @@ import org.jooq.types.UInteger;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class SbUploadImageTbRecord extends UpdatableRecordImpl<SbUploadImageTbRecord> implements Record4<String, UInteger, String, Long> {
 
-    private static final long serialVersionUID = -1789109814;
+    private static final long serialVersionUID = 250611786;
 
     /**
-     * Setter for <code>sb_db.sb_upload_image_tb.yyyymmdd</code>.
+     * Setter for <code>sb_db.sb_upload_image_tb.yyyymmdd</code>. 년월일
      */
     public void setYyyymmdd(String value) {
         set(0, value);
     }
 
     /**
-     * Getter for <code>sb_db.sb_upload_image_tb.yyyymmdd</code>.
+     * Getter for <code>sb_db.sb_upload_image_tb.yyyymmdd</code>. 년월일
      */
     public String getYyyymmdd() {
         return (String) get(0);
     }
 
     /**
-     * Setter for <code>sb_db.sb_upload_image_tb.day_sq</code>.
+     * Setter for <code>sb_db.sb_upload_image_tb.day_sq</code>. 일별 순서
      */
     public void setDaySq(UInteger value) {
         set(1, value);
     }
 
     /**
-     * Getter for <code>sb_db.sb_upload_image_tb.day_sq</code>.
+     * Getter for <code>sb_db.sb_upload_image_tb.day_sq</code>. 일별 순서
      */
     public UInteger getDaySq() {
         return (UInteger) get(1);
     }
 
     /**
-     * Setter for <code>sb_db.sb_upload_image_tb.fname</code>.
+     * Setter for <code>sb_db.sb_upload_image_tb.fname</code>. 이미지 파일 이름
      */
     public void setFname(String value) {
         set(2, value);
     }
 
     /**
-     * Getter for <code>sb_db.sb_upload_image_tb.fname</code>.
+     * Getter for <code>sb_db.sb_upload_image_tb.fname</code>. 이미지 파일 이름
      */
     public String getFname() {
         return (String) get(2);
     }
 
     /**
-     * Setter for <code>sb_db.sb_upload_image_tb.fsize</code>.
+     * Setter for <code>sb_db.sb_upload_image_tb.fsize</code>. 이미지 파일 크기
      */
     public void setFsize(Long value) {
         set(3, value);
     }
 
     /**
-     * Getter for <code>sb_db.sb_upload_image_tb.fsize</code>.
+     * Getter for <code>sb_db.sb_upload_image_tb.fsize</code>. 이미지 파일 크기
      */
     public Long getFsize() {
         return (Long) get(3);

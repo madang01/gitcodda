@@ -12,6 +12,8 @@ import kr.pe.codda.jooq.tables.SbBoardHistoryTb;
 import kr.pe.codda.jooq.tables.SbBoardInfoTb;
 import kr.pe.codda.jooq.tables.SbBoardTb;
 import kr.pe.codda.jooq.tables.SbBoardVoteTb;
+import kr.pe.codda.jooq.tables.SbDocHistoryTb;
+import kr.pe.codda.jooq.tables.SbDocTb;
 import kr.pe.codda.jooq.tables.SbMemberActivityHistoryTb;
 import kr.pe.codda.jooq.tables.SbMemberTb;
 import kr.pe.codda.jooq.tables.SbSeqTb;
@@ -53,6 +55,8 @@ public class Indexes {
     public static final Index SB_BOARD_VOTE_TB_PRIMARY = Indexes0.SB_BOARD_VOTE_TB_PRIMARY;
     public static final Index SB_BOARD_VOTE_TB_SB_BOARD_VOTE_FK1 = Indexes0.SB_BOARD_VOTE_TB_SB_BOARD_VOTE_FK1;
     public static final Index SB_BOARD_VOTE_TB_SB_BOARD_VOTE_FK2 = Indexes0.SB_BOARD_VOTE_TB_SB_BOARD_VOTE_FK2;
+    public static final Index SB_DOC_HISTORY_TB_PRIMARY = Indexes0.SB_DOC_HISTORY_TB_PRIMARY;
+    public static final Index SB_DOC_TB_PRIMARY = Indexes0.SB_DOC_TB_PRIMARY;
     public static final Index SB_MEMBER_ACTIVITY_HISTORY_TB_BOARD_ID_IDX = Indexes0.SB_MEMBER_ACTIVITY_HISTORY_TB_BOARD_ID_IDX;
     public static final Index SB_MEMBER_ACTIVITY_HISTORY_TB_PRIMARY = Indexes0.SB_MEMBER_ACTIVITY_HISTORY_TB_PRIMARY;
     public static final Index SB_MEMBER_TB_EMAIL_UNIQUE = Indexes0.SB_MEMBER_TB_EMAIL_UNIQUE;
@@ -83,6 +87,8 @@ public class Indexes {
         public static Index SB_BOARD_VOTE_TB_PRIMARY = Internal.createIndex("PRIMARY", SbBoardVoteTb.SB_BOARD_VOTE_TB, new OrderField[] { SbBoardVoteTb.SB_BOARD_VOTE_TB.BOARD_NO, SbBoardVoteTb.SB_BOARD_VOTE_TB.USER_ID, SbBoardVoteTb.SB_BOARD_VOTE_TB.BOARD_ID }, true);
         public static Index SB_BOARD_VOTE_TB_SB_BOARD_VOTE_FK1 = Internal.createIndex("sb_board_vote_fk1", SbBoardVoteTb.SB_BOARD_VOTE_TB, new OrderField[] { SbBoardVoteTb.SB_BOARD_VOTE_TB.BOARD_ID, SbBoardVoteTb.SB_BOARD_VOTE_TB.BOARD_NO }, false);
         public static Index SB_BOARD_VOTE_TB_SB_BOARD_VOTE_FK2 = Internal.createIndex("sb_board_vote_fk2", SbBoardVoteTb.SB_BOARD_VOTE_TB, new OrderField[] { SbBoardVoteTb.SB_BOARD_VOTE_TB.USER_ID }, false);
+        public static Index SB_DOC_HISTORY_TB_PRIMARY = Internal.createIndex("PRIMARY", SbDocHistoryTb.SB_DOC_HISTORY_TB, new OrderField[] { SbDocHistoryTb.SB_DOC_HISTORY_TB.DOC_NO, SbDocHistoryTb.SB_DOC_HISTORY_TB.DOC_SQ }, true);
+        public static Index SB_DOC_TB_PRIMARY = Internal.createIndex("PRIMARY", SbDocTb.SB_DOC_TB, new OrderField[] { SbDocTb.SB_DOC_TB.DOC_NO }, true);
         public static Index SB_MEMBER_ACTIVITY_HISTORY_TB_BOARD_ID_IDX = Internal.createIndex("board_id_idx", SbMemberActivityHistoryTb.SB_MEMBER_ACTIVITY_HISTORY_TB, new OrderField[] { SbMemberActivityHistoryTb.SB_MEMBER_ACTIVITY_HISTORY_TB.BOARD_ID, SbMemberActivityHistoryTb.SB_MEMBER_ACTIVITY_HISTORY_TB.BOARD_NO }, false);
         public static Index SB_MEMBER_ACTIVITY_HISTORY_TB_PRIMARY = Internal.createIndex("PRIMARY", SbMemberActivityHistoryTb.SB_MEMBER_ACTIVITY_HISTORY_TB, new OrderField[] { SbMemberActivityHistoryTb.SB_MEMBER_ACTIVITY_HISTORY_TB.USER_ID, SbMemberActivityHistoryTb.SB_MEMBER_ACTIVITY_HISTORY_TB.ACTIVITY_SQ }, true);
         public static Index SB_MEMBER_TB_EMAIL_UNIQUE = Internal.createIndex("email_UNIQUE", SbMemberTb.SB_MEMBER_TB, new OrderField[] { SbMemberTb.SB_MEMBER_TB.EMAIL }, true);

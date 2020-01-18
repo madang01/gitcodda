@@ -1,22 +1,17 @@
-<%@page import="kr.pe.codda.weblib.summernote.SummerNoteConfiguration"%><%
+<%@page import="kr.pe.codda.weblib.common.AccessedUserInformation"%><%
+%><%@page import="kr.pe.codda.impl.message.DocumentListRes.DocumentListRes"%><%
+%><%@page import="kr.pe.codda.weblib.summernote.SummerNoteConfiguration"%><%
 %><%@page import="kr.pe.codda.weblib.summernote.SummerNoteConfigurationManger"%><%
 %><%@page import="kr.pe.codda.common.etc.CommonStaticFinalVars"%><%
-%><%@page import="kr.pe.codda.weblib.common.AccessedUserInformation"%><%
-%><%@page import="kr.pe.codda.weblib.common.PermissionType"%><%	
-%><%@page import="kr.pe.codda.weblib.common.BoardListType"%><%	
 %><%@page import="java.util.List"%><%
 %><%@page import="kr.pe.codda.weblib.htmlstring.StringEscapeActorUtil.STRING_REPLACEMENT_ACTOR_TYPE"%><%
 %><%@page import="kr.pe.codda.weblib.htmlstring.StringEscapeActorUtil"%><%
 %><%@ page import="kr.pe.codda.weblib.common.WebCommonStaticFinalVars" %><%	
-%><%@ page import="kr.pe.codda.impl.message.BoardListRes.BoardListRes" %><%
 %><%@ page extends="kr.pe.codda.weblib.jdf.AbstractAdminJSP" language="java" session="true" autoFlush="true" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %><%
-%><jsp:useBean id="boardListRes" class="kr.pe.codda.impl.message.BoardListRes.BoardListRes" scope="request" /><%
+%><jsp:useBean id="documentListRes" class="kr.pe.codda.impl.message.DocumentListRes.DocumentListRes" scope="request" /><%
 	
 	SummerNoteConfiguration summerNoteConfiguration = SummerNoteConfigurationManger.getInstance();
 	AccessedUserInformation accessedUserformation = getAccessedUserInformationFromSession(request);
-	
-	BoardListType boardListType = BoardListType.valueOf(boardListRes.getBoardListType());		
-	PermissionType boardWritePermissionType = PermissionType.valueOf(boardListRes.getBoardWritePermissionType());
 	
 %><!DOCTYPE html>
 <html lang="ko">
@@ -103,8 +98,14 @@
 		return iv;
 	}
 		
-	function writeBoard() {		
-		var f = document.writeInputFrm;		
+	function saveNewDocument() {		
+		var f = document.documentRegistrationInputFrm;		
+		
+		if ('' == f.fileName.value) {
+			alert("파일 이름을 넣어 주세요.");
+			f.fileName.focus();
+			return;
+		}
 		
 		if ('' == f.subject.value) {
 			alert("제목을 넣어 주세요.");
@@ -118,97 +119,46 @@
 			return;
 		}
 		
-		if (f.pwd != undefined) {
-			try {
-				checkValidPwd('게시글', f.pwd.value);
-			} catch(err) {
-				alert(err);
-				f.pwd.focus();
-				return;
-			}
-			
-			try {
-				checkValidPwdConfirm('게시글', f.pwd.value, f.pwdConfirm.value);
-			} catch(err) {
-				alert(err);
-				f.pwd.focus();
-				return;
-			}
-		}		
-		
 		var symmetricKeyObj = CryptoJS.<%= WebCommonStaticFinalVars.WEBSITE_JAVASCRIPT_SYMMETRIC_KEY_ALGORITHM_NAME %>;		
 		var privateKey = getPrivateKeyFromSessionStorage();
 		var iv = buildIV();
 
-		var g = document.writeProcessFrm;	
-		
-		var newFileListDivNode = document.getElementById('newAttachedFileList');
-		var uploadFileCnt = newFileListDivNode.childNodes.length;	
-		
-		if (uploadFileCnt > _ATTACHED_FILE_MAX_COUNT) {
-			alert("업로드 할 수 있는 파일 갯수는 최대["+_ATTACHED_FILE_MAX_COUNT+"] 까지 입니다.");
-			return;
-		}
-			
-		for (var i=0; i < newFileListDivNode.childNodes.length; i++) {				
-			var fileInput = newFileListDivNode.childNodes[i].childNodes[0].childNodes[0];
-			
-			if (1 == newFileListDivNode.childNodes.length) {
-				if (g.newAttachedFile.value == '') {
-					alert("첨부 파일을 선택하세요");
-					return;
-				}
-			} else {
-				if (g.newAttachedFile[i].value == '') {
-					alert(fileInput.getAttribute("title")+"을 선택하세요");
-					return;
-				}
-			}			
-		}
+		var g = document.documentRegistrationProcessFrm;	
 		
 		g.<%= WebCommonStaticFinalVars.PARAMETER_KEY_NAME_OF_SESSION_KEY %>.value = getSessionkeyBase64FromSessionStorage();	
 		g.<%= WebCommonStaticFinalVars.PARAMETER_KEY_NAME_OF_SESSION_KEY_IV %>.value = CryptoJS.enc.Base64.stringify(iv);
 		
+		g.fileName.value = f.fileName.value;
 		g.subject.value = f.subject.value;
-		g.contents.value = $('#contentsOfBoard').summernote('code');
-		
-		if (f.pwd != undefined) {
-			var symmetricKeyObj = CryptoJS.AES;		
-			g.pwd.value = symmetricKeyObj.encrypt(f.pwd.value, getPrivateKeyFromSessionStorage(), { mode: CryptoJS.mode.CBC, padding: CryptoJS.pad.Pkcs7, iv: iv });
-		}
+		g.contents.value = $('#contentsOfDocument').summernote('code');
 
 		g.submit()
 	}
 	
-	function callBackForBoardWriteProcess(boardWriteResObj) {
-		alert("게시글 작성이 완료되었습니다");		
-		goListPage(1);
+	function callBackForDocumentRegistrationProcess(documentWriteResJson) {
+		alert("문서[문서 번호=" + documentWriteResJson.documentNo +"] 작성이 완료되었습니다");		
+		goDocumentMangerPage(1);
 	}	
 		
-	function showWriteEditScreen() {	
-		var editScreenNodeOfBoard0 = document.getElementById('editScreenOfBoard0');
-		editScreenNodeOfBoard0.style.display = "block";
+	function showDocumentWriteInputScreen() {	
+		var documentWriteInputScreen = document.getElementById('documentWriteInputScreen');
+		documentWriteInputScreen.style.display = "block";
 		
-		$('#contentsOfBoard').summernote({
+		
+		$('#contentsOfDocument').summernote({
 <%= summerNoteConfiguration.buildInitializationOptionsString(3) %>,
 			placeholder: '이곳에 글을 작성해 주세요',
 			tabsize: 2,
 			height: 200
 		});
 		
-		var f = document.writeInputFrm;	
+		var f = document.documentRegistrationInputFrm;	
 		f.reset();
-		
-		var newFileListDivNode = document.getElementById('newAttachedFileList');
-		
-		while(newFileListDivNode.hasChildNodes()) {
-			newFileListDivNode.removeChild(newFileListDivNode.firstChild);
-		}
 	}
 	
 	
 	function hideWriteEditScreen() {	
-		var editScreenNodeOfBoard0 = document.getElementById('editScreenOfBoard0');
+		var editScreenNodeOfBoard0 = document.getElementById('documentWriteInputScreen');
 		editScreenNodeOfBoard0.style.display = "none";
 	}
 	
@@ -223,10 +173,10 @@
 		}		
 	}
 	
-	function goListPage(pageNo) {
+	function goDocumentMangerPage(pageNo) {
 		var iv = buildIV();
 		
-		var g = document.listwriteInputFrm;
+		var g = document.documentMangerFrm;
 		
 		g.<%= WebCommonStaticFinalVars.PARAMETER_KEY_NAME_OF_SESSION_KEY %>.value = getSessionkeyBase64FromSessionStorage();		
 		g.<%= WebCommonStaticFinalVars.PARAMETER_KEY_NAME_OF_SESSION_KEY_IV %>.value = CryptoJS.enc.Base64.stringify(iv);
@@ -236,72 +186,17 @@
 		g.submit();
 	}
 	
-	function addNewAttachedFile(f) {		
-		var prefixOfNewChildDiv = 'newAttachedFileRowDiv';		
-
-		var newFileListDivNode = document.getElementById('newAttachedFileList');		
-		var oldFileListDivNode = document.getElementById('oldAttachedFileList');
+	function goDocumentViewPage(documentNo) {
+		var iv = buildIV();
 		
-		var uploadFileCnt;
+		var g = document.documentViewFrm;
 		
-		if (oldFileListDivNode == undefined) {
-			uploadFileCnt = newFileListDivNode.childNodes.length;
-		} else {
-			uploadFileCnt = oldFileListDivNode.childNodes.length + newFileListDivNode.childNodes.length;
-		}
-			
-		if (uploadFileCnt >= _ATTACHED_FILE_MAX_COUNT) {
-			alert("업로드 할 수 있는 파일 갯수는 최대["+_ATTACHED_FILE_MAX_COUNT+"] 까지 입니다.");
-			return;
-		}
+		g.<%= WebCommonStaticFinalVars.PARAMETER_KEY_NAME_OF_SESSION_KEY %>.value = getSessionkeyBase64FromSessionStorage();		
+		g.<%= WebCommonStaticFinalVars.PARAMETER_KEY_NAME_OF_SESSION_KEY_IV %>.value = CryptoJS.enc.Base64.stringify(iv);
 		
-		var newAttachedFileRowSeq = parseInt(f.newAttachedFileRowSeq.value, 10);
-
-		var attachedFileRowDivNode = makeNewAttachedFileRowDiv(prefixOfNewChildDiv+newAttachedFileRowSeq);
+		g.documentNo.value = documentNo;
 		
-		newFileListDivNode.appendChild(attachedFileRowDivNode);
-		
-		newAttachedFileRowSeq++;
-		f.newAttachedFileRowSeq.value = newAttachedFileRowSeq;
-	}
-
-	function makeNewAttachedFileRowDiv(attachedFileRowDivID) {
-		var attachedFileRowDivNode = document.createElement("div");
-		attachedFileRowDivNode.setAttribute("class", "row");
-		attachedFileRowDivNode.setAttribute("id", attachedFileRowDivID);		
-		
-		var attachedFileNode  = document.createElement("INPUT");
-		attachedFileNode .setAttribute("type", "file");
-		attachedFileNode .setAttribute("class", "form-control");
-		attachedFileNode .setAttribute("title", "첨부파일('"+attachedFileRowDivID+"')");
-		attachedFileNode .setAttribute("name", "newAttachedFile");
-		
-		var attachedFileColDivNode = document.createElement("div");
-		attachedFileColDivNode.setAttribute("class", "col-sm-10");
-		
-		attachedFileColDivNode.appendChild(attachedFileNode);
-		
-		var deleteButtonNode = document.createElement("INPUT");
-		deleteButtonNode.setAttribute("type", "button");
-		deleteButtonNode.setAttribute("value", "삭제");
-		deleteButtonNode.setAttribute("title", "첨부파일('"+attachedFileRowDivID+"') 삭제");
-		deleteButtonNode.setAttribute("onclick", "removeNewAttachFile('"+attachedFileRowDivID+"')");
-		
-		var buttonColDivNode = document.createElement("div");
-		buttonColDivNode.setAttribute("class", "col-*-*");
-		
-		buttonColDivNode.appendChild(deleteButtonNode);
-		
-		attachedFileRowDivNode.appendChild(attachedFileColDivNode);
-		attachedFileRowDivNode.appendChild(buttonColDivNode);
-		
-		return attachedFileRowDivNode;
-	}
-		
-	function removeNewAttachFile(selectedDivID) {
-		var newFileListDivNode = document.getElementById('newAttachedFileList');		
-		var selectedDivNode = document.getElementById(selectedDivID);
-		newFileListDivNode.removeChild(selectedDivNode);
+		g.submit();
 	}
 	
 	function clickHiddenFrameButton(thisObj) {		
@@ -334,9 +229,15 @@
 	</div>
 </div>
 
-<form name=listwriteInputFrm method="post" action="/servlet/DocumentManager">
-<input type="hidden" name="boardID" value="<%=boardListRes.getBoardID()%>" />
+<form name=documentMangerFrm method="post" action="/servlet/DocumentManager">
 <input type="hidden" name="pageNo" />
+<input type="hidden" name="documentSateSearchType" value="Y" />
+<input type="hidden" name="<%= WebCommonStaticFinalVars.PARAMETER_KEY_NAME_OF_SESSION_KEY %>" />
+<input type="hidden" name="<%= WebCommonStaticFinalVars.PARAMETER_KEY_NAME_OF_SESSION_KEY_IV %>" />
+</form>
+
+<form name=documentViewFrm method="post" action="/servlet/DocumentView">
+<input type="hidden" name="documentNo" />
 <input type="hidden" name="<%= WebCommonStaticFinalVars.PARAMETER_KEY_NAME_OF_SESSION_KEY %>" />
 <input type="hidden" name="<%= WebCommonStaticFinalVars.PARAMETER_KEY_NAME_OF_SESSION_KEY_IV %>" />
 </form>
@@ -344,30 +245,10 @@
 <div class="content">
 	<div class="container">
 		<div class="panel panel-default">
-			<div class="panel-heading"><h4><%= boardListRes.getBoardName() %> 게시판</h4></div>
+			<div class="panel-heading"><h4>문서 관리자</h4></div>
 			<div class="panel-body">
-				<div class="btn-group"><%
-	if (PermissionType.MEMBER.equals(boardWritePermissionType)) {
-		/** 본문 작성 권한이 회원인 경우 */
-		if (accessedUserformation.isLoginedIn()) {
-			out.write(CommonStaticFinalVars.NEWLINE);
-			out.write("					");
-			out.write("<button type=\"button\" class=\"btn btn-primary btn-sm\" onClick=\"showWriteEditScreen();\">글 작성하기</button>");
-		}
-	} else if (PermissionType.ADMIN.equals(boardWritePermissionType)) {
-		/** 본문 작성 권한이 관리자인 경우 */
-		if (accessedUserformation.isAdmin()) {
-			out.write(CommonStaticFinalVars.NEWLINE);
-			out.write("					");
-			out.write("<button type=\"button\" class=\"btn btn-primary btn-sm\" onClick=\"showWriteEditScreen();\">글 작성하기</button>");
-		}
-	} else if (PermissionType.GUEST.equals(boardWritePermissionType)) {
-		/** 본문 작성 권한이 손님인 경우 */
-		out.write(CommonStaticFinalVars.NEWLINE);
-		out.write("					");
-		out.write("<button type=\"button\" class=\"btn btn-primary btn-sm\" onClick=\"showWriteEditScreen();\">글 작성하기</button>");
-	}
-%>
+				<div class="btn-group">
+					<button type="button" class="btn btn-primary btn-sm" onClick="showDocumentWriteInputScreen()">글 작성하기</button>
 					<button type="button" class="btn btn-primary btn-sm" onClick="clickHiddenFrameButton(this);">Show Hidden Frame</button>
 				</div>			 
 				<div id="resultMessage"></div>
@@ -375,51 +256,38 @@
 				<div id="listPartView">
 					<div class="row">
 						<div class="col-sm-1" style="background-color:lavender;">번호</div>
-						<div class="col-sm-3" style="background-color:lavender;">제목</div>
-						<div class="col-sm-2" style="background-color:lavender;">작성자</div>
-						<div class="col-sm-1" style="background-color:lavender;">조회수</div>
-						<div class="col-sm-1" style="background-color:lavender;">추천수</div>
-						<div class="col-sm-2" style="background-color:lavender;">최초 작성일</div>
+						<div class="col-sm-5" style="background-color:lavender;">제목</div>
+						<div class="col-sm-2" style="background-color:lavender;">파일명</div>
 						<div class="col-sm-2" style="background-color:lavender;">마지막 수정일</div>
 					</div><%
-	List<BoardListRes.Board> boardList = boardListRes.getBoardList();
-	if (null == boardList || boardList.isEmpty()) {
+	List<DocumentListRes.Document> documentList = documentListRes.getDocumentList();
+	if (null == documentList || documentList.isEmpty()) {
 %>
 					<div class="row">
 						<div class="col-sm-12" align="center">조회 결과가 없습니다</div>
 					</div><%
 	} else {
-		for (BoardListRes.Board board : boardList) {
-			int depth = board.getDepth();
+		for (DocumentListRes.Document document : documentList) {
+			
 %>
 					<div class="row">
-						<div class="col-sm-1"><%=board.getBoardNo()%></div>
-						<div class="col-sm-3"><%
-			if (depth > 0) {
-				for (int i=0; i < depth; i++) {
-					out.print("&nbsp;&nbsp;&nbsp;&nbsp;");
-				}
-				out.print("ㄴ");
-			}
-%><a href="#" onClick="goViewPage(<%=boardListRes.getBoardID()%>, <%=board.getBoardNo()%>, <%=BoardListType.TREE.equals(boardListType)%>)"><%=StringEscapeActorUtil.replace(board.getSubject(), STRING_REPLACEMENT_ACTOR_TYPE.ESCAPEHTML4)%></a></div>
-						<div class="col-sm-2"><%=StringEscapeActorUtil.replace(board.getWriterNickname(), STRING_REPLACEMENT_ACTOR_TYPE.ESCAPEHTML4)%></div>
-						<div class="col-sm-1"><%=board.getViewCount()%></div>
-						<div class="col-sm-1"><%=board.getVotes()%></div>
-						<div class="col-sm-2"><%=board.getRegisteredDate()%></div>
-						<div class="col-sm-2"><%=board.getLastModifiedDate()%></div>
+						<div class="col-sm-1"><%= document.getDocumentNo() %></div>
+						<div class="col-sm-5"><a href="#" onClick="goDocumentViewPage(<%=document.getDocumentNo()%>);"><%=StringEscapeActorUtil.replace(document.getSubject(), STRING_REPLACEMENT_ACTOR_TYPE.ESCAPEHTML4) %></a></div>
+						<div class="col-sm-2"><%=StringEscapeActorUtil.replace(document.getFileName(), STRING_REPLACEMENT_ACTOR_TYPE.ESCAPEHTML4)%></div>
+						<div class="col-sm-2"><%= document.getLastModifiedDate()%></div>
 					</div><%
 		}
 	}
 
-	if (boardListRes.getTotal() > 1) {
-		final int pageNo = boardListRes.getPageNo();
-		final int pageSize = boardListRes.getPageSize();
+	if (documentListRes.getTotal() > 1) {
+		final int pageNo = documentListRes.getPageNo();
+		final int pageSize = documentListRes.getPageSize();
 		
 		// long pageNo = boardListRes.getPageOffset() / boardListRes.getPageLength() + 1;
 		
 		long startPageNo = 1 + WebCommonStaticFinalVars.WEBSITE_BOARD_PAGE_LIST_SIZE*(long)((pageNo - 1) / WebCommonStaticFinalVars.WEBSITE_BOARD_PAGE_LIST_SIZE);
 		long endPageNo = Math.min(startPageNo + WebCommonStaticFinalVars.WEBSITE_BOARD_PAGE_LIST_SIZE, 
-		(boardListRes.getTotal() + pageSize - 1) / pageSize);
+		(documentListRes.getTotal() + pageSize - 1) / pageSize);
 		
 		
 		out.write(CommonStaticFinalVars.NEWLINE);
@@ -429,7 +297,7 @@
 		if (startPageNo > 1) {
 			out.write(CommonStaticFinalVars.NEWLINE);
 			out.write("						");
-			out.write("<li class=\"previous\"><a href=\"#\" onClick=\"goListPage(");
+			out.write("<li class=\"previous\"><a href=\"#\" onClick=\"goDocumentMangerPage(");
 			out.write(String.valueOf(startPageNo-1));
 			out.write(")\">이전</a></li>");
 		} else {
@@ -451,7 +319,7 @@
 			} else {
 				out.write(CommonStaticFinalVars.NEWLINE);
 				out.write("						");
-				out.write("<li><a href=\"#\" onClick=\"goListPage(");
+				out.write("<li><a href=\"#\" onClick=\"goDocumentMangerPage(");
 				out.write(String.valueOf(workingPageNo));
 				out.write(")\">");
 				out.write(String.valueOf(workingPageNo));
@@ -462,7 +330,7 @@
 		if (startPageNo+WebCommonStaticFinalVars.WEBSITE_BOARD_PAGE_LIST_SIZE <= endPageNo) {
 			out.write(CommonStaticFinalVars.NEWLINE);
 			out.write("						");
-			out.write("<li class=\"next\"><a href=\"#\" onClick=\"goListPage(");
+			out.write("<li class=\"next\"><a href=\"#\" onClick=\"goDocumentMangerPage(");
 			out.write(String.valueOf(startPageNo+WebCommonStaticFinalVars.WEBSITE_BOARD_PAGE_LIST_SIZE));
 			out.write(")\">다음</a></li>");
 		} else {
@@ -477,45 +345,29 @@
 	}
 %>				
 				</div>
-				<div id="editScreenOfBoard0" style="display:none">
-					<form name="writeInputFrm" enctype="multipart/form-data" method="post" action="/servlet/DocumentRegistrationProcess" onsubmit="return false;">
+				<div id="documentWriteInputScreen" style="display:none">
+					<form name="documentRegistrationInputFrm" method="post" action="/servlet/DocumentRegistrationProcess" onsubmit="return false;">
 						<input type="hidden" name="newAttachedFileRowSeq" value="0" />
 						<div class="form-group">
+							<label for="subject">파일 이름</label>
+							<input type="text" name="fileName" class="form-control" placeholder="Enter file name" />
 							<label for="subject">제목</label>
 							<input type="text" name="subject" class="form-control" placeholder="Enter subject" />
 							<label for="content">내용</label>							
-							<textarea name="contents" id="contentsOfBoard" class="form-control input-block-level" placeholder="Enter contents" rows="20"></textarea><%
-								if (! accessedUserformation.isLoginedIn()) {
-							%>
-							<label for="content">게시글 비밀번호</label>
-							<input type="password" class="form-control" placeholder="Enter password" name="pwd">
-							<label for="content">비밀번호 확인</label>
-							<input type="password" class="form-control" placeholder="Enter password" name="pwdConfirm"><%
-								}
-							%>
-														
+							<textarea name="contents" id="contentsOfDocument" class="form-control input-block-level" placeholder="Enter contents" rows="20"></textarea>
 						</div>
 					</form>
 					<div class="btn-group">
-						<input type="button" class="btn btn-default" onClick="writeBoard();" value="저장" />					
-						<input type="button" class="btn btn-default" onClick="addNewAttachedFile(document.writeInputFrm);" value="첨부 파일 추가" />
+						<input type="button" class="btn btn-default" onClick="saveNewDocument();" value="저장" />
 						<input type="button" class="btn btn-default" onClick="hideWriteEditScreen();" value="닫기" />
 					</div>
-					<form name="writeProcessFrm" enctype="multipart/form-data" method="post" target="hiddenFrame" action="/servlet/DocumentRegistrationProcess">
+					<form name="documentRegistrationProcessFrm" method="post" target="hiddenFrame" action="/servlet/DocumentRegistrationProcess">
 						<div class="form-group">
-							<input type="hidden" name="boardID" value="<%=boardListRes.getBoardID()%>" />
+							<input type="hidden" name="fileName" />
 							<input type="hidden" name="subject" />
-							<input type="hidden" name="contents" /><%
-	if (! accessedUserformation.isLoginedIn()) {
-		out.write(CommonStaticFinalVars.NEWLINE);
-		out.write("							");
-		out.write("<input type=\"hidden\" name=\"pwd\" />");
-	}
-%>
+							<input type="hidden" name="contents" />
 							<input type="hidden" name="<%= WebCommonStaticFinalVars.PARAMETER_KEY_NAME_OF_SESSION_KEY %>" />
-							<input type="hidden" name="<%= WebCommonStaticFinalVars.PARAMETER_KEY_NAME_OF_SESSION_KEY_IV %>" />					
-							<!-- 주의점 div 시작 태그와 종료 태그 사이에는 공백을 포함한 어떠한 것도 넣지 말것, 자식 노드로 인식됨 -->
-							<div id="newAttachedFileList"></div>
+							<input type="hidden" name="<%= WebCommonStaticFinalVars.PARAMETER_KEY_NAME_OF_SESSION_KEY_IV %>" />
 						</div>
 					</form>				
 				</div>

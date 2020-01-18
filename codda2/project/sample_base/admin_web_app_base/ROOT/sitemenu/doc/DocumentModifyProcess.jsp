@@ -1,8 +1,8 @@
 <%@page import="com.google.gson.Gson"%><%
 %><%@page import="kr.pe.codda.weblib.common.WebCommonStaticFinalVars"%><%
-%><%@page import="kr.pe.codda.impl.message.BoardModifyRes.BoardModifyRes"%><%
+%><%@page import="kr.pe.codda.impl.message.DocumentModifyRes.DocumentModifyRes"%><%
 %><%@ page extends="kr.pe.codda.weblib.jdf.AbstractAdminJSP" language="java" session="true" autoFlush="true" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %><%
-	BoardModifyRes boardModifyRes = (BoardModifyRes)request.getAttribute("boardModifyRes");
+DocumentModifyRes documentModifyRes = (DocumentModifyRes)request.getAttribute("documentModifyRes");
 %><!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -10,11 +10,11 @@
 <title><%= WebCommonStaticFinalVars.ADMIN_WEBSITE_TITLE %></title>
 <script type="text/javascript">
     function init() {<%
-    if (null != boardModifyRes) {
-    		String boardModifyResJsonString = new Gson().toJson(boardModifyRes);	
+    if (null != documentModifyRes) {
+    		String documentModifyResJsonString = new Gson().toJson(documentModifyRes);	
 %>
-		var boardModifyRes = <%= boardModifyResJsonString %>;
-    	parent.callBackForBoardModifyProcess(boardModifyRes);<%
+		var documentModifyResJson = <%= documentModifyResJsonString %>;
+    	parent.callBackForDoucmentModify(documentModifyResJson);<%
     } else {
 %>
 		alert("the var boardModifyRes is null");<%

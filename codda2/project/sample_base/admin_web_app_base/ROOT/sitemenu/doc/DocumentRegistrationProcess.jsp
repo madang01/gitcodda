@@ -1,8 +1,8 @@
-<%@page import="com.google.gson.Gson"%><%
-%><%@page import="kr.pe.codda.impl.message.BoardWriteRes.BoardWriteRes"%>
-<%@page import="kr.pe.codda.weblib.common.WebCommonStaticFinalVars"%><%
+<%@page import="kr.pe.codda.impl.message.DocumentWriteRes.DocumentWriteRes"%><%
+%><%@page import="com.google.gson.Gson"%><%
+%><%@page import="kr.pe.codda.weblib.common.WebCommonStaticFinalVars"%><%
 %><%@ page extends="kr.pe.codda.weblib.jdf.AbstractAdminJSP" language="java" session="true" autoFlush="true" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %><%
-	BoardWriteRes boardWriteRes = (BoardWriteRes)request.getAttribute("boardWriteRes");
+	DocumentWriteRes documentWriteRes = (DocumentWriteRes)request.getAttribute("documentWriteRes");
 %><!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -10,13 +10,13 @@
 <title><%= WebCommonStaticFinalVars.ADMIN_WEBSITE_TITLE %></title>
 <script type="text/javascript">
     function init() {<%
-    	if (null != boardWriteRes) {
-    		String boardWriteResJsonString = new Gson().toJson(boardWriteRes);
+    	if (null != documentWriteRes) {
+    		String documentWriteResJsonString = new Gson().toJson(documentWriteRes);
     		
     		
 %>
-		var boardWriteResObj = <%= boardWriteResJsonString %>;		
-		parent.callBackForBoardWriteProcess(boardWriteResObj);<%
+		var documentWriteResJson = <%= documentWriteResJsonString %>;		
+		parent.callBackForDocumentRegistrationProcess(documentWriteResJson);<%
     	} else {
 %>
 		alert("the var boardWriteRes is null");<%

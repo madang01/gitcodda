@@ -12,6 +12,8 @@ import kr.pe.codda.jooq.tables.SbBoardHistoryTb;
 import kr.pe.codda.jooq.tables.SbBoardInfoTb;
 import kr.pe.codda.jooq.tables.SbBoardTb;
 import kr.pe.codda.jooq.tables.SbBoardVoteTb;
+import kr.pe.codda.jooq.tables.SbDocHistoryTb;
+import kr.pe.codda.jooq.tables.SbDocTb;
 import kr.pe.codda.jooq.tables.SbMemberActivityHistoryTb;
 import kr.pe.codda.jooq.tables.SbMemberTb;
 import kr.pe.codda.jooq.tables.SbSeqTb;
@@ -34,7 +36,7 @@ import kr.pe.codda.jooq.tables.SbUploadImageTb;
 public class Tables {
 
     /**
-     * The table <code>sb_db.sb_account_serarch_tb</code>.
+     * 계정 찾기 테이블
      */
     public static final SbAccountSerarchTb SB_ACCOUNT_SERARCH_TB = kr.pe.codda.jooq.tables.SbAccountSerarchTb.SB_ACCOUNT_SERARCH_TB;
 
@@ -62,6 +64,16 @@ public class Tables {
      * The table <code>sb_db.sb_board_vote_tb</code>.
      */
     public static final SbBoardVoteTb SB_BOARD_VOTE_TB = kr.pe.codda.jooq.tables.SbBoardVoteTb.SB_BOARD_VOTE_TB;
+
+    /**
+     * The table <code>sb_db.sb_doc_history_tb</code>.
+     */
+    public static final SbDocHistoryTb SB_DOC_HISTORY_TB = kr.pe.codda.jooq.tables.SbDocHistoryTb.SB_DOC_HISTORY_TB;
+
+    /**
+     * The table <code>sb_db.sb_doc_tb</code>.
+     */
+    public static final SbDocTb SB_DOC_TB = kr.pe.codda.jooq.tables.SbDocTb.SB_DOC_TB;
 
     /**
      * The table <code>sb_db.sb_member_activity_history_tb</code>.

@@ -213,7 +213,7 @@ public class UserSiteMenuManger {
 	}
 
 	public String getMenuNavbarString(String menuGroupURL, boolean isLogin, String userName) {
-		final int tapStep = 1;		
+		final int tapStep = 3;		
 
 		JsonArray rootMenuListJsonArray = websiteMenuPartStringFileWatcher
 				.getRootMenuListJsonArray();

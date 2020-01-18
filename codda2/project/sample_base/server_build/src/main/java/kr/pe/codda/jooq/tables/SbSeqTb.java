@@ -40,7 +40,7 @@ import org.jooq.types.UInteger;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class SbSeqTb extends TableImpl<SbSeqTbRecord> {
 
-    private static final long serialVersionUID = 545506171;
+    private static final long serialVersionUID = 1128608944;
 
     /**
      * The reference instance of <code>sb_db.sb_seq_tb</code>
@@ -68,7 +68,7 @@ public class SbSeqTb extends TableImpl<SbSeqTbRecord> {
     /**
      * The column <code>sb_db.sb_seq_tb.sq_name</code>. 시퀀스 이름
      */
-    public final TableField<SbSeqTbRecord, String> SQ_NAME = createField("sq_name", org.jooq.impl.SQLDataType.VARCHAR(45), this, "시퀀스 이름");
+    public final TableField<SbSeqTbRecord, String> SQ_NAME = createField("sq_name", org.jooq.impl.SQLDataType.VARCHAR(255), this, "시퀀스 이름");
 
     /**
      * Create a <code>sb_db.sb_seq_tb</code> table reference

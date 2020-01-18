@@ -5,7 +5,8 @@ import org.jooq.types.UByte;
 public enum SequenceType {
 	MENU(UByte.valueOf(0), "메뉴에 사용되는 시퀀스"), 
 	SITE_LOG_LOCK(UByte.valueOf(1), "부분 키인 날짜별 시퀀스를 얻기 위한 목적의 SB_SITE_LOG_TB 테이블 락에 사용되는 시퀀스"),
-	SITE_UPLOAD_IMAGE_LOCK(UByte.valueOf(2), "부분 키인 날짜별 시퀀스를 얻기 위한 목적의 SB_UPLOAD_IMAGE_TB 테이블 락에 사용되는 시퀀스");
+	SITE_UPLOAD_IMAGE_LOCK(UByte.valueOf(2), "부분 키인 날짜별 시퀀스를 얻기 위한 목적의 SB_UPLOAD_IMAGE_TB 테이블 락에 사용되는 시퀀스"),
+	DOCUMENT_NO(UByte.valueOf(3), "문서 번호 시퀀스");
 
 	private UByte sequenceID;
 	private String sequenceTypeName;

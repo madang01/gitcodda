@@ -16,6 +16,8 @@ import kr.pe.codda.jooq.tables.SbBoardHistoryTb;
 import kr.pe.codda.jooq.tables.SbBoardInfoTb;
 import kr.pe.codda.jooq.tables.SbBoardTb;
 import kr.pe.codda.jooq.tables.SbBoardVoteTb;
+import kr.pe.codda.jooq.tables.SbDocHistoryTb;
+import kr.pe.codda.jooq.tables.SbDocTb;
 import kr.pe.codda.jooq.tables.SbMemberActivityHistoryTb;
 import kr.pe.codda.jooq.tables.SbMemberTb;
 import kr.pe.codda.jooq.tables.SbSeqTb;
@@ -41,7 +43,7 @@ import org.jooq.impl.SchemaImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class SbDb extends SchemaImpl {
 
-    private static final long serialVersionUID = 1910019043;
+    private static final long serialVersionUID = -1046974919;
 
     /**
      * The reference instance of <code>sb_db</code>
@@ -49,7 +51,7 @@ public class SbDb extends SchemaImpl {
     public static final SbDb SB_DB = new SbDb();
 
     /**
-     * The table <code>sb_db.sb_account_serarch_tb</code>.
+     * 계정 찾기 테이블
      */
     public final SbAccountSerarchTb SB_ACCOUNT_SERARCH_TB = kr.pe.codda.jooq.tables.SbAccountSerarchTb.SB_ACCOUNT_SERARCH_TB;
 
@@ -77,6 +79,16 @@ public class SbDb extends SchemaImpl {
      * The table <code>sb_db.sb_board_vote_tb</code>.
      */
     public final SbBoardVoteTb SB_BOARD_VOTE_TB = kr.pe.codda.jooq.tables.SbBoardVoteTb.SB_BOARD_VOTE_TB;
+
+    /**
+     * The table <code>sb_db.sb_doc_history_tb</code>.
+     */
+    public final SbDocHistoryTb SB_DOC_HISTORY_TB = kr.pe.codda.jooq.tables.SbDocHistoryTb.SB_DOC_HISTORY_TB;
+
+    /**
+     * The table <code>sb_db.sb_doc_tb</code>.
+     */
+    public final SbDocTb SB_DOC_TB = kr.pe.codda.jooq.tables.SbDocTb.SB_DOC_TB;
 
     /**
      * The table <code>sb_db.sb_member_activity_history_tb</code>.
@@ -139,6 +151,8 @@ public class SbDb extends SchemaImpl {
             SbBoardInfoTb.SB_BOARD_INFO_TB,
             SbBoardTb.SB_BOARD_TB,
             SbBoardVoteTb.SB_BOARD_VOTE_TB,
+            SbDocHistoryTb.SB_DOC_HISTORY_TB,
+            SbDocTb.SB_DOC_TB,
             SbMemberActivityHistoryTb.SB_MEMBER_ACTIVITY_HISTORY_TB,
             SbMemberTb.SB_MEMBER_TB,
             SbSeqTb.SB_SEQ_TB,

@@ -39,7 +39,7 @@ import org.jooq.types.UInteger;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class SbUploadImageTb extends TableImpl<SbUploadImageTbRecord> {
 
-    private static final long serialVersionUID = 887118634;
+    private static final long serialVersionUID = -1553803370;
 
     /**
      * The reference instance of <code>sb_db.sb_upload_image_tb</code>
@@ -55,24 +55,24 @@ public class SbUploadImageTb extends TableImpl<SbUploadImageTbRecord> {
     }
 
     /**
-     * The column <code>sb_db.sb_upload_image_tb.yyyymmdd</code>.
+     * The column <code>sb_db.sb_upload_image_tb.yyyymmdd</code>. 년월일
      */
-    public final TableField<SbUploadImageTbRecord, String> YYYYMMDD = createField("yyyymmdd", org.jooq.impl.SQLDataType.CHAR(8).nullable(false), this, "");
+    public final TableField<SbUploadImageTbRecord, String> YYYYMMDD = createField("yyyymmdd", org.jooq.impl.SQLDataType.CHAR(8).nullable(false), this, "년월일");
 
     /**
-     * The column <code>sb_db.sb_upload_image_tb.day_sq</code>.
+     * The column <code>sb_db.sb_upload_image_tb.day_sq</code>. 일별 순서
      */
-    public final TableField<SbUploadImageTbRecord, UInteger> DAY_SQ = createField("day_sq", org.jooq.impl.SQLDataType.INTEGERUNSIGNED.nullable(false), this, "");
+    public final TableField<SbUploadImageTbRecord, UInteger> DAY_SQ = createField("day_sq", org.jooq.impl.SQLDataType.INTEGERUNSIGNED.nullable(false), this, "일별 순서");
 
     /**
-     * The column <code>sb_db.sb_upload_image_tb.fname</code>.
+     * The column <code>sb_db.sb_upload_image_tb.fname</code>. 이미지 파일 이름
      */
-    public final TableField<SbUploadImageTbRecord, String> FNAME = createField("fname", org.jooq.impl.SQLDataType.VARCHAR(255), this, "");
+    public final TableField<SbUploadImageTbRecord, String> FNAME = createField("fname", org.jooq.impl.SQLDataType.VARCHAR(255), this, "이미지 파일 이름");
 
     /**
-     * The column <code>sb_db.sb_upload_image_tb.fsize</code>.
+     * The column <code>sb_db.sb_upload_image_tb.fsize</code>. 이미지 파일 크기
      */
-    public final TableField<SbUploadImageTbRecord, Long> FSIZE = createField("fsize", org.jooq.impl.SQLDataType.BIGINT, this, "");
+    public final TableField<SbUploadImageTbRecord, Long> FSIZE = createField("fsize", org.jooq.impl.SQLDataType.BIGINT, this, "이미지 파일 크기");
 
     /**
      * Create a <code>sb_db.sb_upload_image_tb</code> table reference
