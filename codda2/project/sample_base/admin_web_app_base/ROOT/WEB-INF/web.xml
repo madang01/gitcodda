@@ -314,6 +314,48 @@
 		<url-pattern>/servlet/DocumentModifyProcess</url-pattern>
 	</servlet-mapping>
 	
+	<!-- 문서 삭제 처리 -->
+	<servlet>
+		<servlet-name>DocumentDeleteProcess</servlet-name>
+		<servlet-class>kr.pe.codda.servlet.admin.DocumentDeleteProcessSvl</servlet-class>
+		<init-param>
+			<param-name>menuGroupURL</param-name>
+			<param-value>/servlet/DocumentManager</param-value>
+		</init-param>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>DocumentDeleteProcess</servlet-name>
+		<url-pattern>/servlet/DocumentDeleteProcess</url-pattern>
+	</servlet-mapping>
+	
+	<!-- 문서 웹 사이트 적용 처리 -->
+	<servlet>
+		<servlet-name>DocumentWebSiteApplyProcess</servlet-name>
+		<servlet-class>kr.pe.codda.servlet.admin.DocumentWebSiteApplyProcessSvl</servlet-class>
+		<init-param>
+			<param-name>menuGroupURL</param-name>
+			<param-value>/servlet/DocumentManager</param-value>
+		</init-param>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>DocumentWebSiteApplyProcess</servlet-name>
+		<url-pattern>/servlet/DocumentWebSiteApplyProcess</url-pattern>
+	</servlet-mapping>	
+	
+	<!-- 개별 문서 변경 이력 조회 -->
+	<servlet>
+		<servlet-name>DocumentChangeHistory</servlet-name>
+		<servlet-class>kr.pe.codda.servlet.admin.DocumentChangeHistorySvl</servlet-class>
+		<init-param>
+			<param-name>menuGroupURL</param-name>
+			<param-value>/servlet/DocumentManager</param-value>
+		</init-param>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>DocumentChangeHistory</servlet-name>
+		<url-pattern>/servlet/DocumentChangeHistory</url-pattern>
+	</servlet-mapping>	
+	
 	<!-- 회원 관리자 -->
 	<servlet>
 		<servlet-name>MemberManager</servlet-name>

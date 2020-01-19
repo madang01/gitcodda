@@ -4,8 +4,6 @@
 %><%@page import="kr.pe.codda.weblib.summernote.SummerNoteConfigurationManger"%><%
 %><%@page import="kr.pe.codda.common.etc.CommonStaticFinalVars"%><%
 %><%@page import="java.util.List"%><%
-%><%@page import="kr.pe.codda.weblib.htmlstring.StringEscapeActorUtil.STRING_REPLACEMENT_ACTOR_TYPE"%><%
-%><%@page import="kr.pe.codda.weblib.htmlstring.StringEscapeActorUtil"%><%
 %><%@ page import="kr.pe.codda.weblib.common.WebCommonStaticFinalVars" %><%	
 %><%@ page extends="kr.pe.codda.weblib.jdf.AbstractAdminJSP" language="java" session="true" autoFlush="true" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %><%
 %><jsp:useBean id="documentListRes" class="kr.pe.codda.impl.message.DocumentListRes.DocumentListRes" scope="request" /><%
@@ -137,7 +135,7 @@
 	
 	function callBackForDocumentRegistrationProcess(documentWriteResJson) {
 		alert("문서[문서 번호=" + documentWriteResJson.documentNo +"] 작성이 완료되었습니다");		
-		goDocumentMangerPage(1);
+		goDocumentManagerPage(1);
 	}	
 		
 	function showDocumentWriteInputScreen() {	
@@ -173,7 +171,7 @@
 		}		
 	}
 	
-	function goDocumentMangerPage(pageNo) {
+	function goDocumentManagerPage(pageNo) {
 		var iv = buildIV();
 		
 		var g = document.documentMangerFrm;
@@ -272,8 +270,8 @@
 %>
 					<div class="row">
 						<div class="col-sm-1"><%= document.getDocumentNo() %></div>
-						<div class="col-sm-5"><a href="#" onClick="goDocumentViewPage(<%=document.getDocumentNo()%>);"><%=StringEscapeActorUtil.replace(document.getSubject(), STRING_REPLACEMENT_ACTOR_TYPE.ESCAPEHTML4) %></a></div>
-						<div class="col-sm-2"><%=StringEscapeActorUtil.replace(document.getFileName(), STRING_REPLACEMENT_ACTOR_TYPE.ESCAPEHTML4)%></div>
+						<div class="col-sm-5"><a href="#" onClick="goDocumentViewPage(<%=document.getDocumentNo()%>);"><%= toEscapeHtml4(document.getSubject()) %></a></div>
+						<div class="col-sm-2"><%= toEscapeHtml4(document.getFileName()) %></div>
 						<div class="col-sm-2"><%= document.getLastModifiedDate()%></div>
 					</div><%
 		}
@@ -297,7 +295,7 @@
 		if (startPageNo > 1) {
 			out.write(CommonStaticFinalVars.NEWLINE);
 			out.write("						");
-			out.write("<li class=\"previous\"><a href=\"#\" onClick=\"goDocumentMangerPage(");
+			out.write("<li class=\"previous\"><a href=\"#\" onClick=\"goDocumentManagerPage(");
 			out.write(String.valueOf(startPageNo-1));
 			out.write(")\">이전</a></li>");
 		} else {
@@ -319,7 +317,7 @@
 			} else {
 				out.write(CommonStaticFinalVars.NEWLINE);
 				out.write("						");
-				out.write("<li><a href=\"#\" onClick=\"goDocumentMangerPage(");
+				out.write("<li><a href=\"#\" onClick=\"goDocumentManagerPage(");
 				out.write(String.valueOf(workingPageNo));
 				out.write(")\">");
 				out.write(String.valueOf(workingPageNo));
@@ -330,7 +328,7 @@
 		if (startPageNo+WebCommonStaticFinalVars.WEBSITE_BOARD_PAGE_LIST_SIZE <= endPageNo) {
 			out.write(CommonStaticFinalVars.NEWLINE);
 			out.write("						");
-			out.write("<li class=\"next\"><a href=\"#\" onClick=\"goDocumentMangerPage(");
+			out.write("<li class=\"next\"><a href=\"#\" onClick=\"goDocumentManagerPage(");
 			out.write(String.valueOf(startPageNo+WebCommonStaticFinalVars.WEBSITE_BOARD_PAGE_LIST_SIZE));
 			out.write(")\">다음</a></li>");
 		} else {
@@ -349,7 +347,7 @@
 					<form name="documentRegistrationInputFrm" method="post" action="/servlet/DocumentRegistrationProcess" onsubmit="return false;">
 						<input type="hidden" name="newAttachedFileRowSeq" value="0" />
 						<div class="form-group">
-							<label for="subject">파일 이름</label>
+							<label for="subject">HTML 파일 이름</label>
 							<input type="text" name="fileName" class="form-control" placeholder="Enter file name" />
 							<label for="subject">제목</label>
 							<input type="text" name="subject" class="form-control" placeholder="Enter subject" />

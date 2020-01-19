@@ -1,25 +1,15 @@
 <%@page import="kr.pe.codda.weblib.common.DocumentStateType"%>
 <%@page import="kr.pe.codda.weblib.summernote.SummerNoteConfiguration"%><%
 %><%@page import="kr.pe.codda.weblib.summernote.SummerNoteConfigurationManger"%><%
-%><%@page import="kr.pe.codda.weblib.common.AccessedUserInformation"%><%
-%><%@page import="kr.pe.codda.weblib.common.MemberRoleType"%><%
-%><%@page import="kr.pe.codda.common.etc.CommonStaticFinalVars"%><%
-%><%@page import="kr.pe.codda.weblib.common.BoardReplyPolicyType"%><%
-%><%@page import="kr.pe.codda.weblib.common.PermissionType"%><%
-%><%@page import="kr.pe.codda.weblib.common.BoardListType"%><%
-%><%@page import="com.google.gson.Gson"%><%
-%><%@page import="kr.pe.codda.weblib.common.BoardStateType"%><%
-%><%@page import="kr.pe.codda.weblib.htmlstring.StringEscapeActorUtil.STRING_REPLACEMENT_ACTOR_TYPE"%><%
-%><%@page import="kr.pe.codda.weblib.htmlstring.StringEscapeActorUtil"%><%
 %><%@page import="kr.pe.codda.weblib.common.WebCommonStaticFinalVars"%><%
-%><%@page import="kr.pe.codda.impl.message.BoardDetailRes.BoardDetailRes"%><%
 %><%@ page extends="kr.pe.codda.weblib.jdf.AbstractAdminJSP" language="java" session="true" autoFlush="true"	contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%><%
 %><jsp:useBean id="documentViewRes" class="kr.pe.codda.impl.message.DocumentViewRes.DocumentViewRes" scope="request" /><%
-	
 
 	SummerNoteConfiguration summerNoteConfiguration = SummerNoteConfigurationManger.getInstance();
 	
-	
+	DocumentStateType documentStateType = DocumentStateType.valueOf(documentViewRes.getDocumentSate());
+
+
 %><!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -101,6 +91,31 @@
 		return iv;
 	}
 	
+	function showDocumentModifyInputScreen(documentNo) {
+		var documentModifyScreen = document.getElementById("documentModifyScreen");
+		documentModifyScreen.style.display = "block";	
+		
+		$('#contentsOfDocumentModifyScreen').summernote({
+	<%= summerNoteConfiguration.buildInitializationOptionsString(3) %>,
+			placeholder: '이곳에서 문서를 작성해 주세요',
+	        tabsize: 2,
+	        height: 400
+		});
+				
+		var fileNameOfDocumnetViewScreen = document.getElementById("fileNameOfDocumnetViewScreen");
+		var subjectOfDocumnetViewScreen = document.getElementById("subjectOfDocumnetViewScreen");
+		var contentsOfDocumnetViewScreen = document.getElementById("contentsOfDocumnetViewScreen");
+		
+		var f = document.documentModifyInputFrm;
+		f.fileName.value = fileNameOfDocumnetViewScreen.innerText;
+		f.subject.value = subjectOfDocumnetViewScreen.innerText;
+		
+		$('#contentsOfDocumentModifyScreen').summernote("code", contentsOfDocumnetViewScreen.innerHTML);
+		
+		
+		turnOffDocumentViewScreen();
+	}
+	
 	function modifyDocument() {			
 		var f = document.documentModifyInputFrm;
 		
@@ -142,90 +157,79 @@
 		return;	
 	}
 	
-	function callBackForDoucmentModify(documentModifyResJson) {
+	function callBackForDocumentModifyProcess(documentModifyResJson) {
 		alert("문서["+documentModifyResJson.documentNo+"] 수정이 완료되었습니다");
 		
 		document.location.reload();
 	}
 	
-	function goDoucmentDelete(documentNo) {		
-		var f = document.documentDeleteInputFrm;
+	function deleteDocument() {
+		var r = confirm("정말로 문서를 삭제하시겠습니까?");
 		
-		if (f != undefined) {
-			try {
-				checkValidPwd('게시글', f.pwd.value);
-			} catch(err) {
-				alert(err);
-				f.pwd.focus();
-				return;
-			}
+		if (r != true) {
+			console.log("삭제 취소");
+			return;
 		}
 		
-		var symmetricKeyObj = CryptoJS.<%=WebCommonStaticFinalVars.WEBSITE_JAVASCRIPT_SYMMETRIC_KEY_ALGORITHM_NAME%>;
-		var privateKey = getPrivateKeyFromSessionStorage();		
 		var iv = buildIV();
 		
-		var g = document.documentDeleteProcessFrm;
+		var g = document.documentDeleteFrm;
 	
 		g.<%=WebCommonStaticFinalVars.PARAMETER_KEY_NAME_OF_SESSION_KEY%>.value = getSessionkeyBase64FromSessionStorage();		
 		g.<%=WebCommonStaticFinalVars.PARAMETER_KEY_NAME_OF_SESSION_KEY_IV%>.value = CryptoJS.enc.Base64.stringify(iv);
 		
-		g.boardNo.value = boardNo;		
-		if (f != undefined) {
-			g.pwd.value = symmetricKeyObj.encrypt(f.pwd.value, getPrivateKeyFromSessionStorage(), { mode: CryptoJS.mode.CBC, padding: CryptoJS.pad.Pkcs7, iv: iv });
+		g.submit();
+	}
+		
+	function callBackForDocumentDeleteProcess() {
+		alert("문서["+document.documentDeleteFrm.documentNo.value+"] 삭제가 완료되었습니다");
+		
+		goDocumentManagerPage();
+	}
+	
+	
+	function applyDocumenetToWebSite() {
+		var r = confirm("문서를 일반 웹 사이트에 적용하시겠습니까?");
+		
+		if (r != true) {
+			console.log("적용 취소");
+			return;
 		}
 		
+		var iv = buildIV();
+		
+		var g = document.documentWebSiteApplyFrm;
+	
+		g.<%=WebCommonStaticFinalVars.PARAMETER_KEY_NAME_OF_SESSION_KEY%>.value = getSessionkeyBase64FromSessionStorage();		
+		g.<%=WebCommonStaticFinalVars.PARAMETER_KEY_NAME_OF_SESSION_KEY_IV%>.value = CryptoJS.enc.Base64.stringify(iv);
+		
 		g.submit();
 	}
 	
-	
-	
-	function goDocumentChangeHistory() {
-		var g = document.boardChangeHistoryFrm;
-		g.boardNo.value = boardNo;		
-		g.submit();
+	function callBackForDocumentWebSiteApplyProcess(documentViewResJson) {
+		alert("문서["+documentViewResJson.documentNo+"] 일반 웹 사이트 적용이 완료되었습니다");
 	}
 	
 	
-	
-	
-	function showDocumentModifyInputScreen(documentNo) {
-		var documentModifyScreen = document.getElementById("documentModifyScreen");
-		documentModifyScreen.style.display = "block";	
-		
-		$('#contentsOfDocumentModifyScreen').summernote({
-	<%= summerNoteConfiguration.buildInitializationOptionsString(3) %>,
-			placeholder: '이곳에서 문서를 작성해 주세요',
-	        tabsize: 2,
-	        height: 400
-		});
-				
-		var fileNameOfDocumnetViewScreen = document.getElementById("fileNameOfDocumnetViewScreen");
-		var subjectOfDocumnetViewScreen = document.getElementById("subjectOfDocumnetViewScreen");
-		var contentsOfDocumnetViewScreen = document.getElementById("contentsOfDocumnetViewScreen");
-		
-		var f = document.documentModifyInputFrm;
-		f.fileName.value = fileNameOfDocumnetViewScreen.innerText;
-		f.subject.value = subjectOfDocumnetViewScreen.innerText;
-		
-		$('#contentsOfDocumentModifyScreen').summernote("code", contentsOfDocumnetViewScreen.innerHTML);
-		
-		
+	function turnOffDocumentViewScreen() {
 		var documentViewScreen = document.getElementById("documentViewScreen");
 		documentViewScreen.style.display = "none";
 		var documentViewScreenDisplayToggleButton = document.getElementById("documentViewScreenDisplayToggleButton");
 		documentViewScreenDisplayToggleButton.innerText = "문서 보기 보이기";
-		
 	}
 	
-	function closeDocumentModifyInputScreen() {
-		var documentModifyScreen = document.getElementById("documentModifyScreen");
-		documentModifyScreen.style.display = "none";
-		
+	function turnOnDocumentViewScreen() {
 		var documentViewScreen = document.getElementById("documentViewScreen");
 		documentViewScreen.style.display = "block";
 		var documentViewScreenDisplayToggleButton = document.getElementById("documentViewScreenDisplayToggleButton");
 		documentViewScreenDisplayToggleButton.innerText = "문서 보기 닫기";
+	}
+	
+	function closeDocumentModifyScreen() {
+		var documentModifyScreen = document.getElementById("documentModifyScreen");
+		documentModifyScreen.style.display = "none";
+		
+		turnOnDocumentViewScreen();
 	}
 		
 	function clickHiddenFrameButton(thisObj) {		
@@ -240,25 +244,6 @@
 		}
 	}
 	
-	
-	function goMemberInformation(targetUserID) {		
-		if (opener != undefined) {			
-			opener.document.location.href = "http://www.sinoiri.pe.kr/servlet/MemberInformation?targetUserID="+targetUserID;
-			self.close();
-		} else {
-			document.location.href = "http://www.sinoiri.pe.kr/servlet/MemberInformation?targetUserID="+targetUserID;
-		}
-	}
-	
-	function goPersonalActivityHistory(targetUserID) {
-		if (opener != undefined) {			
-			opener.document.location.href = "http://www.sinoiri.pe.kr/servlet/PersonalActivityHistory?targetUserID="+targetUserID;
-			self.close();
-		} else {
-			document.location.href = "http://www.sinoiri.pe.kr/servlet/PersonalActivityHistory?targetUserID="+targetUserID;
-		}
-	}
-
 	function clieckDocumentViewScreenDisplayToggleButton(buttonObj) {
 		var documentViewScreen = document.getElementById("documentViewScreen");
 
@@ -271,10 +256,20 @@
 		}
 	}
 	
-	function goDocumentMnager() {
+	function goDocumentManagerPage() {
 		var iv = buildIV();
 		
-		var g = document.documnetMangerFrm;
+		var g = document.documentMangerFrm;
+		g.<%=WebCommonStaticFinalVars.PARAMETER_KEY_NAME_OF_SESSION_KEY%>.value = getSessionkeyBase64FromSessionStorage();		
+		g.<%=WebCommonStaticFinalVars.PARAMETER_KEY_NAME_OF_SESSION_KEY_IV%>.value = CryptoJS.enc.Base64.stringify(iv);
+		
+		g.submit();
+	}
+	
+	function goDoucmentChangeHistoryPage() {
+		var iv = buildIV();
+		
+		var g = document.documentChangeHistoryFrm;
 		g.<%=WebCommonStaticFinalVars.PARAMETER_KEY_NAME_OF_SESSION_KEY%>.value = getSessionkeyBase64FromSessionStorage();		
 		g.<%=WebCommonStaticFinalVars.PARAMETER_KEY_NAME_OF_SESSION_KEY_IV%>.value = CryptoJS.enc.Base64.stringify(iv);
 		
@@ -308,18 +303,24 @@
 <%= getMenuNavbarString(request) %>
 		</div>
 	</div>
-	<form name=documnetMangerFrm method="post" action="/servlet/DocumentManager">
+	<form name=documentMangerFrm method="post" action="/servlet/DocumentManager">
 		<input type="hidden" name="<%= WebCommonStaticFinalVars.PARAMETER_KEY_NAME_OF_SESSION_KEY %>" />
 		<input type="hidden" name="<%= WebCommonStaticFinalVars.PARAMETER_KEY_NAME_OF_SESSION_KEY_IV %>" />
 	</form>
 	
-	<form name=documnetDeleteFrm method="post" action="/servlet/DocumentDeleteProcess">
+	<form name=documentDeleteFrm method="post" target="hiddenFrame" action="/servlet/DocumentDeleteProcess">
 		<input type="hidden" name="documentNo" value="<%= documentViewRes.getDocumentNo() %>" />
 		<input type="hidden" name="<%= WebCommonStaticFinalVars.PARAMETER_KEY_NAME_OF_SESSION_KEY %>" />
 		<input type="hidden" name="<%= WebCommonStaticFinalVars.PARAMETER_KEY_NAME_OF_SESSION_KEY_IV %>" />
 	</form>	
 	
-	<form name=documentHistoryFrm method="post" action="/servlet/DocumentChangeHistory">
+	<form name=documentWebSiteApplyFrm method="post" target="hiddenFrame" action="/servlet/DocumentWebSiteApplyProcess">
+		<input type="hidden" name="documentNo" value="<%= documentViewRes.getDocumentNo() %>" />
+		<input type="hidden" name="<%= WebCommonStaticFinalVars.PARAMETER_KEY_NAME_OF_SESSION_KEY %>" />
+		<input type="hidden" name="<%= WebCommonStaticFinalVars.PARAMETER_KEY_NAME_OF_SESSION_KEY_IV %>" />
+	</form>	
+	
+	<form name=documentChangeHistoryFrm method="post" action="/servlet/DocumentChangeHistory">
 		<input type="hidden" name="documentNo" value="<%= documentViewRes.getDocumentNo() %>" />
 		<input type="hidden" name="<%= WebCommonStaticFinalVars.PARAMETER_KEY_NAME_OF_SESSION_KEY %>" />
 		<input type="hidden" name="<%= WebCommonStaticFinalVars.PARAMETER_KEY_NAME_OF_SESSION_KEY_IV %>" />
@@ -329,14 +330,19 @@
 		<div class="container">
 			<div class="panel panel-default">
 				<div class="panel-heading">
-					<h4>문서 수정 화면</h4>
+					<h4>문서 보기 화면</h4>
 				</div>
 				<div class="panel-body">
 					<div class="btn-group">
-						<button type="button" class="btn btn-primary btn-sm"  onClick="goDocumentMnager()">문서 관리 화면 이동</button>
-						<button type="button" class="btn btn-primary btn-sm"  onClick="showDocumentModifyInputScreen()">수정</button>
-						<button type="button" class="btn btn-primary btn-sm"  onClick="goDoucmentDelete()">삭제</button>
-						<button type="button" class="btn btn-primary btn-sm"  onClick="goDoucmentChangeHistory()">변경 이력 조회</button>
+						<button type="button" class="btn btn-primary btn-sm"  onClick="goDocumentManagerPage()">문서 관리 화면</button>
+						<button type="button" class="btn btn-primary btn-sm"  onClick="showDocumentModifyInputScreen()">수정</button><%
+	if (DocumentStateType.OK.equals(documentStateType)) {
+%>
+						<button type="button" class="btn btn-primary btn-sm"  onClick="deleteDocument()">삭제</button><%
+	}
+%>
+						<button type="button" class="btn btn-primary btn-sm"  onClick="applyDocumenetToWebSite()">웹사이트 적용</button>
+						<button type="button" class="btn btn-primary btn-sm"  onClick="goDoucmentChangeHistoryPage()">변경 이력 조회</button>
 						<button id="documentViewScreenDisplayToggleButton" type="button" class="btn btn-primary btn-sm" onClick="clieckDocumentViewScreenDisplayToggleButton(this);">문서 보기 닫기</button>
 						<button type="button" class="btn btn-primary btn-sm" onClick="clickHiddenFrameButton(this);">Show Hidden Frame</button>
 					</div>
@@ -345,14 +351,18 @@
 					<br>
 					<div id="documentViewScreen">
 						<div class="row">
-							<div class="col-xs-1"><b>번호</b></div>
+							<div class="col-xs-1"><b>문서번호</b></div>
 							<div class="col-xs-1"><%= documentViewRes.getDocumentNo() %></div>
 							<div class="col-xs-1"><b>상태</b></div>
-							<div class="col-xs-2"><%= DocumentStateType.valueOf(documentViewRes.getDocumentSate()).getName() %></div>
-							<div class="col-xs-2"><b>파일 이름</b></div>
-							<div class="col-xs-5" id="fileNameOfDocumnetViewScreen"><%= documentViewRes.getFileName() %></div>
-						</div>					
+							<div class="col-xs-1"><%= documentStateType.getName() %></div>
+							<div class="col-xs-2"><b>마지막 변경일</b></div>
+							<div class="col-xs-2"><%= documentViewRes.getLastModifiedDate() %></div>
+						</div>
 						<div class="row">
+							<div class="col-xs-2"><b>HTML 파일이름</b></div>
+							<div class="col-xs-6" id="fileNameOfDocumnetViewScreen"><%= documentViewRes.getFileName() %></div>
+						</div>
+						<div class="row" style="background-color:#fefbd8;">
 							<div class="col-xs-2"><h3><b>제  목 :</b></h3></div>
 							<div class="col-xs-10" id="subjectOfDocumnetViewScreen"><h3><%= toEscapeHtml4(documentViewRes.getSubject())%></h3></div>
 						</div>
@@ -366,7 +376,7 @@
 						<form name="documentModifyInputFrm" method="post" action="/servlet/DocumentModifyProcess" onsubmit="return false;">
 							<input type="hidden" name="newAttachedFileRowSeq" value="0" />
 							<div class="form-group">
-								<label for="subject">파일 이름</label>
+								<label for="subject">HTML 파일 이름</label>
 								<input type="text" name="fileName" class="form-control" placeholder="Enter file name" />
 								<label for="subject">제목</label>
 								<input type="text" name="subject" class="form-control" placeholder="Enter subject" />
@@ -376,7 +386,7 @@
 						</form>
 						<div class="btn-group">
 							<input type="button" class="btn btn-default" onClick="modifyDocument();" value="저장" />
-							<input type="button" class="btn btn-default" onClick="closeDocumentModifyInputScreen();" value="닫기" />
+							<input type="button" class="btn btn-default" onClick="closeDocumentModifyScreen();" value="닫기" />
 						</div>
 						<form name="documentModifyProcessFrm" method="post" target="hiddenFrame" action="/servlet/DocumentModifyProcess">
 							<div class="form-group">

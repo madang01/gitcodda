@@ -140,7 +140,7 @@ public class DocumentModifyProcessSvl extends AbstractAdminLoginServlet implemen
 
 				throw new WebClientException(errorMessage, debugMessage);
 			} else {
-				String errorMessage = "문서 작성이 실패했습니다";
+				String errorMessage = "문서 수정이 실패했습니다";
 				String debugMessage = new StringBuilder("입력 메시지[")
 						.append(documentModifyReq.getMessageID())
 						.append("]에 대한 비 정상 출력 메시지[")
