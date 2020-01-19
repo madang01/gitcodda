@@ -297,9 +297,13 @@ public class BoardReplyProcessSvl extends AbstractMultipartServlet implements Im
 			boardID = ValueChecker.checkValidBoardID(paramBoardID);
 			
 			/**
-			 * 웹 브라우저에서 게시판 정의에 제목이 없어야 한다면 파라미터 '제목'을 생략하던가 빈 문자열로 넘겨야한다.   
+			 * <pre>
+			 * 웹 브라우저에서 동적으로 화면을 구성하는데 이때 주제 없이 본문만 입력하는 경우에 웹 파라미터 'subject'(=주제)를 생략한다.
+			 * 하여 웹 파라미터 'subject'(=주제) 생략시 주제 없이 본문만 입력하는 경우 이므로 주제는 빈 문자열로 지정한다.
+			 * 서버단에서는 주제에 관해서 클라이언트에 의존하지 않고 게시판 정보 테이블로 부터 필수 항목 여부를 따져서 필수인 경우 무조건 유효성 검사를 수행한다. 
+			 * </pre>    
 			 */
-			if (null == paramSubject || paramSubject.isEmpty()) {
+			if (null == paramSubject) {
 				paramSubject = "";
 			} else {
 				ValueChecker.checkValidSubject(paramSubject);
