@@ -101,7 +101,6 @@ public class DocumentWebSiteApplyProcessSvl extends AbstractAdminLoginServlet {
 		
 		DocumentViewRes documentViewRes = (DocumentViewRes)outputMessage;
 		
-		
 		String relativeURL = new StringBuilder()
 				.append("/sitemenu/doc/")
 				.append(documentViewRes.getFileName()).toString();
