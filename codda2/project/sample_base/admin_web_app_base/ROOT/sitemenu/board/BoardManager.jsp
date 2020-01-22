@@ -1,11 +1,7 @@
 <%@page import="kr.pe.codda.weblib.common.MemberStateType"%>
 <%@page import="kr.pe.codda.common.etc.CommonStaticFinalVars"%><%
 %><%@page import="kr.pe.codda.weblib.common.WebCommonStaticFinalVars"%><%
-%><%@page import="kr.pe.codda.impl.message.MemberManagerRes.MemberManagerRes.Member"%><%
 %><%@page extends="kr.pe.codda.weblib.jdf.AbstractAdminJSP" language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%><%
-%><jsp:useBean id="memberManagerRes" class="kr.pe.codda.impl.message.MemberManagerRes.MemberManagerRes" scope="request" /><%
-
-	final MemberStateType memberStateType = MemberStateType.valueOf(memberManagerRes.getMemberState());
 	
 	
 %><!DOCTYPE html>

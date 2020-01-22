@@ -1,4 +1,6 @@
-<%@page import="kr.pe.codda.weblib.common.AccessedUserInformation"%><%
+<%@page import="kr.pe.codda.weblib.common.AccessedUserInformation" %><%
+%><%@page import="kr.pe.codda.weblib.common.DocumentSateSearchType" %><%
+%><%@page import="kr.pe.codda.weblib.common.DocumentStateType" %><%
 %><%@page import="kr.pe.codda.impl.message.DocumentListRes.DocumentListRes"%><%
 %><%@page import="kr.pe.codda.weblib.summernote.SummerNoteConfiguration"%><%
 %><%@page import="kr.pe.codda.weblib.summernote.SummerNoteConfigurationManger"%><%
@@ -7,7 +9,12 @@
 %><%@ page import="kr.pe.codda.weblib.common.WebCommonStaticFinalVars" %><%	
 %><%@ page extends="kr.pe.codda.weblib.jdf.AbstractAdminJSP" language="java" session="true" autoFlush="true" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %><%
 %><jsp:useBean id="documentListRes" class="kr.pe.codda.impl.message.DocumentListRes.DocumentListRes" scope="request" /><%
-	
+
+	DocumentSateSearchType documentSateSearchType = (DocumentSateSearchType)request.getAttribute("documentSateSearchType");
+	if (null == documentSateSearchType) {
+		documentSateSearchType = DocumentSateSearchType.OK;
+	}
+
 	SummerNoteConfiguration summerNoteConfiguration = SummerNoteConfigurationManger.getInstance();
 	AccessedUserInformation accessedUserformation = getAccessedUserInformationFromSession(request);
 	
@@ -229,7 +236,7 @@
 
 <form name=documentMangerFrm method="post" action="/servlet/DocumentManager">
 <input type="hidden" name="pageNo" />
-<input type="hidden" name="documentSateSearchType" value="Y" />
+<input type="hidden" name="documentSateSearchType" value="<%= documentSateSearchType.getValue() %>" />
 <input type="hidden" name="<%= WebCommonStaticFinalVars.PARAMETER_KEY_NAME_OF_SESSION_KEY %>" />
 <input type="hidden" name="<%= WebCommonStaticFinalVars.PARAMETER_KEY_NAME_OF_SESSION_KEY_IV %>" />
 </form>
@@ -243,19 +250,48 @@
 <div class="content">
 	<div class="container">
 		<div class="panel panel-default">
-			<div class="panel-heading"><h4>문서 관리자</h4></div>
+			<div class="panel-heading"><h4>문서 관리</h4></div>
 			<div class="panel-body">
 				<div class="btn-group">
 					<button type="button" class="btn btn-primary btn-sm" onClick="showDocumentWriteInputScreen()">글 작성하기</button>
-					<button type="button" class="btn btn-primary btn-sm" onClick="clickHiddenFrameButton(this);">Show Hidden Frame</button>
-				</div>			 
-				<div id="resultMessage"></div>
-				<br>
+					<button type="button" class="btn btn-primary btn-sm" onClick="clickHiddenFrameButton(this);">Show Hidden Frame</button>					
+				</div>
+				<div style="height: 20px;"></div>
+				<form class="form-inline" name="searchFrm" method="post" action="/servlet/DocumentManager">
+					<div class="form-group">
+						<label for="documentSateSearchType">상태 :&nbsp;</label>						
+						<label class="radio-inline">
+							<input type="radio" name="documentSateSearchType" value="A"<% 
+	if (DocumentSateSearchType.ALL.equals(documentSateSearchType)) {
+		out.print(" checked");
+	}
+	%>>전체
+						</label>
+						<label class="radio-inline">
+							<input type="radio" name="documentSateSearchType" value="Y"<% 
+		if (DocumentSateSearchType.OK.equals(documentSateSearchType)) {
+			out.print(" checked");
+		}
+		%>>정상
+						</label>
+						<label class="radio-inline">
+							<input type="radio" name="documentSateSearchType" value="D"<% 
+		if (DocumentSateSearchType.DELETE.equals(documentSateSearchType)) {
+			out.print(" checked");
+		}
+		%>>삭제
+						</label>						
+					</div>
+					<div class="form-group">&nbsp;
+						<button type="submit" class="btn btn-default btn-sm">조회</button>
+					</div>		
+				</form>
+				<div style="height: 10px;"></div>
 				<div id="listPartView">
 					<div class="row">
 						<div class="col-sm-1" style="background-color:lavender;">번호</div>
 						<div class="col-sm-5" style="background-color:lavender;">제목</div>
-						<div class="col-sm-2" style="background-color:lavender;">파일명</div>
+						<div class="col-sm-1" style="background-color:lavender;">상태</div>
 						<div class="col-sm-2" style="background-color:lavender;">마지막 수정일</div>
 					</div><%
 	List<DocumentListRes.Document> documentList = documentListRes.getDocumentList();
@@ -266,12 +302,19 @@
 					</div><%
 	} else {
 		for (DocumentListRes.Document document : documentList) {
+			byte documentStateTypeValue = document.getDocumentSate();
+			DocumentStateType documentStateType = DocumentStateType.valueOf(documentStateTypeValue);
+			
 			
 %>
 					<div class="row">
 						<div class="col-sm-1"><%= document.getDocumentNo() %></div>
 						<div class="col-sm-5"><a href="#" onClick="goDocumentViewPage(<%=document.getDocumentNo()%>);"><%= toEscapeHtml4(document.getSubject()) %></a></div>
-						<div class="col-sm-2"><%= toEscapeHtml4(document.getFileName()) %></div>
+						<div class="col-sm-1"<%
+			if (DocumentStateType.DELETE.equals(documentStateType)) {
+				out.print(" style=\"color:red;\"");
+			}
+%>><%= documentStateType.getName() %></div>
 						<div class="col-sm-2"><%= document.getLastModifiedDate()%></div>
 					</div><%
 		}

@@ -111,6 +111,7 @@ public class DocumentManagerSvl extends AbstractAdminLoginServlet {
 		
 		DocumentListRes documentListRes = (DocumentListRes)outputMessage;
 		req.setAttribute("documentListRes", documentListRes);
+		req.setAttribute("documentSateSearchType", documentSateSearchType);
 		printJspPage(req, res, "/sitemenu/doc/DocumentManager.jsp");
 		
 	}

@@ -334,14 +334,14 @@
 				</div>
 				<div class="panel-body">
 					<div class="btn-group">
-						<button type="button" class="btn btn-primary btn-sm"  onClick="goDocumentManagerPage()">문서 관리 화면</button>
-						<button type="button" class="btn btn-primary btn-sm"  onClick="showDocumentModifyInputScreen()">수정</button><%
+						<button type="button" class="btn btn-primary btn-sm"  onClick="goDocumentManagerPage()">문서 관리 화면</button><%
 	if (DocumentStateType.OK.equals(documentStateType)) {
-%>
-						<button type="button" class="btn btn-primary btn-sm"  onClick="deleteDocument()">삭제</button><%
+%>					
+						<button type="button" class="btn btn-primary btn-sm"  onClick="showDocumentModifyInputScreen()">수정</button>
+						<button type="button" class="btn btn-primary btn-sm"  onClick="deleteDocument()">삭제</button>
+						<button type="button" class="btn btn-primary btn-sm"  onClick="applyDocumenetToWebSite()">웹사이트 적용</button><%
 	}
-%>
-						<button type="button" class="btn btn-primary btn-sm"  onClick="applyDocumenetToWebSite()">웹사이트 적용</button>
+%>					
 						<button type="button" class="btn btn-primary btn-sm"  onClick="goDoucmentChangeHistoryPage()">변경 이력 조회</button>
 						<button id="documentViewScreenDisplayToggleButton" type="button" class="btn btn-primary btn-sm" onClick="clieckDocumentViewScreenDisplayToggleButton(this);">문서 보기 닫기</button>
 						<button type="button" class="btn btn-primary btn-sm" onClick="clickHiddenFrameButton(this);">Show Hidden Frame</button>

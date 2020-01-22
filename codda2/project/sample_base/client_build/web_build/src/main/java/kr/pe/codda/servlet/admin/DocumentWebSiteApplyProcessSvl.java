@@ -19,6 +19,7 @@ import kr.pe.codda.impl.message.DocumentViewRes.DocumentViewRes;
 import kr.pe.codda.impl.message.MessageResultRes.MessageResultRes;
 import kr.pe.codda.weblib.common.AccessedUserInformation;
 import kr.pe.codda.weblib.common.DocumentFileBuilder;
+import kr.pe.codda.weblib.common.DocumentStateType;
 import kr.pe.codda.weblib.exception.WebClientException;
 import kr.pe.codda.weblib.jdf.AbstractAdminLoginServlet;
 
@@ -100,6 +101,18 @@ public class DocumentWebSiteApplyProcessSvl extends AbstractAdminLoginServlet {
 		
 		
 		DocumentViewRes documentViewRes = (DocumentViewRes)outputMessage;
+		
+		byte documentStateTypeValue = documentViewRes.getDocumentSate();
+		DocumentStateType documentStateType = DocumentStateType.valueOf(documentStateTypeValue);
+		
+		if (DocumentStateType.DELETE.equals(documentStateType)) {
+			String errorMessage = new StringBuilder("삭제된 문서[")
+					.append(documentNo)
+					.append("]를 일반 웹 사이트에 반영 할 수 없습니다").toString();
+			String debugMessage = null;
+			
+			throw new WebClientException(errorMessage, debugMessage);
+		}
 		
 		String relativeURL = new StringBuilder()
 				.append("/sitemenu/doc/")
