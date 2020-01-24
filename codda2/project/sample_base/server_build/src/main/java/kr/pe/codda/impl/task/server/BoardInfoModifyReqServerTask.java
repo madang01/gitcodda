@@ -33,40 +33,14 @@ public class BoardInfoModifyReqServerTask extends AbstractServerTask {
 	public BoardInfoModifyReqServerTask() throws DynamicClassCallException {
 		super();
 	}
-
-	private void sendErrorOutputMessage(String errorMessage, ToLetterCarrier toLetterCarrier,
-			AbstractMessage inputMessage) throws InterruptedException {
-		log.warn("{}, inObj={}", errorMessage, inputMessage.toString());
-
-		MessageResultRes messageResultRes = new MessageResultRes();
-		messageResultRes.setTaskMessageID(inputMessage.getMessageID());
-		messageResultRes.setIsSuccess(false);
-		messageResultRes.setResultMessage(errorMessage);
-		toLetterCarrier.addSyncOutputMessage(messageResultRes);
-	}
 	
 	@Override
 	public void doTask(String projectName, LoginManagerIF personalLoginManager, ToLetterCarrier toLetterCarrier,
 			AbstractMessage inputMessage) throws Exception {
-		try {
-			AbstractMessage outputMessage = doWork(ServerCommonStaticFinalVars.DEFAULT_DBCP_NAME,
-					(BoardInfoModifyReq) inputMessage);
-			toLetterCarrier.addSyncOutputMessage(outputMessage);
-		} catch (ServerTaskException e) {
-			String errorMessage = e.getMessage();
-			log.warn("errmsg=={}, inObj={}", errorMessage, inputMessage.toString());
 
-			sendErrorOutputMessage(errorMessage, toLetterCarrier, inputMessage);
-			return;
-		} catch (Exception e) {
-			String errorMessage = new StringBuilder().append("unknwon errmsg=").append(e.getMessage())
-					.append(", inObj=").append(inputMessage.toString()).toString();
-
-			log.warn(errorMessage, e);
-
-			sendErrorOutputMessage("게시판 정보 수정이 실패하였습니다", toLetterCarrier, inputMessage);
-			return;
-		}
+		AbstractMessage outputMessage = doWork(ServerCommonStaticFinalVars.DEFAULT_DBCP_NAME,
+				(BoardInfoModifyReq) inputMessage);
+		toLetterCarrier.addSyncOutputMessage(outputMessage);
 	}
 	
 	public MessageResultRes doWork(String dbcpName, BoardInfoModifyReq boardInfoModifyReq) throws Exception {
@@ -93,11 +67,11 @@ public class BoardInfoModifyReqServerTask extends AbstractServerTask {
 		UByte boardID = UByte.valueOf(boardInfoModifyReq.getBoardID());
 		String boardName = boardInfoModifyReq.getBoardName();
 		
-		ServerDBUtil.execute(dbcpName, (conn, create) -> {
+		ServerDBUtil.execute(dbcpName, (conn, dsl) -> {
 			
-			ServerDBUtil.checkUserAccessRights(conn, create, log, "게시판 정보 수정 서비스", PermissionType.ADMIN, boardInfoModifyReq.getRequestedUserID());
+			ServerDBUtil.checkUserAccessRights(conn, dsl, log, "게시판 정보 수정 서비스", PermissionType.ADMIN, boardInfoModifyReq.getRequestedUserID());
 			
-			Record1<UByte> boardInfoRecord = create.select(SB_BOARD_INFO_TB.BOARD_ID).from(SB_BOARD_INFO_TB)
+			Record1<UByte> boardInfoRecord = dsl.select(SB_BOARD_INFO_TB.BOARD_ID).from(SB_BOARD_INFO_TB)
 			.where(SB_BOARD_INFO_TB.BOARD_ID.eq(boardID)).fetchOne();
 
 			if (null == boardInfoRecord) {
@@ -112,7 +86,7 @@ public class BoardInfoModifyReqServerTask extends AbstractServerTask {
 			}			
 			
 			
-			int countOfUpdate = create.update(SB_BOARD_INFO_TB)
+			int countOfUpdate = dsl.update(SB_BOARD_INFO_TB)
 						.set(SB_BOARD_INFO_TB.BOARD_NAME, boardName)
 						.set(SB_BOARD_INFO_TB.REPLY_POLICY_TYPE, boardReplyPolicyType.getValue())
 						.set(SB_BOARD_INFO_TB.WRITE_PERMISSION_TYPE, boardWritePermissionType.getValue())

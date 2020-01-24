@@ -137,8 +137,8 @@ public class BoardReplyReqServerTaskTest extends AbstractBoardTest {
 		
 		try {
 			
-			ServerDBUtil.execute(TEST_DBCP_NAME, (conn, create) -> {
-				create.update(SB_BOARD_INFO_TB).set(SB_BOARD_INFO_TB.NEXT_BOARD_NO, UInteger.valueOf(CommonStaticFinalVars.UNSIGNED_INTEGER_MAX))
+			ServerDBUtil.execute(TEST_DBCP_NAME, (conn, dsl) -> {
+				dsl.update(SB_BOARD_INFO_TB).set(SB_BOARD_INFO_TB.NEXT_BOARD_NO, UInteger.valueOf(CommonStaticFinalVars.UNSIGNED_INTEGER_MAX))
 				.where(SB_BOARD_INFO_TB.BOARD_ID.eq(boardID))
 				.execute();	
 				

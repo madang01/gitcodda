@@ -17,7 +17,6 @@ import kr.pe.codda.common.exception.ServerTaskException;
 import kr.pe.codda.common.message.AbstractMessage;
 import kr.pe.codda.impl.message.ArraySiteMenuReq.ArraySiteMenuReq;
 import kr.pe.codda.impl.message.ArraySiteMenuRes.ArraySiteMenuRes;
-import kr.pe.codda.impl.message.MessageResultRes.MessageResultRes;
 import kr.pe.codda.server.LoginManagerIF;
 import kr.pe.codda.server.lib.PermissionType;
 import kr.pe.codda.server.lib.ServerCommonStaticFinalVars;
@@ -32,44 +31,13 @@ public class ArraySiteMenuReqServerTask extends AbstractServerTask {
 	
 	public ArraySiteMenuReqServerTask() throws DynamicClassCallException {
 		super();
-	}
-
-
-	private void sendErrorOutputMessage(String errorMessage,			
-			ToLetterCarrier toLetterCarrier,
-			AbstractMessage inputMessage) throws InterruptedException {
-		
-		MessageResultRes messageResultRes = new MessageResultRes();
-		messageResultRes.setTaskMessageID(inputMessage.getMessageID());
-		messageResultRes.setIsSuccess(false);		
-		messageResultRes.setResultMessage(errorMessage);
-		toLetterCarrier.addSyncOutputMessage(messageResultRes);
-	}
-	
+	}	
 
 	@Override
 	public void doTask(String projectName, LoginManagerIF personalLoginManager, ToLetterCarrier toLetterCarrier,
 			AbstractMessage inputMessage) throws Exception {
-		try {
-			AbstractMessage outputMessage = doWork(ServerCommonStaticFinalVars.DEFAULT_DBCP_NAME, (ArraySiteMenuReq)inputMessage);
-			toLetterCarrier.addSyncOutputMessage(outputMessage);
-		} catch(ServerTaskException e) {
-			String errorMessage = e.getMessage();
-			log.warn("errmsg=={}, inObj={}", errorMessage, inputMessage.toString());
-			
-			sendErrorOutputMessage(errorMessage, toLetterCarrier, inputMessage);
-			return;
-		} catch(Exception e) {
-			String errorMessage = new StringBuilder().append("unknwon errmsg=")
-					.append(e.getMessage())
-					.append(", inObj=")
-					.append(inputMessage.toString()).toString();
-			
-			log.warn(errorMessage, e);
-						
-			sendErrorOutputMessage("배형형 메뉴 조회가 실패하였습니다", toLetterCarrier, inputMessage);
-			return;
-		}
+		AbstractMessage outputMessage = doWork(ServerCommonStaticFinalVars.DEFAULT_DBCP_NAME, (ArraySiteMenuReq)inputMessage);
+		toLetterCarrier.addSyncOutputMessage(outputMessage);
 	}
 
 	public ArraySiteMenuRes doWork(String dbcpName, ArraySiteMenuReq arraySiteMenuReq) throws Exception {
@@ -85,13 +53,13 @@ public class ArraySiteMenuReqServerTask extends AbstractServerTask {
 		
 		final java.util.List<ArraySiteMenuRes.Menu> menuList = new ArrayList<ArraySiteMenuRes.Menu>();
 		
-		ServerDBUtil.execute(dbcpName, (conn, create) -> {
+		ServerDBUtil.execute(dbcpName, (conn, dsl) -> {
 			
-			ServerDBUtil.checkUserAccessRights(conn, create, log, 
+			ServerDBUtil.checkUserAccessRights(conn, dsl, log, 
 					"배열형 메뉴 조회 서비스", PermissionType.ADMIN, arraySiteMenuReq.getRequestedUserID());
 						
 			
-			Result<Record6<UInteger, UInteger, UByte, UByte, String, String>> menuListResult = create.select(SB_SITEMENU_TB.MENU_NO, 
+			Result<Record6<UInteger, UInteger, UByte, UByte, String, String>> menuListResult = dsl.select(SB_SITEMENU_TB.MENU_NO, 
 					SB_SITEMENU_TB.PARENT_NO, 
 					SB_SITEMENU_TB.DEPTH, 
 					SB_SITEMENU_TB.ORDER_SQ,					
@@ -101,7 +69,7 @@ public class ArraySiteMenuReqServerTask extends AbstractServerTask {
 			.orderBy(SB_SITEMENU_TB.ORDER_SQ.asc())
 			.fetch();			
 						
-			// buildMenuListRes(menuList, create, rootParnetNo);		
+			// buildMenuListRes(menuList, dsl, rootParnetNo);		
 			for (Record menuListRecord : menuListResult) {
 				ArraySiteMenuRes.Menu menu = new ArraySiteMenuRes.Menu();
 				

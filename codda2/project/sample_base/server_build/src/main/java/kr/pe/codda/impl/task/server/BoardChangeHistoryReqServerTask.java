@@ -23,7 +23,6 @@ import kr.pe.codda.common.exception.ServerTaskException;
 import kr.pe.codda.common.message.AbstractMessage;
 import kr.pe.codda.impl.message.BoardChangeHistoryReq.BoardChangeHistoryReq;
 import kr.pe.codda.impl.message.BoardChangeHistoryRes.BoardChangeHistoryRes;
-import kr.pe.codda.impl.message.MessageResultRes.MessageResultRes;
 import kr.pe.codda.server.LoginManagerIF;
 import kr.pe.codda.server.lib.BoardListType;
 import kr.pe.codda.server.lib.PermissionType;
@@ -40,39 +39,12 @@ public class BoardChangeHistoryReqServerTask extends AbstractServerTask {
 		super();
 	}
 
-	private void sendErrorOutputMessage(String errorMessage, ToLetterCarrier toLetterCarrier,
-			AbstractMessage inputMessage) throws InterruptedException {
-		log.warn("{}, inObj=", errorMessage, inputMessage.toString());
-
-		MessageResultRes messageResultRes = new MessageResultRes();
-		messageResultRes.setTaskMessageID(inputMessage.getMessageID());
-		messageResultRes.setIsSuccess(false);
-		messageResultRes.setResultMessage(errorMessage);
-		toLetterCarrier.addSyncOutputMessage(messageResultRes);
-	}
-
 	@Override
 	public void doTask(String projectName, LoginManagerIF personalLoginManager, ToLetterCarrier toLetterCarrier,
 			AbstractMessage inputMessage) throws Exception {
-		try {
-			AbstractMessage outputMessage = doWork(ServerCommonStaticFinalVars.DEFAULT_DBCP_NAME,
-					(BoardChangeHistoryReq) inputMessage);
-			toLetterCarrier.addSyncOutputMessage(outputMessage);
-		} catch (ServerTaskException e) {
-			String errorMessage = e.getMessage();
-			log.warn("errmsg=={}, inObj={}", errorMessage, inputMessage.toString());
-
-			sendErrorOutputMessage(errorMessage, toLetterCarrier, inputMessage);
-			return;
-		} catch (Exception e) {
-			String errorMessage = new StringBuilder().append("unknwon errmsg=").append(e.getMessage())
-					.append(", inObj=").append(inputMessage.toString()).toString();
-
-			log.warn(errorMessage, e);
-
-			sendErrorOutputMessage("게시글 수정 이력 조회가 실패하였습니다", toLetterCarrier, inputMessage);
-			return;
-		}
+		AbstractMessage outputMessage = doWork(ServerCommonStaticFinalVars.DEFAULT_DBCP_NAME,
+				(BoardChangeHistoryReq) inputMessage);
+		toLetterCarrier.addSyncOutputMessage(outputMessage);
 	}
 	
 	public BoardChangeHistoryRes doWork(String dbcpName, BoardChangeHistoryReq boardChangeHistoryReq) throws Exception {
@@ -91,8 +63,8 @@ public class BoardChangeHistoryReqServerTask extends AbstractServerTask {
 		final List<BoardChangeHistoryRes.BoardChangeHistory> boardChangeHistoryList = new ArrayList<BoardChangeHistoryRes.BoardChangeHistory>();
 		final BoardChangeHistoryRes boardChangeHistoryRes = new BoardChangeHistoryRes();
 		
-		ServerDBUtil.execute(dbcpName, (conn, create) -> {
-			Record1<Byte> boardInforRecord = create
+		ServerDBUtil.execute(dbcpName, (conn, dsl) -> {
+			Record1<Byte> boardInforRecord = dsl
 					.select(SB_BOARD_INFO_TB.LIST_TYPE)
 					.from(SB_BOARD_INFO_TB).where(SB_BOARD_INFO_TB.BOARD_ID.eq(boardID)).fetchOne();
 
@@ -125,11 +97,11 @@ public class BoardChangeHistoryReqServerTask extends AbstractServerTask {
 			}
 			
 			
-			ServerDBUtil.checkUserAccessRights(conn, create, log,
+			ServerDBUtil.checkUserAccessRights(conn, dsl, log,
 					"게시글 수정 이력 조회 서비스", PermissionType.GUEST, boardChangeHistoryReq.getRequestedUserID());
 			
 			
-			Record2<UInteger, UInteger> boardRecord = create.select(SB_BOARD_TB.PARENT_NO, SB_BOARD_TB.GROUP_NO)
+			Record2<UInteger, UInteger> boardRecord = dsl.select(SB_BOARD_TB.PARENT_NO, SB_BOARD_TB.GROUP_NO)
 			.from(SB_BOARD_TB)
 			.where(SB_BOARD_TB.BOARD_ID.eq(boardID))
 			.and(SB_BOARD_TB.BOARD_NO.eq(boardNo))
@@ -150,7 +122,7 @@ public class BoardChangeHistoryReqServerTask extends AbstractServerTask {
 			UInteger parentNo = boardRecord.get(SB_BOARD_TB.PARENT_NO);
 			UInteger groupNo = boardRecord.get(SB_BOARD_TB.GROUP_NO);
 			
-			Result<Record6<UByte, String, String, String, String, Timestamp>> boardHistoryResult = create.select(SB_BOARD_HISTORY_TB.HISTORY_SQ, 
+			Result<Record6<UByte, String, String, String, String, Timestamp>> boardHistoryResult = dsl.select(SB_BOARD_HISTORY_TB.HISTORY_SQ, 
 					SB_BOARD_HISTORY_TB.SUBJECT, 
 					SB_BOARD_HISTORY_TB.CONTENTS,
 					SB_BOARD_HISTORY_TB.REGISTRANT_ID,

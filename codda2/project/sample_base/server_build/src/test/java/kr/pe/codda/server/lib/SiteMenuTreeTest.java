@@ -27,12 +27,12 @@ public class SiteMenuTreeTest extends AbstractBoardTest {
 		// UByte freeBoardSequenceID = UByte.valueOf(SequenceType.FREE_BOARD.getSequenceID());
 	
 		try {
-			ServerDBUtil.execute(TEST_DBCP_NAME, (conn, create) -> {
-				create.update(SB_SEQ_TB).set(SB_SEQ_TB.SQ_VALUE, UInteger.valueOf(1))
+			ServerDBUtil.execute(TEST_DBCP_NAME, (conn, dsl) -> {
+				dsl.update(SB_SEQ_TB).set(SB_SEQ_TB.SQ_VALUE, UInteger.valueOf(1))
 				.where(SB_SEQ_TB.SQ_ID.eq(SequenceType.MENU.getSequenceID()))
 				.execute();			
 							
-				create.delete(SB_SITEMENU_TB).execute();			
+				dsl.delete(SB_SITEMENU_TB).execute();			
 				
 				conn.commit();
 			});

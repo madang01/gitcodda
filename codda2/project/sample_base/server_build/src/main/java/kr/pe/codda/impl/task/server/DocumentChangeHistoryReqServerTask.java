@@ -36,7 +36,6 @@ import kr.pe.codda.common.exception.ServerTaskException;
 import kr.pe.codda.common.message.AbstractMessage;
 import kr.pe.codda.impl.message.DocumentChangeHistoryReq.DocumentChangeHistoryReq;
 import kr.pe.codda.impl.message.DocumentChangeHistoryRes.DocumentChangeHistoryRes;
-import kr.pe.codda.impl.message.MessageResultRes.MessageResultRes;
 import kr.pe.codda.server.LoginManagerIF;
 import kr.pe.codda.server.lib.DocumentStateType;
 import kr.pe.codda.server.lib.PermissionType;
@@ -62,47 +61,14 @@ public class DocumentChangeHistoryReqServerTask extends AbstractServerTask {
 		super();
 	}
 
-	/**
-	 * 에러 내용을 담은 출력 메시지 송신
-	 *  
-	 * @param errorMessage 에러 내용
-	 * @param toLetterCarrier 송신 메시지 배달자
-	 * @param inputMessage 입력 메시지
-	 * @throws InterruptedException 인터럽트 발생시 던지는 예외
-	 */
-	private void sendErrorOutputMessage(String errorMessage, ToLetterCarrier toLetterCarrier,
-			AbstractMessage inputMessage) throws InterruptedException {
-		log.warn("{}, inObj={}", errorMessage, inputMessage.toString());
-
-		MessageResultRes messageResultRes = new MessageResultRes();
-		messageResultRes.setTaskMessageID(inputMessage.getMessageID());
-		messageResultRes.setIsSuccess(false);
-		messageResultRes.setResultMessage(errorMessage);
-		toLetterCarrier.addSyncOutputMessage(messageResultRes);
-	}
 	
 	@Override
 	public void doTask(String projectName, LoginManagerIF personalLoginManager, ToLetterCarrier toLetterCarrier,
 			AbstractMessage inputMessage) throws Exception {
-		try {
-			AbstractMessage outputMessage = doWork(ServerCommonStaticFinalVars.DEFAULT_DBCP_NAME,
-					(DocumentChangeHistoryReq) inputMessage);
-			toLetterCarrier.addSyncOutputMessage(outputMessage);
-		} catch (ServerTaskException e) {
-			String errorMessage = e.getMessage();
-			log.warn("errmsg=={}, inObj={}", errorMessage, inputMessage.toString());
 
-			sendErrorOutputMessage(errorMessage, toLetterCarrier, inputMessage);
-			return;
-		} catch (Exception e) {
-			String errorMessage = new StringBuilder().append("unknwon errmsg=").append(e.getMessage())
-					.append(", inObj=").append(inputMessage.toString()).toString();
-
-			log.warn(errorMessage, e);
-
-			sendErrorOutputMessage("문서 목록 조회가 실패하였습니다", toLetterCarrier, inputMessage);
-			return;
-		}
+		AbstractMessage outputMessage = doWork(ServerCommonStaticFinalVars.DEFAULT_DBCP_NAME,
+				(DocumentChangeHistoryReq) inputMessage);
+		toLetterCarrier.addSyncOutputMessage(outputMessage);
 	}
 	
 	/**
@@ -134,11 +100,11 @@ public class DocumentChangeHistoryReqServerTask extends AbstractServerTask {
 		final java.util.List<DocumentChangeHistoryRes.Document> documentList = new ArrayList<DocumentChangeHistoryRes.Document>();
 		final DocumentChangeHistoryRes documentHistoryRes = new DocumentChangeHistoryRes();
 		
-		ServerDBUtil.execute(dbcpName, (conn, create) -> {
-			ServerDBUtil.checkUserAccessRights(conn, create, log, "개별 문서 이력 조회 서비스", PermissionType.ADMIN,
+		ServerDBUtil.execute(dbcpName, (conn, dsl) -> {
+			ServerDBUtil.checkUserAccessRights(conn, dsl, log, "개별 문서 이력 조회 서비스", PermissionType.ADMIN,
 					documentHistoryReq.getRequestedUserID());
 			
-			Record2<Byte, UInteger> documentRecord = create
+			Record2<Byte, UInteger> documentRecord = dsl
 					.select(SB_DOC_TB.DOC_STATE, SB_DOC_TB.LAST_DOC_SQ)
 					.from(SB_DOC_TB)
 					.where(SB_DOC_TB.DOC_NO.eq(documentNo))
@@ -178,7 +144,7 @@ public class DocumentChangeHistoryReqServerTask extends AbstractServerTask {
 					documentHistoryRes.setDocumentSate(documentStateTypeValue);
 					documentHistoryRes.setTotal(lastDocumentSequence.longValue() + 1);					
 					
-					Result<Record5<UInteger, String, String, String, Timestamp>> result = create
+					Result<Record5<UInteger, String, String, String, Timestamp>> result = dsl
 					.select(SB_DOC_HISTORY_TB.DOC_SQ, SB_DOC_HISTORY_TB.FILE_NAME, 
 							SB_DOC_HISTORY_TB.SUBJECT, SB_DOC_HISTORY_TB.CONTENTS, SB_DOC_HISTORY_TB.REG_DT)
 					.from(SB_DOC_HISTORY_TB)

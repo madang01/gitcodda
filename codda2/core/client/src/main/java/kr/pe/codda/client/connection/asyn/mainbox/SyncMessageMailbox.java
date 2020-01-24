@@ -25,6 +25,10 @@ import kr.pe.codda.client.ConnectionIF;
 import kr.pe.codda.client.connection.ClientMessageUtility;
 import kr.pe.codda.common.classloader.MessageCodecMangerIF;
 import kr.pe.codda.common.etc.CommonStaticFinalVars;
+import kr.pe.codda.common.exception.BodyFormatException;
+import kr.pe.codda.common.exception.DynamicClassCallException;
+import kr.pe.codda.common.exception.NoMoreWrapBufferException;
+import kr.pe.codda.common.exception.ServerTaskException;
 import kr.pe.codda.common.message.AbstractMessage;
 import kr.pe.codda.common.protocol.MessageProtocolIF;
 
@@ -194,8 +198,12 @@ public final class SyncMessageMailbox {
 	 * @return 스트림에서 추출한 중간 객체로 부터 변환된 메시지
 	 * @throws IOException 소켓 타임 아웃 포함하여 입출력 에러 발생시 던지는 예외
 	 * @throws InterruptedException 인터럽트 발생시 던지는 예외
+	 * @throws BodyFormatException 
+	 * @throws ServerTaskException 
+	 * @throws NoMoreWrapBufferException 
+	 * @throws DynamicClassCallException 
 	 */
-	public AbstractMessage getSyncOutputMessage(MessageCodecMangerIF messageCodecManger) throws IOException, InterruptedException {
+	public AbstractMessage getSyncOutputMessage(MessageCodecMangerIF messageCodecManger) throws IOException, InterruptedException, DynamicClassCallException, NoMoreWrapBufferException, ServerTaskException, BodyFormatException {
 		AbstractMessage returnedObject = null;
 		synchronized (monitor) {
 			if (null == receviedReadableMiddleObject) {

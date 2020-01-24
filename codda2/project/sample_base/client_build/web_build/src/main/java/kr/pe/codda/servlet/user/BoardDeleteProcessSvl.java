@@ -10,13 +10,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import kr.pe.codda.client.AnyProjectConnectionPoolIF;
 import kr.pe.codda.client.ConnectionPoolManager;
-import kr.pe.codda.common.exception.SymmetricException;
 import kr.pe.codda.common.message.AbstractMessage;
-import kr.pe.codda.common.sessionkey.ServerSessionkeyIF;
-import kr.pe.codda.common.sessionkey.ServerSessionkeyManager;
 import kr.pe.codda.common.sessionkey.ServerSymmetricKeyIF;
 import kr.pe.codda.common.util.CommonStaticUtil;
-import kr.pe.codda.common.util.HexUtil;
 import kr.pe.codda.impl.classloader.ClientMessageCodecManger;
 import kr.pe.codda.impl.message.BoardDeleteReq.BoardDeleteReq;
 import kr.pe.codda.impl.message.MessageResultRes.MessageResultRes;
@@ -24,9 +20,9 @@ import kr.pe.codda.weblib.common.AccessedUserInformation;
 import kr.pe.codda.weblib.common.ValueChecker;
 import kr.pe.codda.weblib.common.WebCommonStaticFinalVars;
 import kr.pe.codda.weblib.exception.WebClientException;
-import kr.pe.codda.weblib.jdf.AbstractServlet;
+import kr.pe.codda.weblib.jdf.AbstractSessionKeyServlet;
 
-public class BoardDeleteProcessSvl extends AbstractServlet {
+public class BoardDeleteProcessSvl extends AbstractSessionKeyServlet {
 
 	private static final long serialVersionUID = -238411848490485952L;
 
@@ -34,8 +30,6 @@ public class BoardDeleteProcessSvl extends AbstractServlet {
 	protected void performTask(HttpServletRequest req, HttpServletResponse res)
 			throws Exception {
 		/**************** 파라미터 시작 *******************/
-		String paramSessionKeyBase64 = req.getParameter(WebCommonStaticFinalVars.PARAMETER_KEY_NAME_OF_SESSION_KEY);
-		String paramIVBase64 = req.getParameter(WebCommonStaticFinalVars.PARAMETER_KEY_NAME_OF_SESSION_KEY_IV);
 		String paramBoardID = req.getParameter("boardID");
 		String paramBoardNo = req.getParameter("boardNo");
 		String paramPwdCipherBase64 = req.getParameter("pwd");
@@ -44,19 +38,6 @@ public class BoardDeleteProcessSvl extends AbstractServlet {
 		// FIXME!
 		log.info("paramPwdCipherBase64=[" + paramPwdCipherBase64 + "]");
 		
-		if (null == paramSessionKeyBase64) {
-			String errorMessage = "the request parameter paramSessionKeyBase64 is null";
-			String debugMessage = errorMessage;
-			printErrorMessagePage(req, res, errorMessage, debugMessage);
-			return;
-		}
-
-		if (null == paramIVBase64) {
-			String errorMessage = "the request parameter paramIVBase64 is null";
-			String debugMessage = errorMessage;
-			printErrorMessagePage(req, res, errorMessage, debugMessage);
-			return;
-		}
 		
 		short boardID = -1;
 		long boardNo = 0L;
@@ -69,81 +50,7 @@ public class BoardDeleteProcessSvl extends AbstractServlet {
 			printErrorMessagePage(req, res, errorMessage, debugMessage);
 			return;
 		}
-		
-		byte[] sessionkeyBytes = null;
-		try {
-			sessionkeyBytes = CommonStaticUtil.Base64Decoder.decode(paramSessionKeyBase64);
-		} catch (Exception e) {
-			String errorMessage = "세션키 파라미터가 잘못되었습니다";
-			String debugMessage = new StringBuilder().append("the parameter '")
-					.append(WebCommonStaticFinalVars.PARAMETER_KEY_NAME_OF_SESSION_KEY).append("'[")
-					.append(paramSessionKeyBase64).append("] is not a base64 encoding string, errmsg=")
-					.append(e.getMessage()).toString();
-			
-			log.warning(debugMessage);
-
-			printErrorMessagePage(req, res, errorMessage, debugMessage);
-			return;
-		}
-		byte[] ivBytes = null;
-		try {
-			ivBytes = CommonStaticUtil.Base64Decoder.decode(paramIVBase64);
-		} catch (Exception e) {
-			String errorMessage = "세션키 소금 파라미터가 잘못되었습니다";
-			String debugMessage = new StringBuilder().append("the parameter '")
-					.append(WebCommonStaticFinalVars.PARAMETER_KEY_NAME_OF_SESSION_KEY_IV).append("'[")
-					.append(paramIVBase64).append("] is not a base64 encoding string, errmsg=").append(e.getMessage())
-					.toString();
-			
-			log.warning(debugMessage);
-
-			printErrorMessagePage(req, res, errorMessage, debugMessage);
-			return;
-		}
-		
-		ServerSessionkeyIF webServerSessionkey = null;
-		try {
-			ServerSessionkeyManager serverSessionkeyManager = ServerSessionkeyManager.getInstance();
-			webServerSessionkey = serverSessionkeyManager.getMainProjectServerSessionkey();
-		} catch (SymmetricException e) {
-			String errorMessage = "fail to get a ServerSessionkeyManger class instance";
-			log.log(Level.WARNING, errorMessage, e);
-
-			String debugMessage = e.getMessage();
-			printErrorMessagePage(req, res, errorMessage, debugMessage);
-			return;
-		}
-		
-		ServerSymmetricKeyIF webServerSymmetricKey = null;
-		try {
-			webServerSymmetricKey = webServerSessionkey
-					.createNewInstanceOfServerSymmetricKey(true, sessionkeyBytes,
-							ivBytes);
-		} catch (IllegalArgumentException e) {
-			String errorMessage = "웹 세션키 인스턴스 생성 실패";
-			log.log(Level.WARNING, errorMessage, e);
-
-			String debugMessage = new StringBuilder("sessionkeyBytes=[")
-					.append(HexUtil.getHexStringFromByteArray(sessionkeyBytes))
-					.append("], ivBytes=[")
-					.append(HexUtil.getHexStringFromByteArray(ivBytes))
-					.append("]").toString();
-
-			printErrorMessagePage(req, res, errorMessage, debugMessage);
-			return;
-		} catch (SymmetricException e) {
-			String errorMessage = "웹 세션키 인스턴스 생성 실패";
-			log.log(Level.WARNING, errorMessage, e);
-
-			String debugMessage = new StringBuilder("sessionkeyBytes=[")
-					.append(HexUtil.getHexStringFromByteArray(sessionkeyBytes))
-					.append("], ivBytes=[")
-					.append(HexUtil.getHexStringFromByteArray(ivBytes))
-					.append("]").toString();
-
-			printErrorMessagePage(req, res, errorMessage, debugMessage);
-			return;
-		}
+		ServerSymmetricKeyIF webServerSymmetricKey = buildServerSymmetricKey(req, false);
 
 		String pwdHashBase64 = null;
 		if (null == paramPwdCipherBase64) {

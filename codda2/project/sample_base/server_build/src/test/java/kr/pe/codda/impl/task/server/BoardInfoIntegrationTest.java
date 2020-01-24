@@ -43,17 +43,17 @@ public class BoardInfoIntegrationTest extends AbstractBoardTest	 {
 	@Before
 	public void setUp() {
 		try {
-			ServerDBUtil.execute(TEST_DBCP_NAME, (conn, create) -> {
-				create.delete(SB_MEMBER_ACTIVITY_HISTORY_TB).execute();
-				create.delete(SB_BOARD_VOTE_TB).execute();
-				create.delete(SB_BOARD_FILELIST_TB).execute();
-				create.delete(SB_BOARD_HISTORY_TB).execute();
-				create.delete(SB_BOARD_TB).execute();
+			ServerDBUtil.execute(TEST_DBCP_NAME, (conn, dsl) -> {
+				dsl.delete(SB_MEMBER_ACTIVITY_HISTORY_TB).execute();
+				dsl.delete(SB_BOARD_VOTE_TB).execute();
+				dsl.delete(SB_BOARD_FILELIST_TB).execute();
+				dsl.delete(SB_BOARD_HISTORY_TB).execute();
+				dsl.delete(SB_BOARD_TB).execute();
 
 				/** sample_base 프로젝에 예약된 0 ~ 3 까지의 게시판 식별자를 제외한 게시판 정보 삭제  */
-				create.delete(SB_BOARD_INFO_TB).where(SB_BOARD_INFO_TB.BOARD_ID.ge(UByte.valueOf(4))).execute();
+				dsl.delete(SB_BOARD_INFO_TB).where(SB_BOARD_INFO_TB.BOARD_ID.ge(UByte.valueOf(4))).execute();
 				
-				create.update(SB_BOARD_INFO_TB)
+				dsl.update(SB_BOARD_INFO_TB)
 						.set(SB_BOARD_INFO_TB.CNT, 0L)
 						.set(SB_BOARD_INFO_TB.TOTAL, 0L)
 						.set(SB_BOARD_INFO_TB.NEXT_BOARD_NO, UInteger.valueOf(1)).execute();
@@ -173,8 +173,8 @@ public class BoardInfoIntegrationTest extends AbstractBoardTest	 {
 		maxBoardInfoAddReq.setBoardReplyPermissionType(PermissionType.MEMBER.getValue());
 		
 		try {
-			ServerDBUtil.execute(TEST_DBCP_NAME, (conn, create) -> {
-				create.insertInto(SB_BOARD_INFO_TB).set(SB_BOARD_INFO_TB.BOARD_ID, UByte.valueOf(CommonStaticFinalVars.UNSIGNED_BYTE_MAX))
+			ServerDBUtil.execute(TEST_DBCP_NAME, (conn, dsl) -> {
+				dsl.insertInto(SB_BOARD_INFO_TB).set(SB_BOARD_INFO_TB.BOARD_ID, UByte.valueOf(CommonStaticFinalVars.UNSIGNED_BYTE_MAX))
 				.set(SB_BOARD_INFO_TB.BOARD_NAME, "게시판 식별자 최대값 게시판")
 				.set(SB_BOARD_INFO_TB.LIST_TYPE, BoardListType.TREE.getValue())
 				.set(SB_BOARD_INFO_TB.REPLY_POLICY_TYPE, BoardReplyPolicyType.ALL.getValue())

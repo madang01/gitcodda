@@ -54,48 +54,15 @@ public class DocumentDeleteReqServerTask extends AbstractServerTask {
 	public DocumentDeleteReqServerTask() throws DynamicClassCallException {
 		super();
 	}
-
-	/**
-	 * 에러 내용을 담은 출력 메시지 송신
-	 *  
-	 * @param errorMessage 에러 내용
-	 * @param toLetterCarrier 송신 메시지 배달자
-	 * @param inputMessage 입력 메시지
-	 * @throws InterruptedException 인터럽트 발생시 던지는 예외
-	 */
-	private void sendErrorOutputMessage(String errorMessage, ToLetterCarrier toLetterCarrier,
-			AbstractMessage inputMessage) throws InterruptedException {
-		log.warn("{}, inObj={}", errorMessage, inputMessage.toString());
-
-		MessageResultRes messageResultRes = new MessageResultRes();
-		messageResultRes.setTaskMessageID(inputMessage.getMessageID());
-		messageResultRes.setIsSuccess(false);
-		messageResultRes.setResultMessage(errorMessage);
-		toLetterCarrier.addSyncOutputMessage(messageResultRes);
-	}
+	
 	
 	@Override
 	public void doTask(String projectName, LoginManagerIF personalLoginManager, ToLetterCarrier toLetterCarrier,
 			AbstractMessage inputMessage) throws Exception {
-		try {
-			AbstractMessage outputMessage = doWork(ServerCommonStaticFinalVars.DEFAULT_DBCP_NAME,
-					(DocumentDeleteReq) inputMessage);
-			toLetterCarrier.addSyncOutputMessage(outputMessage);
-		} catch (ServerTaskException e) {
-			String errorMessage = e.getMessage();
-			log.warn("errmsg=={}, inObj={}", errorMessage, inputMessage.toString());
 
-			sendErrorOutputMessage(errorMessage, toLetterCarrier, inputMessage);
-			return;
-		} catch (Exception e) {
-			String errorMessage = new StringBuilder().append("unknwon errmsg=").append(e.getMessage())
-					.append(", inObj=").append(inputMessage.toString()).toString();
-
-			log.warn(errorMessage, e);
-
-			sendErrorOutputMessage("문서 목록 조회가 실패하였습니다", toLetterCarrier, inputMessage);
-			return;
-		}
+		AbstractMessage outputMessage = doWork(ServerCommonStaticFinalVars.DEFAULT_DBCP_NAME,
+				(DocumentDeleteReq) inputMessage);
+		toLetterCarrier.addSyncOutputMessage(outputMessage);
 	}
 	
 	/**
@@ -118,14 +85,17 @@ public class DocumentDeleteReqServerTask extends AbstractServerTask {
 		
 		final UInteger documentNo = UInteger.valueOf(documentDeleteReq.getDocumentNo());
 		
-		MessageResultRes messageResultRes = new MessageResultRes();
+		final String successMessage = new StringBuilder()
+				.append("문서[no=")
+				.append(documentDeleteReq.getDocumentNo())
+				.append("]를 삭제하였습니다").toString();
 		
-		ServerDBUtil.execute(dbcpName, (conn, create) -> {
-			ServerDBUtil.checkUserAccessRights(conn, create, log, "문서 삭제 서비스", PermissionType.ADMIN,
+		ServerDBUtil.execute(dbcpName, (conn, dsl) -> {
+			ServerDBUtil.checkUserAccessRights(conn, dsl, log, "문서 삭제 서비스", PermissionType.ADMIN,
 					documentDeleteReq.getRequestedUserID());		
 
 			/** 삭제할 문서에 락을 건다 */
-			Record1<Byte> documentRecord = create
+			Record1<Byte> documentRecord = dsl
 			.select(SB_DOC_TB.DOC_STATE)
 			.from(SB_DOC_TB)
 			.where(SB_DOC_TB.DOC_NO.eq(documentNo))
@@ -177,30 +147,25 @@ public class DocumentDeleteReqServerTask extends AbstractServerTask {
 				throw new ServerTaskException(errorMessage);
 			}
 			
-			create.update(SB_DOC_TB).set(SB_DOC_TB.DOC_STATE, DocumentStateType.DELETE.getValue())
+			dsl.update(SB_DOC_TB).set(SB_DOC_TB.DOC_STATE, DocumentStateType.DELETE.getValue())
 			.where(SB_DOC_TB.DOC_NO.eq(documentNo)).execute();			
 			
 			
-			conn.commit();
+			conn.commit();			
 			
-			
-			String siteLog = new StringBuilder()
-					.append("문서[no=")
-					.append(documentDeleteReq.getDocumentNo())
-					.append("]를 삭제하였습니다").toString();
-			
-			messageResultRes.setResultMessage(siteLog);
-			
-			ServerDBUtil.insertSiteLog(conn, create, log, documentDeleteReq.getRequestedUserID(), 
-					siteLog,
+			ServerDBUtil.insertSiteLog(conn, dsl, log, documentDeleteReq.getRequestedUserID(), 
+					successMessage,
 					new java.sql.Timestamp(System.currentTimeMillis()), documentDeleteReq.getIp());
 			
 			conn.commit();
 			
 		});		
+
 		
+		MessageResultRes messageResultRes = new MessageResultRes();
 		messageResultRes.setTaskMessageID(documentDeleteReq.getMessageID());
 		messageResultRes.setIsSuccess(true);
+		messageResultRes.setResultMessage(successMessage);
 		
 		return messageResultRes;
 	}

@@ -13,7 +13,6 @@ import kr.pe.codda.common.etc.CommonStaticFinalVars;
 import kr.pe.codda.common.exception.DynamicClassCallException;
 import kr.pe.codda.common.exception.ServerTaskException;
 import kr.pe.codda.common.message.AbstractMessage;
-import kr.pe.codda.impl.message.MessageResultRes.MessageResultRes;
 import kr.pe.codda.impl.message.RootMenuAddReq.RootMenuAddReq;
 import kr.pe.codda.impl.message.RootMenuAddRes.RootMenuAddRes;
 import kr.pe.codda.server.LoginManagerIF;
@@ -34,39 +33,14 @@ public class RootMenuAddReqServerTask extends AbstractServerTask {
 		super();
 	}
 
-	private void sendErrorOutputMessage(String errorMessage, ToLetterCarrier toLetterCarrier,
-			AbstractMessage inputMessage) throws InterruptedException {
-
-		MessageResultRes messageResultRes = new MessageResultRes();
-		messageResultRes.setTaskMessageID(inputMessage.getMessageID());
-		messageResultRes.setIsSuccess(false);
-		messageResultRes.setResultMessage(errorMessage);
-		toLetterCarrier.addSyncOutputMessage(messageResultRes);
-	}
 
 	@Override
 	public void doTask(String projectName, LoginManagerIF personalLoginManager, ToLetterCarrier toLetterCarrier,
 			AbstractMessage inputMessage) throws Exception {
-		try {
-			AbstractMessage outputMessage = doWork(ServerCommonStaticFinalVars.DEFAULT_DBCP_NAME,
-					(RootMenuAddReq) inputMessage);
-			toLetterCarrier.addSyncOutputMessage(outputMessage);
-		} catch (ServerTaskException e) {
-			String errorMessage = e.getMessage();
-			log.warn("errmsg=={}, inObj={}", errorMessage, inputMessage.toString());
 
-			sendErrorOutputMessage(errorMessage, toLetterCarrier, inputMessage);
-			return;
-		} catch (Exception e) {
-			String errorMessage = new StringBuilder().append("unknwon errmsg=").append(e.getMessage())
-					.append(", inObj=").append(inputMessage.toString()).toString();
-
-			log.warn(errorMessage, e);
-
-			sendErrorOutputMessage("루트 메뉴 추가하는데 실패하였습니다", toLetterCarrier, inputMessage);
-			return;
-		}
-
+		AbstractMessage outputMessage = doWork(ServerCommonStaticFinalVars.DEFAULT_DBCP_NAME,
+				(RootMenuAddReq) inputMessage);		
+		toLetterCarrier.addSyncOutputMessage(outputMessage);
 	}
 
 	public RootMenuAddRes doWork(String dbcpName, RootMenuAddReq rootMenuAddReq) throws Exception {
@@ -83,13 +57,13 @@ public class RootMenuAddReqServerTask extends AbstractServerTask {
 		final UByte menuSequenceID = SequenceType.MENU.getSequenceID();
 		final RootMenuAddRes rootMenuAddRes = new RootMenuAddRes();		
 		
-		ServerDBUtil.execute(dbcpName, (conn, create) -> {
+		ServerDBUtil.execute(dbcpName, (conn, dsl) -> {
 			
-			ServerDBUtil.checkUserAccessRights(conn, create, log, "루트 메뉴 추가 서비스", PermissionType.ADMIN,
+			ServerDBUtil.checkUserAccessRights(conn, dsl, log, "루트 메뉴 추가 서비스", PermissionType.ADMIN,
 					rootMenuAddReq.getRequestedUserID());
 
 			/** '메뉴 순서' 를 위한 lock */
-			Record menuSeqRecord = create.select(SB_SEQ_TB.SQ_VALUE).from(SB_SEQ_TB)
+			Record menuSeqRecord = dsl.select(SB_SEQ_TB.SQ_VALUE).from(SB_SEQ_TB)
 					.where(SB_SEQ_TB.SQ_ID.eq(menuSequenceID)).forUpdate().fetchOne();
 
 			if (null == menuSeqRecord) {
@@ -118,7 +92,7 @@ public class RootMenuAddReqServerTask extends AbstractServerTask {
 				throw new ServerTaskException(errorMessage);
 			}
 
-			int seqUpdateCnt = create.update(SB_SEQ_TB).set(SB_SEQ_TB.SQ_VALUE, SB_SEQ_TB.SQ_VALUE.add(1))
+			int seqUpdateCnt = dsl.update(SB_SEQ_TB).set(SB_SEQ_TB.SQ_VALUE, SB_SEQ_TB.SQ_VALUE.add(1))
 					.where(SB_SEQ_TB.SQ_ID.eq(menuSequenceID)).execute();
 
 			if (0 == seqUpdateCnt) {
@@ -133,7 +107,7 @@ public class RootMenuAddReqServerTask extends AbstractServerTask {
 				throw new ServerTaskException(errorMessage);
 			}
 
-			short newOrderSeq = create.select(
+			short newOrderSeq = dsl.select(
 					JooqSqlUtil.getIfField(SB_SITEMENU_TB.ORDER_SQ.max(), 0, SB_SITEMENU_TB.ORDER_SQ.max().add(1)))
 					.from(SB_SITEMENU_TB).fetchOne(0, Short.class);
 
@@ -148,7 +122,7 @@ public class RootMenuAddReqServerTask extends AbstractServerTask {
 				throw new ServerTaskException(errorMessage);
 			}
 
-			int rootMenuInsertCount = create.insertInto(SB_SITEMENU_TB).set(SB_SITEMENU_TB.MENU_NO, rootMenuNo)
+			int rootMenuInsertCount = dsl.insertInto(SB_SITEMENU_TB).set(SB_SITEMENU_TB.MENU_NO, rootMenuNo)
 					.set(SB_SITEMENU_TB.PARENT_NO, UInteger.valueOf(0)).set(SB_SITEMENU_TB.DEPTH, UByte.valueOf(0))
 					.set(SB_SITEMENU_TB.ORDER_SQ, UByte.valueOf(newOrderSeq))
 					.set(SB_SITEMENU_TB.MENU_NM, rootMenuAddReq.getMenuName())

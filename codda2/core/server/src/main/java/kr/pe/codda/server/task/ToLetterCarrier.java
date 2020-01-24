@@ -78,16 +78,16 @@ public class ToLetterCarrier {
 			ExceptionDelivery.ErrorType errorType, 
 			String errorReason) {
 		
-		ExceptionDeliveryRes selfExnRes = new ExceptionDeliveryRes();
-		selfExnRes.setMailboxID(mailboxIDOfSelfExn);
-		selfExnRes.setMailID(mailIDOfSelfExn);
-		selfExnRes.setErrorPlace(ExceptionDelivery.ErrorPlace.SERVER);
-		selfExnRes.setErrorType(errorType);
+		ExceptionDeliveryRes exceptionDeliveryRes = new ExceptionDeliveryRes();
+		exceptionDeliveryRes.setMailboxID(mailboxIDOfSelfExn);
+		exceptionDeliveryRes.setMailID(mailIDOfSelfExn);
+		exceptionDeliveryRes.setErrorPlace(ExceptionDelivery.ErrorPlace.SERVER);
+		exceptionDeliveryRes.setErrorType(errorType);
 	
-		selfExnRes.setErrorMessageID(errorMessageID);
-		selfExnRes.setErrorReason(errorReason);
+		exceptionDeliveryRes.setErrorMessageID(errorMessageID);
+		exceptionDeliveryRes.setErrorReason(errorReason);
 		
-		return selfExnRes;
+		return exceptionDeliveryRes;
 	}	
 
 	private void doAddOutputMessage(AcceptedConnection toAcceptedConnection,
@@ -183,26 +183,26 @@ public class ToLetterCarrier {
 			String errorReason,
 			AbstractMessage outputMessage,			
 			MessageProtocolIF messageProtocol) throws InterruptedException {
-		ExceptionDeliveryRes selfExnRes = buildSelfExn( 
+		ExceptionDeliveryRes exceptionDeliveryRes = buildSelfExn( 
 				outputMessage.getMailboxID(),
 				outputMessage.getMailID(),
 				outputMessage.getMessageID(),
 				errorType,
 				errorReason);
 		
-		StreamBuffer selfExnResStreamBuffer = messageProtocol.createNewMessageStreamBuffer();
+		StreamBuffer outputMessageStreamBuffer = messageProtocol.createNewMessageStreamBuffer();
 		try {
-			messageProtocol.M2S(selfExnRes, CommonStaticFinalVars.EXCEPTIONDELIVERY_ENCODER, selfExnResStreamBuffer);
+			messageProtocol.M2S(exceptionDeliveryRes, CommonStaticFinalVars.EXCEPTIONDELIVERY_ENCODER, outputMessageStreamBuffer);
 			
-			selfExnResStreamBuffer.flip();
+			outputMessageStreamBuffer.flip();
 			
-			toAcceptedConnection.addOutputMessage(selfExnResStreamBuffer);
+			toAcceptedConnection.addOutputMessage(outputMessageStreamBuffer);
 		} catch (Exception e) {
-			selfExnResStreamBuffer.releaseAllWrapBuffers();
+			outputMessageStreamBuffer.releaseAllWrapBuffers();
 			
 			String errorMessage = new StringBuilder()
 					.append("fail to build a output stream of the output message ThrowExceptionRes[")
-					.append(selfExnRes.toString())
+					.append(exceptionDeliveryRes.toString())
 					.append("] to send to to-client[")
 					.append(toAcceptedConnection.toSimpleInfomation())
 					.append("] because of unknown error, errmsg=")
@@ -312,26 +312,26 @@ public class ToLetterCarrier {
 		}
 		
 		
-		ExceptionDeliveryRes selfExnRes = buildSelfExn(mailboxID, 
+		ExceptionDeliveryRes exceptionDeliveryRes = buildSelfExn(mailboxID, 
 				mailID, 
 				messageID, 
 				errorType,
 				errorReason);
 
-		StreamBuffer selfExnResStreamBuffer = messageProtocol.createNewMessageStreamBuffer();
+		StreamBuffer outputMessageStreamBuffer = messageProtocol.createNewMessageStreamBuffer();
 		try {
-			messageProtocol.M2S(selfExnRes, CommonStaticFinalVars.EXCEPTIONDELIVERY_ENCODER, selfExnResStreamBuffer);
+			messageProtocol.M2S(exceptionDeliveryRes, CommonStaticFinalVars.EXCEPTIONDELIVERY_ENCODER, outputMessageStreamBuffer);
 			
-			selfExnResStreamBuffer.flip();
+			outputMessageStreamBuffer.flip();
 		
-			fromAcceptedConnection.addOutputMessage(selfExnResStreamBuffer);
+			fromAcceptedConnection.addOutputMessage(outputMessageStreamBuffer);
 		} catch (Exception e) {
-			selfExnResStreamBuffer.releaseAllWrapBuffers();
+			outputMessageStreamBuffer.releaseAllWrapBuffers();
 			
 			Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
 			String errorMessage = new StringBuilder()
 					.append("fail to build a output stream of the output message ThrowExceptionRes[")
-					.append(selfExnRes.toString())
+					.append(exceptionDeliveryRes.toString())
 					.append("] to send to from-client[")
 					.append(fromAcceptedConnection.toSimpleInfomation())
 					.append("] because of unknown error, errmsg=")

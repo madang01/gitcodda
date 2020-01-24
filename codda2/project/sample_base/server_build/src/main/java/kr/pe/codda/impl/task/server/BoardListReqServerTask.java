@@ -28,7 +28,6 @@ import kr.pe.codda.common.exception.ServerTaskException;
 import kr.pe.codda.common.message.AbstractMessage;
 import kr.pe.codda.impl.message.BoardListReq.BoardListReq;
 import kr.pe.codda.impl.message.BoardListRes.BoardListRes;
-import kr.pe.codda.impl.message.MessageResultRes.MessageResultRes;
 import kr.pe.codda.jooq.tables.SbBoardHistoryTb;
 import kr.pe.codda.jooq.tables.SbBoardTb;
 import kr.pe.codda.server.LoginManagerIF;
@@ -48,39 +47,13 @@ public class BoardListReqServerTask extends AbstractServerTask {
 		super();
 	}
 
-	private void sendErrorOutputMessage(String errorMessage, ToLetterCarrier toLetterCarrier,
-			AbstractMessage inputMessage) throws InterruptedException {
-		log.warn("{}, inObj={}", errorMessage, inputMessage.toString());
-
-		MessageResultRes messageResultRes = new MessageResultRes();
-		messageResultRes.setTaskMessageID(inputMessage.getMessageID());
-		messageResultRes.setIsSuccess(false);
-		messageResultRes.setResultMessage(errorMessage);
-		toLetterCarrier.addSyncOutputMessage(messageResultRes);
-	}
-
 	@Override
 	public void doTask(String projectName, LoginManagerIF personalLoginManager, ToLetterCarrier toLetterCarrier,
 			AbstractMessage inputMessage) throws Exception {
-		try {
-			AbstractMessage outputMessage = doWork(ServerCommonStaticFinalVars.DEFAULT_DBCP_NAME,
-					(BoardListReq) inputMessage);
-			toLetterCarrier.addSyncOutputMessage(outputMessage);
-		} catch (ServerTaskException e) {
-			String errorMessage = e.getMessage();
-			log.warn("errmsg=={}, inObj={}", errorMessage, inputMessage.toString());
 
-			sendErrorOutputMessage(errorMessage, toLetterCarrier, inputMessage);
-			return;
-		} catch (Exception e) {
-			String errorMessage = new StringBuilder().append("unknwon errmsg=").append(e.getMessage())
-					.append(", inObj=").append(inputMessage.toString()).toString();
-
-			log.warn(errorMessage, e);
-
-			sendErrorOutputMessage("게시글 목록 조회가 실패하였습니다", toLetterCarrier, inputMessage);
-			return;
-		}
+		AbstractMessage outputMessage = doWork(ServerCommonStaticFinalVars.DEFAULT_DBCP_NAME,
+				(BoardListReq) inputMessage);
+		toLetterCarrier.addSyncOutputMessage(outputMessage);
 	}
 
 	public BoardListRes doWork(String dbcpName, BoardListReq boardListReq) throws Exception {
@@ -105,11 +78,11 @@ public class BoardListReqServerTask extends AbstractServerTask {
 		
 		final BoardListRes boardListRes = new BoardListRes();
 		
-		ServerDBUtil.execute(dbcpName, (conn, create) -> {
+		ServerDBUtil.execute(dbcpName, (conn, dsl) -> {
 			
-			ServerDBUtil.checkUserAccessRights(conn, create, log, "게시글 목록 조회 서비스", PermissionType.GUEST, boardListReq.getRequestedUserID());
+			ServerDBUtil.checkUserAccessRights(conn, dsl, log, "게시글 목록 조회 서비스", PermissionType.GUEST, boardListReq.getRequestedUserID());
 			
-			Record3<String, Byte, Byte> boardInforRecord = create
+			Record3<String, Byte, Byte> boardInforRecord = dsl
 					.select(SB_BOARD_INFO_TB.BOARD_NAME, SB_BOARD_INFO_TB.LIST_TYPE, SB_BOARD_INFO_TB.WRITE_PERMISSION_TYPE)
 					.from(SB_BOARD_INFO_TB).where(SB_BOARD_INFO_TB.BOARD_ID.eq(boardID)).forUpdate().fetchOne();
 
@@ -149,7 +122,7 @@ public class BoardListReqServerTask extends AbstractServerTask {
 			}			
 			
 			
-			int total = create.select(SB_BOARD_INFO_TB.CNT).from(SB_BOARD_INFO_TB)
+			int total = dsl.select(SB_BOARD_INFO_TB.CNT).from(SB_BOARD_INFO_TB)
 					.where(SB_BOARD_INFO_TB.BOARD_ID.eq(boardID)).fetchOne(0, Integer.class);
 			
 			SbBoardTb a = SB_BOARD_TB.as("a");
@@ -159,14 +132,14 @@ public class BoardListReqServerTask extends AbstractServerTask {
 			HashSet<UInteger> boardNoSet = new HashSet<UInteger>(); 
 			
 			if (BoardListType.TREE.equals(boardListType)) {
-				Table<Record4<UByte, UInteger, UShort, Byte>> d = create.select(a.BOARD_ID, a.GROUP_NO, a.GROUP_SQ, a.BOARD_ST)
+				Table<Record4<UByte, UInteger, UShort, Byte>> d = dsl.select(a.BOARD_ID, a.GROUP_NO, a.GROUP_SQ, a.BOARD_ST)
 						.from(a.forceIndex("sb_board_idx1"))
 						.where(a.BOARD_ID.eq(boardID))
 						.and(a.BOARD_ST.eq(BoardStateType.OK.getValue()))
 						.orderBy(a.GROUP_NO.desc(), a.GROUP_SQ.desc())
 						.offset(offset).limit(pageSize).asTable("b");
 
-				Result<Record1<UInteger>> boardResult = create
+				Result<Record1<UInteger>> boardResult = dsl
 						.select(a.BOARD_NO)
 						.from(a).innerJoin(d).on(a.BOARD_ID.eq(d.field(SB_BOARD_TB.BOARD_ID)))						
 						.and(a.GROUP_NO.eq(d.field(SB_BOARD_TB.GROUP_NO)))
@@ -180,7 +153,7 @@ public class BoardListReqServerTask extends AbstractServerTask {
 				
 				
 			} else {
-				Table<Record4<UByte, UInteger, UInteger, Byte>> d = create.select(a.BOARD_ID, a.PARENT_NO, a.BOARD_NO, a.BOARD_ST)
+				Table<Record4<UByte, UInteger, UInteger, Byte>> d = dsl.select(a.BOARD_ID, a.PARENT_NO, a.BOARD_NO, a.BOARD_ST)
 						.from(a.forceIndex("sb_board_idx2"))
 						.where(a.BOARD_ID.eq(boardID))
 						.and(a.PARENT_NO.eq(UInteger.valueOf(0)))						
@@ -188,7 +161,7 @@ public class BoardListReqServerTask extends AbstractServerTask {
 						.orderBy(a.BOARD_NO.desc())
 						.offset(offset).limit(pageSize).asTable("b");
 
-				Result<Record1<UInteger>> boardResult = create
+				Result<Record1<UInteger>> boardResult = dsl
 						.select(a.BOARD_NO)
 						.from(a).innerJoin(d).on(a.BOARD_ID.eq(d.field(SB_BOARD_TB.BOARD_ID)))
 						.and(a.PARENT_NO.eq(d.field(SB_BOARD_TB.PARENT_NO)))
@@ -204,17 +177,17 @@ public class BoardListReqServerTask extends AbstractServerTask {
 			
 			if (! boardNoSet.isEmpty()) {
 				Result<Record13<UInteger, UInteger, UShort, UInteger, UByte, Integer, Byte, Object, String, Timestamp, String, Object, Timestamp>> boardResult = null;
-				boardResult = create
+				boardResult = dsl
 						.select(a.field(SB_BOARD_TB.BOARD_NO), a.field(SB_BOARD_TB.GROUP_NO),
 								a.field(SB_BOARD_TB.GROUP_SQ), a.field(SB_BOARD_TB.PARENT_NO),
 								a.field(SB_BOARD_TB.DEPTH), a.field(SB_BOARD_TB.VIEW_CNT),
 								a.field(SB_BOARD_TB.BOARD_ST),
-								create.selectCount().from(SB_BOARD_VOTE_TB)
+								dsl.selectCount().from(SB_BOARD_VOTE_TB)
 										.where(SB_BOARD_VOTE_TB.BOARD_ID.eq(a.field(SB_BOARD_TB.BOARD_ID)))
 										.and(SB_BOARD_VOTE_TB.BOARD_NO.eq(a.field(SB_BOARD_TB.BOARD_NO)))
 										.asField("votes"),
 								b.SUBJECT, b.REG_DT.as("last_mod_date"), c.REGISTRANT_ID,
-								create.select(SB_MEMBER_TB.NICKNAME).from(SB_MEMBER_TB)
+								dsl.select(SB_MEMBER_TB.NICKNAME).from(SB_MEMBER_TB)
 										.where(SB_MEMBER_TB.USER_ID.eq(c.REGISTRANT_ID))
 										.asField(SB_MEMBER_TB.NICKNAME.getName()),
 								c.REG_DT.as("first_reg_date"))
@@ -224,7 +197,7 @@ public class BoardListReqServerTask extends AbstractServerTask {
 							.and(c.HISTORY_SQ.eq(UByte.valueOf(0)))
 						.innerJoin(b).on(b.BOARD_ID.eq(a.field(SB_BOARD_TB.BOARD_ID)))
 							.and(b.BOARD_NO.eq(a.field(SB_BOARD_TB.BOARD_NO)))
-							.and(b.HISTORY_SQ.eq(create.select(b.HISTORY_SQ.max()).from(b)
+							.and(b.HISTORY_SQ.eq(dsl.select(b.HISTORY_SQ.max()).from(b)
 								.where(b.BOARD_ID.eq(a.field(SB_BOARD_TB.BOARD_ID)))
 								.and(b.BOARD_NO.eq(a.field(SB_BOARD_TB.BOARD_NO)))))
 						.where(a.BOARD_ID.eq(boardID))

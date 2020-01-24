@@ -63,16 +63,16 @@ public class AccountSearchReadyReqServerTaskTest extends AbstractBoardTest {
 		String ip = "127.0.0.1";
 		
 		try {		
-			ServerDBUtil.execute(TEST_DBCP_NAME, (conn, create) -> {
+			ServerDBUtil.execute(TEST_DBCP_NAME, (conn, dsl) -> {
 				
-				create.delete(SB_SITE_LOG_TB)
+				dsl.delete(SB_SITE_LOG_TB)
 				.execute();
 				
-				create.delete(SB_ACCOUNT_SERARCH_TB)
+				dsl.delete(SB_ACCOUNT_SERARCH_TB)
 				.where(SB_ACCOUNT_SERARCH_TB.USER_ID.eq(testID))
 				.execute();
 				
-				create.delete(SB_MEMBER_TB)
+				dsl.delete(SB_MEMBER_TB)
 				.where(SB_MEMBER_TB.USER_ID.eq(testID))
 				.execute();
 				
@@ -104,7 +104,7 @@ public class AccountSearchReadyReqServerTaskTest extends AbstractBoardTest {
 				assertEquals(expectedErrorMessage, actualErrorMessag);
 			} catch (Exception e) {
 				log.warn("unknown error", e);
-				fail("fail to create a test ID");
+				fail("fail to dsl a test ID");
 			}
 		}
 		
@@ -205,16 +205,16 @@ public class AccountSearchReadyReqServerTaskTest extends AbstractBoardTest {
 		String ip = "127.0.0.1";
 		
 		try {		
-			ServerDBUtil.execute(TEST_DBCP_NAME, (conn, create) -> {
+			ServerDBUtil.execute(TEST_DBCP_NAME, (conn, dsl) -> {
 				
-				create.delete(SB_SITE_LOG_TB)
+				dsl.delete(SB_SITE_LOG_TB)
 				.execute();
 				
-				create.delete(SB_ACCOUNT_SERARCH_TB)
+				dsl.delete(SB_ACCOUNT_SERARCH_TB)
 				.where(SB_ACCOUNT_SERARCH_TB.USER_ID.eq(testID))
 				.execute();
 				
-				create.delete(SB_MEMBER_TB)
+				dsl.delete(SB_MEMBER_TB)
 				.where(SB_MEMBER_TB.USER_ID.eq(testID))
 				.execute();
 				
@@ -246,7 +246,7 @@ public class AccountSearchReadyReqServerTaskTest extends AbstractBoardTest {
 				assertEquals(expectedErrorMessage, actualErrorMessag);
 			} catch (Exception e) {
 				log.warn("unknown error", e);
-				fail("fail to create a test ID");
+				fail("fail to dsl a test ID");
 			}
 		}		
 		
@@ -308,16 +308,16 @@ public class AccountSearchReadyReqServerTaskTest extends AbstractBoardTest {
 		String ip = "127.0.0.1";
 		
 		try {		
-			ServerDBUtil.execute(TEST_DBCP_NAME, (conn, create) -> {
+			ServerDBUtil.execute(TEST_DBCP_NAME, (conn, dsl) -> {
 				
-				create.delete(SB_SITE_LOG_TB)
+				dsl.delete(SB_SITE_LOG_TB)
 				.execute();
 				
-				create.delete(SB_ACCOUNT_SERARCH_TB)
+				dsl.delete(SB_ACCOUNT_SERARCH_TB)
 				.where(SB_ACCOUNT_SERARCH_TB.USER_ID.eq(testID))
 				.execute();
 				
-				create.delete(SB_MEMBER_TB)
+				dsl.delete(SB_MEMBER_TB)
 				.where(SB_MEMBER_TB.USER_ID.eq(testID))
 				.execute();
 				
@@ -349,7 +349,7 @@ public class AccountSearchReadyReqServerTaskTest extends AbstractBoardTest {
 				assertEquals(expectedErrorMessage, actualErrorMessag);
 			} catch (Exception e) {
 				log.warn("unknown error", e);
-				fail("fail to create a test ID");
+				fail("fail to dsl a test ID");
 			}
 		}		
 		

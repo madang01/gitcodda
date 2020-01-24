@@ -15,7 +15,6 @@ import kr.pe.codda.common.etc.CommonStaticFinalVars;
 import kr.pe.codda.common.exception.DynamicClassCallException;
 import kr.pe.codda.common.exception.ServerTaskException;
 import kr.pe.codda.common.message.AbstractMessage;
-import kr.pe.codda.impl.message.MessageResultRes.MessageResultRes;
 import kr.pe.codda.impl.message.UploadImageReq.UploadImageReq;
 import kr.pe.codda.impl.message.UploadImageRes.UploadImageRes;
 import kr.pe.codda.server.LoginManagerIF;
@@ -33,39 +32,13 @@ public class UploadImageReqServerTask extends AbstractServerTask {
 		super();
 	}
 
-	private void sendErrorOutputMessage(String errorMessage, ToLetterCarrier toLetterCarrier,
-			AbstractMessage inputMessage) throws InterruptedException {
-		log.warn("{}, inObj=", errorMessage, inputMessage.toString());
-
-		MessageResultRes messageResultRes = new MessageResultRes();
-		messageResultRes.setTaskMessageID(inputMessage.getMessageID());
-		messageResultRes.setIsSuccess(false);
-		messageResultRes.setResultMessage(errorMessage);
-		toLetterCarrier.addSyncOutputMessage(messageResultRes);
-	}
-
 	@Override
 	public void doTask(String projectName, LoginManagerIF personalLoginManager, ToLetterCarrier toLetterCarrier,
 			AbstractMessage inputMessage) throws Exception {
-		try {
-			AbstractMessage outputMessage = doWork(ServerCommonStaticFinalVars.DEFAULT_DBCP_NAME,
-					(UploadImageReq) inputMessage);
-			toLetterCarrier.addSyncOutputMessage(outputMessage);
-		} catch (ServerTaskException e) {
-			String errorMessage = e.getMessage();
-			log.warn("errmsg=={}, inObj={}", errorMessage, inputMessage.toString());
 
-			sendErrorOutputMessage(errorMessage, toLetterCarrier, inputMessage);
-			return;
-		} catch (Exception e) {
-			String errorMessage = new StringBuilder().append("unknwon errmsg=").append(e.getMessage())
-					.append(", inObj=").append(inputMessage.toString()).toString();
-
-			log.warn(errorMessage, e);
-
-			sendErrorOutputMessage("이미지 업로드가 실패하였습니다", toLetterCarrier, inputMessage);
-			return;
-		}
+		AbstractMessage outputMessage = doWork(ServerCommonStaticFinalVars.DEFAULT_DBCP_NAME,
+				(UploadImageReq) inputMessage);
+		toLetterCarrier.addSyncOutputMessage(outputMessage);
 	}
 
 	public UploadImageRes doWork(final String dbcpName, final UploadImageReq uploadImageReq) throws Exception {
@@ -89,13 +62,13 @@ public class UploadImageReqServerTask extends AbstractServerTask {
 		final SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");		
 		final String yyyyMMdd = sdf.format(registeredDate);
 
-		ServerDBUtil.execute(dbcpName, (conn, create) -> {			
+		ServerDBUtil.execute(dbcpName, (conn, dsl) -> {			
 
-			create.select(SB_SEQ_TB.SQ_ID).from(SB_SEQ_TB)
+			dsl.select(SB_SEQ_TB.SQ_ID).from(SB_SEQ_TB)
 			.where(SB_SEQ_TB.SQ_ID.eq(SequenceType.SITE_UPLOAD_IMAGE_LOCK.getSequenceID()))
 			.forUpdate().fetchOne();
 			
-			long maxOfDaySeq = create.select(DSL.field("if ({0} is null, {1}, {2})", 
+			long maxOfDaySeq = dsl.select(DSL.field("if ({0} is null, {1}, {2})", 
 					Long.class, SB_UPLOAD_IMAGE_TB.DAY_SQ.max(), Long.valueOf(0), 
 					SB_UPLOAD_IMAGE_TB.DAY_SQ.max()))
 			.from(SB_UPLOAD_IMAGE_TB)
@@ -107,7 +80,7 @@ public class UploadImageReqServerTask extends AbstractServerTask {
 			
 			long newDayLogSeq = maxOfDaySeq + 1;
 			
-			create.insertInto(SB_UPLOAD_IMAGE_TB)
+			dsl.insertInto(SB_UPLOAD_IMAGE_TB)
 			.set(SB_UPLOAD_IMAGE_TB.YYYYMMDD, yyyyMMdd)
 			.set(SB_UPLOAD_IMAGE_TB.DAY_SQ, UInteger.valueOf(newDayLogSeq))
 			.set(SB_UPLOAD_IMAGE_TB.FNAME, uploadImageReq.getImageFileName())		

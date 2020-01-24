@@ -17,11 +17,16 @@
 
 package kr.pe.codda.client.connection.sync;
 
+import java.io.IOException;
 import java.util.logging.Logger;
 
 import kr.pe.codda.client.connection.ClientMessageUtility;
 import kr.pe.codda.common.classloader.MessageCodecMangerIF;
 import kr.pe.codda.common.etc.CommonStaticFinalVars;
+import kr.pe.codda.common.exception.BodyFormatException;
+import kr.pe.codda.common.exception.DynamicClassCallException;
+import kr.pe.codda.common.exception.NoMoreWrapBufferException;
+import kr.pe.codda.common.exception.ServerTaskException;
 import kr.pe.codda.common.message.AbstractMessage;
 import kr.pe.codda.common.protocol.MessageProtocolIF;
 import kr.pe.codda.common.protocol.ReceivedMiddleObjectForwarderIF;
@@ -35,6 +40,11 @@ public class SyncOutputMessageReceiver implements ReceivedMiddleObjectForwarderI
 	private Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
 
 	// private ReadableMiddleObjectWrapper readableMiddleObjectWrapper = null;
+	private int mailboxID;
+	private int mailID;
+	private String messageID;
+	private Object readableMiddleObject;
+	
 	private MessageProtocolIF messageProtocol = null;
 	private MessageCodecMangerIF messageCodecManger = null;
 	private AbstractMessage receivedMessage = null;
@@ -51,13 +61,26 @@ public class SyncOutputMessageReceiver implements ReceivedMiddleObjectForwarderI
 		if (null != receivedMessage) {
 			/** discard message */
 			isError = true;
-
-			AbstractMessage discardedMessage = ClientMessageUtility.buildOutputMessage("discarded", messageCodecManger,
-					messageProtocol, mailboxID, mailID, messageID, readableMiddleObject);
-
-			errorMessage = new StringBuilder().append("discard the received message[")
-					.append(discardedMessage.toString())
-					.append("] becase there are one more recevied messages").toString();
+			
+			try {
+				AbstractMessage discardedMessage = ClientMessageUtility.buildOutputMessage("discarded", messageCodecManger,
+						messageProtocol, mailboxID, mailID, messageID, readableMiddleObject);
+				
+				errorMessage = new StringBuilder().append("discard the received message[")
+						.append(discardedMessage.toString())
+						.append("] becase there are one more recevied messages").toString();
+			} catch (Exception e) {
+				
+				errorMessage = new StringBuilder().append("discard the received message[mailboxID=")
+						.append(mailboxID)
+						.append(", mailID=")
+						.append(mailID)
+						.append(", messageID=")
+						.append(messageID)
+						.append("readableMiddleObject=")
+						.append(readableMiddleObject.toString())
+						.append("] becase there are one more recevied messages").toString();
+			}
 			
 			log.warning(errorMessage);
 
@@ -67,23 +90,38 @@ public class SyncOutputMessageReceiver implements ReceivedMiddleObjectForwarderI
 		if ((CommonStaticFinalVars.CLIENT_ASYN_MAILBOX_ID == mailboxID) || (CommonStaticFinalVars.SERVER_ASYN_MAILBOX_ID == mailboxID)) {
 			/** discard message */
 			isError = true;
-
-			AbstractMessage discardedMessage = ClientMessageUtility.buildOutputMessage("discarded", messageCodecManger,
-					messageProtocol, mailboxID, mailID, messageID, readableMiddleObject);
-
-			errorMessage = new StringBuilder().append("discard the received message[")
-					.append(discardedMessage.toString())
-					.append("] becase the var mailboxID[")
-					.append(mailboxID)
-					.append("] is not a sync mailbox id").toString();
+			
+			try {
+				AbstractMessage discardedMessage = ClientMessageUtility.buildOutputMessage("discarded", messageCodecManger,
+						messageProtocol, mailboxID, mailID, messageID, readableMiddleObject);
+				
+				errorMessage = new StringBuilder().append("discard the received message[")
+						.append(discardedMessage.toString())
+						.append("] becase the var mailboxID[")
+						.append(mailboxID)
+						.append("] is not a sync mailbox id").toString();
+			} catch (Exception e) {
+				errorMessage = new StringBuilder().append("discard the received message[mailboxID=")
+						.append(mailboxID)
+						.append(", mailID=")
+						.append(mailID)
+						.append(", messageID=")
+						.append(messageID)
+						.append("readableMiddleObject=")
+						.append(readableMiddleObject.toString())
+						.append("] becase there are one more recevied messages").toString();
+			}			
 			
 			log.warning(errorMessage);
 
 			return;
 		}
 
-		receivedMessage = ClientMessageUtility.buildOutputMessage("recevied", messageCodecManger, messageProtocol, mailboxID,
-				mailID, messageID, readableMiddleObject);
+		
+		this.mailboxID = mailboxID;
+		this.mailID = mailID;
+		this.messageID = messageID;
+		this.readableMiddleObject = readableMiddleObject;
 	}
 
 	/**
@@ -98,8 +136,17 @@ public class SyncOutputMessageReceiver implements ReceivedMiddleObjectForwarderI
 
 	/**
 	 * @return 수신한 출력 메시지
+	 * @throws IOException 서버로 부터 전달된 입출력 에러
+	 * @throws BodyFormatException  서버로 부터 전달된 바디 포맷 에러 
+	 * @throws ServerTaskException  서버로 부터 전달된 서버 비지니스 로직 에러 
+	 * @throws NoMoreWrapBufferException 서버로 부터 전잘된 랩버퍼 부족 에러
+	 * @throws DynamicClassCallException  서버로 부터 전다된 동적 호출 클래스 에러
 	 */
-	public AbstractMessage getReceiveMessage() {
+	public AbstractMessage getReceiveMessage() throws DynamicClassCallException, NoMoreWrapBufferException, ServerTaskException, BodyFormatException, IOException {
+		
+		receivedMessage = ClientMessageUtility.buildOutputMessage("recevied", messageCodecManger, messageProtocol, mailboxID,
+				mailID, messageID, readableMiddleObject);
+		
 		return receivedMessage;
 	}
 

@@ -588,9 +588,9 @@ public class BoardDeleteReqServerTaskTest extends AbstractBoardTest {
 		final String newBoardPwdBase64 = null;
 		
 		try {
-			ServerDBUtil.execute(TEST_DBCP_NAME, (conn, create) -> {
+			ServerDBUtil.execute(TEST_DBCP_NAME, (conn, dsl) -> {
 				
-				create.update(SB_BOARD_TB)
+				dsl.update(SB_BOARD_TB)
 				.set(SB_BOARD_TB.PWD_BASE64, newBoardPwdBase64)
 				.where(SB_BOARD_TB.BOARD_ID.eq(boardID))
 				.and(SB_BOARD_TB.BOARD_NO.eq(boardNo))

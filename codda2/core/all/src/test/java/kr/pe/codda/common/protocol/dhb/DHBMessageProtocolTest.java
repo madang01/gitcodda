@@ -274,16 +274,16 @@ public class DHBMessageProtocolTest {
 					Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
 					log.log(Level.WARNING, errorMessage);
 
-					ExceptionDeliveryRes selfExnRes = new ExceptionDeliveryRes();
-					selfExnRes.setMailboxID(mailboxID);
-					selfExnRes.setMailID(mailID);
-					selfExnRes.setErrorPlace(ExceptionDelivery.ErrorPlace.CLIENT);
-					selfExnRes.setErrorType(ExceptionDelivery.ErrorType.valueOf(DynamicClassCallException.class));
+					ExceptionDeliveryRes exceptionDeliveryRes = new ExceptionDeliveryRes();
+					exceptionDeliveryRes.setMailboxID(mailboxID);
+					exceptionDeliveryRes.setMailID(mailID);
+					exceptionDeliveryRes.setErrorPlace(ExceptionDelivery.ErrorPlace.CLIENT);
+					exceptionDeliveryRes.setErrorType(ExceptionDelivery.ErrorType.valueOf(DynamicClassCallException.class));
 
-					selfExnRes.setErrorMessageID(messageID);
-					selfExnRes.setErrorReason(errorMessage);
+					exceptionDeliveryRes.setErrorMessageID(messageID);
+					exceptionDeliveryRes.setErrorReason(errorMessage);
 
-					receivedMessage = selfExnRes;
+					receivedMessage = exceptionDeliveryRes;
 				} catch (BodyFormatException e) {
 
 					String errorMessage = new StringBuilder(
@@ -295,16 +295,16 @@ public class DHBMessageProtocolTest {
 					Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
 					log.log(Level.WARNING, errorMessage);
 
-					ExceptionDeliveryRes selfExnRes = new ExceptionDeliveryRes();
-					selfExnRes.setMailboxID(mailboxID);
-					selfExnRes.setMailID(mailID);
-					selfExnRes.setErrorPlace(ExceptionDelivery.ErrorPlace.CLIENT);
-					selfExnRes.setErrorType(ExceptionDelivery.ErrorType.valueOf(BodyFormatException.class));
+					ExceptionDeliveryRes exceptionDeliveryRes = new ExceptionDeliveryRes();
+					exceptionDeliveryRes.setMailboxID(mailboxID);
+					exceptionDeliveryRes.setMailID(mailID);
+					exceptionDeliveryRes.setErrorPlace(ExceptionDelivery.ErrorPlace.CLIENT);
+					exceptionDeliveryRes.setErrorType(ExceptionDelivery.ErrorType.valueOf(BodyFormatException.class));
 
-					selfExnRes.setErrorMessageID(messageID);
-					selfExnRes.setErrorReason(errorMessage);
+					exceptionDeliveryRes.setErrorMessageID(messageID);
+					exceptionDeliveryRes.setErrorReason(errorMessage);
 
-					receivedMessage = selfExnRes;
+					receivedMessage = exceptionDeliveryRes;
 				} catch (Exception e) {
 					String errorMessage = new StringBuilder(
 							"unknwon error::fail to get the client message decoder of the output message[")
@@ -315,16 +315,16 @@ public class DHBMessageProtocolTest {
 					Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
 					log.log(Level.WARNING, errorMessage);
 
-					ExceptionDeliveryRes selfExnRes = new ExceptionDeliveryRes();
-					selfExnRes.setMailboxID(mailboxID);
-					selfExnRes.setMailID(mailID);
-					selfExnRes.setErrorPlace(ExceptionDelivery.ErrorPlace.CLIENT);
-					selfExnRes.setErrorType(ExceptionDelivery.ErrorType.valueOf(DynamicClassCallException.class));
+					ExceptionDeliveryRes exceptionDeliveryRes = new ExceptionDeliveryRes();
+					exceptionDeliveryRes.setMailboxID(mailboxID);
+					exceptionDeliveryRes.setMailID(mailID);
+					exceptionDeliveryRes.setErrorPlace(ExceptionDelivery.ErrorPlace.CLIENT);
+					exceptionDeliveryRes.setErrorType(ExceptionDelivery.ErrorType.valueOf(DynamicClassCallException.class));
 
-					selfExnRes.setErrorMessageID(messageID);
-					selfExnRes.setErrorReason(errorMessage);
+					exceptionDeliveryRes.setErrorMessageID(messageID);
+					exceptionDeliveryRes.setErrorReason(errorMessage);
 
-					receivedMessage = selfExnRes;
+					receivedMessage = exceptionDeliveryRes;
 				} finally {
 					if (null != readableMiddleObject && readableMiddleObject instanceof StreamBuffer) {
 						StreamBuffer sb = (StreamBuffer) readableMiddleObject;

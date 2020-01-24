@@ -26,7 +26,6 @@ import org.slf4j.LoggerFactory;
 import kr.pe.codda.common.exception.DynamicClassCallException;
 import kr.pe.codda.common.exception.ServerTaskException;
 import kr.pe.codda.common.message.AbstractMessage;
-import kr.pe.codda.impl.message.MessageResultRes.MessageResultRes;
 import kr.pe.codda.impl.message.PersonalActivityHistoryReq.PersonalActivityHistoryReq;
 import kr.pe.codda.impl.message.PersonalActivityHistoryRes.PersonalActivityHistoryRes;
 import kr.pe.codda.jooq.tables.SbBoardHistoryTb;
@@ -47,19 +46,6 @@ public class PersonalActivityHistoryReqServerTask extends AbstractServerTask {
 	public PersonalActivityHistoryReqServerTask() throws DynamicClassCallException {
 		super();
 	}
-
-
-	private void sendErrorOutputMessage(String errorMessage, ToLetterCarrier toLetterCarrier,
-			AbstractMessage inputMessage) throws InterruptedException {
-		log.warn("{}, inObj=", errorMessage, inputMessage.toString());
-
-		MessageResultRes messageResultRes = new MessageResultRes();
-		messageResultRes.setTaskMessageID(inputMessage.getMessageID());
-		messageResultRes.setIsSuccess(false);
-		messageResultRes.setResultMessage(errorMessage);
-		toLetterCarrier.addSyncOutputMessage(messageResultRes);
-	}
-
 	
 	@Override
 	public void doTask(String projectName, 
@@ -67,26 +53,8 @@ public class PersonalActivityHistoryReqServerTask extends AbstractServerTask {
 			ToLetterCarrier toLetterCarrier,
 			AbstractMessage inputMessage) throws Exception {
 		
-		try {
-			AbstractMessage outputMessage = doWork(ServerCommonStaticFinalVars.DEFAULT_DBCP_NAME, (PersonalActivityHistoryReq)inputMessage);
-			toLetterCarrier.addSyncOutputMessage(outputMessage);
-		} catch(ServerTaskException e) {
-			String errorMessage = e.getMessage();
-			log.warn("errmsg=={}, inObj={}", errorMessage, inputMessage.toString());
-			
-			sendErrorOutputMessage(errorMessage, toLetterCarrier, inputMessage);
-			return;
-		} catch(Exception e) {
-			String errorMessage = new StringBuilder().append("unknwon errmsg=")
-					.append(e.getMessage())
-					.append(", inObj=")
-					.append(inputMessage.toString()).toString();
-			
-			log.warn(errorMessage, e);
-						
-			sendErrorOutputMessage("게시글을 추천하는데  실패하였습니다", toLetterCarrier, inputMessage);
-			return;
-		}
+		AbstractMessage outputMessage = doWork(ServerCommonStaticFinalVars.DEFAULT_DBCP_NAME, (PersonalActivityHistoryReq)inputMessage);
+		toLetterCarrier.addSyncOutputMessage(outputMessage);
 		
 	}
 	
@@ -111,11 +79,11 @@ public class PersonalActivityHistoryReqServerTask extends AbstractServerTask {
 		
 		final PersonalActivityHistoryRes personalActivityHistoryRes = new PersonalActivityHistoryRes();
 		
-		ServerDBUtil.execute(dbcpName, (conn, create) -> {
+		ServerDBUtil.execute(dbcpName, (conn, dsl) -> {
 			
-			MemberRoleType memberRoleTypeOfRequestedUserID = ServerDBUtil.checkUserAccessRights(conn, create, log, "개인 활동 내역 조회 서비스", PermissionType.GUEST, personalActivityHistoryReq.getRequestedUserID());
+			MemberRoleType memberRoleTypeOfRequestedUserID = ServerDBUtil.checkUserAccessRights(conn, dsl, log, "개인 활동 내역 조회 서비스", PermissionType.GUEST, personalActivityHistoryReq.getRequestedUserID());
 			
-			Record3<String, Byte, Byte> targetUserMemberRecord = create.select(
+			Record3<String, Byte, Byte> targetUserMemberRecord = dsl.select(
 					SB_MEMBER_TB.NICKNAME,
 					SB_MEMBER_TB.ROLE,
 					SB_MEMBER_TB.STATE)
@@ -193,7 +161,7 @@ public class PersonalActivityHistoryReqServerTask extends AbstractServerTask {
 			}
 			
 			
-			Record1<Long> totalRecord =  create.select(
+			Record1<Long> totalRecord =  dsl.select(
 					DSL.field("if ({0} is null, {1}, {2})", Long.class, 
 							SB_MEMBER_ACTIVITY_HISTORY_TB.ACTIVITY_SQ.max(), 0, 
 							SB_MEMBER_ACTIVITY_HISTORY_TB.ACTIVITY_SQ.max().add(1)))
@@ -209,10 +177,10 @@ public class PersonalActivityHistoryReqServerTask extends AbstractServerTask {
 				long endActivitySeq = startActivitySeq + pageSize;
 				
 				Table<Record9<Long, Byte, UByte, UInteger, Timestamp, Byte, String, Byte, UInteger>> mainTable = 
-						create.select( SB_MEMBER_ACTIVITY_HISTORY_TB.ACTIVITY_SQ, SB_MEMBER_ACTIVITY_HISTORY_TB.ACTIVITY_TYPE, SB_MEMBER_ACTIVITY_HISTORY_TB.BOARD_ID, 
+						dsl.select( SB_MEMBER_ACTIVITY_HISTORY_TB.ACTIVITY_SQ, SB_MEMBER_ACTIVITY_HISTORY_TB.ACTIVITY_TYPE, SB_MEMBER_ACTIVITY_HISTORY_TB.BOARD_ID, 
 					SB_MEMBER_ACTIVITY_HISTORY_TB.BOARD_NO,	SB_MEMBER_ACTIVITY_HISTORY_TB.REG_DT,
-					create.select(SB_BOARD_INFO_TB.LIST_TYPE).from(SB_BOARD_INFO_TB).where(SB_BOARD_INFO_TB.BOARD_ID.eq(SB_MEMBER_ACTIVITY_HISTORY_TB.BOARD_ID)).<Byte>asField(SB_BOARD_INFO_TB.LIST_TYPE.getName()),
-					create.select(SB_BOARD_INFO_TB.BOARD_NAME).from(SB_BOARD_INFO_TB).where(SB_BOARD_INFO_TB.BOARD_ID.eq(SB_MEMBER_ACTIVITY_HISTORY_TB.BOARD_ID)).<String>asField(SB_BOARD_INFO_TB.BOARD_NAME.getName()),
+					dsl.select(SB_BOARD_INFO_TB.LIST_TYPE).from(SB_BOARD_INFO_TB).where(SB_BOARD_INFO_TB.BOARD_ID.eq(SB_MEMBER_ACTIVITY_HISTORY_TB.BOARD_ID)).<Byte>asField(SB_BOARD_INFO_TB.LIST_TYPE.getName()),
+					dsl.select(SB_BOARD_INFO_TB.BOARD_NAME).from(SB_BOARD_INFO_TB).where(SB_BOARD_INFO_TB.BOARD_ID.eq(SB_MEMBER_ACTIVITY_HISTORY_TB.BOARD_ID)).<String>asField(SB_BOARD_INFO_TB.BOARD_NAME.getName()),
 					SB_BOARD_TB.BOARD_ST,
 					SB_BOARD_TB.GROUP_NO
 				).from(SB_MEMBER_ACTIVITY_HISTORY_TB)
@@ -228,7 +196,7 @@ public class PersonalActivityHistoryReqServerTask extends AbstractServerTask {
 				SbBoardHistoryTb c = SB_BOARD_HISTORY_TB.as("c");
 				SbBoardHistoryTb d = SB_BOARD_HISTORY_TB.as("d");
 				
-				Result<Record11<Byte, UByte, UInteger, Timestamp, Byte, String, Byte, UInteger, String, String, String>> memberActivityHisotryResult = create.select(mainTable.field(SB_MEMBER_ACTIVITY_HISTORY_TB.ACTIVITY_TYPE),
+				Result<Record11<Byte, UByte, UInteger, Timestamp, Byte, String, Byte, UInteger, String, String, String>> memberActivityHisotryResult = dsl.select(mainTable.field(SB_MEMBER_ACTIVITY_HISTORY_TB.ACTIVITY_TYPE),
 						mainTable.field(SB_MEMBER_ACTIVITY_HISTORY_TB.BOARD_ID),
 						mainTable.field(SB_MEMBER_ACTIVITY_HISTORY_TB.BOARD_NO),
 						mainTable.field(SB_MEMBER_ACTIVITY_HISTORY_TB.REG_DT),
@@ -239,13 +207,13 @@ public class PersonalActivityHistoryReqServerTask extends AbstractServerTask {
 						DSL.choose(mainTable.field(SB_BOARD_INFO_TB.LIST_TYPE)).when(BoardListType.TREE.getValue(), d.SUBJECT).otherwise(b.SUBJECT).as("sourceSubject"),
 						DSL.choose(mainTable.field(SB_BOARD_INFO_TB.LIST_TYPE)).when(BoardListType.TREE.getValue(), personalActivityHistoryReq.getTargetUserID()).otherwise(c.REGISTRANT_ID).as("sourceWriterID"),
 						DSL.choose(mainTable.field(SB_BOARD_INFO_TB.LIST_TYPE)).when(BoardListType.TREE.getValue(), targetUserNickname)
-							.otherwise(create.select(SB_MEMBER_TB.NICKNAME).from(SB_MEMBER_TB).where(SB_MEMBER_TB.USER_ID.eq(c.REGISTRANT_ID)).<String>asField()).as("sourceWriterNickname")
+							.otherwise(dsl.select(SB_MEMBER_TB.NICKNAME).from(SB_MEMBER_TB).where(SB_MEMBER_TB.USER_ID.eq(c.REGISTRANT_ID)).<String>asField()).as("sourceWriterNickname")
 				)
 				.from(mainTable)
 				.innerJoin(b)
 					.on(b.BOARD_ID.eq(mainTable.field(SB_MEMBER_ACTIVITY_HISTORY_TB.BOARD_ID)))
 					.and(b.BOARD_NO.eq(mainTable.field(SB_BOARD_TB.GROUP_NO)))
-					.and(b.field(SB_BOARD_HISTORY_TB.HISTORY_SQ).eq(create.select(SB_BOARD_HISTORY_TB.HISTORY_SQ.max())
+					.and(b.field(SB_BOARD_HISTORY_TB.HISTORY_SQ).eq(dsl.select(SB_BOARD_HISTORY_TB.HISTORY_SQ.max())
 							.from(SB_BOARD_HISTORY_TB)
 							.where(SB_BOARD_HISTORY_TB.BOARD_ID.eq(mainTable.field(SB_MEMBER_ACTIVITY_HISTORY_TB.BOARD_ID)))
 							.and(SB_BOARD_HISTORY_TB.BOARD_NO.eq(mainTable.field(SB_BOARD_TB.GROUP_NO)))))
@@ -256,7 +224,7 @@ public class PersonalActivityHistoryReqServerTask extends AbstractServerTask {
 				.innerJoin(d)
 					.on(d.BOARD_ID.eq(mainTable.field(SB_MEMBER_ACTIVITY_HISTORY_TB.BOARD_ID)))
 					.and(d.BOARD_NO.eq(mainTable.field(SB_MEMBER_ACTIVITY_HISTORY_TB.BOARD_NO)))
-					.and(d.field(SB_BOARD_HISTORY_TB.HISTORY_SQ).eq(create.select(SB_BOARD_HISTORY_TB.HISTORY_SQ.max())
+					.and(d.field(SB_BOARD_HISTORY_TB.HISTORY_SQ).eq(dsl.select(SB_BOARD_HISTORY_TB.HISTORY_SQ.max())
 							.from(SB_BOARD_HISTORY_TB)
 							.where(SB_BOARD_HISTORY_TB.BOARD_ID.eq(mainTable.field(SB_MEMBER_ACTIVITY_HISTORY_TB.BOARD_ID)))
 							.and(SB_BOARD_HISTORY_TB.BOARD_NO.eq(mainTable.field(SB_MEMBER_ACTIVITY_HISTORY_TB.BOARD_NO)))))

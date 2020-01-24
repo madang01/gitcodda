@@ -12,7 +12,6 @@ import kr.pe.codda.common.exception.ServerTaskException;
 import kr.pe.codda.common.message.AbstractMessage;
 import kr.pe.codda.impl.message.DownloadImageReq.DownloadImageReq;
 import kr.pe.codda.impl.message.DownloadImageRes.DownloadImageRes;
-import kr.pe.codda.impl.message.MessageResultRes.MessageResultRes;
 import kr.pe.codda.server.LoginManagerIF;
 import kr.pe.codda.server.lib.ServerCommonStaticFinalVars;
 import kr.pe.codda.server.lib.ServerDBUtil;
@@ -26,39 +25,13 @@ public class DownloadImageReqServerTask extends AbstractServerTask {
 		super();
 	}
 	
-	private void sendErrorOutputMessage(String errorMessage, ToLetterCarrier toLetterCarrier,
-			AbstractMessage inputMessage) throws InterruptedException {
-		log.warn("{}, inObj=", errorMessage, inputMessage.toString());
-
-		MessageResultRes messageResultRes = new MessageResultRes();
-		messageResultRes.setTaskMessageID(inputMessage.getMessageID());
-		messageResultRes.setIsSuccess(false);
-		messageResultRes.setResultMessage(errorMessage);
-		toLetterCarrier.addSyncOutputMessage(messageResultRes);
-	}
-
 	@Override
 	public void doTask(String projectName, LoginManagerIF personalLoginManager, ToLetterCarrier toLetterCarrier,
 			AbstractMessage inputMessage) throws Exception {
-		try {
-			AbstractMessage outputMessage = doWork(ServerCommonStaticFinalVars.DEFAULT_DBCP_NAME,
-					(DownloadImageReq) inputMessage);
-			toLetterCarrier.addSyncOutputMessage(outputMessage);
-		} catch (ServerTaskException e) {
-			String errorMessage = e.getMessage();
-			log.warn("errmsg=={}, inObj={}", errorMessage, inputMessage.toString());
 
-			sendErrorOutputMessage(errorMessage, toLetterCarrier, inputMessage);
-			return;
-		} catch (Exception e) {
-			String errorMessage = new StringBuilder().append("unknwon errmsg=").append(e.getMessage())
-					.append(", inObj=").append(inputMessage.toString()).toString();
-
-			log.warn(errorMessage, e);
-
-			sendErrorOutputMessage("이미지 다운로드가 실패하였습니다", toLetterCarrier, inputMessage);
-			return;
-		}
+		AbstractMessage outputMessage = doWork(ServerCommonStaticFinalVars.DEFAULT_DBCP_NAME,
+				(DownloadImageReq) inputMessage);
+		toLetterCarrier.addSyncOutputMessage(outputMessage);
 	}
 	
 	public DownloadImageRes doWork(final String dbcpName, final DownloadImageReq downloadImageReq) throws Exception {
@@ -67,9 +40,9 @@ public class DownloadImageReqServerTask extends AbstractServerTask {
 		
 		final DownloadImageRes downloadImageRes = new DownloadImageRes();	
 		
-		ServerDBUtil.execute(dbcpName, (conn, create) -> {
+		ServerDBUtil.execute(dbcpName, (conn, dsl) -> {
 
-			Record2<String, Long> uploadImageRecord = create.select(SB_UPLOAD_IMAGE_TB.FNAME, SB_UPLOAD_IMAGE_TB.FSIZE)
+			Record2<String, Long> uploadImageRecord = dsl.select(SB_UPLOAD_IMAGE_TB.FNAME, SB_UPLOAD_IMAGE_TB.FSIZE)
 			.from(SB_UPLOAD_IMAGE_TB)
 			.where(SB_UPLOAD_IMAGE_TB.YYYYMMDD.eq(downloadImageReq.getYyyyMMdd()))
 			.and(SB_UPLOAD_IMAGE_TB.DAY_SQ.eq(UInteger.valueOf(downloadImageReq.getDaySequence())))

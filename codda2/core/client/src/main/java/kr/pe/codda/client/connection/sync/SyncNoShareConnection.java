@@ -37,7 +37,6 @@ import kr.pe.codda.common.exception.HeaderFormatException;
 import kr.pe.codda.common.exception.NoMoreWrapBufferException;
 import kr.pe.codda.common.exception.NotSupportedException;
 import kr.pe.codda.common.exception.ServerTaskException;
-import kr.pe.codda.common.exception.ServerTaskPermissionException;
 import kr.pe.codda.common.io.IncomingStream;
 import kr.pe.codda.common.io.StreamBuffer;
 import kr.pe.codda.common.io.WrapBufferPoolIF;
@@ -164,7 +163,7 @@ public final class SyncNoShareConnection implements SyncConnectionIF {
 	@Override
 	public AbstractMessage sendSyncInputMessage(MessageCodecMangerIF messageCodecManger, AbstractMessage inputMessage)
 			throws InterruptedException, IOException, NoMoreWrapBufferException, DynamicClassCallException,
-			BodyFormatException, ServerTaskException, ServerTaskPermissionException {
+			BodyFormatException, ServerTaskException {
 		inputMessageStreamBuffer.clear();		
 		
 		if (Integer.MAX_VALUE == mailID) {

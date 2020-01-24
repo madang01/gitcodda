@@ -18,7 +18,6 @@ import kr.pe.codda.common.sessionkey.ServerSymmetricKeyIF;
 import kr.pe.codda.common.util.CommonStaticUtil;
 import kr.pe.codda.impl.message.MemberLoginReq.MemberLoginReq;
 import kr.pe.codda.impl.message.MemberLoginRes.MemberLoginRes;
-import kr.pe.codda.impl.message.MessageResultRes.MessageResultRes;
 import kr.pe.codda.server.LoginManagerIF;
 import kr.pe.codda.server.lib.MemberRoleType;
 import kr.pe.codda.server.lib.MemberStateType;
@@ -36,17 +35,6 @@ public class MemberLoginReqServerTask extends AbstractServerTask {
 		super();
 	}
 
-	private void sendErrorOutputMessage(String errorMessage, ToLetterCarrier toLetterCarrier,
-			AbstractMessage inputMessage) throws InterruptedException {
-		log.warn("{}, inObj=", errorMessage, inputMessage.toString());
-
-		MessageResultRes messageResultRes = new MessageResultRes();
-		messageResultRes.setTaskMessageID(inputMessage.getMessageID());
-		messageResultRes.setIsSuccess(false);
-		messageResultRes.setResultMessage(errorMessage);
-		toLetterCarrier.addSyncOutputMessage(messageResultRes);
-	}
-
 	private String getDecryptedString(byte[] cipherBytes, ServerSymmetricKeyIF serverSymmetricKey)
 			throws InterruptedException, IllegalArgumentException, SymmetricException {
 		byte[] valueBytes = serverSymmetricKey.decrypt(cipherBytes);
@@ -57,25 +45,10 @@ public class MemberLoginReqServerTask extends AbstractServerTask {
 	@Override
 	public void doTask(String projectName, LoginManagerIF personalLoginManager, ToLetterCarrier toLetterCarrier,
 			AbstractMessage inputMessage) throws Exception {
-		try {
-			AbstractMessage outputMessage = doWork(ServerCommonStaticFinalVars.DEFAULT_DBCP_NAME,
-					(MemberLoginReq) inputMessage);
-			toLetterCarrier.addSyncOutputMessage(outputMessage);
-		} catch (ServerTaskException e) {
-			String errorMessage = e.getMessage();
-			log.warn("errmsg=={}, inObj={}", errorMessage, inputMessage.toString());
 
-			sendErrorOutputMessage(errorMessage, toLetterCarrier, inputMessage);
-			return;
-		} catch (Exception e) {
-			String errorMessage = new StringBuilder().append("unknwon errmsg=").append(e.getMessage())
-					.append(", inObj=").append(inputMessage.toString()).toString();
-
-			log.warn(errorMessage, e);
-
-			sendErrorOutputMessage("사용자 로그인이 실패하였습니다", toLetterCarrier, inputMessage);
-			return;
-		}
+		AbstractMessage outputMessage = doWork(ServerCommonStaticFinalVars.DEFAULT_DBCP_NAME,
+				(MemberLoginReq) inputMessage);
+		toLetterCarrier.addSyncOutputMessage(outputMessage);
 	}
 
 	public MemberLoginRes doWork(String dbcpName, MemberLoginReq memberLoginReq) throws Exception {
@@ -203,9 +176,9 @@ public class MemberLoginReqServerTask extends AbstractServerTask {
 		
 		final MemberLoginRes memberLoginRes = new MemberLoginRes();
 		
-		ServerDBUtil.execute(dbcpName, (conn, create) -> {
+		ServerDBUtil.execute(dbcpName, (conn, dsl) -> {
 			
-			Record6<String, Byte, Byte, UByte, String, String> memberRecord = create
+			Record6<String, Byte, Byte, UByte, String, String> memberRecord = dsl
 					.select(SB_MEMBER_TB.NICKNAME, SB_MEMBER_TB.ROLE, SB_MEMBER_TB.STATE, SB_MEMBER_TB.PWD_FAIL_CNT,
 							SB_MEMBER_TB.PWD_BASE64, SB_MEMBER_TB.PWD_SALT_BASE64)
 					.from(SB_MEMBER_TB).where(SB_MEMBER_TB.USER_ID.eq(userID)).forUpdate().fetchOne();
@@ -256,7 +229,7 @@ public class MemberLoginReqServerTask extends AbstractServerTask {
 
 				String errorMessage = "손님은 로그인 할 수 없습니다";
 			
-				ServerDBUtil.insertSiteLog(conn, create, log, userID,
+				ServerDBUtil.insertSiteLog(conn, dsl, log, userID,
 						new StringBuilder().append("[경고] 손님 아이디[")
 						.append(userID)
 						.append("]로 로그인 시도").toString(),
@@ -324,7 +297,7 @@ public class MemberLoginReqServerTask extends AbstractServerTask {
 				 * update SB_MEMBER_TB set pwd_fail_cnt=#{pwdFailCount}, mod_dt=sysdate() where
 				 * user_id=#{userId} and member_gb=1 and member_st=0
 				 */
-				int countOfPwdFailedCountUpdate = create.update(SB_MEMBER_TB)
+				int countOfPwdFailedCountUpdate = dsl.update(SB_MEMBER_TB)
 						.set(SB_MEMBER_TB.PWD_FAIL_CNT, UByte.valueOf(pwdFailedCount + 1))
 						.where(SB_MEMBER_TB.USER_ID.eq(userID)).execute();
 
@@ -344,7 +317,7 @@ public class MemberLoginReqServerTask extends AbstractServerTask {
 				String errorMessage = new StringBuilder().append(pwdFailedCount + 1).append(" 회 비밀 번호가 틀렸습니다")
 						.toString();
 
-				ServerDBUtil.insertSiteLog(conn, create, log, userID, errorMessage,
+				ServerDBUtil.insertSiteLog(conn, dsl, log, userID, errorMessage,
 						new java.sql.Timestamp(System.currentTimeMillis()), memberLoginReq.getIp());
 
 				conn.commit();
@@ -353,13 +326,13 @@ public class MemberLoginReqServerTask extends AbstractServerTask {
 			}
 
 			if (pwdFailedCount > 0) {
-				create.update(SB_MEMBER_TB).set(SB_MEMBER_TB.PWD_FAIL_CNT, UByte.valueOf(0))
+				dsl.update(SB_MEMBER_TB).set(SB_MEMBER_TB.PWD_FAIL_CNT, UByte.valueOf(0))
 				.where(SB_MEMBER_TB.USER_ID.eq(userID)).execute();
 			}			
 
 			conn.commit();
 
-			ServerDBUtil.insertSiteLog(conn, create, log, userID,
+			ServerDBUtil.insertSiteLog(conn, dsl, log, userID,
 					new StringBuilder().append(memberRoleType.getName()).append(" 로그인").toString(),
 					new java.sql.Timestamp(System.currentTimeMillis()), memberLoginReq.getIp());
 			conn.commit();

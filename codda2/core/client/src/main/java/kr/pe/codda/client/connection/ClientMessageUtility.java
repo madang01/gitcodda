@@ -17,6 +17,7 @@
 
 package kr.pe.codda.client.connection;
 
+import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -24,6 +25,8 @@ import kr.pe.codda.common.classloader.MessageDecoderManagerIF;
 import kr.pe.codda.common.etc.CommonStaticFinalVars;
 import kr.pe.codda.common.exception.BodyFormatException;
 import kr.pe.codda.common.exception.DynamicClassCallException;
+import kr.pe.codda.common.exception.NoMoreWrapBufferException;
+import kr.pe.codda.common.exception.ServerTaskException;
 import kr.pe.codda.common.message.AbstractMessage;
 import kr.pe.codda.common.message.codec.AbstractMessageDecoder;
 import kr.pe.codda.common.protocol.MessageProtocolIF;
@@ -54,11 +57,16 @@ public abstract class ClientMessageUtility {
 	 * @param messageID 메시지 식별자
 	 * @param receviedMiddleObject 입력 스트림에서 메시지 변환용으로 추출된 '수신한 중간 객체'    
 	 * @return 지정한 '수신한 중간 객체'로 부터 변환된 지정한 메일 박스 식별자와 메일 식별자 그리고 메시지 식별자를 갖는 출력 메시지
+	 * @throws IOException 
+	 * @throws BodyFormatException 
+	 * @throws ServerTaskException 
+	 * @throws NoMoreWrapBufferException 
+	 * @throws DynamicClassCallException 
 	 */
 	public static AbstractMessage buildOutputMessage(String title,
 			MessageDecoderManagerIF messageCodecManger, 
 			MessageProtocolIF messageProtocol,
-			int mailboxID, int mailID, String messageID, Object receviedMiddleObject) {
+			int mailboxID, int mailID, String messageID, Object receviedMiddleObject) throws DynamicClassCallException, NoMoreWrapBufferException, ServerTaskException, BodyFormatException, IOException {
 		
 		try {
 			AbstractMessageDecoder messageDecoder = null;		
@@ -81,16 +89,16 @@ public abstract class ClientMessageUtility {
 				log.warning(errorMessage);
 					
 				
-				ExceptionDeliveryRes selfExnRes = new ExceptionDeliveryRes();
-				selfExnRes.setMailboxID(mailboxID);
-				selfExnRes.setMailID(mailID);
-				selfExnRes.setErrorPlace(ExceptionDelivery.ErrorPlace.CLIENT);
-				selfExnRes.setErrorType(ExceptionDelivery.ErrorType.valueOf(DynamicClassCallException.class));
+				ExceptionDeliveryRes exceptionDeliveryRes = new ExceptionDeliveryRes();
+				exceptionDeliveryRes.setMailboxID(mailboxID);
+				exceptionDeliveryRes.setMailID(mailID);
+				exceptionDeliveryRes.setErrorPlace(ExceptionDelivery.ErrorPlace.CLIENT);
+				exceptionDeliveryRes.setErrorType(ExceptionDelivery.ErrorType.valueOf(DynamicClassCallException.class));
 			
-				selfExnRes.setErrorMessageID(messageID);
-				selfExnRes.setErrorReason(errorMessage);
+				exceptionDeliveryRes.setErrorMessageID(messageID);
+				exceptionDeliveryRes.setErrorReason(errorMessage);
 				
-				return selfExnRes;
+				return exceptionDeliveryRes;
 			} catch (Exception e) {
 				String errorMessage = new StringBuilder(
 						"unknwon error::fail to get the client message decoder of the ")
@@ -108,16 +116,16 @@ public abstract class ClientMessageUtility {
 				Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
 				log.log(Level.WARNING, errorMessage, e);
 				
-				ExceptionDeliveryRes selfExnRes = new ExceptionDeliveryRes();
-				selfExnRes.setMailboxID(mailboxID);
-				selfExnRes.setMailID(mailID);
-				selfExnRes.setErrorPlace(ExceptionDelivery.ErrorPlace.CLIENT);
-				selfExnRes.setErrorType(ExceptionDelivery.ErrorType.valueOf(DynamicClassCallException.class));
+				ExceptionDeliveryRes exceptionDeliveryRes = new ExceptionDeliveryRes();
+				exceptionDeliveryRes.setMailboxID(mailboxID);
+				exceptionDeliveryRes.setMailID(mailID);
+				exceptionDeliveryRes.setErrorPlace(ExceptionDelivery.ErrorPlace.CLIENT);
+				exceptionDeliveryRes.setErrorType(ExceptionDelivery.ErrorType.valueOf(DynamicClassCallException.class));
 			
-				selfExnRes.setErrorMessageID(messageID);
-				selfExnRes.setErrorReason(errorMessage);
+				exceptionDeliveryRes.setErrorMessageID(messageID);
+				exceptionDeliveryRes.setErrorReason(errorMessage);
 				
-				return selfExnRes;
+				return exceptionDeliveryRes;
 			}
 
 			AbstractMessage outputMessage = null;
@@ -143,16 +151,16 @@ public abstract class ClientMessageUtility {
 				Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
 				log.warning(errorMessage);		
 				
-				ExceptionDeliveryRes selfExnRes = new ExceptionDeliveryRes();
-				selfExnRes.setMailboxID(mailboxID);
-				selfExnRes.setMailID(mailID);
-				selfExnRes.setErrorPlace(ExceptionDelivery.ErrorPlace.CLIENT);
-				selfExnRes.setErrorType(ExceptionDelivery.ErrorType.valueOf(BodyFormatException.class));
+				ExceptionDeliveryRes exceptionDeliveryRes = new ExceptionDeliveryRes();
+				exceptionDeliveryRes.setMailboxID(mailboxID);
+				exceptionDeliveryRes.setMailID(mailID);
+				exceptionDeliveryRes.setErrorPlace(ExceptionDelivery.ErrorPlace.CLIENT);
+				exceptionDeliveryRes.setErrorType(ExceptionDelivery.ErrorType.valueOf(BodyFormatException.class));
 			
-				selfExnRes.setErrorMessageID(messageID);
-				selfExnRes.setErrorReason(errorMessage);
+				exceptionDeliveryRes.setErrorMessageID(messageID);
+				exceptionDeliveryRes.setErrorReason(errorMessage);
 				
-				return selfExnRes;
+				return exceptionDeliveryRes;
 			} catch (Exception | Error e) {
 				String errorMessage = new StringBuilder("unknow error::fail to decode the var 'readableMiddleObject' of the ")
 						.append(title)
@@ -171,17 +179,21 @@ public abstract class ClientMessageUtility {
 				Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
 				log.log(Level.WARNING, errorMessage, e);
 				
-				ExceptionDeliveryRes selfExnRes = new ExceptionDeliveryRes();
-				selfExnRes.setMailboxID(mailboxID);
-				selfExnRes.setMailID(mailID);
-				selfExnRes.setErrorPlace(ExceptionDelivery.ErrorPlace.CLIENT);
-				selfExnRes.setErrorType(ExceptionDelivery.ErrorType.valueOf(BodyFormatException.class));
+				ExceptionDeliveryRes exceptionDeliveryRes = new ExceptionDeliveryRes();
+				exceptionDeliveryRes.setMailboxID(mailboxID);
+				exceptionDeliveryRes.setMailID(mailID);
+				exceptionDeliveryRes.setErrorPlace(ExceptionDelivery.ErrorPlace.CLIENT);
+				exceptionDeliveryRes.setErrorType(ExceptionDelivery.ErrorType.valueOf(BodyFormatException.class));
 			
-				selfExnRes.setErrorMessageID(messageID);
-				selfExnRes.setErrorReason(errorMessage);
+				exceptionDeliveryRes.setErrorMessageID(messageID);
+				exceptionDeliveryRes.setErrorReason(errorMessage);
 				
-				return selfExnRes;
+				return exceptionDeliveryRes;
 			}			
+			
+			if (outputMessage instanceof ExceptionDeliveryRes) {
+				ExceptionDelivery.ErrorType.throwSelfExnException((ExceptionDeliveryRes)outputMessage);
+			}
 
 			return outputMessage;
 		} finally {

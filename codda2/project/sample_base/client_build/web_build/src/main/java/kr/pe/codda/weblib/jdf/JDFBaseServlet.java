@@ -33,8 +33,12 @@ import kr.pe.codda.common.config.CoddaConfigurationManager;
 import kr.pe.codda.common.config.subset.CommonPartConfiguration;
 import kr.pe.codda.common.etc.CommonStaticFinalVars;
 import kr.pe.codda.common.exception.ConnectionPoolException;
+import kr.pe.codda.common.exception.ServerTaskException;
+import kr.pe.codda.common.sessionkey.ServerSessionkeyIF;
+import kr.pe.codda.common.sessionkey.ServerSessionkeyManager;
 import kr.pe.codda.weblib.common.AccessedUserInformation;
 import kr.pe.codda.weblib.common.WebCommonStaticFinalVars;
+import kr.pe.codda.weblib.exception.NoSessionKeyParameterException;
 import kr.pe.codda.weblib.exception.WebClientException;
 import kr.pe.codda.weblib.exception.WhiteParserException;
 
@@ -225,6 +229,25 @@ public abstract class JDFBaseServlet extends AbstractBaseServlet {
 	 */
 	protected void performBasePreTask(HttpServletRequest req, HttpServletResponse res)
 			throws ServletException, IOException {
+		
+		try {
+			ServerSessionkeyManager serverSessionkeyManager = ServerSessionkeyManager.getInstance();
+			ServerSessionkeyIF webServerSessionkey  = serverSessionkeyManager.getMainProjectServerSessionkey();
+			req.setAttribute(WebCommonStaticFinalVars.REQUEST_KEY_NAME_OF_MODULUS_HEX_STRING, webServerSessionkey.getModulusHexStrForWeb());
+		} catch(Exception e) {
+			String errorMessage = "fail to set modulusHexString to request";
+			
+			log.log(Level.WARNING, errorMessage, e);			
+
+			String debugMessage = new StringBuilder()
+					.append(errorMessage)
+					.append(", errmsg=")
+					.append(e.getMessage()).toString();
+			
+			printErrorMessagePage(req, res, errorMessage, debugMessage);
+			return;
+		}
+		
 		String menuGroupURL = this
 				.getInitParameter(WebCommonStaticFinalVars.SERVLET_INIT_PARM_KEY_NAME_OF_MENU_GROUP_URL);
 		if (null == menuGroupURL) {
@@ -301,6 +324,14 @@ public abstract class JDFBaseServlet extends AbstractBaseServlet {
 
 		try {
 			performPreTask(req, res);
+		} catch (NoSessionKeyParameterException e) {
+			req.setAttribute("requestURI", req.getRequestURI());
+			printJspPage(req, res, JDF_SESSION_KEY_REDIRECT_PAGE);
+		} catch (ServerTaskException e) {
+			String errorMessage = e.getMessage();
+			String debugMessage = null;
+			printErrorMessagePage(req, res, errorMessage, debugMessage);
+			
 		} catch (ConnectionPoolException e) {
 			log.log(Level.WARNING, "server connection fail", e);
 
@@ -324,7 +355,6 @@ public abstract class JDFBaseServlet extends AbstractBaseServlet {
 			log.warning(logMessage);
 
 			printErrorMessagePage(req, res, errorMessage, debugMessage);
-			return;	
 		} catch (WebClientException e) {
 			String errorMessage = e.getErrorMessage();
 			String debugMessage = e.getDebugMessage();
@@ -342,7 +372,6 @@ public abstract class JDFBaseServlet extends AbstractBaseServlet {
 			log.warning(logMessage);
 
 			printErrorMessagePage(req, res, errorMessage, debugMessage);
-			return;		
 		} catch (Exception | java.lang.Error e) {
 			java.io.ByteArrayOutputStream bos = new java.io.ByteArrayOutputStream();
 			

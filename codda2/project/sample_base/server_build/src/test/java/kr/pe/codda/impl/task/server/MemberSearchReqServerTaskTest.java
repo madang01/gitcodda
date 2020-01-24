@@ -33,12 +33,12 @@ public class MemberSearchReqServerTaskTest extends AbstractBoardTest {
 		
 		
 		try {
-			ServerDBUtil.execute(TEST_DBCP_NAME, (conn, create) -> {
+			ServerDBUtil.execute(TEST_DBCP_NAME, (conn, dsl) -> {
 				
-				create.delete(SB_SITE_LOG_TB)
+				dsl.delete(SB_SITE_LOG_TB)
 				.where(SB_SITE_LOG_TB.USER_ID.eq(testID)).execute();
 				
-				create.delete(SB_MEMBER_TB)
+				dsl.delete(SB_MEMBER_TB)
 				.where(SB_MEMBER_TB.USER_ID.eq(testID)).execute();
 
 				conn.commit();
@@ -62,7 +62,7 @@ public class MemberSearchReqServerTaskTest extends AbstractBoardTest {
 						passwordBytes, new java.sql.Timestamp(System.currentTimeMillis()), ip);			
 			} catch (Exception e) {
 				log.warn("unknown error", e);
-				fail("fail to create a test ID");
+				fail("fail to dsl a test ID");
 			}
 		}
 		

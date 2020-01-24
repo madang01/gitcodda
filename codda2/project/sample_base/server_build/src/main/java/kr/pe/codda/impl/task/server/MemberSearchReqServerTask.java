@@ -21,7 +21,6 @@ import kr.pe.codda.common.exception.ServerTaskException;
 import kr.pe.codda.common.message.AbstractMessage;
 import kr.pe.codda.impl.message.MemberSearchReq.MemberSearchReq;
 import kr.pe.codda.impl.message.MemberSearchRes.MemberSearchRes;
-import kr.pe.codda.impl.message.MessageResultRes.MessageResultRes;
 import kr.pe.codda.server.LoginManagerIF;
 import kr.pe.codda.server.lib.MemberRoleType;
 import kr.pe.codda.server.lib.MemberStateType;
@@ -39,40 +38,13 @@ public class MemberSearchReqServerTask extends AbstractServerTask {
 		super();
 	}
 
-	private void sendErrorOutputMessage(String errorMessage, ToLetterCarrier toLetterCarrier,
-			AbstractMessage inputMessage) throws InterruptedException {
-		log.warn("{}, inObj=", errorMessage, inputMessage.toString());
-
-		MessageResultRes messageResultRes = new MessageResultRes();
-		messageResultRes.setTaskMessageID(inputMessage.getMessageID());
-		messageResultRes.setIsSuccess(false);
-		messageResultRes.setResultMessage(errorMessage);
-		toLetterCarrier.addSyncOutputMessage(messageResultRes);
-	}
 
 	@Override
 	public void doTask(String projectName, LoginManagerIF personalLoginManager, ToLetterCarrier toLetterCarrier,
 			AbstractMessage inputMessage) throws Exception {
-		try {
-			AbstractMessage outputMessage = doWork(ServerCommonStaticFinalVars.DEFAULT_DBCP_NAME, (MemberSearchReq)inputMessage);
-			toLetterCarrier.addSyncOutputMessage(outputMessage);
-		} catch(ServerTaskException e) {
-			String errorMessage = e.getMessage();
-			log.warn("errmsg=={}, inObj={}", errorMessage, inputMessage.toString());
-			
-			sendErrorOutputMessage(errorMessage, toLetterCarrier, inputMessage);
-			return;
-		} catch(Exception e) {
-			String errorMessage = new StringBuilder().append("unknwon errmsg=")
-					.append(e.getMessage())
-					.append(", inObj=")
-					.append(inputMessage.toString()).toString();
-			
-			log.warn(errorMessage, e);
-						
-			sendErrorOutputMessage("사용자 관리자 서비스가 실패하였습니다", toLetterCarrier, inputMessage);
-			return;
-		}
+
+		AbstractMessage outputMessage = doWork(ServerCommonStaticFinalVars.DEFAULT_DBCP_NAME, (MemberSearchReq)inputMessage);
+		toLetterCarrier.addSyncOutputMessage(outputMessage);
 	}
 	
 	public MemberSearchRes doWork(String dbcpName, MemberSearchReq memberSearchReq)
@@ -159,13 +131,13 @@ public class MemberSearchReqServerTask extends AbstractServerTask {
 		
 		List<MemberSearchRes.Member> memberList = new ArrayList<MemberSearchRes.Member>();
 		
-		ServerDBUtil.execute(dbcpName, (conn, create) -> {
+		ServerDBUtil.execute(dbcpName, (conn, dsl) -> {
 			
-			ServerDBUtil.checkUserAccessRights(conn, create, log, "회원 조회 서비스", PermissionType.ADMIN, 
+			ServerDBUtil.checkUserAccessRights(conn, dsl, log, "회원 조회 서비스", PermissionType.ADMIN, 
 					memberSearchReq.getRequestedUserID());
 			
 			
-			SelectConditionStep<Record8<String, String, UByte, Timestamp, Timestamp, Timestamp, Timestamp, Timestamp>> memberSelectConditionStep = create.select(SB_MEMBER_TB.USER_ID, 
+			SelectConditionStep<Record8<String, String, UByte, Timestamp, Timestamp, Timestamp, Timestamp, Timestamp>> memberSelectConditionStep = dsl.select(SB_MEMBER_TB.USER_ID, 
 					SB_MEMBER_TB.NICKNAME,
 					SB_MEMBER_TB.PWD_FAIL_CNT,
 					SB_MEMBER_TB.REG_DT,

@@ -26,8 +26,8 @@ import java.util.logging.Logger;
 
 import kr.pe.codda.client.classloader.ClientClassLoaderFactory;
 import kr.pe.codda.client.classloader.ClientTaskManger;
-import kr.pe.codda.client.classloader.ClientTaskMangerUsingSystemClassLoader;
 import kr.pe.codda.client.classloader.ClientTaskMangerIF;
+import kr.pe.codda.client.classloader.ClientTaskMangerUsingSystemClassLoader;
 import kr.pe.codda.client.connection.ConnectionPoolIF;
 import kr.pe.codda.client.connection.ConnectionPoolSupporter;
 import kr.pe.codda.client.connection.asyn.AsynThreadSafeSingleConnection;
@@ -51,7 +51,6 @@ import kr.pe.codda.common.exception.DynamicClassCallException;
 import kr.pe.codda.common.exception.NoMoreWrapBufferException;
 import kr.pe.codda.common.exception.NotSupportedException;
 import kr.pe.codda.common.exception.ServerTaskException;
-import kr.pe.codda.common.exception.ServerTaskPermissionException;
 import kr.pe.codda.common.io.WrapBufferPool;
 import kr.pe.codda.common.io.WrapBufferPoolIF;
 import kr.pe.codda.common.message.AbstractMessage;
@@ -226,7 +225,7 @@ public final class AnyProjectConnectionPool implements AnyProjectConnectionPoolI
 	@Override
 	public AbstractMessage sendSyncInputMessage(MessageCodecMangerIF messageCodecManger, AbstractMessage inputMessage)
 			throws InterruptedException, IOException, NoMoreWrapBufferException, BodyFormatException,
-			DynamicClassCallException, ServerTaskException, ServerTaskPermissionException, ConnectionPoolException {
+			DynamicClassCallException, ServerTaskException, ConnectionPoolException {
 		/*long startTime = 0;
 		long endTime = 0;
 		startTime = System.nanoTime();*/

@@ -14,7 +14,6 @@ import kr.pe.codda.common.exception.ServerTaskException;
 import kr.pe.codda.common.message.AbstractMessage;
 import kr.pe.codda.impl.message.MemberAllInformationReq.MemberAllInformationReq;
 import kr.pe.codda.impl.message.MemberAllInformationRes.MemberAllInformationRes;
-import kr.pe.codda.impl.message.MessageResultRes.MessageResultRes;
 import kr.pe.codda.server.LoginManagerIF;
 import kr.pe.codda.server.lib.MemberRoleType;
 import kr.pe.codda.server.lib.PermissionType;
@@ -31,40 +30,12 @@ public class MemberAllInformationReqServerTask extends AbstractServerTask {
 		super();
 	}
 
-	private void sendErrorOutputMessage(String errorMessage, ToLetterCarrier toLetterCarrier,
-			AbstractMessage inputMessage) throws InterruptedException {
-		log.warn("{}, inObj=", errorMessage, inputMessage.toString());
-
-		MessageResultRes messageResultRes = new MessageResultRes();
-		messageResultRes.setTaskMessageID(inputMessage.getMessageID());
-		messageResultRes.setIsSuccess(false);
-		messageResultRes.setResultMessage(errorMessage);
-		toLetterCarrier.addSyncOutputMessage(messageResultRes);
-	}
-	
 	@Override
 	public void doTask(String projectName, LoginManagerIF personalLoginManager, ToLetterCarrier toLetterCarrier,
 			AbstractMessage inputMessage) throws Exception {
-		try {
-			AbstractMessage outputMessage = doWork(ServerCommonStaticFinalVars.DEFAULT_DBCP_NAME, (MemberAllInformationReq)inputMessage);
-			toLetterCarrier.addSyncOutputMessage(outputMessage);
-		} catch(ServerTaskException e) {
-			String errorMessage = e.getMessage();
-			log.warn("errmsg=={}, inObj={}", errorMessage, inputMessage.toString());
-			
-			sendErrorOutputMessage(errorMessage, toLetterCarrier, inputMessage);
-			return;
-		} catch(Exception e) {
-			String errorMessage = new StringBuilder().append("unknwon errmsg=")
-					.append(e.getMessage())
-					.append(", inObj=")
-					.append(inputMessage.toString()).toString();
-			
-			log.warn(errorMessage, e);
-						
-			sendErrorOutputMessage("게시글 가져오는데 실패하였습니다", toLetterCarrier, inputMessage);
-			return;
-		}		
+
+		AbstractMessage outputMessage = doWork(ServerCommonStaticFinalVars.DEFAULT_DBCP_NAME, (MemberAllInformationReq)inputMessage);
+		toLetterCarrier.addSyncOutputMessage(outputMessage);	
 	}
 	
 	public MemberAllInformationRes doWork(String dbcpName, MemberAllInformationReq userInformationReq)
@@ -82,9 +53,9 @@ public class MemberAllInformationReqServerTask extends AbstractServerTask {
 		
 		final MemberAllInformationRes userInformationRes = new MemberAllInformationRes();
 		
-		ServerDBUtil.execute(dbcpName, (conn, create) -> {
+		ServerDBUtil.execute(dbcpName, (conn, dsl) -> {
 			
-			MemberRoleType  memberRoleTypeOfRequestedUserID = ServerDBUtil.checkUserAccessRights(conn, create, log, "사용자 정보 조회 서비스", PermissionType.MEMBER, requestedUserID);
+			MemberRoleType  memberRoleTypeOfRequestedUserID = ServerDBUtil.checkUserAccessRights(conn, dsl, log, "사용자 정보 조회 서비스", PermissionType.MEMBER, requestedUserID);
 			
 			if (! MemberRoleType.ADMIN.equals(memberRoleTypeOfRequestedUserID)) {
 				/** 관리자가 아닌 경우 본인 여부 확인 */
@@ -95,7 +66,7 @@ public class MemberAllInformationReqServerTask extends AbstractServerTask {
 			}
 			
 			Record9<String, Byte, Byte, String, UByte, Timestamp, Timestamp, Timestamp, Timestamp> 
-			memberRecordOfTargetUserID = create.select(SB_MEMBER_TB.NICKNAME,
+			memberRecordOfTargetUserID = dsl.select(SB_MEMBER_TB.NICKNAME,
 					SB_MEMBER_TB.STATE, SB_MEMBER_TB.ROLE,
 					SB_MEMBER_TB.EMAIL,
 					SB_MEMBER_TB.PWD_FAIL_CNT,

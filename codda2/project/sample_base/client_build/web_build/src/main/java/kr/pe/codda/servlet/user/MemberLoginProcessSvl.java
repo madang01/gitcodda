@@ -9,7 +9,6 @@ import javax.servlet.http.HttpSession;
 
 import kr.pe.codda.client.AnyProjectConnectionPoolIF;
 import kr.pe.codda.client.ConnectionPoolManager;
-import kr.pe.codda.common.exception.SymmetricException;
 import kr.pe.codda.common.message.AbstractMessage;
 import kr.pe.codda.common.sessionkey.ClientSessionKeyIF;
 import kr.pe.codda.common.sessionkey.ClientSessionKeyManager;
@@ -18,7 +17,6 @@ import kr.pe.codda.common.sessionkey.ServerSessionkeyIF;
 import kr.pe.codda.common.sessionkey.ServerSessionkeyManager;
 import kr.pe.codda.common.sessionkey.ServerSymmetricKeyIF;
 import kr.pe.codda.common.util.CommonStaticUtil;
-import kr.pe.codda.common.util.HexUtil;
 import kr.pe.codda.impl.classloader.ClientMessageCodecManger;
 import kr.pe.codda.impl.message.BinaryPublicKey.BinaryPublicKey;
 import kr.pe.codda.impl.message.MemberLoginReq.MemberLoginReq;
@@ -28,9 +26,9 @@ import kr.pe.codda.weblib.common.AccessedUserInformation;
 import kr.pe.codda.weblib.common.MemberRoleType;
 import kr.pe.codda.weblib.common.ValueChecker;
 import kr.pe.codda.weblib.common.WebCommonStaticFinalVars;
-import kr.pe.codda.weblib.jdf.AbstractServlet;
+import kr.pe.codda.weblib.jdf.AbstractSessionKeyServlet;
 
-public class MemberLoginProcessSvl extends AbstractServlet {
+public class MemberLoginProcessSvl extends AbstractSessionKeyServlet {
 
 	private static final long serialVersionUID = -5979668829130203071L;
 	
@@ -38,26 +36,9 @@ public class MemberLoginProcessSvl extends AbstractServlet {
 	@Override
 	protected void performTask(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		/**************** 파라미터 시작 *******************/
-		String paramSessionKeyBase64 = req.getParameter(WebCommonStaticFinalVars.PARAMETER_KEY_NAME_OF_SESSION_KEY);
-		String paramIVBase64 = req.getParameter(WebCommonStaticFinalVars.PARAMETER_KEY_NAME_OF_SESSION_KEY_IV);
-
 		String paramUserIDCipherBase64 = req.getParameter("userID");
 		String paramPwdCipherBase64 = req.getParameter("pwd");
 		/**************** 파라미터 종료 *******************/
-
-		if (null == paramSessionKeyBase64) {
-			String errorMessage = "the request parameter paramSessionKeyBase64 is null";
-			String debugMessage = errorMessage;
-			printErrorMessagePage(req, res, errorMessage, debugMessage);
-			return;
-		}
-
-		if (null == paramIVBase64) {
-			String errorMessage = "the request parameter paramIVBase64 is null";
-			String debugMessage = errorMessage;
-			printErrorMessagePage(req, res, errorMessage, debugMessage);
-			return;
-		}
 
 		if (null == paramUserIDCipherBase64) {
 			String errorMessage = "the request parameter userID is null";
@@ -84,76 +65,7 @@ public class MemberLoginProcessSvl extends AbstractServlet {
 
 		// req.setAttribute("isSuccess", Boolean.FALSE);
 
-		byte[] sessionkeyBytes = null;
-		try {
-			sessionkeyBytes = CommonStaticUtil.Base64Decoder.decode(paramSessionKeyBase64);
-		} catch (Exception e) {
-
-			String errorMessage = "세션키 파라미터가 잘못되었습니다";
-			String debugMessage = new StringBuilder().append("the parameter '")
-					.append(WebCommonStaticFinalVars.PARAMETER_KEY_NAME_OF_SESSION_KEY).append("'[")
-					.append(paramSessionKeyBase64).append("] is not a base64 encoding string, errmsg=")
-					.append(e.getMessage()).toString();
-			
-			log.warning(debugMessage);
-
-			printErrorMessagePage(req, res, errorMessage, debugMessage);
-			return;
-		}
-		byte[] ivBytes = null;
-		try {
-			ivBytes = CommonStaticUtil.Base64Decoder.decode(paramIVBase64);
-		} catch (Exception e) {
-			String errorMessage = "세션키 소금 파라미터가 잘못되었습니다";
-			String debugMessage = new StringBuilder().append("the parameter '")
-					.append(WebCommonStaticFinalVars.PARAMETER_KEY_NAME_OF_SESSION_KEY_IV).append("'[")
-					.append(paramIVBase64).append("] is not a base64 encoding string, errmsg=").append(e.getMessage())
-					.toString();
-			
-			log.warning(debugMessage);
-
-			printErrorMessagePage(req, res, errorMessage, debugMessage);
-			return;
-		}
-
-		ServerSessionkeyIF webServerSessionkey = null;
-		try {
-			ServerSessionkeyManager serverSessionkeyManager = ServerSessionkeyManager.getInstance();
-			webServerSessionkey = serverSessionkeyManager.getMainProjectServerSessionkey();
-		} catch (SymmetricException e) {
-			String errorMessage = "fail to get a ServerSessionkeyManger class instance";
-			log.log(Level.WARNING, errorMessage, e);
-
-			String debugMessage = e.getMessage();
-			printErrorMessagePage(req, res, errorMessage, debugMessage);
-			return;
-		}
-
-		ServerSymmetricKeyIF webServerSymmetricKey = null;
-		try {
-			webServerSymmetricKey = webServerSessionkey.createNewInstanceOfServerSymmetricKey(true, sessionkeyBytes,
-					ivBytes);
-		} catch (IllegalArgumentException e) {
-			String errorMessage = "웹 세션키 인스턴스 생성 실패";
-			log.log(Level.WARNING, errorMessage, e);
-
-			String debugMessage = new StringBuilder("sessionkeyBytes=[")
-					.append(HexUtil.getHexStringFromByteArray(sessionkeyBytes)).append("], ivBytes=[")
-					.append(HexUtil.getHexStringFromByteArray(ivBytes)).append("]").toString();
-
-			printErrorMessagePage(req, res, errorMessage, debugMessage);
-			return;
-		} catch (SymmetricException e) {
-			String errorMessage = "웹 세션키 인스턴스 생성 실패";
-			log.log(Level.WARNING, errorMessage, e);
-
-			String debugMessage = new StringBuilder("sessionkeyBytes=[")
-					.append(HexUtil.getHexStringFromByteArray(sessionkeyBytes)).append("], ivBytes=[")
-					.append(HexUtil.getHexStringFromByteArray(ivBytes)).append("]").toString();
-
-			printErrorMessagePage(req, res, errorMessage, debugMessage);
-			return;
-		}
+		ServerSymmetricKeyIF webServerSymmetricKey = buildServerSymmetricKey(req, false);
 
 		/**
 		 * WARNING! 보안 권고 사항에 따라 로그인 정보들을 자바 스트링으로 만들지 않기 위해서 비밀번호외 항목들은 유효성 검사를 수행하지 않는다   
@@ -185,6 +97,9 @@ public class MemberLoginProcessSvl extends AbstractServlet {
 		
 		
 		BinaryPublicKey binaryPublicKeyReq = new BinaryPublicKey();
+		
+		ServerSessionkeyManager serverSessionkeyManager = ServerSessionkeyManager.getInstance();
+		ServerSessionkeyIF webServerSessionkey  = serverSessionkeyManager.getMainProjectServerSessionkey();
 		binaryPublicKeyReq.setPublicKeyBytes(webServerSessionkey.getDupPublicKeyBytes());
 
 		AbstractMessage binaryPublicKeyOutputMessage = mainProjectConnectionPool
@@ -294,9 +209,7 @@ public class MemberLoginProcessSvl extends AbstractServlet {
 		 * memberRoleType);
 		 */
 
-		req.setAttribute(WebCommonStaticFinalVars.REQUEST_KEY_NAME_OF_SYMMETRIC_KEY_FROM_SESSIONKEY, webServerSymmetricKey);
-		req.setAttribute(WebCommonStaticFinalVars.REQUEST_KEY_NAME_OF_MODULUS_HEX_STRING,
-				webServerSessionkey.getModulusHexStrForWeb());
+		
 		printJspPage(req, res, "/sitemenu/member/MemberLoginProcess.jsp");
 		return;
 

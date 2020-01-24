@@ -23,7 +23,6 @@ import kr.pe.codda.common.exception.BodyFormatException;
 import kr.pe.codda.common.exception.DynamicClassCallException;
 import kr.pe.codda.common.exception.NoMoreWrapBufferException;
 import kr.pe.codda.common.exception.ServerTaskException;
-import kr.pe.codda.common.exception.ServerTaskPermissionException;
 import kr.pe.codda.impl.message.ExceptionDeliveryRes.ExceptionDeliveryRes;
 
 /**
@@ -109,8 +108,6 @@ public abstract class ExceptionDelivery {
 				return NoMoreDataPacketBufferException;
 			} else if (errorTypeClass.equals(ServerTaskException.class)) {
 				return ServerTaskException;
-			} else if (errorTypeClass.equals(ServerTaskPermissionException.class)) {
-				return ServerTaskPermissionException;			
 			} else {
 				String errorMessage = new StringBuilder()
 						.append("the parameter errorTypeClass[")
@@ -123,9 +120,9 @@ public abstract class ExceptionDelivery {
 		public static void throwSelfExnException(ExceptionDeliveryRes throwExceptionRes) 
 				throws DynamicClassCallException, 
 				NoMoreWrapBufferException, ServerTaskException,
-				ServerTaskPermissionException, BodyFormatException, IOException {
+				BodyFormatException, IOException {
 			ErrorType errorType = throwExceptionRes.getErrorType();
-			String errorMessage = throwExceptionRes.toString();
+			String errorMessage = throwExceptionRes.getErrorReason();
 			
 			switch (errorType) {
 			case BodyFormatException :
@@ -135,10 +132,7 @@ public abstract class ExceptionDelivery {
 			case NoMoreDataPacketBufferException :
 				throw new NoMoreWrapBufferException(errorMessage);
 			case ServerTaskException :
-				throw new ServerTaskException(errorMessage);
-			case ServerTaskPermissionException :
-				throw new ServerTaskPermissionException(errorMessage);
-		
+				throw new ServerTaskException(errorMessage);		
 			default:
 				throw new IllegalArgumentException("unknown error type["+throwExceptionRes.toString()+"]");
 			}

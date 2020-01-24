@@ -35,42 +35,13 @@ public class MemberWithdrawReqServerTask extends AbstractServerTask {
 	public MemberWithdrawReqServerTask() throws DynamicClassCallException {
 		super();
 	}
-
-	private void sendErrorOutputMessage(String errorMessage, ToLetterCarrier toLetterCarrier,
-			AbstractMessage inputMessage) throws InterruptedException {
-		log.warn("{}, inObj=", errorMessage, inputMessage.toString());
-
-		MessageResultRes messageResultRes = new MessageResultRes();
-		messageResultRes.setTaskMessageID(inputMessage.getMessageID());
-		messageResultRes.setIsSuccess(false);
-		messageResultRes.setResultMessage(errorMessage);
-		toLetterCarrier.addSyncOutputMessage(messageResultRes);
-	}
-	
 	
 	@Override
 	public void doTask(String projectName, LoginManagerIF personalLoginManager, ToLetterCarrier toLetterCarrier,
 			AbstractMessage inputMessage) throws Exception {
-		try {
-			AbstractMessage outputMessage = doWork(ServerCommonStaticFinalVars.DEFAULT_DBCP_NAME, (MemberWithdrawReq)inputMessage);
-			toLetterCarrier.addSyncOutputMessage(outputMessage);
-		} catch(ServerTaskException e) {
-			String errorMessage = e.getMessage();
-			log.warn("errmsg=={}, inObj={}", errorMessage, inputMessage.toString());
-			
-			sendErrorOutputMessage(errorMessage, toLetterCarrier, inputMessage);
-			return;
-		} catch(Exception e) {
-			String errorMessage = new StringBuilder().append("unknwon errmsg=")
-					.append(e.getMessage())
-					.append(", inObj=")
-					.append(inputMessage.toString()).toString();
-			
-			log.warn(errorMessage, e);
-						
-			sendErrorOutputMessage("회웥 탈퇴하는데 실패하였습니다", toLetterCarrier, inputMessage);
-			return;
-		}
+
+		AbstractMessage outputMessage = doWork(ServerCommonStaticFinalVars.DEFAULT_DBCP_NAME, (MemberWithdrawReq)inputMessage);
+		toLetterCarrier.addSyncOutputMessage(outputMessage);
 	}
 	
 	public MessageResultRes doWork(String dbcpName, MemberWithdrawReq memberWithdrawReq)
@@ -196,9 +167,9 @@ public class MemberWithdrawReqServerTask extends AbstractServerTask {
 			throw new ServerTaskException(errorMessage);
 		}
 		
-		ServerDBUtil.execute(dbcpName, (conn, create) -> {
+		ServerDBUtil.execute(dbcpName, (conn, dsl) -> {
 			/** 탈퇴 대상 회원 레코드 락 */
-			Record5<Byte, Byte, UByte, String, String> memberRecordOfRequestedUserID = create.select(
+			Record5<Byte, Byte, UByte, String, String> memberRecordOfRequestedUserID = dsl.select(
 					SB_MEMBER_TB.ROLE,
 					SB_MEMBER_TB.STATE,
 					SB_MEMBER_TB.PWD_FAIL_CNT,
@@ -314,7 +285,7 @@ public class MemberWithdrawReqServerTask extends AbstractServerTask {
 			PasswordPairOfMemberTable passwordPairOfMemberTable = ServerDBUtil.toPasswordPairOfMemberTable(passwordBytes, pwdSaltBytes);
 			
 			if (! pwdBase64.equals(passwordPairOfMemberTable.getPasswordBase64())) {
-				int countOfPwdFailedCountUpdate = create.update(SB_MEMBER_TB)
+				int countOfPwdFailedCountUpdate = dsl.update(SB_MEMBER_TB)
 					.set(SB_MEMBER_TB.PWD_FAIL_CNT, UByte.valueOf(pwdFailedCount+1))
 					.where(SB_MEMBER_TB.USER_ID.eq(requestedUserID))
 				.execute();
@@ -332,7 +303,7 @@ public class MemberWithdrawReqServerTask extends AbstractServerTask {
 				
 				conn.commit();
 				
-				ServerDBUtil.insertSiteLog(conn, create, log, requestedUserID, "회원 탈퇴 비밀번호 틀림", 
+				ServerDBUtil.insertSiteLog(conn, dsl, log, requestedUserID, "회원 탈퇴 비밀번호 틀림", 
 						new java.sql.Timestamp(System.currentTimeMillis()), ip);
 				
 				conn.commit();
@@ -343,7 +314,7 @@ public class MemberWithdrawReqServerTask extends AbstractServerTask {
 			
 			Timestamp lastStateModifiedDate = new java.sql.Timestamp(System.currentTimeMillis());
 			
-			create.update(SB_MEMBER_TB)
+			dsl.update(SB_MEMBER_TB)
 			.set(SB_MEMBER_TB.STATE, MemberStateType.WITHDRAWAL.getValue())
 			.set(SB_MEMBER_TB.LAST_STATE_MOD_DT, lastStateModifiedDate)
 			.where(SB_MEMBER_TB.USER_ID.eq(requestedUserID))
@@ -352,7 +323,7 @@ public class MemberWithdrawReqServerTask extends AbstractServerTask {
 			
 			conn.commit();
 			
-			ServerDBUtil.insertSiteLog(conn, create, log, requestedUserID, "회원 탈퇴 완료", 
+			ServerDBUtil.insertSiteLog(conn, dsl, log, requestedUserID, "회원 탈퇴 완료", 
 					lastStateModifiedDate, ip);
 			
 			conn.commit();

@@ -25,7 +25,6 @@ import kr.pe.codda.common.exception.ServerTaskException;
 import kr.pe.codda.common.message.AbstractMessage;
 import kr.pe.codda.impl.message.BoardModifyReq.BoardModifyReq;
 import kr.pe.codda.impl.message.BoardModifyRes.BoardModifyRes;
-import kr.pe.codda.impl.message.MessageResultRes.MessageResultRes;
 import kr.pe.codda.server.LoginManagerIF;
 import kr.pe.codda.server.lib.BoardListType;
 import kr.pe.codda.server.lib.BoardStateType;
@@ -44,41 +43,15 @@ public class BoardModifyReqServerTask extends AbstractServerTask {
 	public BoardModifyReqServerTask() throws DynamicClassCallException {
 		super();
 	}
-
-	private void sendErrorOutputMessage(String errorMessage, ToLetterCarrier toLetterCarrier,
-			AbstractMessage inputMessage) throws InterruptedException {
-		log.warn("{}, inObj=", errorMessage, inputMessage.toString());
-
-		MessageResultRes messageResultRes = new MessageResultRes();
-		messageResultRes.setTaskMessageID(inputMessage.getMessageID());
-		messageResultRes.setIsSuccess(false);
-		messageResultRes.setResultMessage(errorMessage);
-		toLetterCarrier.addSyncOutputMessage(messageResultRes);
-	}
+	
 
 	@Override
 	public void doTask(String projectName, LoginManagerIF personalLoginManager, ToLetterCarrier toLetterCarrier,
 			AbstractMessage inputMessage) throws Exception {
 
-		try {
-			AbstractMessage outputMessage = doWork(ServerCommonStaticFinalVars.DEFAULT_DBCP_NAME,
-					(BoardModifyReq) inputMessage);
-			toLetterCarrier.addSyncOutputMessage(outputMessage);
-		} catch (ServerTaskException e) {
-			String errorMessage = e.getMessage();
-			log.warn("errmsg=={}, inObj={}", errorMessage, inputMessage.toString());
-
-			sendErrorOutputMessage(errorMessage, toLetterCarrier, inputMessage);
-			return;
-		} catch (Exception e) {
-			String errorMessage = new StringBuilder().append("unknwon errmsg=").append(e.getMessage())
-					.append(", inObj=").append(inputMessage.toString()).toString();
-
-			log.warn(errorMessage, e);
-
-			sendErrorOutputMessage("게시글 수정하는데 실패하였습니다", toLetterCarrier, inputMessage);
-			return;
-		}
+		AbstractMessage outputMessage = doWork(ServerCommonStaticFinalVars.DEFAULT_DBCP_NAME,
+				(BoardModifyReq) inputMessage);
+		toLetterCarrier.addSyncOutputMessage(outputMessage);
 	}
 
 	public BoardModifyRes doWork(String dbcpName, BoardModifyReq boardModifyReq) throws Exception {
@@ -154,12 +127,12 @@ public class BoardModifyReqServerTask extends AbstractServerTask {
 			throw new ServerTaskException(errorMessage);
 		}
 
-		ServerDBUtil.execute(dbcpName, (conn, create) -> {
+		ServerDBUtil.execute(dbcpName, (conn, dsl) -> {
 			
-			MemberRoleType memberRoleTypeOfRequestedUserID = ServerDBUtil.checkUserAccessRights(conn, create, log,
+			MemberRoleType memberRoleTypeOfRequestedUserID = ServerDBUtil.checkUserAccessRights(conn, dsl, log,
 					"게시판 수정 서비스", PermissionType.GUEST, boardModifyReq.getRequestedUserID());
 
-			Record1<Byte> boardInforRecord = create.select(SB_BOARD_INFO_TB.LIST_TYPE).from(SB_BOARD_INFO_TB)
+			Record1<Byte> boardInforRecord = dsl.select(SB_BOARD_INFO_TB.LIST_TYPE).from(SB_BOARD_INFO_TB)
 					.where(SB_BOARD_INFO_TB.BOARD_ID.eq(boardID)).fetchOne();
 
 			if (null == boardInforRecord) {
@@ -205,11 +178,11 @@ public class BoardModifyReqServerTask extends AbstractServerTask {
 			}
 			
 			/** 수정할 게시글에 속한 그룹의 루트 노드에 해당하는 레코드에 락을 건다  */
-			ServerDBUtil.lockGroupOfGivenBoard(conn, create, log, boardID, boardNo);
+			ServerDBUtil.lockGroupOfGivenBoard(conn, dsl, log, boardID, boardNo);
 
 			if (! MemberRoleType.ADMIN.equals(memberRoleTypeOfRequestedUserID)) {
 				/** 관리자가 아닌 경우 본인 여부 확인 */
-				Record1<String> firstWriterBoardRecord = create.select(SB_BOARD_HISTORY_TB.REGISTRANT_ID)
+				Record1<String> firstWriterBoardRecord = dsl.select(SB_BOARD_HISTORY_TB.REGISTRANT_ID)
 						.from(SB_BOARD_HISTORY_TB).where(SB_BOARD_HISTORY_TB.BOARD_ID.eq(boardID))
 						.and(SB_BOARD_HISTORY_TB.BOARD_NO.eq(boardNo))
 						.and(SB_BOARD_HISTORY_TB.HISTORY_SQ.eq(UByte.valueOf(0))).fetchOne();
@@ -240,7 +213,7 @@ public class BoardModifyReqServerTask extends AbstractServerTask {
 				}
 			}			
 
-			Record4<UInteger, Byte, UByte, String> boardRecord = create
+			Record4<UInteger, Byte, UByte, String> boardRecord = dsl
 					.select(SB_BOARD_TB.PARENT_NO, SB_BOARD_TB.BOARD_ST, SB_BOARD_TB.NEXT_ATTACHED_FILE_SQ,
 							SB_BOARD_TB.PWD_BASE64)
 					.from(SB_BOARD_TB).where(SB_BOARD_TB.BOARD_ID.eq(boardID)).and(SB_BOARD_TB.BOARD_NO.eq(boardNo))
@@ -371,10 +344,10 @@ public class BoardModifyReqServerTask extends AbstractServerTask {
 				}
 			}
 
-			create.update(SB_BOARD_TB).set(SB_BOARD_TB.NEXT_ATTACHED_FILE_SQ, UByte.valueOf(newNextAttachedFileSeq))
+			dsl.update(SB_BOARD_TB).set(SB_BOARD_TB.NEXT_ATTACHED_FILE_SQ, UByte.valueOf(newNextAttachedFileSeq))
 					.where(SB_BOARD_TB.BOARD_ID.eq(boardID)).and(SB_BOARD_TB.BOARD_NO.eq(boardNo)).execute();
 
-			UByte oldBoardHistorySeq = create.select(SB_BOARD_HISTORY_TB.HISTORY_SQ.max()).from(SB_BOARD_HISTORY_TB)
+			UByte oldBoardHistorySeq = dsl.select(SB_BOARD_HISTORY_TB.HISTORY_SQ.max()).from(SB_BOARD_HISTORY_TB)
 					.where(SB_BOARD_HISTORY_TB.BOARD_ID.eq(boardID)).and(SB_BOARD_HISTORY_TB.BOARD_NO.eq(boardNo))
 					.fetchOne().value1();
 			
@@ -391,7 +364,7 @@ public class BoardModifyReqServerTask extends AbstractServerTask {
 			
 			UByte newBoardHistorySeq = UByte.valueOf(oldBoardHistorySeq.shortValue()+1);
 			
-			int boardHistoryInsertCount = create.insertInto(SB_BOARD_HISTORY_TB)
+			int boardHistoryInsertCount = dsl.insertInto(SB_BOARD_HISTORY_TB)
 			.set(SB_BOARD_HISTORY_TB.BOARD_ID, boardID).set(SB_BOARD_HISTORY_TB.BOARD_NO, boardNo)
 			.set(SB_BOARD_HISTORY_TB.HISTORY_SQ, newBoardHistorySeq)
 			.set(SB_BOARD_HISTORY_TB.SUBJECT, (BoardListType.ONLY_GROUP_ROOT.equals(boardListType) && (parenetNo.longValue() != 0L) ? null : boardModifyReq.getSubject()))
@@ -410,7 +383,7 @@ public class BoardModifyReqServerTask extends AbstractServerTask {
 				throw new ServerTaskException(errorMessage);
 			}
 
-			Result<Record1<UByte>> attachFileListRecord = create.select(SB_BOARD_FILELIST_TB.ATTACHED_FILE_SQ)
+			Result<Record1<UByte>> attachFileListRecord = dsl.select(SB_BOARD_FILELIST_TB.ATTACHED_FILE_SQ)
 					.from(SB_BOARD_FILELIST_TB).where(SB_BOARD_FILELIST_TB.BOARD_ID.eq(boardID))
 					.and(SB_BOARD_FILELIST_TB.BOARD_NO.eq(boardNo)).fetch();
 
@@ -451,7 +424,7 @@ public class BoardModifyReqServerTask extends AbstractServerTask {
 				deletedAttachedFileSequeceSet.removeAll(remainingOldAttachedFileSequeceSet);
 
 				if (!deletedAttachedFileSequeceSet.isEmpty()) {
-					create.delete(SB_BOARD_FILELIST_TB).where(SB_BOARD_FILELIST_TB.BOARD_ID.eq(boardID))
+					dsl.delete(SB_BOARD_FILELIST_TB).where(SB_BOARD_FILELIST_TB.BOARD_ID.eq(boardID))
 							.and(SB_BOARD_FILELIST_TB.BOARD_NO.eq(boardNo))
 							.and(SB_BOARD_FILELIST_TB.ATTACHED_FILE_SQ.in(deletedAttachedFileSequeceSet)).execute();
 				}
@@ -461,7 +434,7 @@ public class BoardModifyReqServerTask extends AbstractServerTask {
 				int newAttachedFileListIndex = 0;
 				int newAttachedFileSeq = nextAttachedFileSeq.shortValue();
 				for (BoardModifyReq.NewAttachedFile newAttachedFile : boardModifyReq.getNewAttachedFileList()) {
-					int boardFileListInsertCount = create.insertInto(SB_BOARD_FILELIST_TB)
+					int boardFileListInsertCount = dsl.insertInto(SB_BOARD_FILELIST_TB)
 							.set(SB_BOARD_FILELIST_TB.BOARD_ID, boardID).set(SB_BOARD_FILELIST_TB.BOARD_NO, boardNo)
 							.set(SB_BOARD_FILELIST_TB.ATTACHED_FILE_SQ, UByte.valueOf(newAttachedFileSeq))
 							.set(SB_BOARD_FILELIST_TB.ATTACHED_FNAME, newAttachedFile.getAttachedFileName())

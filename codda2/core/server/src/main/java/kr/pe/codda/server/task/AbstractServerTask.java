@@ -247,6 +247,19 @@ public abstract class AbstractServerTask {
 			doTask(projectName, fromPersonalLoginManager, toLetterCarrier, inputMessage);
 		} catch (InterruptedException e) {
 			throw e;
+		} catch (ServerTaskException e) {
+			ExceptionDelivery.ErrorType errorType = ExceptionDelivery.ErrorType.valueOf(ServerTaskException.class);
+			
+			String errorReason = e.getMessage();
+			
+			Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
+			log.log(Level.WARNING, errorReason, e);
+			
+			ToLetterCarrier.putInputErrorMessageToOutputMessageQueue( 
+					errorType,
+					errorReason,
+					mailboxID, mailID, messageID, fromAcceptedConnection, messageProtocol);
+			return;
 		} catch (Exception | Error e) {			
 			ExceptionDelivery.ErrorType errorType = ExceptionDelivery.ErrorType.valueOf(ServerTaskException.class);
 			

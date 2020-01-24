@@ -33,44 +33,15 @@ public class BoardVoteReqServerTask extends AbstractServerTask {
 		super();
 	}
 
-
-	private void sendErrorOutputMessage(String errorMessage, ToLetterCarrier toLetterCarrier,
-			AbstractMessage inputMessage) throws InterruptedException {
-		log.warn("{}, inObj=", errorMessage, inputMessage.toString());
-
-		MessageResultRes messageResultRes = new MessageResultRes();
-		messageResultRes.setTaskMessageID(inputMessage.getMessageID());
-		messageResultRes.setIsSuccess(false);
-		messageResultRes.setResultMessage(errorMessage);
-		toLetterCarrier.addSyncOutputMessage(messageResultRes);
-	}
-
 	
 	@Override
 	public void doTask(String projectName, 
 			LoginManagerIF personalLoginManager, 
 			ToLetterCarrier toLetterCarrier,
-			AbstractMessage inputMessage) throws Exception {
-		try {
-			AbstractMessage outputMessage = doWork(ServerCommonStaticFinalVars.DEFAULT_DBCP_NAME, (BoardVoteReq)inputMessage);
-			toLetterCarrier.addSyncOutputMessage(outputMessage);
-		} catch(ServerTaskException e) {
-			String errorMessage = e.getMessage();
-			log.warn("errmsg=={}, inObj={}", errorMessage, inputMessage.toString());
-			
-			sendErrorOutputMessage(errorMessage, toLetterCarrier, inputMessage);
-			return;
-		} catch(Exception e) {
-			String errorMessage = new StringBuilder().append("unknwon errmsg=")
-					.append(e.getMessage())
-					.append(", inObj=")
-					.append(inputMessage.toString()).toString();
-			
-			log.warn(errorMessage, e);
-						
-			sendErrorOutputMessage("게시글을 추천하는데  실패하였습니다", toLetterCarrier, inputMessage);
-			return;
-		}
+
+		AbstractMessage inputMessage) throws Exception {
+		AbstractMessage outputMessage = doWork(ServerCommonStaticFinalVars.DEFAULT_DBCP_NAME, (BoardVoteReq)inputMessage);
+		toLetterCarrier.addSyncOutputMessage(outputMessage);
 	}
 	
 	public MessageResultRes doWork(String dbcpName, BoardVoteReq boardVoteReq) throws Exception {
@@ -90,15 +61,15 @@ public class BoardVoteReqServerTask extends AbstractServerTask {
 		final UByte boardID = UByte.valueOf(boardVoteReq.getBoardID());
 		final UInteger boardNo = UInteger.valueOf(boardVoteReq.getBoardNo());
 		
-		ServerDBUtil.execute(dbcpName, (conn, create) -> {
+		ServerDBUtil.execute(dbcpName, (conn, dsl) -> {
 			
-			MemberRoleType memberRoleTypeOfRequestedUserID = ServerDBUtil.checkUserAccessRights(conn, create, log, "게시글 추천 서비스", PermissionType.MEMBER, boardVoteReq.getRequestedUserID());
+			MemberRoleType memberRoleTypeOfRequestedUserID = ServerDBUtil.checkUserAccessRights(conn, dsl, log, "게시글 추천 서비스", PermissionType.MEMBER, boardVoteReq.getRequestedUserID());
 			
 			/** 추천할 게시글에 속한 그룹의 루트 노드에 해당하는 레코드에 락을 건다  */
-			ServerDBUtil.lockGroupOfGivenBoard(conn, create, log, boardID, boardNo);
+			ServerDBUtil.lockGroupOfGivenBoard(conn, dsl, log, boardID, boardNo);
 			
 			Record1<String> 
-			firstWriterBoardRecord = create.select(SB_BOARD_HISTORY_TB.REGISTRANT_ID)
+			firstWriterBoardRecord = dsl.select(SB_BOARD_HISTORY_TB.REGISTRANT_ID)
 			.from(SB_BOARD_HISTORY_TB)
 			.where(SB_BOARD_HISTORY_TB.BOARD_ID.eq(boardID))
 			.and(SB_BOARD_HISTORY_TB.BOARD_NO.eq(boardNo))
@@ -131,7 +102,7 @@ public class BoardVoteReqServerTask extends AbstractServerTask {
 				throw new ServerTaskException(errorMessage);
 			}
 			
-			boolean isVoted = create.fetchExists(create.select()
+			boolean isVoted = dsl.fetchExists(dsl.select()
 					.from(SB_BOARD_VOTE_TB)
 					.where(SB_BOARD_VOTE_TB.BOARD_ID.eq(boardID))
 					.and(SB_BOARD_VOTE_TB.BOARD_NO.eq(boardNo))
@@ -150,7 +121,7 @@ public class BoardVoteReqServerTask extends AbstractServerTask {
 			
 			Timestamp registeredDate = new java.sql.Timestamp(System.currentTimeMillis());
 			
-			int countOfInsert = create.insertInto(SB_BOARD_VOTE_TB)
+			int countOfInsert = dsl.insertInto(SB_BOARD_VOTE_TB)
 					.set(SB_BOARD_VOTE_TB.BOARD_ID, boardID)
 			.set(SB_BOARD_VOTE_TB.BOARD_NO, boardNo)
 			.set(SB_BOARD_VOTE_TB.USER_ID, boardVoteReq.getRequestedUserID())
@@ -171,7 +142,7 @@ public class BoardVoteReqServerTask extends AbstractServerTask {
 			
 			conn.commit();
 			
-			ServerDBUtil.insertMemberActivityHistory(conn, create, log, boardVoteReq.getRequestedUserID(), 
+			ServerDBUtil.insertMemberActivityHistory(conn, dsl, log, boardVoteReq.getRequestedUserID(), 
 					memberRoleTypeOfRequestedUserID, MemberActivityType.VOTE, boardID, boardNo, registeredDate);
 			
 			conn.commit();

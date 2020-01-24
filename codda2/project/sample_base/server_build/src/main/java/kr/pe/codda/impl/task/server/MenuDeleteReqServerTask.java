@@ -31,40 +31,13 @@ public class MenuDeleteReqServerTask extends AbstractServerTask {
 		super();
 	}
 
-	private void sendErrorOutputMessage(String errorMessage,			
-			ToLetterCarrier toLetterCarrier,
-			AbstractMessage inputMessage) throws InterruptedException {
-		
-		MessageResultRes messageResultRes = new MessageResultRes();
-		messageResultRes.setTaskMessageID(inputMessage.getMessageID());
-		messageResultRes.setIsSuccess(false);		
-		messageResultRes.setResultMessage(errorMessage);
-		toLetterCarrier.addSyncOutputMessage(messageResultRes);
-	}
 	
 	@Override
 	public void doTask(String projectName, LoginManagerIF personalLoginManager, ToLetterCarrier toLetterCarrier,
 			AbstractMessage inputMessage) throws Exception {
-		try {
-			AbstractMessage outputMessage = doWork(ServerCommonStaticFinalVars.DEFAULT_DBCP_NAME, (MenuDeleteReq)inputMessage);
-			toLetterCarrier.addSyncOutputMessage(outputMessage);
-		} catch(ServerTaskException e) {
-			String errorMessage = e.getMessage();
-			log.warn("errmsg=={}, inObj={}", errorMessage, inputMessage.toString());
-			
-			sendErrorOutputMessage(errorMessage, toLetterCarrier, inputMessage);
-			return;
-		} catch(Exception e) {
-			String errorMessage = new StringBuilder().append("unknwon errmsg=")
-					.append(e.getMessage())
-					.append(", inObj=")
-					.append(inputMessage.toString()).toString();
-			
-			log.warn(errorMessage, e);
 
-			sendErrorOutputMessage("메뉴 삭제하는데 실패하였습니다", toLetterCarrier, inputMessage);
-			return;
-		}
+		AbstractMessage outputMessage = doWork(ServerCommonStaticFinalVars.DEFAULT_DBCP_NAME, (MenuDeleteReq)inputMessage);
+		toLetterCarrier.addSyncOutputMessage(outputMessage);
 	}
 	
 	public MessageResultRes doWork(String dbcpName, MenuDeleteReq menuDeleteReq) throws Exception {
@@ -81,12 +54,12 @@ public class MenuDeleteReqServerTask extends AbstractServerTask {
 		final UByte menuSequenceID = SequenceType.MENU.getSequenceID();
 		
 		
-		ServerDBUtil.execute(dbcpName, (conn, create) -> {
+		ServerDBUtil.execute(dbcpName, (conn, dsl) -> {
 			
-			ServerDBUtil.checkUserAccessRights(conn, create, log, "메뉴 삭제 서비스", PermissionType.ADMIN, menuDeleteReq.getRequestedUserID());
+			ServerDBUtil.checkUserAccessRights(conn, dsl, log, "메뉴 삭제 서비스", PermissionType.ADMIN, menuDeleteReq.getRequestedUserID());
 			
 			/** 삭제에 따른 '메뉴 순서' 조정을  위한 lock */
-			Record menuSeqRecord = create.select(SB_SEQ_TB.SQ_VALUE)
+			Record menuSeqRecord = dsl.select(SB_SEQ_TB.SQ_VALUE)
 			.from(SB_SEQ_TB)
 			.where(SB_SEQ_TB.SQ_ID.eq(menuSequenceID))
 			.forUpdate().fetchOne();
@@ -105,7 +78,7 @@ public class MenuDeleteReqServerTask extends AbstractServerTask {
 			}
 			
 			
-			Record1<UByte> deleteMenuRecord =  create.select(SB_SITEMENU_TB.ORDER_SQ)
+			Record1<UByte> deleteMenuRecord =  dsl.select(SB_SITEMENU_TB.ORDER_SQ)
 			.from(SB_SITEMENU_TB)
 			.where(SB_SITEMENU_TB.MENU_NO.eq(UInteger.valueOf(menuDeleteReq.getMenuNo()))).fetchOne();
 			
@@ -123,7 +96,7 @@ public class MenuDeleteReqServerTask extends AbstractServerTask {
 				throw new ServerTaskException(errorMessage);
 			}
 			
-			boolean isParentMenuRecord = create.fetchExists(create.selectOne()
+			boolean isParentMenuRecord = dsl.fetchExists(dsl.selectOne()
 					.from(SB_SITEMENU_TB)
 					.where(SB_SITEMENU_TB.PARENT_NO.eq(UInteger.valueOf(menuDeleteReq.getMenuNo()))));
 			
@@ -142,7 +115,7 @@ public class MenuDeleteReqServerTask extends AbstractServerTask {
 			}
 			
 			
-			int menuDeleteCount = create.delete(SB_SITEMENU_TB)
+			int menuDeleteCount = dsl.delete(SB_SITEMENU_TB)
 			.where(SB_SITEMENU_TB.MENU_NO.eq(UInteger.valueOf(menuDeleteReq.getMenuNo())))
 			.execute();
 			
@@ -161,7 +134,7 @@ public class MenuDeleteReqServerTask extends AbstractServerTask {
 			}
 			
 			/** 삭제할 메뉴 이후의 순서 보정 */
-			create.update(SB_SITEMENU_TB)
+			dsl.update(SB_SITEMENU_TB)
 			.set(SB_SITEMENU_TB.ORDER_SQ, SB_SITEMENU_TB.ORDER_SQ.sub(1))
 			.where(SB_SITEMENU_TB.ORDER_SQ.gt(deleteMenuRecord.getValue(SB_SITEMENU_TB.ORDER_SQ)))
 			.execute();

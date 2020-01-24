@@ -16,15 +16,9 @@
  */
 package kr.pe.codda.servlet.admin;
 
-import java.util.logging.Level;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import kr.pe.codda.common.exception.SymmetricException;
-import kr.pe.codda.common.sessionkey.ServerSessionkeyIF;
-import kr.pe.codda.common.sessionkey.ServerSessionkeyManager;
-import kr.pe.codda.weblib.common.WebCommonStaticFinalVars;
 import kr.pe.codda.weblib.jdf.AbstractServlet;
 
 /**
@@ -37,23 +31,8 @@ import kr.pe.codda.weblib.jdf.AbstractServlet;
 public class MemberRegisterInputSvl extends AbstractServlet {
 
 	@Override
-	protected void performTask(HttpServletRequest req, HttpServletResponse res) throws Exception {		
+	protected void performTask(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		
-		ServerSessionkeyIF webServerSessionkey = null;
-		try {
-			ServerSessionkeyManager serverSessionkeyManager = ServerSessionkeyManager.getInstance();
-			webServerSessionkey = serverSessionkeyManager.getMainProjectServerSessionkey();
-		} catch (SymmetricException e) {
-			String errorMessage = "fail to get a ServerSessionkeyManger class instance";
-			log.log(Level.WARNING, errorMessage, e);			
-			
-			String debugMessage = e.getMessage();
-			printErrorMessagePage(req, res, errorMessage, debugMessage);
-			return;
-		}
-		
-		req.setAttribute(WebCommonStaticFinalVars.REQUEST_KEY_NAME_OF_MODULUS_HEX_STRING,
-				webServerSessionkey.getModulusHexStrForWeb());
 		
 		printJspPage(req, res, "/sitemenu/member/MemberRegisterInput.jsp");
 		

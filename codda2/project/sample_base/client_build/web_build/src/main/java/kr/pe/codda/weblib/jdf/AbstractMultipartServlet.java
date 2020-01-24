@@ -90,7 +90,7 @@ public abstract class AbstractMultipartServlet extends AbstractServlet {
 			}
 		} catch (FileUploadException e) {
 			log.log(Level.WARNING, "fail to parse a multipart request", e);
-			
+
 			/**
 			 * <pre>
 			 * 멀티 파트 폼 파싱 실패는 비정상적인 경우 메뉴 그룹 URL을 로직의 간편성을 위해서 루트로 바꾼다.

@@ -18,7 +18,6 @@
 package kr.pe.codda.server.task;
 
 import kr.pe.codda.common.exception.DynamicClassCallException;
-import kr.pe.codda.common.exception.ServerTaskPermissionException;
 import kr.pe.codda.common.protocol.MessageProtocolIF;
 import kr.pe.codda.common.type.ExceptionDelivery;
 import kr.pe.codda.server.AcceptedConnection;
@@ -52,7 +51,7 @@ public abstract class AbstractAuthServerTask extends AbstractServerTask {
 		
 		if (! fromPersonalLoginManager.isLogin()) {
 			ToLetterCarrier.putInputErrorMessageToOutputMessageQueue( 
-					ExceptionDelivery.ErrorType.valueOf(ServerTaskPermissionException.class),
+					ExceptionDelivery.ErrorType.ServerTaskException,
 					"you are not logged in. this service requires a login",
 					mailboxID, mailID, messageID, fromAcceptedConnection, messageProtocol);
 			

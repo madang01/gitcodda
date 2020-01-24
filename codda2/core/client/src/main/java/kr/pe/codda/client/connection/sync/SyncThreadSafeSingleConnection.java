@@ -38,7 +38,6 @@ import kr.pe.codda.common.exception.HeaderFormatException;
 import kr.pe.codda.common.exception.NoMoreWrapBufferException;
 import kr.pe.codda.common.exception.NotSupportedException;
 import kr.pe.codda.common.exception.ServerTaskException;
-import kr.pe.codda.common.exception.ServerTaskPermissionException;
 import kr.pe.codda.common.io.IncomingStream;
 import kr.pe.codda.common.io.StreamBuffer;
 import kr.pe.codda.common.io.WrapBufferPoolIF;
@@ -209,7 +208,7 @@ public final class SyncThreadSafeSingleConnection implements SyncConnectionIF {
 	@Override
 	public AbstractMessage sendSyncInputMessage(MessageCodecMangerIF messageCodecManger, AbstractMessage inputMessage)
 			throws InterruptedException, IOException, NoMoreWrapBufferException, DynamicClassCallException,
-			BodyFormatException, ServerTaskException, ServerTaskPermissionException {
+			BodyFormatException, ServerTaskException {
 
 		final AbstractMessage outputMessage;
 		final AbstractMessageEncoder messageEncoder;

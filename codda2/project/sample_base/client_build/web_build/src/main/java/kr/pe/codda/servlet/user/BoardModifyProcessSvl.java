@@ -367,66 +367,85 @@ public class BoardModifyProcessSvl extends AbstractMultipartServlet implements I
 			throw new WebClientException(errorMessage, debugMessage);
 		}
 
-		ServerSessionkeyIF webServerSessionkey = null;
-		try {
-			ServerSessionkeyManager serverSessionkeyManager = ServerSessionkeyManager.getInstance();
-			webServerSessionkey = serverSessionkeyManager.getMainProjectServerSessionkey();
-		} catch (SymmetricException e) {
-			log.log(Level.WARNING, "SymmetricException", e);
-
-			String errorMessage = "fail to initialize ServerSessionkeyManger instance";
-			String debugMessage = new StringBuilder()
-					.append("fail to initialize ServerSessionkeyManger instance, errmsg=").append(e.getMessage())
-					.toString();
-			throw new WebClientException(errorMessage, debugMessage);
-		}
-
-		byte[] sessionkeyBytes = null;
-		try {
-			sessionkeyBytes = CommonStaticUtil.Base64Decoder.decode(paramSessionKeyBase64);
-		} catch (Exception e) {
-			String errorMessage = new StringBuilder().append("the web parameter '")
-					.append(WebCommonStaticFinalVars.PARAMETER_KEY_NAME_OF_SESSION_KEY)
-					.append("' is not a base64 string").toString();
-
-			String debugMessage = new StringBuilder().append("the web parameter '")
-					.append(WebCommonStaticFinalVars.PARAMETER_KEY_NAME_OF_SESSION_KEY).append("'[")
-					.append(paramSessionKeyBase64).append("] is not a base64 string, errmsg=").append(e.getMessage())
-					.toString();
-
-			throw new WebClientException(errorMessage, debugMessage);
-		}
-		byte[] ivBytes = null;
-		try {
-			ivBytes = CommonStaticUtil.Base64Decoder.decode(paramIVBase64);
-		} catch (Exception e) {
-			String errorMessage = new StringBuilder().append("the web parameter '")
-					.append(WebCommonStaticFinalVars.PARAMETER_KEY_NAME_OF_SESSION_KEY_IV)
-					.append("' is not a base64 string").toString();
-
-			String debugMessage = new StringBuilder().append("the web parameter '")
-					.append(WebCommonStaticFinalVars.PARAMETER_KEY_NAME_OF_SESSION_KEY_IV).append("'[")
-					.append(paramIVBase64).append("] is not a base64 string, errmsg=").append(e.getMessage())
-					.toString();
-
-			throw new WebClientException(errorMessage, debugMessage);
-		}
 
 		// log.info("sessionkeyBytes=[{}]",
 		// HexUtil.getHexStringFromByteArray(sessionkeyBytes));
 		// log.info("ivBytes=[{}]", HexUtil.getHexStringFromByteArray(ivBytes));
 
+		ServerSessionkeyIF webServerSessionkey = null;
+		try {
+			ServerSessionkeyManager serverSessionkeyManager = ServerSessionkeyManager
+					.getInstance();
+			webServerSessionkey = serverSessionkeyManager
+					.getMainProjectServerSessionkey();
+		} catch (SymmetricException e) {
+			log.log(Level.WARNING, "SymmetricException", e);
+
+			String errorMessage = "fail to initialize ServerSessionkeyManger instance";
+			String debugMessage = new StringBuilder()
+					.append("fail to initialize ServerSessionkeyManger instance, errmsg=")
+					.append(e.getMessage()).toString();
+			throw new WebClientException(errorMessage, debugMessage);
+		}
+
+		
+		byte[] sessionkeyBytes = null;
+		try {
+			sessionkeyBytes = CommonStaticUtil.Base64Decoder.decode(paramSessionKeyBase64);
+		} catch (Exception e) {
+			String errorMessage = new StringBuilder()
+					.append("the web parameter '")
+					.append(WebCommonStaticFinalVars.PARAMETER_KEY_NAME_OF_SESSION_KEY)
+					.append("' is not a base64 string").toString();
+
+			String debugMessage = new StringBuilder()
+					.append("the web parameter '")
+					.append(WebCommonStaticFinalVars.PARAMETER_KEY_NAME_OF_SESSION_KEY)
+					.append("'[").append(paramSessionKeyBase64)
+					.append("] is not a base64 string, errmsg=")
+					.append(e.getMessage()).toString();
+			
+			log.warning(debugMessage);
+
+			throw new WebClientException(errorMessage, debugMessage);
+		}
+
+		byte[] ivBytes = null;
+		try {
+			ivBytes = CommonStaticUtil.Base64Decoder.decode(paramIVBase64);
+		} catch (Exception e) {
+			String errorMessage = new StringBuilder()
+					.append("the web parameter '")
+					.append(WebCommonStaticFinalVars.PARAMETER_KEY_NAME_OF_SESSION_KEY_IV)
+					.append("' is not a base64 string").toString();
+
+			String debugMessage = new StringBuilder()
+					.append("the web parameter '")
+					.append(WebCommonStaticFinalVars.PARAMETER_KEY_NAME_OF_SESSION_KEY_IV)
+					.append("'[").append(paramIVBase64)
+					.append("] is not a base64 string, errmsg=")
+					.append(e.getMessage()).toString();
+			
+			log.warning(debugMessage);
+
+			throw new WebClientException(errorMessage, debugMessage);
+		}
+
+		// log.info("sessionkeyBytes.length={}", sessionkeyBytes.length);
 		ServerSymmetricKeyIF webServerSymmetricKey = null;
 		try {
-			webServerSymmetricKey = webServerSessionkey.createNewInstanceOfServerSymmetricKey(true, sessionkeyBytes,
-					ivBytes);
+			webServerSymmetricKey = webServerSessionkey
+					.createNewInstanceOfServerSymmetricKey(true, sessionkeyBytes,
+							ivBytes);
 		} catch (IllegalArgumentException e) {
 			String errorMessage = "웹 세션키 인스턴스 생성 실패";
 			log.log(Level.WARNING, errorMessage, e);
 
 			String debugMessage = new StringBuilder("sessionkeyBytes=[")
-					.append(HexUtil.getHexStringFromByteArray(sessionkeyBytes)).append("], ivBytes=[")
-					.append(HexUtil.getHexStringFromByteArray(ivBytes)).append("]").toString();
+					.append(HexUtil.getHexStringFromByteArray(sessionkeyBytes))
+					.append("], ivBytes=[")
+					.append(HexUtil.getHexStringFromByteArray(ivBytes))
+					.append("]").toString();
 
 			throw new WebClientException(errorMessage, debugMessage);
 		} catch (SymmetricException e) {
@@ -434,16 +453,14 @@ public class BoardModifyProcessSvl extends AbstractMultipartServlet implements I
 			log.log(Level.WARNING, errorMessage, e);
 
 			String debugMessage = new StringBuilder("sessionkeyBytes=[")
-					.append(HexUtil.getHexStringFromByteArray(sessionkeyBytes)).append("], ivBytes=[")
-					.append(HexUtil.getHexStringFromByteArray(ivBytes)).append("]").toString();
+					.append(HexUtil.getHexStringFromByteArray(sessionkeyBytes))
+					.append("], ivBytes=[")
+					.append(HexUtil.getHexStringFromByteArray(ivBytes))
+					.append("]").toString();
 
 			throw new WebClientException(errorMessage, debugMessage);
 		}
-
-		req.setAttribute(WebCommonStaticFinalVars.REQUEST_KEY_NAME_OF_MODULUS_HEX_STRING,
-				webServerSessionkey.getModulusHexStrForWeb());
-		req.setAttribute(WebCommonStaticFinalVars.REQUEST_KEY_NAME_OF_SYMMETRIC_KEY_FROM_SESSIONKEY,
-				webServerSymmetricKey);
+				
 
 		String boardPwdHashBase64 = null;
 		if (null == paramBoardPwdCipherBase64) {

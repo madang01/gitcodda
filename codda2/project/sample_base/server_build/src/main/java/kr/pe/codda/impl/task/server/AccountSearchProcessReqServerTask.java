@@ -24,7 +24,6 @@ import kr.pe.codda.common.sessionkey.ServerSymmetricKeyIF;
 import kr.pe.codda.common.util.CommonStaticUtil;
 import kr.pe.codda.impl.message.AccountSearchProcessReq.AccountSearchProcessReq;
 import kr.pe.codda.impl.message.AccountSearchProcessRes.AccountSearchProcessRes;
-import kr.pe.codda.impl.message.MessageResultRes.MessageResultRes;
 import kr.pe.codda.server.LoginManagerIF;
 import kr.pe.codda.server.lib.AccountSearchType;
 import kr.pe.codda.server.lib.MemberRoleType;
@@ -42,40 +41,13 @@ public class AccountSearchProcessReqServerTask extends AbstractServerTask {
 		super();
 	}
 
-	private void sendErrorOutputMessage(String errorMessage, ToLetterCarrier toLetterCarrier,
-			AbstractMessage inputMessage) throws InterruptedException {
-		log.warn("{}, inObj=", errorMessage, inputMessage.toString());
-
-		MessageResultRes messageResultRes = new MessageResultRes();
-		messageResultRes.setTaskMessageID(inputMessage.getMessageID());
-		messageResultRes.setIsSuccess(false);
-		messageResultRes.setResultMessage(errorMessage);
-		toLetterCarrier.addSyncOutputMessage(messageResultRes);
-	}
-
 	@Override
 	public void doTask(String projectName, LoginManagerIF personalLoginManager, ToLetterCarrier toLetterCarrier,
 			AbstractMessage inputMessage) throws Exception {
 		
-		try {
-			AbstractMessage outputMessage = doWork(ServerCommonStaticFinalVars.DEFAULT_DBCP_NAME,
-					(AccountSearchProcessReq) inputMessage);
-			toLetterCarrier.addSyncOutputMessage(outputMessage);
-		} catch (ServerTaskException e) {
-			String errorMessage = e.getMessage();
-			log.warn("errmsg=={}, inObj={}", errorMessage, inputMessage.toString());
-
-			sendErrorOutputMessage(errorMessage, toLetterCarrier, inputMessage);
-			return;
-		} catch (Exception e) {
-			String errorMessage = new StringBuilder().append("unknwon errmsg=").append(e.getMessage())
-					.append(", inObj=").append(inputMessage.toString()).toString();
-
-			log.warn(errorMessage, e);
-
-			sendErrorOutputMessage("게시글 상세 조회가 실패하였습니다", toLetterCarrier, inputMessage);
-			return;
-		}
+		AbstractMessage outputMessage = doWork(ServerCommonStaticFinalVars.DEFAULT_DBCP_NAME,
+				(AccountSearchProcessReq) inputMessage);
+		toLetterCarrier.addSyncOutputMessage(outputMessage);
 		
 	}
 
@@ -258,9 +230,9 @@ public class AccountSearchProcessReqServerTask extends AbstractServerTask {
 			title = "아이디 찾기";
 		}
 				
-		ServerDBUtil.execute(dbcpName, (conn, create) -> {
+		ServerDBUtil.execute(dbcpName, (conn, dsl) -> {
 			
-			Record2<String, String> memberRecord = create
+			Record2<String, String> memberRecord = dsl
 					.select(SB_MEMBER_TB.USER_ID,
 							SB_MEMBER_TB.NICKNAME).from(SB_MEMBER_TB)
 					.where(SB_MEMBER_TB.EMAIL.eq(email))
@@ -281,7 +253,7 @@ public class AccountSearchProcessReqServerTask extends AbstractServerTask {
 			String userID = memberRecord.get(SB_MEMBER_TB.USER_ID);
 			String nickname = memberRecord.get(SB_MEMBER_TB.NICKNAME);
 			
-			Record3<UByte, String, Timestamp> passwordSearchRequestRecord = create
+			Record3<UByte, String, Timestamp> passwordSearchRequestRecord = dsl
 					.select(SB_ACCOUNT_SERARCH_TB.FAIL_CNT, 
 							SB_ACCOUNT_SERARCH_TB.LAST_SECRET_AUTH_VALUE,
 							SB_ACCOUNT_SERARCH_TB.LAST_REQ_DT).from(SB_ACCOUNT_SERARCH_TB)
@@ -338,7 +310,7 @@ public class AccountSearchProcessReqServerTask extends AbstractServerTask {
 			}
 			
 			if (! sourceSecretAuthenticationValue.equals(secretAuthenticationValue)) {
-				create.update(SB_ACCOUNT_SERARCH_TB)
+				dsl.update(SB_ACCOUNT_SERARCH_TB)
 				.set(SB_ACCOUNT_SERARCH_TB.FAIL_CNT, SB_ACCOUNT_SERARCH_TB.FAIL_CNT.add(1))
 				.where(SB_ACCOUNT_SERARCH_TB.USER_ID.eq(userID))
 				.execute();
@@ -352,7 +324,7 @@ public class AccountSearchProcessReqServerTask extends AbstractServerTask {
 				Timestamp lastPwdModifiedDate = new java.sql.Timestamp(System.currentTimeMillis());
 				
 				
-				ServerDBUtil.insertSiteLog(conn, create, log, userID, new StringBuilder()
+				ServerDBUtil.insertSiteLog(conn, dsl, log, userID, new StringBuilder()
 						.append(title)
 						.append(" ")
 						.append(failCount.byteValue()+1)
@@ -370,7 +342,7 @@ public class AccountSearchProcessReqServerTask extends AbstractServerTask {
 				throw new ServerTaskException(errorMessage);
 			}
 			
-			create.update(SB_ACCOUNT_SERARCH_TB)
+			dsl.update(SB_ACCOUNT_SERARCH_TB)
 			.set(SB_ACCOUNT_SERARCH_TB.IS_FINISHED, "Y")
 			.where(SB_ACCOUNT_SERARCH_TB.USER_ID.eq(userID))
 			.execute();
@@ -392,7 +364,7 @@ public class AccountSearchProcessReqServerTask extends AbstractServerTask {
 				
 				Timestamp lastPwdModifiedDate = new java.sql.Timestamp(System.currentTimeMillis());
 				
-				create.update(SB_MEMBER_TB)
+				dsl.update(SB_MEMBER_TB)
 				.set(SB_MEMBER_TB.PWD_FAIL_CNT, UByte.valueOf(0))
 				.set(SB_MEMBER_TB.PWD_BASE64, newPasswordPairOfMemberTable.getPasswordBase64())
 				.set(SB_MEMBER_TB.PWD_SALT_BASE64, newPasswordPairOfMemberTable.getPasswordSaltBase64())
@@ -402,7 +374,7 @@ public class AccountSearchProcessReqServerTask extends AbstractServerTask {
 				
 				conn.commit();
 				
-				ServerDBUtil.insertSiteLog(conn, create, log, userID, "비밀 번호 찾기 완료", 
+				ServerDBUtil.insertSiteLog(conn, dsl, log, userID, "비밀 번호 찾기 완료", 
 						lastPwdModifiedDate, ip);
 				conn.commit();
 			} else {				
@@ -410,7 +382,7 @@ public class AccountSearchProcessReqServerTask extends AbstractServerTask {
 				
 				Timestamp lastPwdModifiedDate = new java.sql.Timestamp(System.currentTimeMillis());
 				
-				ServerDBUtil.insertSiteLog(conn, create, log, userID, "아이디 찾기 완료", 
+				ServerDBUtil.insertSiteLog(conn, dsl, log, userID, "아이디 찾기 완료", 
 						lastPwdModifiedDate, ip);
 				
 				conn.commit();

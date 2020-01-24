@@ -17,7 +17,6 @@ import kr.pe.codda.common.exception.ServerTaskException;
 import kr.pe.codda.common.message.AbstractMessage;
 import kr.pe.codda.impl.message.BoardInfoListReq.BoardInfoListReq;
 import kr.pe.codda.impl.message.BoardInfoListRes.BoardInfoListRes;
-import kr.pe.codda.impl.message.MessageResultRes.MessageResultRes;
 import kr.pe.codda.server.LoginManagerIF;
 import kr.pe.codda.server.lib.PermissionType;
 import kr.pe.codda.server.lib.ServerCommonStaticFinalVars;
@@ -33,39 +32,13 @@ public class BoardInfoListReqServerTask extends AbstractServerTask {
 		super();
 	}
 
-	private void sendErrorOutputMessage(String errorMessage, ToLetterCarrier toLetterCarrier,
-			AbstractMessage inputMessage) throws InterruptedException {
-		log.warn("{}, inObj={}", errorMessage, inputMessage.toString());
-
-		MessageResultRes messageResultRes = new MessageResultRes();
-		messageResultRes.setTaskMessageID(inputMessage.getMessageID());
-		messageResultRes.setIsSuccess(false);
-		messageResultRes.setResultMessage(errorMessage);
-		toLetterCarrier.addSyncOutputMessage(messageResultRes);
-	}
-
 	@Override
 	public void doTask(String projectName, LoginManagerIF personalLoginManager, ToLetterCarrier toLetterCarrier,
 			AbstractMessage inputMessage) throws Exception {
-		try {
-			AbstractMessage outputMessage = doWork(ServerCommonStaticFinalVars.DEFAULT_DBCP_NAME,
-					(BoardInfoListReq) inputMessage);
-			toLetterCarrier.addSyncOutputMessage(outputMessage);
-		} catch (ServerTaskException e) {
-			String errorMessage = e.getMessage();
-			log.warn("errmsg=={}, inObj={}", errorMessage, inputMessage.toString());
 
-			sendErrorOutputMessage(errorMessage, toLetterCarrier, inputMessage);
-			return;
-		} catch (Exception e) {
-			String errorMessage = new StringBuilder().append("unknwon errmsg=").append(e.getMessage())
-					.append(", inObj=").append(inputMessage.toString()).toString();
-
-			log.warn(errorMessage, e);
-
-			sendErrorOutputMessage("게시판 정보 목록 조회가 실패하였습니다", toLetterCarrier, inputMessage);
-			return;
-		}
+		AbstractMessage outputMessage = doWork(ServerCommonStaticFinalVars.DEFAULT_DBCP_NAME,
+				(BoardInfoListReq) inputMessage);
+		toLetterCarrier.addSyncOutputMessage(outputMessage);
 	}
 	public BoardInfoListRes doWork(String dbcpName, BoardInfoListReq boardInfoListReq) throws Exception {
 		// FIXME!
@@ -80,12 +53,12 @@ public class BoardInfoListReqServerTask extends AbstractServerTask {
 		
 		List<BoardInfoListRes.BoardInfo> boardInfoList = new ArrayList<BoardInfoListRes.BoardInfo>();
 		
-		ServerDBUtil.execute(dbcpName, (conn, create) -> {			
+		ServerDBUtil.execute(dbcpName, (conn, dsl) -> {			
 			
-			ServerDBUtil.checkUserAccessRights(conn, create, log, "게시판 정보 목록 조회 서비스", PermissionType.ADMIN, boardInfoListReq.getRequestedUserID());
+			ServerDBUtil.checkUserAccessRights(conn, dsl, log, "게시판 정보 목록 조회 서비스", PermissionType.ADMIN, boardInfoListReq.getRequestedUserID());
 			
 			Result<Record9<UByte, String, Byte, Byte, Byte, Byte, Long, Long, UInteger>>  
-			boardInfoListResult = create.select(SB_BOARD_INFO_TB.BOARD_ID, 
+			boardInfoListResult = dsl.select(SB_BOARD_INFO_TB.BOARD_ID, 
 					SB_BOARD_INFO_TB.BOARD_NAME,
 					SB_BOARD_INFO_TB.LIST_TYPE, SB_BOARD_INFO_TB.REPLY_POLICY_TYPE,
 					SB_BOARD_INFO_TB.WRITE_PERMISSION_TYPE,

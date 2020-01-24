@@ -16,7 +16,6 @@ import org.slf4j.LoggerFactory;
 import kr.pe.codda.common.exception.DynamicClassCallException;
 import kr.pe.codda.common.exception.ServerTaskException;
 import kr.pe.codda.common.message.AbstractMessage;
-import kr.pe.codda.impl.message.MessageResultRes.MessageResultRes;
 import kr.pe.codda.impl.message.TreeSiteMenuReq.TreeSiteMenuReq;
 import kr.pe.codda.impl.message.TreeSiteMenuRes.TreeSiteMenuRes;
 import kr.pe.codda.server.LoginManagerIF;
@@ -34,41 +33,13 @@ public class TreeSiteMenuReqServerTask extends AbstractServerTask {
 	public TreeSiteMenuReqServerTask() throws DynamicClassCallException {
 		super();
 	}
-
-	private void sendErrorOutputMessage(String errorMessage,			
-			ToLetterCarrier toLetterCarrier,
-			AbstractMessage inputMessage) throws InterruptedException {
-		
-		MessageResultRes messageResultRes = new MessageResultRes();
-		messageResultRes.setTaskMessageID(inputMessage.getMessageID());
-		messageResultRes.setIsSuccess(false);		
-		messageResultRes.setResultMessage(errorMessage);
-		toLetterCarrier.addSyncOutputMessage(messageResultRes);
-	}
 	
 	@Override
 	public void doTask(String projectName, LoginManagerIF personalLoginManager, ToLetterCarrier toLetterCarrier,
 			AbstractMessage inputMessage) throws Exception {
-		try {
-			AbstractMessage outputMessage = doWork(ServerCommonStaticFinalVars.DEFAULT_DBCP_NAME, (TreeSiteMenuReq)inputMessage);
-			toLetterCarrier.addSyncOutputMessage(outputMessage);
-		} catch(ServerTaskException e) {
-			String errorMessage = e.getMessage();
-			log.warn("errmsg=={}, inObj={}", errorMessage, inputMessage.toString());
-			
-			sendErrorOutputMessage(errorMessage, toLetterCarrier, inputMessage);
-			return;
-		} catch(Exception e) {
-			String errorMessage = new StringBuilder().append("unknwon errmsg=")
-					.append(e.getMessage())
-					.append(", inObj=")
-					.append(inputMessage.toString()).toString();
-			
-			log.warn(errorMessage, e);
-						
-			sendErrorOutputMessage("트리형 메뉴 조회가 실패하였습니다", toLetterCarrier, inputMessage);
-			return;
-		}
+
+		AbstractMessage outputMessage = doWork(ServerCommonStaticFinalVars.DEFAULT_DBCP_NAME, (TreeSiteMenuReq)inputMessage);
+		toLetterCarrier.addSyncOutputMessage(outputMessage);
 	}
 
 	public TreeSiteMenuRes doWork(String dbcpName, TreeSiteMenuReq treeSiteMenuReq) throws Exception {
@@ -84,13 +55,13 @@ public class TreeSiteMenuReqServerTask extends AbstractServerTask {
 		
 		java.util.List<TreeSiteMenuRes.Menu> rootMenuList = new ArrayList<TreeSiteMenuRes.Menu>();
 		
-		ServerDBUtil.execute(dbcpName, (conn, create) -> {
+		ServerDBUtil.execute(dbcpName, (conn, dsl) -> {
 			
-			ServerDBUtil.checkUserAccessRights(conn, create, log, "계층형 메뉴 조회 서비스", PermissionType.ADMIN, treeSiteMenuReq.getRequestedUserID());
+			ServerDBUtil.checkUserAccessRights(conn, dsl, log, "계층형 메뉴 조회 서비스", PermissionType.ADMIN, treeSiteMenuReq.getRequestedUserID());
 			
 			HashMap<UInteger, TreeSiteMenuRes.Menu> menuHash = new HashMap<UInteger, TreeSiteMenuRes.Menu>();
 			
-			Result<Record6<UInteger, UInteger, UByte, UByte, String, String>> menuListResult = create.select(SB_SITEMENU_TB.MENU_NO, 
+			Result<Record6<UInteger, UInteger, UByte, UByte, String, String>> menuListResult = dsl.select(SB_SITEMENU_TB.MENU_NO, 
 					SB_SITEMENU_TB.PARENT_NO, 
 					SB_SITEMENU_TB.DEPTH, 
 					SB_SITEMENU_TB.ORDER_SQ,					

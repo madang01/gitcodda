@@ -38,45 +38,14 @@ public class MemberPasswordChangeReqServerTask extends AbstractServerTask {
 		super();
 	}
 
-
-	private void sendErrorOutputMessage(String errorMessage,			
-			ToLetterCarrier toLetterCarrier,
-			AbstractMessage inputMessage) throws InterruptedException {
-		log.warn("{}, inObj=", errorMessage, inputMessage.toString());
-		
-		MessageResultRes messageResultRes = new MessageResultRes();
-		messageResultRes.setTaskMessageID(inputMessage.getMessageID());
-		messageResultRes.setIsSuccess(false);		
-		messageResultRes.setResultMessage(errorMessage);
-		toLetterCarrier.addSyncOutputMessage(messageResultRes);
-	}
-	
-
 	@Override
 	public void doTask(String projectName, 
 			LoginManagerIF personalLoginManager, 
 			ToLetterCarrier toLetterCarrier,
 			AbstractMessage inputMessage) throws Exception {
-		try {
-			AbstractMessage outputMessage = doWork(ServerCommonStaticFinalVars.DEFAULT_DBCP_NAME, (MemberPasswordChangeReq)inputMessage);
-			toLetterCarrier.addSyncOutputMessage(outputMessage);
-		} catch(ServerTaskException e) {
-			String errorMessage = e.getMessage();
-			log.warn("errmsg=={}, inObj={}", errorMessage, inputMessage.toString());
-			
-			sendErrorOutputMessage(errorMessage, toLetterCarrier, inputMessage);
-			return;
-		} catch(Exception e) {
-			String errorMessage = new StringBuilder().append("unknwon errmsg=")
-					.append(e.getMessage())
-					.append(", inObj=")
-					.append(inputMessage.toString()).toString();
-			
-			log.warn(errorMessage, e);			
-			
-			sendErrorOutputMessage("사용자 로그인이 실패하였습니다", toLetterCarrier, inputMessage);
-			return;
-		}
+
+		AbstractMessage outputMessage = doWork(ServerCommonStaticFinalVars.DEFAULT_DBCP_NAME, (MemberPasswordChangeReq)inputMessage);
+		toLetterCarrier.addSyncOutputMessage(outputMessage);
 	}
 
 	public MessageResultRes doWork(String dbcpName, MemberPasswordChangeReq memberPasswordChangeReq) throws Exception {
@@ -204,9 +173,9 @@ public class MemberPasswordChangeReqServerTask extends AbstractServerTask {
 		
 		final StringBuilder resultMessageStringBuilder = new StringBuilder();
 		
-		ServerDBUtil.execute(dbcpName, (conn, create) -> {
+		ServerDBUtil.execute(dbcpName, (conn, dsl) -> {
 			
-			Record6<String, Byte, Byte, UByte, String, String> memberRecord = create.select(
+			Record6<String, Byte, Byte, UByte, String, String> memberRecord = dsl.select(
 					SB_MEMBER_TB.NICKNAME,
 					SB_MEMBER_TB.ROLE,
 					SB_MEMBER_TB.STATE,
@@ -322,7 +291,7 @@ public class MemberPasswordChangeReqServerTask extends AbstractServerTask {
 			PasswordPairOfMemberTable oldPasswordPairOfMemberTable = ServerDBUtil.toPasswordPairOfMemberTable(oldPasswordBytes, oldPwdSaltBytes);
 			
 			if (! pwdBase64.equals(oldPasswordPairOfMemberTable.getPasswordBase64())) {				
-				int countOfPwdFailedCountUpdate = create.update(SB_MEMBER_TB)
+				int countOfPwdFailedCountUpdate = dsl.update(SB_MEMBER_TB)
 					.set(SB_MEMBER_TB.PWD_FAIL_CNT, UByte.valueOf(pwdFailedCount+1))
 					.where(SB_MEMBER_TB.USER_ID.eq(memberPasswordChangeReq.getRequestedUserID()))
 				.execute();
@@ -340,7 +309,7 @@ public class MemberPasswordChangeReqServerTask extends AbstractServerTask {
 				
 				conn.commit();
 				
-				ServerDBUtil.insertSiteLog(conn, create, log, memberPasswordChangeReq.getRequestedUserID(), "비밀번호 변경 비밀번호 틀림", 
+				ServerDBUtil.insertSiteLog(conn, dsl, log, memberPasswordChangeReq.getRequestedUserID(), "비밀번호 변경 비밀번호 틀림", 
 						new java.sql.Timestamp(System.currentTimeMillis()), memberPasswordChangeReq.getIp());
 				
 				conn.commit();
@@ -365,7 +334,7 @@ public class MemberPasswordChangeReqServerTask extends AbstractServerTask {
 			
 			PasswordPairOfMemberTable newPasswordPairOfMemberTable = ServerDBUtil.toPasswordPairOfMemberTable(newPasswordBytes, newPwdSaltBytes);
 			
-			create.update(SB_MEMBER_TB)
+			dsl.update(SB_MEMBER_TB)
 			.set(SB_MEMBER_TB.PWD_BASE64, newPasswordPairOfMemberTable.getPasswordBase64())
 			.set(SB_MEMBER_TB.PWD_SALT_BASE64, newPasswordPairOfMemberTable.getPasswordSaltBase64())
 			.set(SB_MEMBER_TB.LAST_PWD_MOD_DT, lastPwdModifiedDate)
@@ -374,7 +343,7 @@ public class MemberPasswordChangeReqServerTask extends AbstractServerTask {
 			
 			conn.commit();
 			
-			ServerDBUtil.insertSiteLog(conn, create, log, memberPasswordChangeReq.getRequestedUserID(), "비밀번호 변경 완료", 
+			ServerDBUtil.insertSiteLog(conn, dsl, log, memberPasswordChangeReq.getRequestedUserID(), "비밀번호 변경 완료", 
 					lastPwdModifiedDate, memberPasswordChangeReq.getIp());
 			conn.commit();
 			

@@ -380,15 +380,6 @@ public class BoardWriteProcessSvl extends AbstractMultipartServlet implements Im
 			throw new WebClientException(errorMessage, debugMessage);
 		}
 		
-
-		req.setAttribute(
-				WebCommonStaticFinalVars.REQUEST_KEY_NAME_OF_MODULUS_HEX_STRING,
-				webServerSessionkey.getModulusHexStrForWeb());
-		req.setAttribute(
-				WebCommonStaticFinalVars.REQUEST_KEY_NAME_OF_SYMMETRIC_KEY_FROM_SESSIONKEY,
-				webServerSymmetricKey);
-		
-		
 		
 		String pwdHashBase64 = null;
 		if (null == paramBoardPwdCipherBase64) {

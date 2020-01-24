@@ -35,39 +35,13 @@ public class AccountSearchReadyReqServerTask extends AbstractServerTask {
 		super();
 	}
 
-	private void sendErrorOutputMessage(String errorMessage, ToLetterCarrier toLetterCarrier,
-			AbstractMessage inputMessage) throws InterruptedException {
-		log.warn("{}, inObj=", errorMessage, inputMessage.toString());
-
-		MessageResultRes messageResultRes = new MessageResultRes();
-		messageResultRes.setTaskMessageID(inputMessage.getMessageID());
-		messageResultRes.setIsSuccess(false);
-		messageResultRes.setResultMessage(errorMessage);
-		toLetterCarrier.addSyncOutputMessage(messageResultRes);
-	}
-
 	@Override
 	public void doTask(String projectName, LoginManagerIF personalLoginManager, ToLetterCarrier toLetterCarrier,
 			AbstractMessage inputMessage) throws Exception {
-		try {
-			AbstractMessage outputMessage = doWork(ServerCommonStaticFinalVars.DEFAULT_DBCP_NAME,
-					(AccountSearchReadyReq) inputMessage);
-			toLetterCarrier.addSyncOutputMessage(outputMessage);
-		} catch (ServerTaskException e) {
-			String errorMessage = e.getMessage();
-			log.warn("errmsg=={}, inObj={}", errorMessage, inputMessage.toString());
-
-			sendErrorOutputMessage(errorMessage, toLetterCarrier, inputMessage);
-			return;
-		} catch (Exception e) {
-			String errorMessage = new StringBuilder().append("unknwon errmsg=").append(e.getMessage())
-					.append(", inObj=").append(inputMessage.toString()).toString();
-
-			log.warn(errorMessage, e);
-
-			sendErrorOutputMessage("게시글 상세 조회가 실패하였습니다", toLetterCarrier, inputMessage);
-			return;
-		}
+		
+		AbstractMessage outputMessage = doWork(ServerCommonStaticFinalVars.DEFAULT_DBCP_NAME,
+				(AccountSearchReadyReq) inputMessage);
+		toLetterCarrier.addSyncOutputMessage(outputMessage);
 	}
 
 	public MessageResultRes doWork(final String dbcpName, final AccountSearchReadyReq accountSearchReadyReq)
@@ -94,8 +68,8 @@ public class AccountSearchReadyReqServerTask extends AbstractServerTask {
 		 * 위해 존재할뿐 회원이 아니기때문에 제외하며 관리자는 보안상 허용해서는 안되기때문에 제외합니다.
 		 */
 
-		ServerDBUtil.execute(dbcpName, (conn, create) -> {
-			Record3<String, String, String> memberRecord = create
+		ServerDBUtil.execute(dbcpName, (conn, dsl) -> {
+			Record3<String, String, String> memberRecord = dsl
 					.select(SB_MEMBER_TB.USER_ID, SB_MEMBER_TB.NICKNAME, SB_MEMBER_TB.EMAIL).from(SB_MEMBER_TB)
 					.where(SB_MEMBER_TB.EMAIL.eq(accountSearchReadyReq.getEmail()))
 					.and(SB_MEMBER_TB.ROLE.eq(MemberRoleType.MEMBER.getValue())).forUpdate().fetchOne();
@@ -116,7 +90,7 @@ public class AccountSearchReadyReqServerTask extends AbstractServerTask {
 			String nickname = memberRecord.get(SB_MEMBER_TB.NICKNAME);
 			String email = memberRecord.get(SB_MEMBER_TB.EMAIL);
 
-			Record2<UByte, UByte> passwordSearchRequestRecord = create
+			Record2<UByte, UByte> passwordSearchRequestRecord = dsl
 					.select(SB_ACCOUNT_SERARCH_TB.FAIL_CNT, SB_ACCOUNT_SERARCH_TB.RETRY_CNT).from(SB_ACCOUNT_SERARCH_TB)
 					.where(SB_ACCOUNT_SERARCH_TB.USER_ID.eq(userID)).fetchOne();
 
@@ -130,7 +104,7 @@ public class AccountSearchReadyReqServerTask extends AbstractServerTask {
 
 				Timestamp registeredDate = new java.sql.Timestamp(System.currentTimeMillis());
 
-				create.insertInto(SB_ACCOUNT_SERARCH_TB).set(SB_ACCOUNT_SERARCH_TB.USER_ID, userID)
+				dsl.insertInto(SB_ACCOUNT_SERARCH_TB).set(SB_ACCOUNT_SERARCH_TB.USER_ID, userID)
 						.set(SB_ACCOUNT_SERARCH_TB.FAIL_CNT, UByte.valueOf(0))
 						.set(SB_ACCOUNT_SERARCH_TB.RETRY_CNT, UByte.valueOf(1))
 						.set(SB_ACCOUNT_SERARCH_TB.LAST_SECRET_AUTH_VALUE, secretAuthenticationValue)
@@ -144,7 +118,7 @@ public class AccountSearchReadyReqServerTask extends AbstractServerTask {
 				String siteLogText = new StringBuilder().append(accountSearchType.getName())
 						.append(" 찾기 신청").toString();
 
-				ServerDBUtil.insertSiteLog(conn, create, log, userID, 
+				ServerDBUtil.insertSiteLog(conn, dsl, log, userID, 
 						siteLogText, registeredDate,
 						accountSearchReadyReq.getIp());
 
@@ -190,7 +164,7 @@ public class AccountSearchReadyReqServerTask extends AbstractServerTask {
 						.encodeToString(newSecretAuthenticationValueBytes);
 				Timestamp registeredDate = new java.sql.Timestamp(System.currentTimeMillis());
 
-				create.update(SB_ACCOUNT_SERARCH_TB)
+				dsl.update(SB_ACCOUNT_SERARCH_TB)
 						.set(SB_ACCOUNT_SERARCH_TB.RETRY_CNT, SB_ACCOUNT_SERARCH_TB.RETRY_CNT.add(1))
 						.set(SB_ACCOUNT_SERARCH_TB.LAST_SECRET_AUTH_VALUE, secretAuthenticationValue)
 						.set(SB_ACCOUNT_SERARCH_TB.LAST_REQ_DT, registeredDate)
@@ -206,7 +180,7 @@ public class AccountSearchReadyReqServerTask extends AbstractServerTask {
 						.append("회 아이디 혹은 비밀번호 찾기 신청[찾기 대상:")
 						.append(accountSearchType.getName()).append("]").toString();
 
-				ServerDBUtil.insertSiteLog(conn, create, log, userID, siteLogText, registeredDate,
+				ServerDBUtil.insertSiteLog(conn, dsl, log, userID, siteLogText, registeredDate,
 						accountSearchReadyReq.getIp());
 
 				conn.commit();

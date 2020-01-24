@@ -17,12 +17,11 @@
 
 package kr.pe.codda.impl.task.server;
 
+import static kr.pe.codda.jooq.tables.SbDocHistoryTb.SB_DOC_HISTORY_TB;
+import static kr.pe.codda.jooq.tables.SbDocTb.SB_DOC_TB;
 import static kr.pe.codda.jooq.tables.SbSeqTb.SB_SEQ_TB;
 
 import java.sql.Timestamp;
-
-import static kr.pe.codda.jooq.tables.SbDocTb.SB_DOC_TB;
-import static kr.pe.codda.jooq.tables.SbDocHistoryTb.SB_DOC_HISTORY_TB;
 
 import org.jooq.Record1;
 import org.jooq.types.UInteger;
@@ -34,7 +33,6 @@ import kr.pe.codda.common.exception.ServerTaskException;
 import kr.pe.codda.common.message.AbstractMessage;
 import kr.pe.codda.impl.message.DocumentWriteReq.DocumentWriteReq;
 import kr.pe.codda.impl.message.DocumentWriteRes.DocumentWriteRes;
-import kr.pe.codda.impl.message.MessageResultRes.MessageResultRes;
 import kr.pe.codda.server.LoginManagerIF;
 import kr.pe.codda.server.lib.DocumentStateType;
 import kr.pe.codda.server.lib.PermissionType;
@@ -61,49 +59,15 @@ public class DocumentWriteReqServerTask extends AbstractServerTask {
 	public DocumentWriteReqServerTask() throws DynamicClassCallException {
 		super();
 	}
-
-	/**
-	 * 에러 내용을 담은 출력 메시지 송신
-	 *  
-	 * @param errorMessage 에러 내용
-	 * @param toLetterCarrier 송신 메시지 배달자
-	 * @param inputMessage 입력 메시지
-	 * @throws InterruptedException 인터럽트 발생시 던지는 예외
-	 */
-	private void sendErrorOutputMessage(String errorMessage, ToLetterCarrier toLetterCarrier,
-			AbstractMessage inputMessage) throws InterruptedException {
-		log.warn("{}, inObj={}", errorMessage, inputMessage.toString());
-
-		MessageResultRes messageResultRes = new MessageResultRes();
-		messageResultRes.setTaskMessageID(inputMessage.getMessageID());
-		messageResultRes.setIsSuccess(false);
-		messageResultRes.setResultMessage(errorMessage);
-		toLetterCarrier.addSyncOutputMessage(messageResultRes);
-	}
+	
 
 	@Override
 	public void doTask(String projectName, LoginManagerIF personalLoginManager, ToLetterCarrier toLetterCarrier,
 			AbstractMessage inputMessage) throws Exception {
 
-		try {
-			AbstractMessage outputMessage = doWork(ServerCommonStaticFinalVars.DEFAULT_DBCP_NAME,
-					(DocumentWriteReq) inputMessage);
-			toLetterCarrier.addSyncOutputMessage(outputMessage);
-		} catch (ServerTaskException e) {
-			String errorMessage = e.getMessage();
-			log.warn("errmsg=={}, inObj={}", errorMessage, inputMessage.toString());
-
-			sendErrorOutputMessage(errorMessage, toLetterCarrier, inputMessage);
-			return;
-		} catch (Exception e) {
-			String errorMessage = new StringBuilder().append("unknwon errmsg=").append(e.getMessage())
-					.append(", inObj=").append(inputMessage.toString()).toString();
-
-			log.warn(errorMessage, e);
-
-			sendErrorOutputMessage("문서 목록 조회가 실패하였습니다", toLetterCarrier, inputMessage);
-			return;
-		}
+		AbstractMessage outputMessage = doWork(ServerCommonStaticFinalVars.DEFAULT_DBCP_NAME,
+				(DocumentWriteReq) inputMessage);
+		toLetterCarrier.addSyncOutputMessage(outputMessage);
 	}
 
 	/**
@@ -132,12 +96,12 @@ public class DocumentWriteReqServerTask extends AbstractServerTask {
 		final Timestamp registeredDate = new java.sql.Timestamp(System.currentTimeMillis());
 		final UInteger lastDocumentSequence = UInteger.valueOf(0);
 
-		ServerDBUtil.execute(dbcpName, (conn, create) -> {
-			ServerDBUtil.checkUserAccessRights(conn, create, log, "문서 조회 서비스", PermissionType.ADMIN,
+		ServerDBUtil.execute(dbcpName, (conn, dsl) -> {
+			ServerDBUtil.checkUserAccessRights(conn, dsl, log, "문서 조회 서비스", PermissionType.ADMIN,
 					documentWriteReq.getRequestedUserID());
 
 			/** 문서 쓰기와 수정을 위한 문서 번호 락 */
-			Record1<UInteger> seqRecord = create.select(SB_SEQ_TB.SQ_VALUE).from(SB_SEQ_TB)
+			Record1<UInteger> seqRecord = dsl.select(SB_SEQ_TB.SQ_VALUE).from(SB_SEQ_TB)
 					.where(SB_SEQ_TB.SQ_ID.eq(SequenceType.DOCUMENT_NO.getSequenceID())).forUpdate().fetchOne();
 
 			if (null == seqRecord) {
@@ -156,14 +120,14 @@ public class DocumentWriteReqServerTask extends AbstractServerTask {
 			
 			documentWriteRes.setDocumentNo(newDocumentNo.longValue());
 
-			create.update(SB_SEQ_TB).set(SB_SEQ_TB.SQ_VALUE, SB_SEQ_TB.SQ_VALUE.add(1))
+			dsl.update(SB_SEQ_TB).set(SB_SEQ_TB.SQ_VALUE, SB_SEQ_TB.SQ_VALUE.add(1))
 					.where(SB_SEQ_TB.SQ_ID.eq(SequenceType.DOCUMENT_NO.getSequenceID())).execute();
 
-			create.insertInto(SB_DOC_TB).set(SB_DOC_TB.DOC_NO, newDocumentNo)
+			dsl.insertInto(SB_DOC_TB).set(SB_DOC_TB.DOC_NO, newDocumentNo)
 					.set(SB_DOC_TB.DOC_STATE, DocumentStateType.OK.getValue())
 					.set(SB_DOC_TB.LAST_DOC_SQ, lastDocumentSequence).execute();
 
-			create.insertInto(SB_DOC_HISTORY_TB).set(SB_DOC_HISTORY_TB.DOC_NO, newDocumentNo)
+			dsl.insertInto(SB_DOC_HISTORY_TB).set(SB_DOC_HISTORY_TB.DOC_NO, newDocumentNo)
 					.set(SB_DOC_HISTORY_TB.DOC_SQ, lastDocumentSequence)
 					.set(SB_DOC_HISTORY_TB.FILE_NAME, documentWriteReq.getFileName())
 					.set(SB_DOC_HISTORY_TB.SUBJECT, documentWriteReq.getSubject())

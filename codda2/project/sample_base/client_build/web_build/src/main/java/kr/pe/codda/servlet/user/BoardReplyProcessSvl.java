@@ -335,6 +335,10 @@ public class BoardReplyProcessSvl extends AbstractMultipartServlet implements Im
 			throw new WebClientException(errorMessage, debugMessage);
 		}
 
+		// log.info("sessionkeyBytes=[{}]",
+		// HexUtil.getHexStringFromByteArray(sessionkeyBytes));
+		// log.info("ivBytes=[{}]", HexUtil.getHexStringFromByteArray(ivBytes));
+		
 		ServerSessionkeyIF webServerSessionkey = null;
 		try {
 			ServerSessionkeyManager serverSessionkeyManager = ServerSessionkeyManager
@@ -350,8 +354,8 @@ public class BoardReplyProcessSvl extends AbstractMultipartServlet implements Im
 					.append(e.getMessage()).toString();
 			throw new WebClientException(errorMessage, debugMessage);
 		}
-		
 
+		
 		byte[] sessionkeyBytes = null;
 		try {
 			sessionkeyBytes = CommonStaticUtil.Base64Decoder.decode(paramSessionKeyBase64);
@@ -367,9 +371,12 @@ public class BoardReplyProcessSvl extends AbstractMultipartServlet implements Im
 					.append("'[").append(paramSessionKeyBase64)
 					.append("] is not a base64 string, errmsg=")
 					.append(e.getMessage()).toString();
+			
+			log.warning(debugMessage);
 
 			throw new WebClientException(errorMessage, debugMessage);
 		}
+
 		byte[] ivBytes = null;
 		try {
 			ivBytes = CommonStaticUtil.Base64Decoder.decode(paramIVBase64);
@@ -385,14 +392,13 @@ public class BoardReplyProcessSvl extends AbstractMultipartServlet implements Im
 					.append("'[").append(paramIVBase64)
 					.append("] is not a base64 string, errmsg=")
 					.append(e.getMessage()).toString();
+			
+			log.warning(debugMessage);
 
 			throw new WebClientException(errorMessage, debugMessage);
 		}
 
-		// log.info("sessionkeyBytes=[{}]",
-		// HexUtil.getHexStringFromByteArray(sessionkeyBytes));
-		// log.info("ivBytes=[{}]", HexUtil.getHexStringFromByteArray(ivBytes));
-		
+		// log.info("sessionkeyBytes.length={}", sessionkeyBytes.length);
 		ServerSymmetricKeyIF webServerSymmetricKey = null;
 		try {
 			webServerSymmetricKey = webServerSessionkey
@@ -421,13 +427,7 @@ public class BoardReplyProcessSvl extends AbstractMultipartServlet implements Im
 
 			throw new WebClientException(errorMessage, debugMessage);
 		}
-
-		req.setAttribute(
-				WebCommonStaticFinalVars.REQUEST_KEY_NAME_OF_MODULUS_HEX_STRING,
-				webServerSessionkey.getModulusHexStrForWeb());
-		req.setAttribute(
-				WebCommonStaticFinalVars.REQUEST_KEY_NAME_OF_SYMMETRIC_KEY_FROM_SESSIONKEY,
-				webServerSymmetricKey);		
+		
 		
 		String boardPwdHashBase64 = null;
 

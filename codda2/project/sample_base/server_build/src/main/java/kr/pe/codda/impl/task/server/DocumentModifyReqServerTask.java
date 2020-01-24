@@ -17,8 +17,8 @@
 
 package kr.pe.codda.impl.task.server;
 
-import static kr.pe.codda.jooq.tables.SbDocTb.SB_DOC_TB;
 import static kr.pe.codda.jooq.tables.SbDocHistoryTb.SB_DOC_HISTORY_TB;
+import static kr.pe.codda.jooq.tables.SbDocTb.SB_DOC_TB;
 
 import java.sql.Timestamp;
 
@@ -33,7 +33,6 @@ import kr.pe.codda.common.exception.ServerTaskException;
 import kr.pe.codda.common.message.AbstractMessage;
 import kr.pe.codda.impl.message.DocumentModifyReq.DocumentModifyReq;
 import kr.pe.codda.impl.message.DocumentModifyRes.DocumentModifyRes;
-import kr.pe.codda.impl.message.MessageResultRes.MessageResultRes;
 import kr.pe.codda.server.LoginManagerIF;
 import kr.pe.codda.server.lib.DocumentStateType;
 import kr.pe.codda.server.lib.PermissionType;
@@ -60,47 +59,15 @@ public class DocumentModifyReqServerTask extends AbstractServerTask {
 		super();
 	}
 
-	/**
-	 * 에러 내용을 담은 출력 메시지 송신
-	 *  
-	 * @param errorMessage 에러 내용
-	 * @param toLetterCarrier 송신 메시지 배달자
-	 * @param inputMessage 입력 메시지
-	 * @throws InterruptedException 인터럽트 발생시 던지는 예외
-	 */
-	private void sendErrorOutputMessage(String errorMessage, ToLetterCarrier toLetterCarrier,
-			AbstractMessage inputMessage) throws InterruptedException {
-		log.warn("{}, inObj={}", errorMessage, inputMessage.toString());
 
-		MessageResultRes messageResultRes = new MessageResultRes();
-		messageResultRes.setTaskMessageID(inputMessage.getMessageID());
-		messageResultRes.setIsSuccess(false);
-		messageResultRes.setResultMessage(errorMessage);
-		toLetterCarrier.addSyncOutputMessage(messageResultRes);
-	}
 
 	@Override
 	public void doTask(String projectName, LoginManagerIF personalLoginManager, ToLetterCarrier toLetterCarrier,
 			AbstractMessage inputMessage) throws Exception {
-		try {
-			AbstractMessage outputMessage = doWork(ServerCommonStaticFinalVars.DEFAULT_DBCP_NAME,
-					(DocumentModifyReq) inputMessage);
-			toLetterCarrier.addSyncOutputMessage(outputMessage);
-		} catch (ServerTaskException e) {
-			String errorMessage = e.getMessage();
-			log.warn("errmsg=={}, inObj={}", errorMessage, inputMessage.toString());
 
-			sendErrorOutputMessage(errorMessage, toLetterCarrier, inputMessage);
-			return;
-		} catch (Exception e) {
-			String errorMessage = new StringBuilder().append("unknwon errmsg=").append(e.getMessage())
-					.append(", inObj=").append(inputMessage.toString()).toString();
-
-			log.warn(errorMessage, e);
-
-			sendErrorOutputMessage("문서 목록 조회가 실패하였습니다", toLetterCarrier, inputMessage);
-			return;
-		}
+		AbstractMessage outputMessage = doWork(ServerCommonStaticFinalVars.DEFAULT_DBCP_NAME,
+				(DocumentModifyReq) inputMessage);
+		toLetterCarrier.addSyncOutputMessage(outputMessage);
 	}
 
 	/**
@@ -130,12 +97,12 @@ public class DocumentModifyReqServerTask extends AbstractServerTask {
 		
 		final Timestamp registeredDate = new java.sql.Timestamp(System.currentTimeMillis());
 		
-		ServerDBUtil.execute(dbcpName, (conn, create) -> {
-			ServerDBUtil.checkUserAccessRights(conn, create, log, "문서 수정 서비스", PermissionType.ADMIN,
+		ServerDBUtil.execute(dbcpName, (conn, dsl) -> {
+			ServerDBUtil.checkUserAccessRights(conn, dsl, log, "문서 수정 서비스", PermissionType.ADMIN,
 					documentModifyReq.getRequestedUserID());		
 
 			/** 수정할 문서에 락을 건다 */
-			Record2<Byte, UInteger> documentRecord = create
+			Record2<Byte, UInteger> documentRecord = dsl
 			.select(SB_DOC_TB.DOC_STATE, SB_DOC_TB.LAST_DOC_SQ)
 			.from(SB_DOC_TB)
 			.where(SB_DOC_TB.DOC_NO.eq(documentNo))
@@ -211,11 +178,11 @@ public class DocumentModifyReqServerTask extends AbstractServerTask {
 			documentModifyRes.setDocumentSeq(documentSequence);
 			
 			/** 문서의 새로운 마지막 시퀀스 번호로 갱신 */
-			create.update(SB_DOC_TB).set(SB_DOC_TB.LAST_DOC_SQ, newLastDocumentSequence)
+			dsl.update(SB_DOC_TB).set(SB_DOC_TB.LAST_DOC_SQ, newLastDocumentSequence)
 			.where(SB_DOC_TB.DOC_NO.eq(documentNo)).execute();
 
 			/** '문서 이력 테이블'(=sb_doc_history_tb)에 '문서의 새로운 마지막 시퀀스 번호'를 갖는 문서 이력 레코드를 추가한다 */
-			create.insertInto(SB_DOC_HISTORY_TB).set(SB_DOC_HISTORY_TB.DOC_NO, documentNo)
+			dsl.insertInto(SB_DOC_HISTORY_TB).set(SB_DOC_HISTORY_TB.DOC_NO, documentNo)
 			.set(SB_DOC_HISTORY_TB.DOC_SQ, newLastDocumentSequence)
 			.set(SB_DOC_HISTORY_TB.FILE_NAME, documentModifyReq.getFileName())
 			.set(SB_DOC_HISTORY_TB.SUBJECT, documentModifyReq.getSubject())

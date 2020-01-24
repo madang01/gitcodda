@@ -41,40 +41,12 @@ public class BoardDeleteReqServerTask extends AbstractServerTask {
 		super();
 	}
 
-	private void sendErrorOutputMessage(String errorMessage, ToLetterCarrier toLetterCarrier,
-			AbstractMessage inputMessage) throws InterruptedException {
-		log.warn("{}, inObj=", errorMessage, inputMessage.toString());
-
-		MessageResultRes messageResultRes = new MessageResultRes();
-		messageResultRes.setTaskMessageID(inputMessage.getMessageID());
-		messageResultRes.setIsSuccess(false);
-		messageResultRes.setResultMessage(errorMessage);
-		toLetterCarrier.addSyncOutputMessage(messageResultRes);
-	}
-
 	@Override
 	public void doTask(String projectName, LoginManagerIF personalLoginManager, ToLetterCarrier toLetterCarrier,
 			AbstractMessage inputMessage) throws Exception {
-		try {
-			AbstractMessage outputMessage = doWork(ServerCommonStaticFinalVars.DEFAULT_DBCP_NAME, (BoardDeleteReq)inputMessage);
-			toLetterCarrier.addSyncOutputMessage(outputMessage);
-		} catch(ServerTaskException e) {
-			String errorMessage = e.getMessage();
-			log.warn("errmsg=={}, inObj={}", errorMessage, inputMessage.toString());
-			
-			sendErrorOutputMessage(errorMessage, toLetterCarrier, inputMessage);
-			return;
-		} catch(Exception e) {
-			String errorMessage = new StringBuilder().append("unknwon errmsg=")
-					.append(e.getMessage())
-					.append(", inObj=")
-					.append(inputMessage.toString()).toString();
-			
-			log.warn(errorMessage, e);
-						
-			sendErrorOutputMessage("게시글 삭제가 실패하였습니다", toLetterCarrier, inputMessage);
-			return;
-		}
+
+		AbstractMessage outputMessage = doWork(ServerCommonStaticFinalVars.DEFAULT_DBCP_NAME, (BoardDeleteReq)inputMessage);
+		toLetterCarrier.addSyncOutputMessage(outputMessage);
 	}
 
 	public MessageResultRes doWork(String dbcpName, BoardDeleteReq boardDeleteReq)
@@ -96,11 +68,11 @@ public class BoardDeleteReqServerTask extends AbstractServerTask {
 		
 		StringBuilder resultMessageStringBuilder = new StringBuilder();
 		
-		ServerDBUtil.execute(dbcpName, (conn, create) -> {
+		ServerDBUtil.execute(dbcpName, (conn, dsl) -> {
 
-			MemberRoleType memberRoleTypeOfRequestedUserID = ServerDBUtil.checkUserAccessRights(conn, create, log, "게시글 삭제 서비스", PermissionType.GUEST, requestedUserID);
+			MemberRoleType memberRoleTypeOfRequestedUserID = ServerDBUtil.checkUserAccessRights(conn, dsl, log, "게시글 삭제 서비스", PermissionType.GUEST, requestedUserID);
 			
-			Record2<String, Byte> boardInforRecord = create
+			Record2<String, Byte> boardInforRecord = dsl
 					.select(SB_BOARD_INFO_TB.BOARD_NAME,
 							SB_BOARD_INFO_TB.LIST_TYPE)
 					.from(SB_BOARD_INFO_TB).where(SB_BOARD_INFO_TB.BOARD_ID.eq(boardID)).fetchOne();
@@ -136,10 +108,10 @@ public class BoardDeleteReqServerTask extends AbstractServerTask {
 			}
 			
 			/** 삭제할 게시글에 속한 그룹의 루트 노드에 해당하는 레코드에 락을 건다  */
-			ServerDBUtil.lockGroupOfGivenBoard(conn, create, log, boardID, boardNo);
+			ServerDBUtil.lockGroupOfGivenBoard(conn, dsl, log, boardID, boardNo);
 			
 			/** 최상위 그룹 레코드에 대한 락 획득후 게시판 상태 얻기 */
-			Record4<String, UInteger, Byte, String>  boardRecord = create.select(SB_BOARD_TB.PWD_BASE64,
+			Record4<String, UInteger, Byte, String>  boardRecord = dsl.select(SB_BOARD_TB.PWD_BASE64,
 					SB_BOARD_TB.PARENT_NO, 
 					SB_BOARD_TB.BOARD_ST,
 					SB_BOARD_HISTORY_TB.REGISTRANT_ID)
@@ -270,7 +242,7 @@ public class BoardDeleteReqServerTask extends AbstractServerTask {
 			}
 			
 			
-			create.update(SB_BOARD_TB)
+			dsl.update(SB_BOARD_TB)
 			.set(SB_BOARD_TB.BOARD_ST, BoardStateType.DELETE.getValue())
 			.where(SB_BOARD_TB.BOARD_ID.eq(boardID))
 			.and(SB_BOARD_TB.BOARD_NO.eq(boardNo))
@@ -278,14 +250,14 @@ public class BoardDeleteReqServerTask extends AbstractServerTask {
 			
 			if (BoardListType.TREE.equals(boardListType)) {
 				// 계층형 목록일때 삭제시 카운트 1 감소
-				create.update(SB_BOARD_INFO_TB)
+				dsl.update(SB_BOARD_INFO_TB)
 					.set(SB_BOARD_INFO_TB.CNT, SB_BOARD_INFO_TB.CNT.sub(1))
 				.where(SB_BOARD_INFO_TB.BOARD_ID.eq(boardID))
 				.execute();
 			} else {
 				// 그룹 루트만으로 이루어진 목록일때 삭제시 카운트 1 감소
 				if (0L == parentNo.longValue()) {					 
-					create.update(SB_BOARD_INFO_TB)
+					dsl.update(SB_BOARD_INFO_TB)
 					.set(SB_BOARD_INFO_TB.CNT, SB_BOARD_INFO_TB.CNT.sub(1))
 					.where(SB_BOARD_INFO_TB.BOARD_ID.eq(boardID))
 					.execute();
@@ -294,7 +266,7 @@ public class BoardDeleteReqServerTask extends AbstractServerTask {
 						
 			conn.commit();
 			
-			ServerDBUtil.insertMemberActivityHistory(conn, create, log, boardDeleteReq.getRequestedUserID(), 
+			ServerDBUtil.insertMemberActivityHistory(conn, dsl, log, boardDeleteReq.getRequestedUserID(), 
 					memberRoleTypeOfRequestedUserID, MemberActivityType.DELETE, boardID, boardNo,
 					new java.sql.Timestamp(System.currentTimeMillis()));
 			

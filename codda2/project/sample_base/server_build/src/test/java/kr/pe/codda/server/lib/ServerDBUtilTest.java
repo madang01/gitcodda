@@ -29,9 +29,9 @@ public class ServerDBUtilTest extends AbstractBoardTest {
 	public void tearDown() {
 		/*
 		try {
-			ServerDBUtil.execute(TEST_DBCP_NAME, (conn, create) -> {
+			ServerDBUtil.execute(TEST_DBCP_NAME, (conn, dsl) -> {
 				
-				Result<Record4<UByte, Byte, Long, Long>> boardInfoResult = create
+				Result<Record4<UByte, Byte, Long, Long>> boardInfoResult = dsl
 						.select(SB_BOARD_INFO_TB.BOARD_ID, SB_BOARD_INFO_TB.LIST_TYPE, SB_BOARD_INFO_TB.CNT,
 								SB_BOARD_INFO_TB.TOTAL)
 						.from(SB_BOARD_INFO_TB).orderBy(SB_BOARD_INFO_TB.BOARD_ID.asc()).fetch();
@@ -43,16 +43,16 @@ public class ServerDBUtilTest extends AbstractBoardTest {
 					long actualCountOfList = boardInfoRecord.getValue(SB_BOARD_INFO_TB.CNT);
 
 					BoardListType boardListType = BoardListType.valueOf(boardListTypeValue);
-					int expectedTotal = create.selectCount().from(SB_BOARD_TB).where(SB_BOARD_TB.BOARD_ID.eq(boardID))
+					int expectedTotal = dsl.selectCount().from(SB_BOARD_TB).where(SB_BOARD_TB.BOARD_ID.eq(boardID))
 							.fetchOne().value1();
 
 					int expectedCountOfList = -1;
 
 					if (BoardListType.TREE.equals(boardListType)) {
-						expectedCountOfList = create.selectCount().from(SB_BOARD_TB).where(SB_BOARD_TB.BOARD_ID.eq(boardID))
+						expectedCountOfList = dsl.selectCount().from(SB_BOARD_TB).where(SB_BOARD_TB.BOARD_ID.eq(boardID))
 								.and(SB_BOARD_TB.BOARD_ST.eq(BoardStateType.OK.getValue())).fetchOne().value1();
 					} else {
-						expectedCountOfList = create.selectCount().from(SB_BOARD_TB).where(SB_BOARD_TB.BOARD_ID.eq(boardID))
+						expectedCountOfList = dsl.selectCount().from(SB_BOARD_TB).where(SB_BOARD_TB.BOARD_ID.eq(boardID))
 								.and(SB_BOARD_TB.BOARD_ST.eq(BoardStateType.OK.getValue()))
 								.and(SB_BOARD_TB.PARENT_NO.eq(UInteger.valueOf(0))).fetchOne().value1();
 					}
@@ -72,10 +72,10 @@ public class ServerDBUtilTest extends AbstractBoardTest {
 
 	private void initMenuDB() {
 		try {
-			ServerDBUtil.execute(TEST_DBCP_NAME, (conn, create) -> {
-				create.update(SB_SEQ_TB).set(SB_SEQ_TB.SQ_VALUE, UInteger.valueOf(1)).execute();
+			ServerDBUtil.execute(TEST_DBCP_NAME, (conn, dsl) -> {
+				dsl.update(SB_SEQ_TB).set(SB_SEQ_TB.SQ_VALUE, UInteger.valueOf(1)).execute();
 
-				create.delete(SB_SITEMENU_TB).execute();
+				dsl.delete(SB_SITEMENU_TB).execute();
 
 				conn.commit();
 			});
@@ -303,13 +303,13 @@ public class ServerDBUtilTest extends AbstractBoardTest {
 		
 		
 		try {
-			ServerDBUtil.execute(TEST_DBCP_NAME, (conn, create) -> {
+			ServerDBUtil.execute(TEST_DBCP_NAME, (conn, dsl) -> {
 				for (ArraySiteMenuRes.Menu siteMenu : arrayTypeMenuList) {
 
-					UByte expectedFromOrderSeq = ServerDBUtil.getToOrderSeqOfRelativeRootMenu(create,
+					UByte expectedFromOrderSeq = ServerDBUtil.getToOrderSeqOfRelativeRootMenu(dsl,
 							UByte.valueOf(siteMenu.getOrderSeq()), UByte.valueOf(siteMenu.getDepth()));
 
-					UByte acutalFromGroupSeq = ServerDBUtil.getToOrderSeqOfRelativeRootMenu(create,
+					UByte acutalFromGroupSeq = ServerDBUtil.getToOrderSeqOfRelativeRootMenu(dsl,
 							UByte.valueOf(siteMenu.getOrderSeq()), UInteger.valueOf(siteMenu.getParentNo()));
 
 					// FIXME!
@@ -335,9 +335,9 @@ public class ServerDBUtilTest extends AbstractBoardTest {
 		final String requestedUserID = "testAA";
 		
 		try {
-			ServerDBUtil.execute(TEST_DBCP_NAME, (conn, create) -> {
+			ServerDBUtil.execute(TEST_DBCP_NAME, (conn, dsl) -> {
 				
-				ServerDBUtil.checkUserAccessRights(conn, create, log, "회원 미 존재 테스트 서비스", PermissionType.MEMBER,
+				ServerDBUtil.checkUserAccessRights(conn, dsl, log, "회원 미 존재 테스트 서비스", PermissionType.MEMBER,
 						requestedUserID);
 				fail("ServerTaskException");
 			});
@@ -366,8 +366,8 @@ public class ServerDBUtilTest extends AbstractBoardTest {
 		String ip = "127.0.0.3";
 		
 		try {
-			ServerDBUtil.execute(TEST_DBCP_NAME, (conn, create) -> {
-				create.delete(SB_MEMBER_TB).where(SB_MEMBER_TB.USER_ID.eq(requestedUserID)).execute();
+			ServerDBUtil.execute(TEST_DBCP_NAME, (conn, dsl) -> {
+				dsl.delete(SB_MEMBER_TB).where(SB_MEMBER_TB.USER_ID.eq(requestedUserID)).execute();
 
 				conn.commit();				
 				
@@ -384,7 +384,7 @@ public class ServerDBUtilTest extends AbstractBoardTest {
 				
 				userBlockReqServerTask.doWork(TEST_DBCP_NAME, memberBlockReq);
 				
-				ServerDBUtil.checkUserAccessRights(conn, create, log, "회원 상태가 비정상 테스트 서비스", PermissionType.MEMBER,
+				ServerDBUtil.checkUserAccessRights(conn, dsl, log, "회원 상태가 비정상 테스트 서비스", PermissionType.MEMBER,
 						requestedUserID);
 				
 				fail("ServerTaskException");
@@ -408,8 +408,8 @@ public class ServerDBUtilTest extends AbstractBoardTest {
 		final String requestedUserID = "test03";
 		
 		try {
-			ServerDBUtil.execute(TEST_DBCP_NAME, (conn, create) -> {
-				create.delete(SB_MEMBER_TB).where(SB_MEMBER_TB.USER_ID.eq(requestedUserID)).execute();
+			ServerDBUtil.execute(TEST_DBCP_NAME, (conn, dsl) -> {
+				dsl.delete(SB_MEMBER_TB).where(SB_MEMBER_TB.USER_ID.eq(requestedUserID)).execute();
 
 				conn.commit();
 
@@ -422,13 +422,13 @@ public class ServerDBUtilTest extends AbstractBoardTest {
 				ServerDBUtil.registerMember(TEST_DBCP_NAME, MemberRoleType.MEMBER, requestedUserID, nickname, email,
 						passwordBytes, new java.sql.Timestamp(System.currentTimeMillis()), ip);
 
-				create.update(SB_MEMBER_TB)
+				dsl.update(SB_MEMBER_TB)
 				.set(SB_MEMBER_TB.ROLE, (byte)'K').where(SB_MEMBER_TB.USER_ID.eq(requestedUserID))
 						.execute();
 				
 				conn.commit();
 
-				ServerDBUtil.checkUserAccessRights(conn, create, log, "회원 역활 유형이 손님인 테스트 서비스", PermissionType.MEMBER,
+				ServerDBUtil.checkUserAccessRights(conn, dsl, log, "회원 역활 유형이 손님인 테스트 서비스", PermissionType.MEMBER,
 						requestedUserID);				
 				
 				fail("ServerTaskException");
@@ -451,8 +451,8 @@ public class ServerDBUtilTest extends AbstractBoardTest {
 		final String TEST_DBCP_NAME = ServerCommonStaticFinalVars.GENERAL_TEST_DBCP_NAME;
 		final String requestedUserID = "test03";
 		try {
-			ServerDBUtil.execute(TEST_DBCP_NAME, (conn, create) -> {
-				create.delete(SB_MEMBER_TB).where(SB_MEMBER_TB.USER_ID.eq(requestedUserID)).execute();
+			ServerDBUtil.execute(TEST_DBCP_NAME, (conn, dsl) -> {
+				dsl.delete(SB_MEMBER_TB).where(SB_MEMBER_TB.USER_ID.eq(requestedUserID)).execute();
 
 				conn.commit();
 
@@ -465,7 +465,7 @@ public class ServerDBUtilTest extends AbstractBoardTest {
 				ServerDBUtil.registerMember(TEST_DBCP_NAME, MemberRoleType.GUEST, requestedUserID, nickname, email,
 						passwordBytes, new java.sql.Timestamp(System.currentTimeMillis()), ip);
 				
-				ServerDBUtil.checkUserAccessRights(conn, create, log, "회원 역활 유형이 손님인 테스트 서비스", PermissionType.MEMBER,
+				ServerDBUtil.checkUserAccessRights(conn, dsl, log, "회원 역활 유형이 손님인 테스트 서비스", PermissionType.MEMBER,
 						requestedUserID);
 				
 				fail("ServerTaskException");
@@ -488,9 +488,9 @@ public class ServerDBUtilTest extends AbstractBoardTest {
 		String requestedUserID = "admin";
 		
 		try {
-			ServerDBUtil.execute(TEST_DBCP_NAME, (conn, create) -> {				
+			ServerDBUtil.execute(TEST_DBCP_NAME, (conn, dsl) -> {				
 
-				ServerDBUtil.checkUserAccessRights(conn, create, log, "관리저 전용 서비스에 관리자 접근 테스트 서비스",
+				ServerDBUtil.checkUserAccessRights(conn, dsl, log, "관리저 전용 서비스에 관리자 접근 테스트 서비스",
 						PermissionType.ADMIN, requestedUserID);
 				
 				conn.commit();
@@ -508,9 +508,9 @@ public class ServerDBUtilTest extends AbstractBoardTest {
 		String requestedUserID = "test01";
 		
 		try {
-			ServerDBUtil.execute(TEST_DBCP_NAME, (conn, create) -> {				
+			ServerDBUtil.execute(TEST_DBCP_NAME, (conn, dsl) -> {				
 
-				ServerDBUtil.checkUserAccessRights(conn, create, log, "관리저 전용 서비스에 일반인 접근 테스트 서비스",
+				ServerDBUtil.checkUserAccessRights(conn, dsl, log, "관리저 전용 서비스에 일반인 접근 테스트 서비스",
 						PermissionType.ADMIN, requestedUserID);
 
 				fail("no ServerTaskException");
@@ -533,8 +533,8 @@ public class ServerDBUtilTest extends AbstractBoardTest {
 		String requestedUserID = "guest";
 		
 		try {			
-			ServerDBUtil.execute(TEST_DBCP_NAME, (conn, create) -> {
-				ServerDBUtil.checkUserAccessRights(conn, create, log, "관리저 전용 서비스에 손님 접근 테스트 서비스",
+			ServerDBUtil.execute(TEST_DBCP_NAME, (conn, dsl) -> {
+				ServerDBUtil.checkUserAccessRights(conn, dsl, log, "관리저 전용 서비스에 손님 접근 테스트 서비스",
 						PermissionType.ADMIN, requestedUserID);
 
 				fail("no ServerTaskException");
@@ -557,8 +557,8 @@ public class ServerDBUtilTest extends AbstractBoardTest {
 		String requestedUserID = "admin";
 		
 		try {
-			ServerDBUtil.execute(TEST_DBCP_NAME, (conn, create) -> {
-				ServerDBUtil.checkUserAccessRights(conn, create, log, "일반 사용자 서비스에 관리자 접근 테스트 서비스",
+			ServerDBUtil.execute(TEST_DBCP_NAME, (conn, dsl) -> {
+				ServerDBUtil.checkUserAccessRights(conn, dsl, log, "일반 사용자 서비스에 관리자 접근 테스트 서비스",
 						PermissionType.MEMBER, requestedUserID);
 				
 				conn.commit();
@@ -575,9 +575,9 @@ public class ServerDBUtilTest extends AbstractBoardTest {
 		String requestedUserID = "test01";
 		
 		try {
-			ServerDBUtil.execute(TEST_DBCP_NAME, (conn, create) -> {
+			ServerDBUtil.execute(TEST_DBCP_NAME, (conn, dsl) -> {
 				
-				ServerDBUtil.checkUserAccessRights(conn, create, log, "일반 사용자 서비스에 관리자 접근 테스트 서비스",
+				ServerDBUtil.checkUserAccessRights(conn, dsl, log, "일반 사용자 서비스에 관리자 접근 테스트 서비스",
 						PermissionType.MEMBER, requestedUserID);
 				
 				conn.commit();
@@ -595,9 +595,9 @@ public class ServerDBUtilTest extends AbstractBoardTest {
 		String requestedUserID = "guest";
 		
 		try {
-			ServerDBUtil.execute(TEST_DBCP_NAME, (conn, create) -> {
+			ServerDBUtil.execute(TEST_DBCP_NAME, (conn, dsl) -> {
 				
-				ServerDBUtil.checkUserAccessRights(conn, create, log, "일반 사용자 서비스에 손님 접근 테스트 서비스", PermissionType.MEMBER,
+				ServerDBUtil.checkUserAccessRights(conn, dsl, log, "일반 사용자 서비스에 손님 접근 테스트 서비스", PermissionType.MEMBER,
 						requestedUserID);
 
 				fail("no ServerTaskException");
@@ -620,8 +620,8 @@ public class ServerDBUtilTest extends AbstractBoardTest {
 		String requestedUserID = "admin";
 		try {
 			
-			ServerDBUtil.execute(TEST_DBCP_NAME, (conn, create) -> {
-				ServerDBUtil.checkUserAccessRights(conn, create, log, "손님 권한일때 손님으로 접근 테스트 서비스", 
+			ServerDBUtil.execute(TEST_DBCP_NAME, (conn, dsl) -> {
+				ServerDBUtil.checkUserAccessRights(conn, dsl, log, "손님 권한일때 손님으로 접근 테스트 서비스", 
 						PermissionType.GUEST, requestedUserID);	
 				
 				conn.commit();
@@ -639,8 +639,8 @@ public class ServerDBUtilTest extends AbstractBoardTest {
 		String requestedUserID = "test01";
 		try {
 			
-			ServerDBUtil.execute(TEST_DBCP_NAME, (conn, create) -> {
-				ServerDBUtil.checkUserAccessRights(conn, create, log, "손님 권한일때 일반회원 접근 테스트 서비스", 
+			ServerDBUtil.execute(TEST_DBCP_NAME, (conn, dsl) -> {
+				ServerDBUtil.checkUserAccessRights(conn, dsl, log, "손님 권한일때 일반회원 접근 테스트 서비스", 
 						PermissionType.GUEST, requestedUserID);	
 				
 				conn.commit();
@@ -659,8 +659,8 @@ public class ServerDBUtilTest extends AbstractBoardTest {
 		String requestedUserID = "guest";
 		try {
 			
-			ServerDBUtil.execute(TEST_DBCP_NAME, (conn, create) -> {
-				ServerDBUtil.checkUserAccessRights(conn, create, log, "손님 권한일때 손님으로 접근 테스트 서비스", 
+			ServerDBUtil.execute(TEST_DBCP_NAME, (conn, dsl) -> {
+				ServerDBUtil.checkUserAccessRights(conn, dsl, log, "손님 권한일때 손님으로 접근 테스트 서비스", 
 						PermissionType.GUEST, requestedUserID);	
 				
 				conn.commit();

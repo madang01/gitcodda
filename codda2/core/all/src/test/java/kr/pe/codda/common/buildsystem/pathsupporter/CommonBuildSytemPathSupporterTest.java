@@ -148,7 +148,7 @@ public class CommonBuildSytemPathSupporterTest {
 	@Test
 	public void testGetMessageInfoFilePathStringFromRootResources() {
 		String installedPathString = installedPath.getAbsolutePath();
-		String messageID = "SelfExnRes";
+		String messageID = "ExceptionDeliveryRes";
 		String expectedValue = new StringBuilder(
 				CommonBuildSytemPathSupporter.getCommonMessageInfoDirectoryPathString(installedPathString))
 						.append(File.separator).append(messageID).append(".xml").toString();

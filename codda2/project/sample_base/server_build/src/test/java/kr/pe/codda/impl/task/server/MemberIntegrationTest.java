@@ -45,7 +45,7 @@ public class MemberIntegrationTest extends AbstractBoardTest {
 			assertEquals("아이디 중복 에러 검증", exepcedErrorMessage, acutalErrorMessage);
 		} catch (Exception e) {
 			log.warn("unknown error", e);
-			fail("fail to create a test ID");
+			fail("fail to dsl a test ID");
 		}
 	}
 
@@ -58,16 +58,16 @@ public class MemberIntegrationTest extends AbstractBoardTest {
 		String ip = "127.0.0.3";
 		
 		try {
-			ServerDBUtil.execute(TEST_DBCP_NAME, (conn, create) -> {
+			ServerDBUtil.execute(TEST_DBCP_NAME, (conn, dsl) -> {
 				
-				create.delete(SB_SITE_LOG_TB)
+				dsl.delete(SB_SITE_LOG_TB)
 				.execute();
 				
-				create.delete(SB_ACCOUNT_SERARCH_TB)
+				dsl.delete(SB_ACCOUNT_SERARCH_TB)
 				.where(SB_ACCOUNT_SERARCH_TB.USER_ID.eq(userID))
 				.execute();
 				
-				create.delete(SB_MEMBER_TB)
+				dsl.delete(SB_MEMBER_TB)
 				.where(SB_MEMBER_TB.USER_ID.eq(userID))
 				.execute();
 				
@@ -88,7 +88,7 @@ public class MemberIntegrationTest extends AbstractBoardTest {
 			assertEquals("별명 중복 에러 검증", exepcedErrorMessage, acutalErrorMessage);
 		} catch (Exception e) {
 			log.warn("unknown error", e);
-			fail("fail to create a test ID");
+			fail("fail to dsl a test ID");
 		}
 	}
 	
@@ -101,16 +101,16 @@ public class MemberIntegrationTest extends AbstractBoardTest {
 		String ip = "127.0.0.3";
 		
 		try {
-			ServerDBUtil.execute(TEST_DBCP_NAME, (conn, create) -> {
+			ServerDBUtil.execute(TEST_DBCP_NAME, (conn, dsl) -> {
 				
-				create.delete(SB_SITE_LOG_TB)
+				dsl.delete(SB_SITE_LOG_TB)
 				.execute();
 				
-				create.delete(SB_ACCOUNT_SERARCH_TB)
+				dsl.delete(SB_ACCOUNT_SERARCH_TB)
 				.where(SB_ACCOUNT_SERARCH_TB.USER_ID.eq(userID))
 				.execute();
 				
-				create.delete(SB_MEMBER_TB)
+				dsl.delete(SB_MEMBER_TB)
 				.where(SB_MEMBER_TB.USER_ID.eq(userID))
 				.execute();
 				
@@ -125,7 +125,7 @@ public class MemberIntegrationTest extends AbstractBoardTest {
 			ServerDBUtil.registerMember(TEST_DBCP_NAME, MemberRoleType.MEMBER, userID, nickname, email, 
 					passwordBytes, new java.sql.Timestamp(System.currentTimeMillis()), ip);
 		} catch (Exception e) {
-			fail("fail to create a test ID");
+			fail("fail to dsl a test ID");
 		}		
 		
 		MemberAllInformationReqServerTask MemberAllInformationReqServerTask = null;
@@ -178,16 +178,16 @@ public class MemberIntegrationTest extends AbstractBoardTest {
 		String ip = "127.0.0.3";
 		
 		try {
-			ServerDBUtil.execute(TEST_DBCP_NAME, (conn, create) -> {
+			ServerDBUtil.execute(TEST_DBCP_NAME, (conn, dsl) -> {
 				
-				create.delete(SB_SITE_LOG_TB)
+				dsl.delete(SB_SITE_LOG_TB)
 				.execute();
 				
-				create.delete(SB_ACCOUNT_SERARCH_TB)
+				dsl.delete(SB_ACCOUNT_SERARCH_TB)
 				.where(SB_ACCOUNT_SERARCH_TB.USER_ID.eq(userID))
 				.execute();
 				
-				create.delete(SB_MEMBER_TB)
+				dsl.delete(SB_MEMBER_TB)
 				.where(SB_MEMBER_TB.USER_ID.eq(userID))
 				.execute();
 				
@@ -203,7 +203,7 @@ public class MemberIntegrationTest extends AbstractBoardTest {
 					new java.sql.Timestamp(System.currentTimeMillis()), ip);
 		} catch (Exception e) {
 			log.warn("unknown error", e);
-			fail("fail to create a test ID");
+			fail("fail to dsl a test ID");
 		}
 		
 		
@@ -344,16 +344,16 @@ public class MemberIntegrationTest extends AbstractBoardTest {
 		String ip = "127.0.0.3";
 		
 		try {
-			ServerDBUtil.execute(TEST_DBCP_NAME, (conn, create) -> {
+			ServerDBUtil.execute(TEST_DBCP_NAME, (conn, dsl) -> {
 				
-				create.delete(SB_SITE_LOG_TB)
+				dsl.delete(SB_SITE_LOG_TB)
 				.execute();
 				
-				create.delete(SB_ACCOUNT_SERARCH_TB)
+				dsl.delete(SB_ACCOUNT_SERARCH_TB)
 				.where(SB_ACCOUNT_SERARCH_TB.USER_ID.eq(userID))
 				.execute();
 				
-				create.delete(SB_MEMBER_TB)
+				dsl.delete(SB_MEMBER_TB)
 				.where(SB_MEMBER_TB.USER_ID.eq(userID))
 				.execute();
 				
@@ -369,7 +369,7 @@ public class MemberIntegrationTest extends AbstractBoardTest {
 					passwordBytes, new java.sql.Timestamp(System.currentTimeMillis()), ip);
 		} catch (Exception e) {
 			log.warn("unknown error", e);
-			fail("fail to create a test ID");
+			fail("fail to dsl a test ID");
 		}
 		
 		MemberBlockReq userBlockReq = new MemberBlockReq();
@@ -413,16 +413,16 @@ public class MemberIntegrationTest extends AbstractBoardTest {
 		String ip = "127.0.0.3";
 		
 		try {
-			ServerDBUtil.execute(TEST_DBCP_NAME, (conn, create) -> {
+			ServerDBUtil.execute(TEST_DBCP_NAME, (conn, dsl) -> {
 				
-				create.delete(SB_SITE_LOG_TB)
+				dsl.delete(SB_SITE_LOG_TB)
 				.execute();
 				
-				create.delete(SB_ACCOUNT_SERARCH_TB)
+				dsl.delete(SB_ACCOUNT_SERARCH_TB)
 				.where(SB_ACCOUNT_SERARCH_TB.USER_ID.eq(userID))
 				.execute();
 				
-				create.delete(SB_MEMBER_TB)
+				dsl.delete(SB_MEMBER_TB)
 				.where(SB_MEMBER_TB.USER_ID.eq(userID))
 				.execute();
 				
@@ -438,7 +438,7 @@ public class MemberIntegrationTest extends AbstractBoardTest {
 					passwordBytes, new java.sql.Timestamp(System.currentTimeMillis()), ip);
 		} catch (Exception e) {
 			log.warn("unknown error", e);
-			fail("fail to create a test ID");
+			fail("fail to dsl a test ID");
 		}		
 		
 		MemberBlockReq userBlockReq = new MemberBlockReq();
@@ -531,17 +531,17 @@ public class MemberIntegrationTest extends AbstractBoardTest {
 		
 		
 		try {
-			ServerDBUtil.execute(TEST_DBCP_NAME, (conn, create) -> {
+			ServerDBUtil.execute(TEST_DBCP_NAME, (conn, dsl) -> {
 				
-				create.delete(SB_SITE_LOG_TB)
+				dsl.delete(SB_SITE_LOG_TB)
 				.execute();
 				
-				create.delete(SB_ACCOUNT_SERARCH_TB)
+				dsl.delete(SB_ACCOUNT_SERARCH_TB)
 				.where(SB_ACCOUNT_SERARCH_TB.USER_ID.eq(userID))
 				.execute();
 				
 				
-				create.delete(SB_MEMBER_TB)
+				dsl.delete(SB_MEMBER_TB)
 				.where(SB_MEMBER_TB.USER_ID.eq(userID))
 				.execute();
 				
@@ -557,7 +557,7 @@ public class MemberIntegrationTest extends AbstractBoardTest {
 					passwordBytes, new java.sql.Timestamp(System.currentTimeMillis()), ip);
 		} catch (Exception e) {
 			log.warn("unknown error", e);
-			fail("fail to create a test ID");
+			fail("fail to dsl a test ID");
 		}
 		
 		MemberBlockReq userBlockReq = new MemberBlockReq();
@@ -705,16 +705,16 @@ public class MemberIntegrationTest extends AbstractBoardTest {
 		String ip = "127.0.0.3";
 		
 		try {
-			ServerDBUtil.execute(TEST_DBCP_NAME, (conn, create) -> {
+			ServerDBUtil.execute(TEST_DBCP_NAME, (conn, dsl) -> {
 				
-				create.delete(SB_SITE_LOG_TB)
+				dsl.delete(SB_SITE_LOG_TB)
 				.execute();
 				
-				create.delete(SB_ACCOUNT_SERARCH_TB)
+				dsl.delete(SB_ACCOUNT_SERARCH_TB)
 				.where(SB_ACCOUNT_SERARCH_TB.USER_ID.eq(userID))
 				.execute();
 				
-				create.delete(SB_MEMBER_TB)
+				dsl.delete(SB_MEMBER_TB)
 				.where(SB_MEMBER_TB.USER_ID.eq(userID))
 				.execute();
 				
@@ -730,7 +730,7 @@ public class MemberIntegrationTest extends AbstractBoardTest {
 					passwordBytes, new java.sql.Timestamp(System.currentTimeMillis()), ip);
 		} catch (Exception e) {
 			log.warn("unknown error", e);
-			fail("fail to create a test ID");
+			fail("fail to dsl a test ID");
 		}
 		
 		MemberUnBlockReq userUnBlockReq = new MemberUnBlockReq();
@@ -772,17 +772,17 @@ public class MemberIntegrationTest extends AbstractBoardTest {
 		String ip = "127.0.0.3";
 		
 		try {
-			ServerDBUtil.execute(TEST_DBCP_NAME, (conn, create) -> {
+			ServerDBUtil.execute(TEST_DBCP_NAME, (conn, dsl) -> {
 				
-				create.delete(SB_SITE_LOG_TB)
+				dsl.delete(SB_SITE_LOG_TB)
 				.execute();
 				
-				create.delete(SB_ACCOUNT_SERARCH_TB)
+				dsl.delete(SB_ACCOUNT_SERARCH_TB)
 				.where(SB_ACCOUNT_SERARCH_TB.USER_ID.eq(userID))
 				.execute();
 				
 				
-				create.delete(SB_MEMBER_TB)
+				dsl.delete(SB_MEMBER_TB)
 				.where(SB_MEMBER_TB.USER_ID.eq(userID))
 				.execute();
 				
@@ -798,7 +798,7 @@ public class MemberIntegrationTest extends AbstractBoardTest {
 					passwordBytes, new java.sql.Timestamp(System.currentTimeMillis()), ip);
 		} catch (Exception e) {
 			log.warn("unknown error", e);
-			fail("fail to create a test ID");
+			fail("fail to dsl a test ID");
 		}
 		
 		MemberUnBlockReq userUnBlockReq = new MemberUnBlockReq();
@@ -840,16 +840,16 @@ public class MemberIntegrationTest extends AbstractBoardTest {
 		String ip = "127.0.0.3";
 		
 		try {
-			ServerDBUtil.execute(TEST_DBCP_NAME, (conn, create) -> {
+			ServerDBUtil.execute(TEST_DBCP_NAME, (conn, dsl) -> {
 				
-				create.delete(SB_SITE_LOG_TB)
+				dsl.delete(SB_SITE_LOG_TB)
 				.execute();
 				
-				create.delete(SB_ACCOUNT_SERARCH_TB)
+				dsl.delete(SB_ACCOUNT_SERARCH_TB)
 				.where(SB_ACCOUNT_SERARCH_TB.USER_ID.eq(userID))
 				.execute();
 				
-				create.delete(SB_MEMBER_TB)
+				dsl.delete(SB_MEMBER_TB)
 				.where(SB_MEMBER_TB.USER_ID.eq(userID))
 				.execute();
 				
@@ -865,7 +865,7 @@ public class MemberIntegrationTest extends AbstractBoardTest {
 					passwordBytes, new java.sql.Timestamp(System.currentTimeMillis()), ip);
 		} catch (Exception e) {
 			log.warn("unknown error", e);
-			fail("fail to create a test ID");
+			fail("fail to dsl a test ID");
 		}
 		
 		MemberBlockReq userBlockReq = new MemberBlockReq();
@@ -996,16 +996,16 @@ public class MemberIntegrationTest extends AbstractBoardTest {
 		String ip = "127.0.0.3";
 		
 		try {
-			ServerDBUtil.execute(TEST_DBCP_NAME, (conn, create) -> {
+			ServerDBUtil.execute(TEST_DBCP_NAME, (conn, dsl) -> {
 				
-				create.delete(SB_SITE_LOG_TB)
+				dsl.delete(SB_SITE_LOG_TB)
 				.execute();
 				
-				create.delete(SB_ACCOUNT_SERARCH_TB)
+				dsl.delete(SB_ACCOUNT_SERARCH_TB)
 				.where(SB_ACCOUNT_SERARCH_TB.USER_ID.eq(userID))
 				.execute();
 				
-				create.delete(SB_MEMBER_TB)
+				dsl.delete(SB_MEMBER_TB)
 				.where(SB_MEMBER_TB.USER_ID.eq(userID))
 				.execute();
 				
@@ -1021,7 +1021,7 @@ public class MemberIntegrationTest extends AbstractBoardTest {
 					passwordBytes, new java.sql.Timestamp(System.currentTimeMillis()), ip);
 		} catch (Exception e) {
 			log.warn("unknown error", e);
-			fail("fail to create a test ID");
+			fail("fail to dsl a test ID");
 		}
 		
 		MemberBlockReq userBlockReq = new MemberBlockReq();
@@ -1075,16 +1075,16 @@ public class MemberIntegrationTest extends AbstractBoardTest {
 		String ip = "127.0.0.3";
 		
 		try {
-			ServerDBUtil.execute(TEST_DBCP_NAME, (conn, create) -> {
+			ServerDBUtil.execute(TEST_DBCP_NAME, (conn, dsl) -> {
 				
-				create.delete(SB_SITE_LOG_TB)
+				dsl.delete(SB_SITE_LOG_TB)
 				.execute();
 				
-				create.delete(SB_ACCOUNT_SERARCH_TB)
+				dsl.delete(SB_ACCOUNT_SERARCH_TB)
 				.where(SB_ACCOUNT_SERARCH_TB.USER_ID.eq(userID))
 				.execute();
 				
-				create.delete(SB_MEMBER_TB)
+				dsl.delete(SB_MEMBER_TB)
 				.where(SB_MEMBER_TB.USER_ID.eq(userID))
 				.execute();
 				
@@ -1100,7 +1100,7 @@ public class MemberIntegrationTest extends AbstractBoardTest {
 					passwordBytes, new java.sql.Timestamp(System.currentTimeMillis()), ip);
 		} catch (Exception e) {
 			log.warn("unknown error", e);
-			fail("fail to create a test ID");
+			fail("fail to dsl a test ID");
 		}
 		
 		

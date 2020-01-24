@@ -30,40 +30,12 @@ public class MemberBlockReqServerTask extends AbstractServerTask {
 		super();
 	}
 
-	private void sendErrorOutputMessage(String errorMessage, ToLetterCarrier toLetterCarrier,
-			AbstractMessage inputMessage) throws InterruptedException {
-		log.warn("{}, inObj=", errorMessage, inputMessage.toString());
-
-		MessageResultRes messageResultRes = new MessageResultRes();
-		messageResultRes.setTaskMessageID(inputMessage.getMessageID());
-		messageResultRes.setIsSuccess(false);
-		messageResultRes.setResultMessage(errorMessage);
-		toLetterCarrier.addSyncOutputMessage(messageResultRes);
-	}
-
 	@Override
 	public void doTask(String projectName, LoginManagerIF personalLoginManager, ToLetterCarrier toLetterCarrier,
 			AbstractMessage inputMessage) throws Exception {
-		try {
-			AbstractMessage outputMessage = doWork(ServerCommonStaticFinalVars.DEFAULT_DBCP_NAME, (MemberBlockReq)inputMessage);
-			toLetterCarrier.addSyncOutputMessage(outputMessage);
-		} catch(ServerTaskException e) {
-			String errorMessage = e.getMessage();
-			log.warn("errmsg=={}, inObj={}", errorMessage, inputMessage.toString());
-			
-			sendErrorOutputMessage(errorMessage, toLetterCarrier, inputMessage);
-			return;
-		} catch(Exception e) {
-			String errorMessage = new StringBuilder().append("unknwon errmsg=")
-					.append(e.getMessage())
-					.append(", inObj=")
-					.append(inputMessage.toString()).toString();
-			
-			log.warn(errorMessage, e);
-						
-			sendErrorOutputMessage("사용자를 차단하는데 실패하였습니다", toLetterCarrier, inputMessage);
-			return;
-		}
+
+		AbstractMessage outputMessage = doWork(ServerCommonStaticFinalVars.DEFAULT_DBCP_NAME, (MemberBlockReq)inputMessage);
+		toLetterCarrier.addSyncOutputMessage(outputMessage);
 	}
 	
 	public MessageResultRes doWork(String dbcpName, MemberBlockReq memberBlockReq)
@@ -83,14 +55,14 @@ public class MemberBlockReqServerTask extends AbstractServerTask {
 			throw new ServerTaskException(errorMessage);
 		}
 		
-		ServerDBUtil.execute(dbcpName, (conn, create) -> {
+		ServerDBUtil.execute(dbcpName, (conn, dsl) -> {
 			
-			ServerDBUtil.checkUserAccessRights(conn, create, log, "회원 차단 서비스", PermissionType.ADMIN, 
+			ServerDBUtil.checkUserAccessRights(conn, dsl, log, "회원 차단 서비스", PermissionType.ADMIN, 
 					memberBlockReq.getRequestedUserID());
 						
 			
 			/** 차단 대상 회원 레코드 락 */
-			Record2<Byte, Byte> memberRecordOfTargetUserID = create.select(SB_MEMBER_TB.STATE, SB_MEMBER_TB.ROLE)
+			Record2<Byte, Byte> memberRecordOfTargetUserID = dsl.select(SB_MEMBER_TB.STATE, SB_MEMBER_TB.ROLE)
 			.from(SB_MEMBER_TB)
 			.where(SB_MEMBER_TB.USER_ID.eq(memberBlockReq.getTargetUserID()))
 			.forUpdate()
@@ -180,7 +152,7 @@ public class MemberBlockReqServerTask extends AbstractServerTask {
 			
 			Timestamp lastStateModifiedDate = new java.sql.Timestamp(System.currentTimeMillis());
 			
-			create.update(SB_MEMBER_TB)
+			dsl.update(SB_MEMBER_TB)
 			.set(SB_MEMBER_TB.STATE, MemberStateType.BLOCK.getValue())
 			.set(SB_MEMBER_TB.LAST_STATE_MOD_DT, lastStateModifiedDate)
 			.where(SB_MEMBER_TB.USER_ID.eq(memberBlockReq.getTargetUserID()))
@@ -193,7 +165,7 @@ public class MemberBlockReqServerTask extends AbstractServerTask {
 					.append(memberBlockReq.getTargetUserID())
 					.append("' 회원 차단 해제").toString();
 			
-			ServerDBUtil.insertSiteLog(conn, create, log, memberBlockReq.getRequestedUserID(), logText, 
+			ServerDBUtil.insertSiteLog(conn, dsl, log, memberBlockReq.getRequestedUserID(), logText, 
 					lastStateModifiedDate, memberBlockReq.getIp());
 			
 			conn.commit();

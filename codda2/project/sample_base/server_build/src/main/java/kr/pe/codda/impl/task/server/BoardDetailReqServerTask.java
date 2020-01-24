@@ -30,7 +30,6 @@ import kr.pe.codda.common.exception.ServerTaskException;
 import kr.pe.codda.common.message.AbstractMessage;
 import kr.pe.codda.impl.message.BoardDetailReq.BoardDetailReq;
 import kr.pe.codda.impl.message.BoardDetailRes.BoardDetailRes;
-import kr.pe.codda.impl.message.MessageResultRes.MessageResultRes;
 import kr.pe.codda.jooq.tables.SbBoardHistoryTb;
 import kr.pe.codda.jooq.tables.SbBoardTb;
 import kr.pe.codda.server.LoginManagerIF;
@@ -51,39 +50,13 @@ public class BoardDetailReqServerTask extends AbstractServerTask {
 		super();
 	}
 
-	private void sendErrorOutputMessage(String errorMessage, ToLetterCarrier toLetterCarrier,
-			AbstractMessage inputMessage) throws InterruptedException {
-		log.warn("{}, inObj=", errorMessage, inputMessage.toString());
-
-		MessageResultRes messageResultRes = new MessageResultRes();
-		messageResultRes.setTaskMessageID(inputMessage.getMessageID());
-		messageResultRes.setIsSuccess(false);
-		messageResultRes.setResultMessage(errorMessage);
-		toLetterCarrier.addSyncOutputMessage(messageResultRes);
-	}
-
 	@Override
 	public void doTask(String projectName, LoginManagerIF personalLoginManager, ToLetterCarrier toLetterCarrier,
 			AbstractMessage inputMessage) throws Exception {
-		try {
-			AbstractMessage outputMessage = doWork(ServerCommonStaticFinalVars.DEFAULT_DBCP_NAME,
-					(BoardDetailReq) inputMessage);
-			toLetterCarrier.addSyncOutputMessage(outputMessage);
-		} catch (ServerTaskException e) {
-			String errorMessage = e.getMessage();
-			log.warn("errmsg=={}, inObj={}", errorMessage, inputMessage.toString());
 
-			sendErrorOutputMessage(errorMessage, toLetterCarrier, inputMessage);
-			return;
-		} catch (Exception e) {
-			String errorMessage = new StringBuilder().append("unknwon errmsg=").append(e.getMessage())
-					.append(", inObj=").append(inputMessage.toString()).toString();
-
-			log.warn(errorMessage, e);
-
-			sendErrorOutputMessage("게시글 상세 조회가 실패하였습니다", toLetterCarrier, inputMessage);
-			return;
-		}
+		AbstractMessage outputMessage = doWork(ServerCommonStaticFinalVars.DEFAULT_DBCP_NAME,
+				(BoardDetailReq) inputMessage);
+		toLetterCarrier.addSyncOutputMessage(outputMessage);
 	}
 
 	public BoardDetailRes doWork(String dbcpName, BoardDetailReq boardDetailReq) throws Exception {
@@ -106,9 +79,9 @@ public class BoardDetailReqServerTask extends AbstractServerTask {
 		final List<BoardDetailRes.AttachedFile> attachedFileList = new ArrayList<BoardDetailRes.AttachedFile>();
 		final List<BoardDetailRes.ChildNode> childNodeList = new ArrayList<BoardDetailRes.ChildNode>();
 
-		ServerDBUtil.execute(dbcpName, (conn, create) -> {
+		ServerDBUtil.execute(dbcpName, (conn, dsl) -> {
 			
-			Record4<String, Byte, Byte, Byte> boardInforRecord = create
+			Record4<String, Byte, Byte, Byte> boardInforRecord = dsl
 					.select(SB_BOARD_INFO_TB.BOARD_NAME, SB_BOARD_INFO_TB.LIST_TYPE, SB_BOARD_INFO_TB.REPLY_POLICY_TYPE,
 							SB_BOARD_INFO_TB.REPLY_PERMISSION_TYPE)
 					.from(SB_BOARD_INFO_TB).where(SB_BOARD_INFO_TB.BOARD_ID.eq(boardID)).fetchOne();
@@ -145,37 +118,37 @@ public class BoardDetailReqServerTask extends AbstractServerTask {
 			}
 			
 			
-			MemberRoleType memberRoleTypeOfRequestedUserID = ServerDBUtil.checkUserAccessRights(conn, create, log,
+			MemberRoleType memberRoleTypeOfRequestedUserID = ServerDBUtil.checkUserAccessRights(conn, dsl, log,
 					"게시글 상세 조회 서비스", PermissionType.GUEST, boardDetailReq.getRequestedUserID());
 
 			SbBoardHistoryTb b = SB_BOARD_HISTORY_TB.as("b");
 			SbBoardHistoryTb c = SB_BOARD_HISTORY_TB.as("c");
 
-			Record18<UInteger, UShort, UInteger, UByte, Integer, Byte, UByte, String, Object, String, String, Timestamp, String, Object, Timestamp, String, Object, Object> mainBoardRecord = create
+			Record18<UInteger, UShort, UInteger, UByte, Integer, Byte, UByte, String, Object, String, String, Timestamp, String, Object, Timestamp, String, Object, Object> mainBoardRecord = dsl
 					.select
 					(
 							SB_BOARD_TB.GROUP_NO, SB_BOARD_TB.GROUP_SQ, SB_BOARD_TB.PARENT_NO, SB_BOARD_TB.DEPTH,
 							SB_BOARD_TB.VIEW_CNT, SB_BOARD_TB.BOARD_ST, SB_BOARD_TB.NEXT_ATTACHED_FILE_SQ,
 							SB_BOARD_TB.PWD_BASE64,
-							create.selectCount().from(SB_BOARD_VOTE_TB)
+							dsl.selectCount().from(SB_BOARD_VOTE_TB)
 									.where(SB_BOARD_VOTE_TB.BOARD_ID.eq(SB_BOARD_TB.BOARD_ID))
 									.and(SB_BOARD_VOTE_TB.BOARD_NO.eq(SB_BOARD_TB.BOARD_NO)).asField("votes"),
 							b.SUBJECT, b.CONTENTS, b.REG_DT.as("last_modified_date"),
 							b.REGISTRANT_ID.as("last_modifier_id"),
-							create.select(SB_MEMBER_TB.NICKNAME).from(SB_MEMBER_TB)
+							dsl.select(SB_MEMBER_TB.NICKNAME).from(SB_MEMBER_TB)
 									.where(SB_MEMBER_TB.USER_ID.eq(b.REGISTRANT_ID)).asField("last_modifier_nickname"),
 							c.REG_DT.as("first_registered_date"), 
 							c.REGISTRANT_ID.as("first_writer_id"),
-							create.select(SB_MEMBER_TB.NICKNAME).from(SB_MEMBER_TB)
+							dsl.select(SB_MEMBER_TB.NICKNAME).from(SB_MEMBER_TB)
 									.where(SB_MEMBER_TB.USER_ID.eq(c.REGISTRANT_ID)).asField("first_writer_nickname"),
-							create.select(SB_MEMBER_TB.ROLE).from(SB_MEMBER_TB)
+							dsl.select(SB_MEMBER_TB.ROLE).from(SB_MEMBER_TB)
 									.where(SB_MEMBER_TB.USER_ID.eq(c.REGISTRANT_ID)).asField("first_writer_role")
 					)
 					.from(SB_BOARD_TB).innerJoin(c).on(c.BOARD_ID.eq(SB_BOARD_TB.field(SB_BOARD_TB.BOARD_ID)))
 					.and(c.BOARD_NO.eq(SB_BOARD_TB.field(SB_BOARD_TB.BOARD_NO))).and(c.HISTORY_SQ.eq(UByte.valueOf(0)))
 					.innerJoin(b).on(b.BOARD_ID.eq(SB_BOARD_TB.field(SB_BOARD_TB.BOARD_ID)))
 					.and(b.BOARD_NO.eq(SB_BOARD_TB.field(SB_BOARD_TB.BOARD_NO)))
-					.and(b.HISTORY_SQ.eq(create.select(b.HISTORY_SQ.max()).from(b)
+					.and(b.HISTORY_SQ.eq(dsl.select(b.HISTORY_SQ.max()).from(b)
 							.where(b.BOARD_ID.eq(SB_BOARD_TB.field(SB_BOARD_TB.BOARD_ID)))
 							.and(b.BOARD_NO.eq(SB_BOARD_TB.field(SB_BOARD_TB.BOARD_NO)))))
 					.where(SB_BOARD_TB.BOARD_ID.eq(boardID)).and(SB_BOARD_TB.BOARD_NO.eq(boardNo))					
@@ -273,7 +246,7 @@ public class BoardDetailReqServerTask extends AbstractServerTask {
 
 				SbBoardTb a = SB_BOARD_TB.as("a");
 				
-				Table<Record3<UByte, UInteger, UShort>> d = create.select(a.BOARD_ID, a.GROUP_NO, a.GROUP_SQ)
+				Table<Record3<UByte, UInteger, UShort>> d = dsl.select(a.BOARD_ID, a.GROUP_NO, a.GROUP_SQ)
 						.from(a.forceIndex("sb_board_idx1"))
 						.where(a.BOARD_ID.eq(boardID))
 						.and(a.BOARD_ST.eq(BoardStateType.OK.getValue()))
@@ -281,14 +254,14 @@ public class BoardDetailReqServerTask extends AbstractServerTask {
 						.and(a.BOARD_NO.notEqual(boardNo))
 						.asTable("d");
 
-				Table<Record10<UByte, UInteger, UInteger, UShort, UInteger, UByte, Integer, Byte, UByte, String>> mainTable = create
+				Table<Record10<UByte, UInteger, UInteger, UShort, UInteger, UByte, Integer, Byte, UByte, String>> mainTable = dsl
 						.select(a.BOARD_ID, a.BOARD_NO, a.GROUP_NO, a.GROUP_SQ, a.PARENT_NO, a.DEPTH, a.VIEW_CNT,
 								a.BOARD_ST, a.NEXT_ATTACHED_FILE_SQ, a.PWD_BASE64)
 						.from(a).innerJoin(d).on(a.BOARD_ID.eq(d.field(SB_BOARD_TB.BOARD_ID)))
 						.and(a.GROUP_NO.eq(d.field(SB_BOARD_TB.GROUP_NO)))
 						.and(a.GROUP_SQ.eq(d.field(SB_BOARD_TB.GROUP_SQ))).asTable("a");				
 
-				Result<Record16<UInteger, UShort, UInteger, UByte, Byte, UByte, String, Object, String, Timestamp, String, Object, Timestamp, String, Object, Object>> childBoardResult = create
+				Result<Record16<UInteger, UShort, UInteger, UByte, Byte, UByte, String, Object, String, Timestamp, String, Object, Timestamp, String, Object, Object>> childBoardResult = dsl
 						.select
 						(
 							mainTable.field(SB_BOARD_TB.BOARD_NO), mainTable.field(SB_BOARD_TB.GROUP_SQ),
@@ -296,20 +269,20 @@ public class BoardDetailReqServerTask extends AbstractServerTask {
 							mainTable.field(SB_BOARD_TB.BOARD_ST),
 							mainTable.field(SB_BOARD_TB.NEXT_ATTACHED_FILE_SQ),
 							mainTable.field(SB_BOARD_TB.PWD_BASE64),
-							create.selectCount().from(SB_BOARD_VOTE_TB)
+							dsl.selectCount().from(SB_BOARD_VOTE_TB)
 							.where(SB_BOARD_VOTE_TB.BOARD_ID.eq(mainTable.field(SB_BOARD_TB.BOARD_ID)))
 							.and(SB_BOARD_VOTE_TB.BOARD_NO.eq(mainTable.field(SB_BOARD_TB.BOARD_NO)))
 							.asField("votes"),
 							b.CONTENTS, b.REG_DT.as("last_modified_date"), b.REGISTRANT_ID.as("last_modifier_id"),
-							create.select(SB_MEMBER_TB.NICKNAME).from(SB_MEMBER_TB)
+							dsl.select(SB_MEMBER_TB.NICKNAME).from(SB_MEMBER_TB)
 									.where(SB_MEMBER_TB.USER_ID.eq(b.REGISTRANT_ID))
 									.asField("last_modifier_nickname"),
 							c.REG_DT.as("first_registered_date"), 
 							c.REGISTRANT_ID.as("first_writer_id"),
-							create.select(SB_MEMBER_TB.NICKNAME).from(SB_MEMBER_TB)
+							dsl.select(SB_MEMBER_TB.NICKNAME).from(SB_MEMBER_TB)
 									.where(SB_MEMBER_TB.USER_ID.eq(c.REGISTRANT_ID))
 									.asField("first_writer_nickname"),
-							create.select(SB_MEMBER_TB.ROLE).from(SB_MEMBER_TB)
+							dsl.select(SB_MEMBER_TB.ROLE).from(SB_MEMBER_TB)
 									.where(SB_MEMBER_TB.USER_ID.eq(c.REGISTRANT_ID))
 									.asField("first_writer_role")
 						)
@@ -318,7 +291,7 @@ public class BoardDetailReqServerTask extends AbstractServerTask {
 						.and(c.HISTORY_SQ.eq(UByte.valueOf(0))).innerJoin(b)
 						.on(b.BOARD_ID.eq(mainTable.field(SB_BOARD_TB.BOARD_ID)))
 						.and(b.BOARD_NO.eq(mainTable.field(SB_BOARD_TB.BOARD_NO)))
-						.and(b.HISTORY_SQ.eq(create.select(b.HISTORY_SQ.max()).from(b)
+						.and(b.HISTORY_SQ.eq(dsl.select(b.HISTORY_SQ.max()).from(b)
 								.where(b.BOARD_ID.eq(mainTable.field(SB_BOARD_TB.BOARD_ID)))
 								.and(b.BOARD_NO.eq(mainTable.field(SB_BOARD_TB.BOARD_NO)))))
 						.orderBy(mainTable.field(SB_BOARD_TB.GROUP_SQ).desc())
@@ -364,7 +337,7 @@ public class BoardDetailReqServerTask extends AbstractServerTask {
 
 					List<BoardDetailRes.ChildNode.AttachedFile> childAttachedFileList = new ArrayList<BoardDetailRes.ChildNode.AttachedFile>();
 
-					Result<Record> attachFileListRecord = create.select().from(SB_BOARD_FILELIST_TB)
+					Result<Record> attachFileListRecord = dsl.select().from(SB_BOARD_FILELIST_TB)
 							.where(SB_BOARD_FILELIST_TB.BOARD_ID.eq(boardID))
 							.and(SB_BOARD_FILELIST_TB.BOARD_NO.eq(childBoardNo)).fetch();
 
@@ -384,7 +357,7 @@ public class BoardDetailReqServerTask extends AbstractServerTask {
 				}
 			}
 
-			Result<Record> attachFileListRecord = create.select().from(SB_BOARD_FILELIST_TB)
+			Result<Record> attachFileListRecord = dsl.select().from(SB_BOARD_FILELIST_TB)
 					.where(SB_BOARD_FILELIST_TB.BOARD_ID.eq(boardID)).and(SB_BOARD_FILELIST_TB.BOARD_NO.eq(boardNo))
 					.fetch();
 
@@ -397,7 +370,7 @@ public class BoardDetailReqServerTask extends AbstractServerTask {
 				attachedFileList.add(attachedFile);
 			}
 
-			int countOfViewCountUpdate = create.update(SB_BOARD_TB)
+			int countOfViewCountUpdate = dsl.update(SB_BOARD_TB)
 					.set(SB_BOARD_TB.VIEW_CNT, SB_BOARD_TB.VIEW_CNT.add(1)).where(SB_BOARD_TB.BOARD_ID.eq(boardID))
 					.and(SB_BOARD_TB.BOARD_NO.eq(boardNo)).execute();
 

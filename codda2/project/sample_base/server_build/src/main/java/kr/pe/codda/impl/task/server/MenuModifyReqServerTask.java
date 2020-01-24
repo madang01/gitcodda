@@ -26,42 +26,13 @@ public class MenuModifyReqServerTask extends AbstractServerTask {
 	public MenuModifyReqServerTask() throws DynamicClassCallException {
 		super();
 	}
-
-	private void sendErrorOutputMessage(String errorMessage,			
-			ToLetterCarrier toLetterCarrier,
-			AbstractMessage inputMessage) throws InterruptedException {
-		
-		MessageResultRes messageResultRes = new MessageResultRes();
-		messageResultRes.setTaskMessageID(inputMessage.getMessageID());
-		messageResultRes.setIsSuccess(false);		
-		messageResultRes.setResultMessage(errorMessage);
-		toLetterCarrier.addSyncOutputMessage(messageResultRes);
-	}
-	
 	
 	@Override
 	public void doTask(String projectName, LoginManagerIF personalLoginManager, ToLetterCarrier toLetterCarrier,
 			AbstractMessage inputMessage) throws Exception {
-		try {
-			AbstractMessage outputMessage = doWork(ServerCommonStaticFinalVars.DEFAULT_DBCP_NAME, (MenuModifyReq)inputMessage);
-			toLetterCarrier.addSyncOutputMessage(outputMessage);
-		} catch(ServerTaskException e) {
-			String errorMessage = e.getMessage();
-			log.warn("errmsg=={}, inObj={}", errorMessage, inputMessage.toString());
-			
-			sendErrorOutputMessage(errorMessage, toLetterCarrier, inputMessage);
-			return;
-		} catch(Exception e) {
-			String errorMessage = new StringBuilder().append("unknwon errmsg=")
-					.append(e.getMessage())
-					.append(", inObj=")
-					.append(inputMessage.toString()).toString();
-			
-			log.warn(errorMessage, e);
-						
-			sendErrorOutputMessage("메뉴 수정하는데 실패하였습니다", toLetterCarrier, inputMessage);
-			return;
-		}
+
+		AbstractMessage outputMessage = doWork(ServerCommonStaticFinalVars.DEFAULT_DBCP_NAME, (MenuModifyReq)inputMessage);
+		toLetterCarrier.addSyncOutputMessage(outputMessage);
 	}
 		
 	public MessageResultRes doWork(String dbcpName, MenuModifyReq menuModifyReq) throws Exception {
@@ -75,11 +46,11 @@ public class MenuModifyReqServerTask extends AbstractServerTask {
 			throw new ServerTaskException(errorMessage);
 		}
 		
-		ServerDBUtil.execute(dbcpName, (conn, create) -> {
+		ServerDBUtil.execute(dbcpName, (conn, dsl) -> {
 			
-			ServerDBUtil.checkUserAccessRights(conn, create, log, "메뉴 수정 서비스", PermissionType.ADMIN, menuModifyReq.getRequestedUserID());
+			ServerDBUtil.checkUserAccessRights(conn, dsl, log, "메뉴 수정 서비스", PermissionType.ADMIN, menuModifyReq.getRequestedUserID());
 			
-			Record2<String, String> menuRecord = create.select(SB_SITEMENU_TB.MENU_NM, SB_SITEMENU_TB.LINK_URL)
+			Record2<String, String> menuRecord = dsl.select(SB_SITEMENU_TB.MENU_NM, SB_SITEMENU_TB.LINK_URL)
 			.from(SB_SITEMENU_TB)
 			.where(SB_SITEMENU_TB.MENU_NO.eq(UInteger.valueOf(menuModifyReq.getMenuNo())))
 			.fetchOne();
@@ -103,7 +74,7 @@ public class MenuModifyReqServerTask extends AbstractServerTask {
 			String oldMenuLinkURL = menuRecord.getValue(SB_SITEMENU_TB.LINK_URL);
 			
 			
-			int menuUpdateCount = create.update(SB_SITEMENU_TB)
+			int menuUpdateCount = dsl.update(SB_SITEMENU_TB)
 			.set(SB_SITEMENU_TB.MENU_NM, menuModifyReq.getMenuName())
 			.set(SB_SITEMENU_TB.LINK_URL, menuModifyReq.getLinkURL())
 			.where(SB_SITEMENU_TB.MENU_NO.eq(UInteger.valueOf(menuModifyReq.getMenuNo())))

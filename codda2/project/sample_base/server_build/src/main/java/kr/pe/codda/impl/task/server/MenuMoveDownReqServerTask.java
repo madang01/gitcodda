@@ -38,39 +38,14 @@ public class MenuMoveDownReqServerTask extends AbstractServerTask {
 		super();
 	}
 
-	private void sendErrorOutputMessage(String errorMessage, ToLetterCarrier toLetterCarrier,
-			AbstractMessage inputMessage) throws InterruptedException {
-
-		MessageResultRes messageResultRes = new MessageResultRes();
-		messageResultRes.setTaskMessageID(inputMessage.getMessageID());
-		messageResultRes.setIsSuccess(false);
-		messageResultRes.setResultMessage(errorMessage);
-		toLetterCarrier.addSyncOutputMessage(messageResultRes);
-	}
-
+	
 	@Override
 	public void doTask(String projectName, LoginManagerIF personalLoginManager, ToLetterCarrier toLetterCarrier,
 			AbstractMessage inputMessage) throws Exception {
-		try {
-			AbstractMessage outputMessage = doWork(ServerCommonStaticFinalVars.DEFAULT_DBCP_NAME,
-					(MenuMoveDownReq) inputMessage);
-			toLetterCarrier.addSyncOutputMessage(outputMessage);
-		} catch (ServerTaskException e) {
-			String errorMessage = e.getMessage();
-			log.warn("errmsg=={}, inObj={}", errorMessage, inputMessage.toString());
 
-			sendErrorOutputMessage(errorMessage, toLetterCarrier, inputMessage);
-			return;
-		} catch (Exception e) {
-			String errorMessage = new StringBuilder().append("unknwon errmsg=").append(e.getMessage())
-					.append(", inObj=").append(inputMessage.toString()).toString();
-
-			log.warn(errorMessage, e);
-
-			sendErrorOutputMessage("메뉴 하단 이동이 실패하였습니다", toLetterCarrier, inputMessage);
-			return;
-		}
-
+		AbstractMessage outputMessage = doWork(ServerCommonStaticFinalVars.DEFAULT_DBCP_NAME,
+				(MenuMoveDownReq) inputMessage);
+		toLetterCarrier.addSyncOutputMessage(outputMessage);
 	}
 
 	public MessageResultRes doWork(String dbcpName, MenuMoveDownReq menuMoveDownReq) throws Exception {
@@ -87,13 +62,13 @@ public class MenuMoveDownReqServerTask extends AbstractServerTask {
 		final UByte menuSequenceID = SequenceType.MENU.getSequenceID();
 		final UInteger sourceMenuNo = UInteger.valueOf(menuMoveDownReq.getMenuNo());
 		
-		ServerDBUtil.execute(dbcpName, (conn, create) -> {
+		ServerDBUtil.execute(dbcpName, (conn, dsl) -> {
 			
-			ServerDBUtil.checkUserAccessRights(conn, create, log, "메뉴 하단 이동 서비스", PermissionType.ADMIN,
+			ServerDBUtil.checkUserAccessRights(conn, dsl, log, "메뉴 하단 이동 서비스", PermissionType.ADMIN,
 					menuMoveDownReq.getRequestedUserID());
 
 			/** '메뉴 순서' 를 위한 lock */
-			Record menuSeqRecord = create.select(SB_SEQ_TB.SQ_VALUE).from(SB_SEQ_TB)
+			Record menuSeqRecord = dsl.select(SB_SEQ_TB.SQ_VALUE).from(SB_SEQ_TB)
 					.where(SB_SEQ_TB.SQ_ID.eq(menuSequenceID)).forUpdate().fetchOne();
 
 			if (null == menuSeqRecord) {
@@ -108,7 +83,7 @@ public class MenuMoveDownReqServerTask extends AbstractServerTask {
 				throw new ServerTaskException(errorMessage);
 			}
 
-			Record3<UInteger, UByte, UByte> sourceMenuRecord = create
+			Record3<UInteger, UByte, UByte> sourceMenuRecord = dsl
 					.select(SB_SITEMENU_TB.PARENT_NO, SB_SITEMENU_TB.DEPTH, SB_SITEMENU_TB.ORDER_SQ)
 					.from(SB_SITEMENU_TB).where(SB_SITEMENU_TB.MENU_NO.eq(sourceMenuNo)).fetchOne();
 
@@ -131,12 +106,12 @@ public class MenuMoveDownReqServerTask extends AbstractServerTask {
 
 			Record3<UInteger, UByte, UByte> targetMenuRecord = null;
 			try {
-				SelectHavingStep<Record1<UByte>> firstYoungerBrowereQuery = create
+				SelectHavingStep<Record1<UByte>> firstYoungerBrowereQuery = dsl
 						.select(SB_SITEMENU_TB.ORDER_SQ.min().as(SB_SITEMENU_TB.ORDER_SQ)).from(SB_SITEMENU_TB)
 						.where(SB_SITEMENU_TB.PARENT_NO.eq(sourceParetNo)).and(SB_SITEMENU_TB.DEPTH.eq(sourceDepth))
 						.and(SB_SITEMENU_TB.ORDER_SQ.gt(sourceOrderSeq));
 
-				targetMenuRecord = create.select(SB_SITEMENU_TB.MENU_NO, SB_SITEMENU_TB.DEPTH, SB_SITEMENU_TB.ORDER_SQ)
+				targetMenuRecord = dsl.select(SB_SITEMENU_TB.MENU_NO, SB_SITEMENU_TB.DEPTH, SB_SITEMENU_TB.ORDER_SQ)
 						.from(SB_SITEMENU_TB).where(SB_SITEMENU_TB.ORDER_SQ.eq(firstYoungerBrowereQuery)).fetchOne();
 			} catch (TooManyRowsException e) {
 				try {
@@ -174,7 +149,7 @@ public class MenuMoveDownReqServerTask extends AbstractServerTask {
 			HashSet<UInteger> targetGroupMenuNoSet = new HashSet<UInteger>();
 			targetGroupMenuNoSet.add(targetMenuNo);
 
-			Result<Record2<UInteger, UByte>> targetGroupSiteMenuResult = create
+			Result<Record2<UInteger, UByte>> targetGroupSiteMenuResult = dsl
 					.select(SB_SITEMENU_TB.MENU_NO, SB_SITEMENU_TB.DEPTH).from(SB_SITEMENU_TB)
 					.where(SB_SITEMENU_TB.ORDER_SQ.gt(targetOrderSeq)).orderBy(SB_SITEMENU_TB.ORDER_SQ.asc()).fetch();
 
@@ -193,7 +168,7 @@ public class MenuMoveDownReqServerTask extends AbstractServerTask {
 			/**
 			 * 하단 이동 요청한 메뉴보다 한칸 낮은 메뉴 그룹을 하단 이동 요청한 메뉴 위치로 전부 이동
 			 */
-			int targetMenuUpdateCount = create.update(SB_SITEMENU_TB)
+			int targetMenuUpdateCount = dsl.update(SB_SITEMENU_TB)
 					.set(SB_SITEMENU_TB.ORDER_SQ, SB_SITEMENU_TB.ORDER_SQ.sub(sourceGroupListSize))
 					.where(SB_SITEMENU_TB.ORDER_SQ.greaterOrEqual(targetOrderSeq))
 					.and(SB_SITEMENU_TB.ORDER_SQ.lt(UByte.valueOf(targetOrderSeq.shortValue() + targetGroupListSize)))
@@ -215,7 +190,7 @@ public class MenuMoveDownReqServerTask extends AbstractServerTask {
 			/**
 			 * 하단 이동 요청한 메뉴 그룹을 하단 이동 요청한 메뉴 위치로 전부 이동
 			 */
-			int sourceMenuUpdateCount = create.update(SB_SITEMENU_TB)
+			int sourceMenuUpdateCount = dsl.update(SB_SITEMENU_TB)
 					.set(SB_SITEMENU_TB.ORDER_SQ, SB_SITEMENU_TB.ORDER_SQ.add(targetGroupListSize))
 					.where(SB_SITEMENU_TB.ORDER_SQ.greaterOrEqual(sourceOrderSeq))
 					.and(SB_SITEMENU_TB.ORDER_SQ.lt(UByte.valueOf(sourceOrderSeq.shortValue() + sourceGroupListSize)))

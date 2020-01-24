@@ -28,7 +28,6 @@ import kr.pe.codda.common.exception.ServerTaskException;
 import kr.pe.codda.common.message.AbstractMessage;
 import kr.pe.codda.impl.message.BoardMoveReq.BoardMoveReq;
 import kr.pe.codda.impl.message.BoardMoveRes.BoardMoveRes;
-import kr.pe.codda.impl.message.MessageResultRes.MessageResultRes;
 import kr.pe.codda.server.LoginManagerIF;
 import kr.pe.codda.server.lib.BoardListType;
 import kr.pe.codda.server.lib.BoardStateType;
@@ -47,39 +46,12 @@ public class BoardMoveReqServerTask extends AbstractServerTask {
 		super();
 	}
 
-	private void sendErrorOutputMessage(String errorMessage, ToLetterCarrier toLetterCarrier,
-			AbstractMessage inputMessage) throws InterruptedException {
-		log.warn("{}, inObj=", errorMessage, inputMessage.toString());
-
-		MessageResultRes messageResultRes = new MessageResultRes();
-		messageResultRes.setTaskMessageID(inputMessage.getMessageID());
-		messageResultRes.setIsSuccess(false);
-		messageResultRes.setResultMessage(errorMessage);
-		toLetterCarrier.addSyncOutputMessage(messageResultRes);
-	}
-
 	@Override
 	public void doTask(String projectName, LoginManagerIF personalLoginManager, ToLetterCarrier toLetterCarrier,
 			AbstractMessage inputMessage) throws Exception {
-		try {
-			AbstractMessage outputMessage = doWork(ServerCommonStaticFinalVars.DEFAULT_DBCP_NAME,
-					(BoardMoveReq) inputMessage);
-			toLetterCarrier.addSyncOutputMessage(outputMessage);
-		} catch (ServerTaskException e) {
-			String errorMessage = e.getMessage();
-			log.warn("errmsg=={}, inObj={}", errorMessage, inputMessage.toString());
-
-			sendErrorOutputMessage(errorMessage, toLetterCarrier, inputMessage);
-			return;
-		} catch (Exception e) {
-			String errorMessage = new StringBuilder().append("unknwon errmsg=").append(e.getMessage())
-					.append(", inObj=").append(inputMessage.toString()).toString();
-
-			log.warn(errorMessage, e);
-
-			sendErrorOutputMessage("게시글 이동 처리가 실패하였습니다", toLetterCarrier, inputMessage);
-			return;
-		}
+		AbstractMessage outputMessage = doWork(ServerCommonStaticFinalVars.DEFAULT_DBCP_NAME,
+				(BoardMoveReq) inputMessage);
+		toLetterCarrier.addSyncOutputMessage(outputMessage);
 	}
 	
 	private void checkValidAllArgument(BoardMoveReq boardMoveReq) throws  ServerTaskException {		
@@ -150,13 +122,13 @@ public class BoardMoveReqServerTask extends AbstractServerTask {
 		
 		final List<BoardMoveRes.BoardMoveInfo> boardMoveInfoList = new ArrayList<BoardMoveRes.BoardMoveInfo>();
 
-		ServerDBUtil.execute(dbcpName, (conn, create) -> {
+		ServerDBUtil.execute(dbcpName, (conn, dsl) -> {
 
 			@SuppressWarnings("unused")
-			MemberRoleType memberRoleTypeOfRequestedUserID = ServerDBUtil.checkUserAccessRights(conn, create, log,
+			MemberRoleType memberRoleTypeOfRequestedUserID = ServerDBUtil.checkUserAccessRights(conn, dsl, log,
 					"게시글 이동 서비스", PermissionType.ADMIN, boardMoveReq.getRequestedUserID());
 
-			Record4<Byte, Byte, Byte, Byte> sourceBoardInforRecord = create
+			Record4<Byte, Byte, Byte, Byte> sourceBoardInforRecord = dsl
 					.select(SB_BOARD_INFO_TB.LIST_TYPE, SB_BOARD_INFO_TB.REPLY_POLICY_TYPE,
 							SB_BOARD_INFO_TB.WRITE_PERMISSION_TYPE, SB_BOARD_INFO_TB.REPLY_PERMISSION_TYPE)
 					.from(SB_BOARD_INFO_TB).where(SB_BOARD_INFO_TB.BOARD_ID.eq(sourceBoardID))
@@ -199,7 +171,7 @@ public class BoardMoveReqServerTask extends AbstractServerTask {
 			
 			
 			/** 이동 후의 게시글 번호를 얻기 위해 레코드 락을 건다 */
-			Record6<String, Byte, Byte, Byte, Byte, UInteger> targetBoardInforRecord = create
+			Record6<String, Byte, Byte, Byte, Byte, UInteger> targetBoardInforRecord = dsl
 					.select(SB_BOARD_INFO_TB.BOARD_NAME, SB_BOARD_INFO_TB.LIST_TYPE, SB_BOARD_INFO_TB.REPLY_POLICY_TYPE,
 							SB_BOARD_INFO_TB.WRITE_PERMISSION_TYPE, SB_BOARD_INFO_TB.REPLY_PERMISSION_TYPE,
 							SB_BOARD_INFO_TB.NEXT_BOARD_NO)
@@ -244,7 +216,7 @@ public class BoardMoveReqServerTask extends AbstractServerTask {
 			}
 
 			/** 수정할 게시글에 속한 그룹의 루트 노드에 해당하는 레코드에 락을 건다 */
-			UInteger sourceGroupNo = ServerDBUtil.lockGroupOfGivenBoard(conn, create, log, sourceBoardID,
+			UInteger sourceGroupNo = ServerDBUtil.lockGroupOfGivenBoard(conn, dsl, log, sourceBoardID,
 					sourceBoardNo);
 
 			if (! sourceBoardNo.equals(sourceGroupNo)) {
@@ -263,7 +235,7 @@ public class BoardMoveReqServerTask extends AbstractServerTask {
 			 *          부모 글 번호를 확정해야 이동이 가능하므로 부모 글 번호 부터 먼저 확정되는것을 보장하는 '게시글 번호 오름 차순'을 꼭 지킬것.
 			 */
 			Result<Record8<UInteger, UShort, UInteger, UByte, Integer, Byte, UByte, String>>  
-			boardResult = create.select(SB_BOARD_TB.BOARD_NO,
+			boardResult = dsl.select(SB_BOARD_TB.BOARD_NO,
 					SB_BOARD_TB.GROUP_SQ,
 					SB_BOARD_TB.PARENT_NO, SB_BOARD_TB.DEPTH,
 					SB_BOARD_TB.VIEW_CNT, SB_BOARD_TB.BOARD_ST, 
@@ -321,7 +293,7 @@ public class BoardMoveReqServerTask extends AbstractServerTask {
 					throw new ServerTaskException(errorMessage);
 				}
 				
-				create.insertInto(SB_BOARD_TB).set(SB_BOARD_TB.BOARD_ID, targetBoardID)
+				dsl.insertInto(SB_BOARD_TB).set(SB_BOARD_TB.BOARD_ID, targetBoardID)
 						.set(SB_BOARD_TB.BOARD_NO, toBoardNo)
 						.set(SB_BOARD_TB.GROUP_NO, targetGroupNo)
 						.set(SB_BOARD_TB.GROUP_SQ, fromGroupSeqence)
@@ -333,35 +305,35 @@ public class BoardMoveReqServerTask extends AbstractServerTask {
 						.set(SB_BOARD_TB.PWD_BASE64, fromBoardPwdBase64)
 						.execute();
 				
-				create.update(SB_BOARD_FILELIST_TB)
+				dsl.update(SB_BOARD_FILELIST_TB)
 				.set(SB_BOARD_FILELIST_TB.BOARD_ID, targetBoardID)
 				.set(SB_BOARD_FILELIST_TB.BOARD_NO, toBoardNo)
 				.where(SB_BOARD_FILELIST_TB.BOARD_ID.eq(sourceBoardID))
 				.and(SB_BOARD_FILELIST_TB.BOARD_NO.eq(fromBoardNo))
 				.execute();
 				
-				create.update(SB_BOARD_HISTORY_TB)
+				dsl.update(SB_BOARD_HISTORY_TB)
 				.set(SB_BOARD_HISTORY_TB.BOARD_ID, targetBoardID)
 				.set(SB_BOARD_HISTORY_TB.BOARD_NO, toBoardNo)
 				.where(SB_BOARD_HISTORY_TB.BOARD_ID.eq(sourceBoardID))
 				.and(SB_BOARD_HISTORY_TB.BOARD_NO.eq(fromBoardNo))
 				.execute();
 				
-				create.update(SB_BOARD_VOTE_TB)
+				dsl.update(SB_BOARD_VOTE_TB)
 				.set(SB_BOARD_VOTE_TB.BOARD_ID, targetBoardID)
 				.set(SB_BOARD_VOTE_TB.BOARD_NO, toBoardNo)
 				.where(SB_BOARD_VOTE_TB.BOARD_ID.eq(sourceBoardID))
 				.and(SB_BOARD_VOTE_TB.BOARD_NO.eq(fromBoardNo))
 				.execute();
 				
-				create.update(SB_MEMBER_ACTIVITY_HISTORY_TB)
+				dsl.update(SB_MEMBER_ACTIVITY_HISTORY_TB)
 				.set(SB_MEMBER_ACTIVITY_HISTORY_TB.BOARD_ID, targetBoardID)
 				.set(SB_MEMBER_ACTIVITY_HISTORY_TB.BOARD_NO, toBoardNo)
 				.where(SB_MEMBER_ACTIVITY_HISTORY_TB.BOARD_ID.eq(sourceBoardID))
 				.and(SB_MEMBER_ACTIVITY_HISTORY_TB.BOARD_NO.eq(fromBoardNo))
 				.execute();
 				
-				create.delete(SB_BOARD_TB)
+				dsl.delete(SB_BOARD_TB)
 				.where(SB_BOARD_TB.BOARD_ID.eq(sourceBoardID))
 				.and(SB_BOARD_TB.BOARD_NO.eq(fromBoardNo))
 				.execute();
@@ -378,13 +350,13 @@ public class BoardMoveReqServerTask extends AbstractServerTask {
 					}
 				}
 				
-				create.update(SB_BOARD_INFO_TB)
+				dsl.update(SB_BOARD_INFO_TB)
 				.set(SB_BOARD_INFO_TB.CNT, SB_BOARD_INFO_TB.CNT.sub(countOfBoard))
 				.set(SB_BOARD_INFO_TB.TOTAL, SB_BOARD_INFO_TB.TOTAL.sub(1))
 				.where(SB_BOARD_INFO_TB.BOARD_ID.eq(sourceBoardID))
 				.execute();
 				
-				create.update(SB_BOARD_INFO_TB)
+				dsl.update(SB_BOARD_INFO_TB)
 				.set(SB_BOARD_INFO_TB.CNT, SB_BOARD_INFO_TB.CNT.add(countOfBoard))
 				.set(SB_BOARD_INFO_TB.TOTAL, SB_BOARD_INFO_TB.TOTAL.add(1))
 				.where(SB_BOARD_INFO_TB.BOARD_ID.eq(targetBoardID))
@@ -392,7 +364,7 @@ public class BoardMoveReqServerTask extends AbstractServerTask {
 				
 				List<BoardMoveRes.BoardMoveInfo.AttachedFile> attachedFileList = new ArrayList<BoardMoveRes.BoardMoveInfo.AttachedFile>();
 				
-				Result<Record1<UByte>> attachedFileResult = create.select(SB_BOARD_FILELIST_TB.ATTACHED_FILE_SQ)
+				Result<Record1<UByte>> attachedFileResult = dsl.select(SB_BOARD_FILELIST_TB.ATTACHED_FILE_SQ)
 				.from(SB_BOARD_FILELIST_TB)
 				.where(SB_BOARD_FILELIST_TB.BOARD_ID.eq(targetBoardID))
 				.and(SB_BOARD_FILELIST_TB.BOARD_NO.eq(toBoardNo))
@@ -421,7 +393,7 @@ public class BoardMoveReqServerTask extends AbstractServerTask {
 						sourceBoardID, fromBoardNo, targetBoardID, toBoardNo);
 			}
 
-			create.update(SB_BOARD_INFO_TB)
+			dsl.update(SB_BOARD_INFO_TB)
 			.set(SB_BOARD_INFO_TB.NEXT_BOARD_NO, UInteger.valueOf(targetNextBoardNo))
 			.where(SB_BOARD_INFO_TB.BOARD_ID.eq(targetBoardID)).execute();
 			
@@ -438,7 +410,7 @@ public class BoardMoveReqServerTask extends AbstractServerTask {
 			.append(targetBoardID)			
 			.append("] 이동 처리가 완료되었습니다");
 			
-			ServerDBUtil.insertSiteLog(conn, create, log, boardMoveReq.getRequestedUserID(), siteLogStringBuilder.toString(), 
+			ServerDBUtil.insertSiteLog(conn, dsl, log, boardMoveReq.getRequestedUserID(), siteLogStringBuilder.toString(), 
 					new java.sql.Timestamp(System.currentTimeMillis()), boardMoveReq.getIp());
 			
 			conn.commit();			

@@ -64,13 +64,13 @@ public abstract class ServerDBUtil {
 			.withSchemata(new MappedSchema().withInput(ServerCommonStaticFinalVars.DEFAULT_DBCP_NAME.toLowerCase())
 					.withOutput(ServerCommonStaticFinalVars.LOAD_TEST_DBCP_NAME.toLowerCase())));
 
-	private static void initializeSequenceTable(DSLContext create) throws Exception {
+	private static void initializeSequenceTable(DSLContext dsl) throws Exception {
 		for (SequenceType sequenceTypeValue : SequenceType.values()) {
-			boolean exists = create.fetchExists(create.select(SB_SEQ_TB.SQ_ID).from(SB_SEQ_TB)
+			boolean exists = dsl.fetchExists(dsl.select(SB_SEQ_TB.SQ_ID).from(SB_SEQ_TB)
 					.where(SB_SEQ_TB.SQ_ID.eq(sequenceTypeValue.getSequenceID())));
 
 			if (!exists) {
-				int countOfInsert = create.insertInto(SB_SEQ_TB).set(SB_SEQ_TB.SQ_ID, sequenceTypeValue.getSequenceID())
+				int countOfInsert = dsl.insertInto(SB_SEQ_TB).set(SB_SEQ_TB.SQ_ID, sequenceTypeValue.getSequenceID())
 						.set(SB_SEQ_TB.SQ_NAME, sequenceTypeValue.getName())
 						.set(SB_SEQ_TB.SQ_VALUE, UInteger.valueOf(1)).execute();
 
@@ -87,10 +87,10 @@ public abstract class ServerDBUtil {
 	/**
 	 * WARNING! 일반 사용자 '사이트 메뉴 정보 테이블' 초기화는 '시퀀스 테이블' 초기화 이후 호출되어야 한다
 	 * 
-	 * @param create
+	 * @param dsl
 	 * @throws Exception
 	 */
-	private static void initializeUserMenuInfoTable(DSLContext create) throws Exception {
+	private static void initializeUserMenuInfoTable(DSLContext dsl) throws Exception {
 		CoddaConfiguration mainProjectConfiguration = CoddaConfigurationManager.getInstance()
 				.getRunningProjectConfiguration();
 		String installedPathString = mainProjectConfiguration.getInstalledPathString();
@@ -182,11 +182,11 @@ public abstract class ServerDBUtil {
 			String menuName = menuNameJsonElement.getAsString();
 			String linkURL = linkURLJsonElement.getAsString();
 
-			boolean isMenu = create.fetchExists(create.select(SB_SITEMENU_TB.MENU_NO).from(SB_SITEMENU_TB)
+			boolean isMenu = dsl.fetchExists(dsl.select(SB_SITEMENU_TB.MENU_NO).from(SB_SITEMENU_TB)
 					.where(SB_SITEMENU_TB.MENU_NO.eq(menuNo)));
 
 			if (!isMenu) {
-				int countOfInsert = create.insertInto(SB_SITEMENU_TB).set(SB_SITEMENU_TB.MENU_NO, menuNo)
+				int countOfInsert = dsl.insertInto(SB_SITEMENU_TB).set(SB_SITEMENU_TB.MENU_NO, menuNo)
 						.set(SB_SITEMENU_TB.PARENT_NO, parentNo).set(SB_SITEMENU_TB.DEPTH, depth)
 						.set(SB_SITEMENU_TB.ORDER_SQ, orderSequence).set(SB_SITEMENU_TB.MENU_NM, menuName)
 						.set(SB_SITEMENU_TB.LINK_URL, linkURL).execute();
@@ -199,13 +199,13 @@ public abstract class ServerDBUtil {
 			}
 		}
 
-		create.update(SB_SEQ_TB).set(SB_SEQ_TB.SQ_VALUE,
-				create.select(DSL.field("if ({0} is null, {1}, {2})", UInteger.class, SB_SITEMENU_TB.MENU_NO.max(),
+		dsl.update(SB_SEQ_TB).set(SB_SEQ_TB.SQ_VALUE,
+				dsl.select(DSL.field("if ({0} is null, {1}, {2})", UInteger.class, SB_SITEMENU_TB.MENU_NO.max(),
 						UInteger.valueOf(1), SB_SITEMENU_TB.MENU_NO.max().add(1))).from(SB_SITEMENU_TB))
 				.where(SB_SEQ_TB.SQ_ID.eq(SequenceType.MENU.getSequenceID())).execute();
 	}
 
-	private static void initializeBoardInfoTable(DSLContext create) throws Exception {
+	private static void initializeBoardInfoTable(DSLContext dsl) throws Exception {
 		CoddaConfiguration mainProjectConfiguration = CoddaConfigurationManager.getInstance()
 				.getRunningProjectConfiguration();
 		String installedPathString = mainProjectConfiguration.getInstalledPathString();
@@ -297,11 +297,11 @@ public abstract class ServerDBUtil {
 			byte boardWritePermissionType = boardWritePermissionTypeJsonElement.getAsByte();
 			byte boardReplyPermissionType = boardReplyPermissionTypeJsonElement.getAsByte();
 
-			boolean isBoardTypeID = create.fetchExists(create.select(SB_BOARD_INFO_TB.BOARD_ID).from(SB_BOARD_INFO_TB)
+			boolean isBoardTypeID = dsl.fetchExists(dsl.select(SB_BOARD_INFO_TB.BOARD_ID).from(SB_BOARD_INFO_TB)
 					.where(SB_BOARD_INFO_TB.BOARD_ID.eq(boardID)));
 
 			if (!isBoardTypeID) {
-				int countOfInsert = create.insertInto(SB_BOARD_INFO_TB).set(SB_BOARD_INFO_TB.BOARD_ID, boardID)
+				int countOfInsert = dsl.insertInto(SB_BOARD_INFO_TB).set(SB_BOARD_INFO_TB.BOARD_ID, boardID)
 						.set(SB_BOARD_INFO_TB.BOARD_NAME, boardName).set(SB_BOARD_INFO_TB.LIST_TYPE, boardListType)
 						.set(SB_BOARD_INFO_TB.REPLY_POLICY_TYPE, boardReplyPolictyType)
 						.set(SB_BOARD_INFO_TB.WRITE_PERMISSION_TYPE, boardWritePermissionType)
@@ -340,13 +340,13 @@ public abstract class ServerDBUtil {
 			conn = dataSource.getConnection();
 			conn.setAutoCommit(true);
 
-			DSLContext create = DSL.using(conn, SQLDialect.MYSQL, ServerDBUtil.getDBCPSettings(dbcpName));
+			DSLContext dsl = DSL.using(conn, SQLDialect.MYSQL, ServerDBUtil.getDBCPSettings(dbcpName));
 
-			initializeSequenceTable(create);
+			initializeSequenceTable(dsl);
 
-			initializeBoardInfoTable(create);
+			initializeBoardInfoTable(dsl);
 
-			initializeUserMenuInfoTable(create);
+			initializeUserMenuInfoTable(dsl);
 
 		} catch (Exception e) {
 			log.warn("error", e);
@@ -431,10 +431,10 @@ public abstract class ServerDBUtil {
 
 		PasswordPairOfMemberTable passwordPairOfMemberTable = toPasswordPairOfMemberTable(passwordBytes, pwdSaltBytes);
 
-		ServerDBUtil.execute(dbcpName, (conn, create) -> {
+		ServerDBUtil.execute(dbcpName, (conn, dsl) -> {
 			
-			boolean isSameIDMember = create.fetchExists(
-					create.select(SB_MEMBER_TB.USER_ID).from(SB_MEMBER_TB).where(SB_MEMBER_TB.USER_ID.eq(userID)));
+			boolean isSameIDMember = dsl.fetchExists(
+					dsl.select(SB_MEMBER_TB.USER_ID).from(SB_MEMBER_TB).where(SB_MEMBER_TB.USER_ID.eq(userID)));
 
 			if (isSameIDMember) {
 				try {
@@ -447,8 +447,8 @@ public abstract class ServerDBUtil {
 				throw new ServerTaskException(errorMessage);
 			}
 
-			boolean isSameNicknameMember = create.fetchExists(
-					create.select(SB_MEMBER_TB.NICKNAME).from(SB_MEMBER_TB).where(SB_MEMBER_TB.NICKNAME.eq(nickname)));
+			boolean isSameNicknameMember = dsl.fetchExists(
+					dsl.select(SB_MEMBER_TB.NICKNAME).from(SB_MEMBER_TB).where(SB_MEMBER_TB.NICKNAME.eq(nickname)));
 
 			if (isSameNicknameMember) {
 				try {
@@ -461,7 +461,7 @@ public abstract class ServerDBUtil {
 				throw new ServerTaskException(errorMessage);
 			}
 
-			int resultOfInsert = create.insertInto(SB_MEMBER_TB).set(SB_MEMBER_TB.USER_ID, userID)
+			int resultOfInsert = dsl.insertInto(SB_MEMBER_TB).set(SB_MEMBER_TB.USER_ID, userID)
 					.set(SB_MEMBER_TB.NICKNAME, nickname)
 					.set(SB_MEMBER_TB.PWD_BASE64, passwordPairOfMemberTable.getPasswordBase64())
 					.set(SB_MEMBER_TB.PWD_SALT_BASE64, passwordPairOfMemberTable.getPasswordSaltBase64())
@@ -492,7 +492,7 @@ public abstract class ServerDBUtil {
 			String logText = new StringBuilder().append("회원 가입 신청 아이디[").append(userID).append("], 회원 종류[")
 					.append(memberRoleType.getName()).append("]").toString();
 			
-			insertSiteLog(conn, create, log, userID, logText, registeredDate, ip);
+			insertSiteLog(conn, dsl, log, userID, logText, registeredDate, ip);
 			
 			conn.commit();
 			
@@ -548,10 +548,10 @@ public abstract class ServerDBUtil {
 		return DEFAULT_DBCP_SETTINGS;
 	}
 
-	public static UByte getToOrderSeqOfRelativeRootMenu(DSLContext create, UByte orderSeq, UByte depth) {
+	public static UByte getToOrderSeqOfRelativeRootMenu(DSLContext dsl, UByte orderSeq, UByte depth) {
 		UByte toOrderSeq = orderSeq;
 
-		Result<Record2<UByte, UByte>> childMenuResult = create.select(SB_SITEMENU_TB.ORDER_SQ, SB_SITEMENU_TB.DEPTH)
+		Result<Record2<UByte, UByte>> childMenuResult = dsl.select(SB_SITEMENU_TB.ORDER_SQ, SB_SITEMENU_TB.DEPTH)
 				.from(SB_SITEMENU_TB.forceIndex("sb_sitemenu_idx1")).where(SB_SITEMENU_TB.ORDER_SQ.gt(orderSeq))
 				.orderBy(SB_SITEMENU_TB.ORDER_SQ.asc()).fetch();
 
@@ -569,23 +569,23 @@ public abstract class ServerDBUtil {
 		return toOrderSeq;
 	}
 
-	public static UByte getToOrderSeqOfRelativeRootMenu(DSLContext create, UByte orderSeq, UInteger directParentNo)
+	public static UByte getToOrderSeqOfRelativeRootMenu(DSLContext dsl, UByte orderSeq, UInteger directParentNo)
 			throws ServerTaskException {
 		while (true) {
-			Record1<UByte> toOrderSeqRecord = create.select(SB_SITEMENU_TB.ORDER_SQ.min().sub(1).as("toOrderSeq"))
+			Record1<UByte> toOrderSeqRecord = dsl.select(SB_SITEMENU_TB.ORDER_SQ.min().sub(1).as("toOrderSeq"))
 					.from(SB_SITEMENU_TB.forceIndex("sb_sitemenu_idx2"))
 					.where(SB_SITEMENU_TB.PARENT_NO.eq(directParentNo)).and(SB_SITEMENU_TB.ORDER_SQ.gt(orderSeq))
 					.fetchOne();
 
 			if (null == toOrderSeqRecord.getValue("toOrderSeq")) {
 				if (0 == directParentNo.longValue()) {
-					Record1<UByte> maxOrderSqRecord = create.select(SB_SITEMENU_TB.ORDER_SQ.max())
+					Record1<UByte> maxOrderSqRecord = dsl.select(SB_SITEMENU_TB.ORDER_SQ.max())
 							.from(SB_SITEMENU_TB.forceIndex("sb_sitemenu_idx1")).fetchOne();
 
 					return maxOrderSqRecord.value1();
 				}
 
-				Record1<UInteger> parentMenuRecord = create.select(SB_SITEMENU_TB.PARENT_NO).from(SB_SITEMENU_TB)
+				Record1<UInteger> parentMenuRecord = dsl.select(SB_SITEMENU_TB.PARENT_NO).from(SB_SITEMENU_TB)
 						.where(SB_SITEMENU_TB.MENU_NO.eq(directParentNo)).fetchOne();
 
 				if (null == parentMenuRecord) {
@@ -603,10 +603,10 @@ public abstract class ServerDBUtil {
 		}
 	}
 
-	public static UShort getToGroupSeqOfRelativeRootBoard(DSLContext create, UByte boardID, UInteger groupNo,
+	public static UShort getToGroupSeqOfRelativeRootBoard(DSLContext dsl, UByte boardID, UInteger groupNo,
 			UShort groupSeq, UByte depth) {
 
-		Result<Record2<UShort, UByte>> childBoardResult = create.select(SB_BOARD_TB.GROUP_SQ, SB_BOARD_TB.DEPTH)
+		Result<Record2<UShort, UByte>> childBoardResult = dsl.select(SB_BOARD_TB.GROUP_SQ, SB_BOARD_TB.DEPTH)
 				.from(SB_BOARD_TB).where(SB_BOARD_TB.BOARD_ID.eq(boardID)).and(SB_BOARD_TB.GROUP_NO.eq(groupNo))
 				.and(SB_BOARD_TB.GROUP_SQ.lt(groupSeq)).orderBy(SB_BOARD_TB.GROUP_SQ.desc()).fetch();
 
@@ -628,7 +628,7 @@ public abstract class ServerDBUtil {
 
 	/*
 	 * public static MemberRoleType getValidMemberRoleType(Connection conn,
-	 * DSLContext create, InternalLogger log, String requestedUserID) throws
+	 * DSLContext dsl, InternalLogger log, String requestedUserID) throws
 	 * ServerTaskException { if (null == requestedUserID) { try {
 	 * conn.rollback(); } catch (Exception e) { log.warn("fail to rollback"); }
 	 * 
@@ -637,7 +637,7 @@ public abstract class ServerDBUtil {
 	 * 
 	 * MemberRoleType memberRoleTypeOfRequestedUserID = null;
 	 * 
-	 * Record2<Byte, Byte> memberRecord = create.select(SB_MEMBER_TB.STATE,
+	 * Record2<Byte, Byte> memberRecord = dsl.select(SB_MEMBER_TB.STATE,
 	 * SB_MEMBER_TB.ROLE).from(SB_MEMBER_TB)
 	 * .where(SB_MEMBER_TB.USER_ID.eq(requestedUserID)).fetchOne();
 	 * 
@@ -703,7 +703,7 @@ public abstract class ServerDBUtil {
 	 * </pre>
 	 * 
 	 * @param conn                    연결 객체
-	 * @param create                  jooq DLSContext 객체
+	 * @param dsl                  jooq DLSContext 객체
 	 * @param log                     로그
 	 * @param serviceName              서비스 이름
 	 * @param servicePermissionType 서비스 이용 권한 유형
@@ -711,7 +711,7 @@ public abstract class ServerDBUtil {
 	 * @return 서비스 요청자의 회원 역활 유형
 	 * @throws ServerTaskException 서비스 이용 권한이 없거나 기타 에러 발생시 던지는 예외
 	 */
-	public static MemberRoleType checkUserAccessRights(Connection conn, DSLContext create, Logger log,
+	public static MemberRoleType checkUserAccessRights(Connection conn, DSLContext dsl, Logger log,
 			String serviceName, PermissionType servicePermissionType, String requestedUserID)
 			throws ServerTaskException {
 
@@ -728,7 +728,7 @@ public abstract class ServerDBUtil {
 
 		
 
-		Record2<Byte, Byte> memberRecord = create.select(SB_MEMBER_TB.STATE, SB_MEMBER_TB.ROLE).from(SB_MEMBER_TB)
+		Record2<Byte, Byte> memberRecord = dsl.select(SB_MEMBER_TB.STATE, SB_MEMBER_TB.ROLE).from(SB_MEMBER_TB)
 				.where(SB_MEMBER_TB.USER_ID.eq(requestedUserID)).fetchOne();
 
 		if (null == memberRecord) {
@@ -818,7 +818,7 @@ public abstract class ServerDBUtil {
 		return memberRoleTypeOfRequestedUserID;
 	}
 
-	public static void insertSiteLog(Connection conn, DSLContext create, Logger log, String userID, 
+	public static void insertSiteLog(Connection conn, DSLContext dsl, Logger log, String userID, 
 			String logText, Timestamp registeredDate, String ip) throws Exception {
 		
 		// SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
@@ -827,11 +827,11 @@ public abstract class ServerDBUtil {
 		Field<String> yyyyMMdd = DSL.field("date_format({0}, {1})", String.class, registeredDate, DSL.inline("%Y%m%d"));		
 		
 		/** '일별 로그 순번' 동기화를 위해 락을 건다 */
-		create.select(SB_SEQ_TB.SQ_ID).from(SB_SEQ_TB)
+		dsl.select(SB_SEQ_TB.SQ_ID).from(SB_SEQ_TB)
 		.where(SB_SEQ_TB.SQ_ID.eq(SequenceType.SITE_LOG_LOCK.getSequenceID()))
 		.forUpdate().fetchOne();
 		
-		long maxOfDayLogSeq = create.select(DSL.field("if ({0} is null, {1}, {2})", 
+		long maxOfDayLogSeq = dsl.select(DSL.field("if ({0} is null, {1}, {2})", 
 				Long.class, SB_SITE_LOG_TB.DAY_LOG_SQ.max(), Long.valueOf(0), 
 				SB_SITE_LOG_TB.DAY_LOG_SQ.max()))
 		.from(SB_SITE_LOG_TB)
@@ -841,7 +841,7 @@ public abstract class ServerDBUtil {
 			throw new ServerTaskException("작업 시점의 SB_SITE_LOG_TB 테이블의 날짜 시퀀스가 최대치에 도달하여 더 이상 로그를 추가할 수 없습니다");
 		}
 		
-		create.insertInto(SB_SITE_LOG_TB)
+		dsl.insertInto(SB_SITE_LOG_TB)
 		.set(SB_SITE_LOG_TB.YYYYMMDD, yyyyMMdd)
 		.set(SB_SITE_LOG_TB.DAY_LOG_SQ, UInteger.valueOf(maxOfDayLogSeq + 1))
 		.set(SB_SITE_LOG_TB.USER_ID, userID)		
@@ -851,7 +851,7 @@ public abstract class ServerDBUtil {
 	}
 	
 	
-	public static void insertMemberActivityHistory(Connection conn, DSLContext create, Logger log,
+	public static void insertMemberActivityHistory(Connection conn, DSLContext dsl, Logger log,
 			String userID, 
 			MemberRoleType memberRoleType, MemberActivityType memberActivityType, UByte boardID, UInteger boardNo,
 			Timestamp registeredDate) throws Exception {
@@ -862,16 +862,16 @@ public abstract class ServerDBUtil {
 		}
 		
 		/** '회원 이력 순번' 동기화를 위해 락을 건다 */
-		create.select(SB_MEMBER_TB.USER_ID).from(SB_MEMBER_TB)
+		dsl.select(SB_MEMBER_TB.USER_ID).from(SB_MEMBER_TB)
 		.where(SB_MEMBER_TB.USER_ID.eq(userID))
 		.forUpdate().fetchOne();
 		
-		Long activitySeq = create.select(DSL.field("if ({0} is null, {1}, {2})", 
+		Long activitySeq = dsl.select(DSL.field("if ({0} is null, {1}, {2})", 
 				Long.class, SB_MEMBER_ACTIVITY_HISTORY_TB.ACTIVITY_SQ.max(), 
 				0, SB_MEMBER_ACTIVITY_HISTORY_TB.ACTIVITY_SQ.max().add(1))).from(SB_MEMBER_ACTIVITY_HISTORY_TB)
 				.where(SB_MEMBER_ACTIVITY_HISTORY_TB.USER_ID.eq(userID)).fetchOne().value1();
 		
-		create.insertInto(SB_MEMBER_ACTIVITY_HISTORY_TB)
+		dsl.insertInto(SB_MEMBER_ACTIVITY_HISTORY_TB)
 		.set(SB_MEMBER_ACTIVITY_HISTORY_TB.USER_ID, userID)
 		.set(SB_MEMBER_ACTIVITY_HISTORY_TB.ACTIVITY_SQ, activitySeq)
 		.set(SB_MEMBER_ACTIVITY_HISTORY_TB.BOARD_ID, boardID)
@@ -884,17 +884,17 @@ public abstract class ServerDBUtil {
 	/**
 	 * 지정한 게시글에 속한 그룹의 루트 노드에 해당하는 레코드에 락을 건후 그룹 번호를 반환한다
 	 * @param conn JDBC 연결
-	 * @param create DSLContext
+	 * @param dsl DSLContext
 	 * @param log 로거
 	 * @param boardID 게시판 식별자
 	 * @param boardNo 게시글 번호
 	 * @return 지정한 게시글에 속한 그룹 번호
 	 * @throws Exception 에러
 	 */
-	public static UInteger lockGroupOfGivenBoard(Connection conn, DSLContext create, Logger log,
+	public static UInteger lockGroupOfGivenBoard(Connection conn, DSLContext dsl, Logger log,
 			UByte boardID, UInteger boardNo) throws Exception {
 		/** 그룹 락 시작 */
-		Record1<UInteger> groupRecord = create.select(SB_BOARD_TB.GROUP_NO)
+		Record1<UInteger> groupRecord = dsl.select(SB_BOARD_TB.GROUP_NO)
 		.from(SB_BOARD_TB).where(SB_BOARD_TB.BOARD_ID.eq(boardID)).and(SB_BOARD_TB.BOARD_NO.eq(boardNo))
 		.fetchOne();
 		
@@ -916,7 +916,7 @@ public abstract class ServerDBUtil {
 		
 		UInteger groupNo = groupRecord.get(SB_BOARD_TB.GROUP_NO);
 		
-		Record1<UInteger> groupLockRecord = create
+		Record1<UInteger> groupLockRecord = dsl
 		.select(SB_BOARD_TB.BOARD_NO)
 		.from(SB_BOARD_TB).where(SB_BOARD_TB.BOARD_ID.eq(boardID)).and(SB_BOARD_TB.BOARD_NO.eq(groupNo))
 		.forUpdate().fetchOne();
@@ -955,9 +955,9 @@ public abstract class ServerDBUtil {
 			conn = dataSource.getConnection();
 			conn.setAutoCommit(false);
 			
-			DSLContext create = DSL.using(conn, SQLDialect.MYSQL, ServerDBUtil.getDBCPSettings(dbcpName));
+			DSLContext dsl = DSL.using(conn, SQLDialect.MYSQL, ServerDBUtil.getDBCPSettings(dbcpName));
 			
-			dbExecutor.execute(conn, create); 
+			dbExecutor.execute(conn, dsl); 
 		} catch (ServerTaskException e) {
 			throw e;
 		} catch (Exception e) {

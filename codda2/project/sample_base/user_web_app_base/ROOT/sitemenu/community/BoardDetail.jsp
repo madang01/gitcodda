@@ -487,7 +487,7 @@ function callBackForBoardDeleteProcess(boardNo) {
 		opener.document.location.reload();
 		self.close();
 	} else {
-		document.location.reload();
+		goList();
 	}
 }
 

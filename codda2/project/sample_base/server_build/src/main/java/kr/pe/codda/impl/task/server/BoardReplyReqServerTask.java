@@ -24,7 +24,6 @@ import kr.pe.codda.common.exception.ServerTaskException;
 import kr.pe.codda.common.message.AbstractMessage;
 import kr.pe.codda.impl.message.BoardReplyReq.BoardReplyReq;
 import kr.pe.codda.impl.message.BoardReplyRes.BoardReplyRes;
-import kr.pe.codda.impl.message.MessageResultRes.MessageResultRes;
 import kr.pe.codda.server.LoginManagerIF;
 import kr.pe.codda.server.lib.BoardListType;
 import kr.pe.codda.server.lib.BoardReplyPolicyType;
@@ -45,40 +44,13 @@ public class BoardReplyReqServerTask extends AbstractServerTask {
 		super();
 	}
 
-	private void sendErrorOutputMessage(String errorMessage, ToLetterCarrier toLetterCarrier,
-			AbstractMessage inputMessage) throws InterruptedException {
-		log.warn("{}, inObj=", errorMessage, inputMessage.toString());
-
-		MessageResultRes messageResultRes = new MessageResultRes();
-		messageResultRes.setTaskMessageID(inputMessage.getMessageID());
-		messageResultRes.setIsSuccess(false);
-		messageResultRes.setResultMessage(errorMessage);
-		toLetterCarrier.addSyncOutputMessage(messageResultRes);
-	}
-
 	@Override
 	public void doTask(String projectName, LoginManagerIF personalLoginManager, ToLetterCarrier toLetterCarrier,
 			AbstractMessage inputMessage) throws Exception {
 
-		try {
-			AbstractMessage outputMessage = doWork(ServerCommonStaticFinalVars.DEFAULT_DBCP_NAME,
-					(BoardReplyReq) inputMessage);
-			toLetterCarrier.addSyncOutputMessage(outputMessage);
-		} catch (ServerTaskException e) {
-			String errorMessage = e.getMessage();
-			log.warn("errmsg=={}, inObj={}", errorMessage, inputMessage.toString());
-
-			sendErrorOutputMessage(errorMessage, toLetterCarrier, inputMessage);
-			return;
-		} catch (Exception e) {
-			String errorMessage = new StringBuilder().append("unknwon errmsg=").append(e.getMessage())
-					.append(", inObj=").append(inputMessage.toString()).toString();
-
-			log.warn(errorMessage, e);
-
-			sendErrorOutputMessage("게시글 댓글 쓰기가 실패하였습니다", toLetterCarrier, inputMessage);
-			return;
-		}
+		AbstractMessage outputMessage = doWork(ServerCommonStaticFinalVars.DEFAULT_DBCP_NAME,
+				(BoardReplyReq) inputMessage);
+		toLetterCarrier.addSyncOutputMessage(outputMessage);
 	}
 
 	public BoardReplyRes doWork(String dbcpName, BoardReplyReq boardReplyReq) throws Exception {
@@ -126,13 +98,13 @@ public class BoardReplyReqServerTask extends AbstractServerTask {
 		final String boardPasswordHashBase64 = (null == boardReplyReq.getPwdHashBase64()) ? "" : boardReplyReq.getPwdHashBase64();
 		final BoardReplyRes boardReplyRes = new BoardReplyRes();
 
-		ServerDBUtil.execute(dbcpName, (conn, create) -> {
+		ServerDBUtil.execute(dbcpName, (conn, dsl) -> {
 			
 			/**
 			 * '게시판 식별자 정보'(SB_BOARD_INFO_TB) 테이블에는 '다음 게시판 번호'가 있어 락을 건후 1 증가 시키고 가져온 값은
 			 * '게시판 번호'로 사용한다
 			 */
-			Record5<String, Byte, Byte, Byte, UInteger> boardInforRecord = create
+			Record5<String, Byte, Byte, Byte, UInteger> boardInforRecord = dsl
 					.select(SB_BOARD_INFO_TB.BOARD_NAME, SB_BOARD_INFO_TB.LIST_TYPE, SB_BOARD_INFO_TB.REPLY_POLICY_TYPE,
 							SB_BOARD_INFO_TB.REPLY_PERMISSION_TYPE, SB_BOARD_INFO_TB.NEXT_BOARD_NO)
 					.from(SB_BOARD_INFO_TB).where(SB_BOARD_INFO_TB.BOARD_ID.eq(boardID)).forUpdate().fetchOne();
@@ -239,7 +211,7 @@ public class BoardReplyReqServerTask extends AbstractServerTask {
 				throw new ServerTaskException(errorMessage);
 			}
 
-			MemberRoleType memberRoleTypeOfRequestedUserID = ServerDBUtil.checkUserAccessRights(conn, create, log,
+			MemberRoleType memberRoleTypeOfRequestedUserID = ServerDBUtil.checkUserAccessRights(conn, dsl, log,
 					"게시판 댓글 등록 서비스", boardReplyPermissionType, boardReplyReq.getRequestedUserID());
 
 			if (MemberRoleType.GUEST.equals(memberRoleTypeOfRequestedUserID)) {
@@ -255,16 +227,16 @@ public class BoardReplyReqServerTask extends AbstractServerTask {
 				}
 			}
 
-			create.update(SB_BOARD_INFO_TB).set(SB_BOARD_INFO_TB.NEXT_BOARD_NO, SB_BOARD_INFO_TB.NEXT_BOARD_NO.add(1))
+			dsl.update(SB_BOARD_INFO_TB).set(SB_BOARD_INFO_TB.NEXT_BOARD_NO, SB_BOARD_INFO_TB.NEXT_BOARD_NO.add(1))
 					.where(SB_BOARD_INFO_TB.BOARD_ID.eq(boardID)).execute();
 
 			conn.commit();
 			
 			
 			/** 댓글의 부모 게시글에 속한 그룹의 루트 노드에 해당하는 레코드에 락을 건다  */
-			UInteger groupNoOfParent = ServerDBUtil.lockGroupOfGivenBoard(conn, create, log, boardID, parentBoardNo);
+			UInteger groupNoOfParent = ServerDBUtil.lockGroupOfGivenBoard(conn, dsl, log, boardID, parentBoardNo);
 			
-			Record3<UShort, UInteger, UByte> parentBoardRecord = create
+			Record3<UShort, UInteger, UByte> parentBoardRecord = dsl
 					.select(SB_BOARD_TB.GROUP_SQ, SB_BOARD_TB.PARENT_NO, SB_BOARD_TB.DEPTH).from(SB_BOARD_TB)
 					.where(SB_BOARD_TB.BOARD_ID.eq(boardID)).and(SB_BOARD_TB.BOARD_NO.eq(parentBoardNo))
 					.fetchOne();
@@ -298,25 +270,25 @@ public class BoardReplyReqServerTask extends AbstractServerTask {
 				}
 			}
 			
-			UShort toGroupSeq = ServerDBUtil.getToGroupSeqOfRelativeRootBoard(create, boardID, groupNoOfParent,
+			UShort toGroupSeq = ServerDBUtil.getToGroupSeqOfRelativeRootBoard(dsl, boardID, groupNoOfParent,
 					groupSeqOfParentBoard, depthOfParentBoard);
 
-			Table<Record3<UByte, UInteger, UShort>> b = create
+			Table<Record3<UByte, UInteger, UShort>> b = dsl
 					.select(SB_BOARD_TB.BOARD_ID, SB_BOARD_TB.GROUP_NO, SB_BOARD_TB.GROUP_SQ)
 					.from(SB_BOARD_TB.forceIndex("sb_board_idx1")).where(SB_BOARD_TB.BOARD_ID.eq(boardID))
 					.and(SB_BOARD_TB.GROUP_NO.eq(groupNoOfParent)).and(SB_BOARD_TB.GROUP_SQ.ge(toGroupSeq))
 					.orderBy(SB_BOARD_TB.GROUP_SQ.desc()).asTable("b");
 
-			create.update(SB_BOARD_TB.innerJoin(b).on(SB_BOARD_TB.BOARD_ID.eq(b.field(SB_BOARD_TB.BOARD_ID)))
+			dsl.update(SB_BOARD_TB.innerJoin(b).on(SB_BOARD_TB.BOARD_ID.eq(b.field(SB_BOARD_TB.BOARD_ID)))
 					.and(SB_BOARD_TB.GROUP_NO.eq(b.field(SB_BOARD_TB.GROUP_NO)))
 					.and(SB_BOARD_TB.GROUP_SQ.eq(b.field(SB_BOARD_TB.GROUP_SQ))))
 					.set(SB_BOARD_TB.GROUP_SQ, SB_BOARD_TB.GROUP_SQ.add(1)).execute();
 
-			int boardInsertCount = create
+			int boardInsertCount = dsl
 					.insertInto(SB_BOARD_TB, SB_BOARD_TB.BOARD_ID, SB_BOARD_TB.BOARD_NO, SB_BOARD_TB.GROUP_NO,
 							SB_BOARD_TB.GROUP_SQ, SB_BOARD_TB.PARENT_NO, SB_BOARD_TB.DEPTH, SB_BOARD_TB.VIEW_CNT,
 							SB_BOARD_TB.BOARD_ST, SB_BOARD_TB.NEXT_ATTACHED_FILE_SQ, SB_BOARD_TB.PWD_BASE64)
-					.select(create
+					.select(dsl
 							.select(SB_BOARD_TB.BOARD_ID, DSL.val(boardNo).as(SB_BOARD_TB.BOARD_NO),
 									SB_BOARD_TB.GROUP_NO, DSL.val(toGroupSeq).as(SB_BOARD_TB.GROUP_SQ),
 									DSL.val(UInteger.valueOf(boardReplyReq.getParentBoardNo()))
@@ -341,7 +313,7 @@ public class BoardReplyReqServerTask extends AbstractServerTask {
 
 			Timestamp registeredDate = new java.sql.Timestamp(System.currentTimeMillis());			
 			
-			int boardHistoryInsertCount = create.insertInto(SB_BOARD_HISTORY_TB)
+			int boardHistoryInsertCount = dsl.insertInto(SB_BOARD_HISTORY_TB)
 			.set(SB_BOARD_HISTORY_TB.BOARD_ID, boardID).set(SB_BOARD_HISTORY_TB.BOARD_NO, boardNo)
 			.set(SB_BOARD_HISTORY_TB.HISTORY_SQ, UByte.valueOf(0))
 			.set(SB_BOARD_HISTORY_TB.SUBJECT, (BoardListType.ONLY_GROUP_ROOT.equals(boardListType) ? null : boardReplyReq.getSubject()))
@@ -363,7 +335,7 @@ public class BoardReplyReqServerTask extends AbstractServerTask {
 			if (boardReplyReq.getNewAttachedFileCnt() > 0) {
 				int attachedFileListIndex = 0;
 				for (BoardReplyReq.NewAttachedFile newAttachedFile : boardReplyReq.getNewAttachedFileList()) {
-					int boardFileListInsertCount = create.insertInto(SB_BOARD_FILELIST_TB)
+					int boardFileListInsertCount = dsl.insertInto(SB_BOARD_FILELIST_TB)
 							.set(SB_BOARD_FILELIST_TB.BOARD_ID, boardID).set(SB_BOARD_FILELIST_TB.BOARD_NO, boardNo)
 							.set(SB_BOARD_FILELIST_TB.ATTACHED_FILE_SQ, UByte.valueOf(attachedFileListIndex))
 							.set(SB_BOARD_FILELIST_TB.ATTACHED_FNAME, newAttachedFile.getAttachedFileName())
@@ -387,18 +359,18 @@ public class BoardReplyReqServerTask extends AbstractServerTask {
 
 			if (BoardListType.TREE.equals(boardListType)) {
 				// 계층형 목록의 경우 댓글시 목록 갯수와 전체 글수 각각 1증가
-				create.update(SB_BOARD_INFO_TB).set(SB_BOARD_INFO_TB.CNT, SB_BOARD_INFO_TB.CNT.add(1))
+				dsl.update(SB_BOARD_INFO_TB).set(SB_BOARD_INFO_TB.CNT, SB_BOARD_INFO_TB.CNT.add(1))
 						.set(SB_BOARD_INFO_TB.TOTAL, SB_BOARD_INFO_TB.TOTAL.add(1))
 						.where(SB_BOARD_INFO_TB.BOARD_ID.eq(boardID)).execute();
 			} else {
 				// 그룹 루트 목록의 경우 댓글시 전체 글수만 1 증가
-				create.update(SB_BOARD_INFO_TB).set(SB_BOARD_INFO_TB.TOTAL, SB_BOARD_INFO_TB.TOTAL.add(1))
+				dsl.update(SB_BOARD_INFO_TB).set(SB_BOARD_INFO_TB.TOTAL, SB_BOARD_INFO_TB.TOTAL.add(1))
 						.where(SB_BOARD_INFO_TB.BOARD_ID.eq(boardID)).execute();
 			}
 
 			conn.commit();
 
-			ServerDBUtil.insertMemberActivityHistory(conn, create, log, boardReplyReq.getRequestedUserID(),
+			ServerDBUtil.insertMemberActivityHistory(conn, dsl, log, boardReplyReq.getRequestedUserID(),
 					memberRoleTypeOfRequestedUserID, MemberActivityType.REPLY, boardID, boardNo, registeredDate);
 
 			conn.commit();

@@ -29,7 +29,7 @@ public abstract class CommonBuildSytemPathSupporter {
 	
 	/**
 	 * @param installedPathString 설치 경로
-	 * @return [installed path]/temp, SelfExnRes 외 메시지 정보 파일로 부터 메시지 정보 파일을 저장할 임시 디렉토리
+	 * @return [installed path]/temp, 메시지 정보 파일로 부터 메시지 정보 파일을 저장할 임시 디렉토리
 	 */
 	public static String getCommonTempPathString(String installedPathString) {
 		if (null == installedPathString) {

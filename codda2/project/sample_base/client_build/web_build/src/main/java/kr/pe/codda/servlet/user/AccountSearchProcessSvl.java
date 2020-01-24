@@ -1,7 +1,6 @@
 package kr.pe.codda.servlet.user;
 
 import java.util.Arrays;
-import java.util.logging.Level;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -9,16 +8,12 @@ import javax.servlet.http.HttpServletResponse;
 import kr.pe.codda.client.AnyProjectConnectionPoolIF;
 import kr.pe.codda.client.ConnectionPoolManager;
 import kr.pe.codda.common.etc.CommonStaticFinalVars;
-import kr.pe.codda.common.exception.SymmetricException;
 import kr.pe.codda.common.message.AbstractMessage;
 import kr.pe.codda.common.sessionkey.ClientSessionKeyIF;
 import kr.pe.codda.common.sessionkey.ClientSessionKeyManager;
 import kr.pe.codda.common.sessionkey.ClientSymmetricKeyIF;
-import kr.pe.codda.common.sessionkey.ServerSessionkeyIF;
-import kr.pe.codda.common.sessionkey.ServerSessionkeyManager;
 import kr.pe.codda.common.sessionkey.ServerSymmetricKeyIF;
 import kr.pe.codda.common.util.CommonStaticUtil;
-import kr.pe.codda.common.util.HexUtil;
 import kr.pe.codda.impl.classloader.ClientMessageCodecManger;
 import kr.pe.codda.impl.message.AccountSearchProcessReq.AccountSearchProcessReq;
 import kr.pe.codda.impl.message.AccountSearchProcessRes.AccountSearchProcessRes;
@@ -26,19 +21,15 @@ import kr.pe.codda.impl.message.BinaryPublicKey.BinaryPublicKey;
 import kr.pe.codda.impl.message.MessageResultRes.MessageResultRes;
 import kr.pe.codda.weblib.common.AccountSearchType;
 import kr.pe.codda.weblib.common.ValueChecker;
-import kr.pe.codda.weblib.common.WebCommonStaticFinalVars;
-import kr.pe.codda.weblib.jdf.AbstractServlet;
+import kr.pe.codda.weblib.jdf.AbstractSessionKeyServlet;
 
-public class AccountSearchProcessSvl extends AbstractServlet {
+public class AccountSearchProcessSvl extends AbstractSessionKeyServlet {
 
 	private static final long serialVersionUID = -8785148116253186154L;
 
 	@Override
 	protected void performTask(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		/**************** 파라미터 시작 *******************/
-		String paramSessionKeyBase64 = req.getParameter(WebCommonStaticFinalVars.PARAMETER_KEY_NAME_OF_SESSION_KEY);
-		String paramIVBase64 = req.getParameter(WebCommonStaticFinalVars.PARAMETER_KEY_NAME_OF_SESSION_KEY_IV);
-
 		String paramEmailCipherBase64 = req.getParameter("email");
 		String paramSecretAuthenticationValueCipherBase64 = req.getParameter("secretAuthenticationValue");
 		String paramPasswordCipherBase64 = req.getParameter("pwd");
@@ -71,20 +62,6 @@ public class AccountSearchProcessSvl extends AbstractServlet {
 			String errorMessage = "the request parameter accountSearchType is bad because it is not a element of SearchWhatType";
 			String debugMessage = new StringBuilder().append("the request parameter searchWhatType[")
 					.append(paramAccountSearchType).append("] is not a element of SearchWhatType").toString();
-			printErrorMessagePage(req, res, errorMessage, debugMessage);
-			return;
-		}
-
-		if (null == paramSessionKeyBase64) {
-			String errorMessage = "the request parameter paramSessionKeyBase64 is null";
-			String debugMessage = null;
-			printErrorMessagePage(req, res, errorMessage, debugMessage);
-			return;
-		}
-
-		if (null == paramIVBase64) {
-			String errorMessage = "the request parameter paramIVBase64 is null";
-			String debugMessage = null;
 			printErrorMessagePage(req, res, errorMessage, debugMessage);
 			return;
 		}
@@ -123,77 +100,8 @@ public class AccountSearchProcessSvl extends AbstractServlet {
 		
 		// log.info(req.getParameterMap().toString());
 
-		byte[] sessionkeyBytes = null;
-		try {
-			sessionkeyBytes = CommonStaticUtil.Base64Decoder.decode(paramSessionKeyBase64);
-		} catch (Exception e) {
-			String errorMessage = "세션키 파라미터가 잘못되었습니다";
-			String debugMessage = new StringBuilder().append("the parameter '")
-					.append(WebCommonStaticFinalVars.PARAMETER_KEY_NAME_OF_SESSION_KEY).append("'[")
-					.append(paramSessionKeyBase64).append("] is not a base64 encoding string, errmsg=")
-					.append(e.getMessage()).toString();
-			
-			log.warning(debugMessage);
-
-			printErrorMessagePage(req, res, errorMessage, debugMessage);
-			return;
-		}
-		byte[] ivBytes = null;
-		try {
-			ivBytes = CommonStaticUtil.Base64Decoder.decode(paramIVBase64);
-		} catch (Exception e) {
-			
-			String errorMessage = "세션키 소금 파라미터가 잘못되었습니다";
-			String debugMessage = new StringBuilder(errorMessage).append(", the parameter '")
-					.append(WebCommonStaticFinalVars.PARAMETER_KEY_NAME_OF_SESSION_KEY_IV).append("'[")
-					.append(paramIVBase64).append("] is not a base64 encoding string, errmsg=").append(e.getMessage())
-					.toString();
-			
-			log.warning(debugMessage);
-
-			printErrorMessagePage(req, res, errorMessage, debugMessage);
-			return;
-		}
-
-		ServerSessionkeyIF webServerSessionkey = null;
-		try {
-			ServerSessionkeyManager serverSessionkeyManager = ServerSessionkeyManager.getInstance();
-			webServerSessionkey = serverSessionkeyManager.getMainProjectServerSessionkey();
-		} catch (SymmetricException e) {
-			String errorMessage = "fail to get a ServerSessionkeyManger class instance";
-			log.log(Level.WARNING, errorMessage, e);
-
-			String debugMessage = e.getMessage();
-			printErrorMessagePage(req, res, errorMessage, debugMessage);
-			return;
-		}
-
-		ServerSymmetricKeyIF webServerSymmetricKey = null;
-		try {
-			webServerSymmetricKey = webServerSessionkey.createNewInstanceOfServerSymmetricKey(true, sessionkeyBytes,
-					ivBytes);
-		} catch (IllegalArgumentException e) {
-			String errorMessage = "웹 세션키 인스턴스 생성 실패";
-			log.log(Level.WARNING, errorMessage, e);
-
-			String debugMessage = new StringBuilder("sessionkeyBytes=[")
-					.append(HexUtil.getHexStringFromByteArray(sessionkeyBytes)).append("], ivBytes=[")
-					.append(HexUtil.getHexStringFromByteArray(ivBytes)).append("]").toString();
-
-			printErrorMessagePage(req, res, errorMessage, debugMessage);
-			return;
-		} catch (SymmetricException e) {
-			String errorMessage = "웹 세션키 인스턴스 생성 실패";
-			log.log(Level.WARNING, errorMessage, e);
-
-			String debugMessage = new StringBuilder("sessionkeyBytes=[")
-					.append(HexUtil.getHexStringFromByteArray(sessionkeyBytes)).append("], ivBytes=[")
-					.append(HexUtil.getHexStringFromByteArray(ivBytes)).append("]").toString();
-
-			printErrorMessagePage(req, res, errorMessage, debugMessage);
-			return;
-		}
-
+		ServerSymmetricKeyIF webServerSymmetricKey = buildServerSymmetricKey(req, false);
+		
 		byte[] emailBytes = webServerSymmetricKey
 				.decrypt(CommonStaticUtil.Base64Decoder.decode(paramEmailCipherBase64));
 
@@ -256,7 +164,9 @@ public class AccountSearchProcessSvl extends AbstractServlet {
 				.getMainProjectConnectionPool();
 
 		BinaryPublicKey binaryPublicKeyReq = new BinaryPublicKey();
-		binaryPublicKeyReq.setPublicKeyBytes(webServerSessionkey.getDupPublicKeyBytes());
+		
+		
+		binaryPublicKeyReq.setPublicKeyBytes(new byte[0]);
 
 		AbstractMessage binaryPublicKeyOutputMessage = mainProjectConnectionPool
 				.sendSyncInputMessage(ClientMessageCodecManger.getInstance(), binaryPublicKeyReq);

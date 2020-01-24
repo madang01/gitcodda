@@ -182,7 +182,7 @@ public abstract class AbstractBoardTest {
 			} catch (Exception e) {
 				Logger log = LoggerFactory.getLogger(AbstractBoardTest.class);
 				log.warn("unknown error", e);
-				fail("fail to create a test ID");
+				fail("fail to dsl a test ID");
 			}
 		}
 		
@@ -208,7 +208,7 @@ public abstract class AbstractBoardTest {
 			} catch (Exception e) {
 				Logger log = LoggerFactory.getLogger(AbstractBoardTest.class);
 				log.warn("unknown error", e);
-				fail("fail to create a test ID");
+				fail("fail to dsl a test ID");
 			}
 		}
 
@@ -234,7 +234,7 @@ public abstract class AbstractBoardTest {
 			} catch (Exception e) {
 				Logger log = LoggerFactory.getLogger(AbstractBoardTest.class);
 				log.warn("unknown error", e);
-				fail("fail to create a test ID");
+				fail("fail to dsl a test ID");
 			}
 		}
 
@@ -260,7 +260,7 @@ public abstract class AbstractBoardTest {
 			} catch (Exception e) {
 				Logger log = LoggerFactory.getLogger(AbstractBoardTest.class);
 				log.warn("unknown error", e);
-				fail("fail to create a test ID");
+				fail("fail to dsl a test ID");
 			}
 		}
 	}
@@ -268,18 +268,18 @@ public abstract class AbstractBoardTest {
 	@Before
 	public void setUp() {
 		try {			
-			ServerDBUtil.execute(TEST_DBCP_NAME, (conn, create) -> {
+			ServerDBUtil.execute(TEST_DBCP_NAME, (conn, dsl) -> {
 
-				create.delete(SB_MEMBER_ACTIVITY_HISTORY_TB).execute();
-				create.delete(SB_BOARD_VOTE_TB).execute();
-				create.delete(SB_BOARD_FILELIST_TB).execute();
-				create.delete(SB_BOARD_HISTORY_TB).execute();
-				create.delete(SB_BOARD_TB).execute();
+				dsl.delete(SB_MEMBER_ACTIVITY_HISTORY_TB).execute();
+				dsl.delete(SB_BOARD_VOTE_TB).execute();
+				dsl.delete(SB_BOARD_FILELIST_TB).execute();
+				dsl.delete(SB_BOARD_HISTORY_TB).execute();
+				dsl.delete(SB_BOARD_TB).execute();
 			 
 				/** sample_base 프로젝에 예약된 0 ~ 3 까지의 게시판 식별자를 제외한 게시판 정보 삭제  */
-				create.delete(SB_BOARD_INFO_TB).where(SB_BOARD_INFO_TB.BOARD_ID.ge(UByte.valueOf(4))).execute();
+				dsl.delete(SB_BOARD_INFO_TB).where(SB_BOARD_INFO_TB.BOARD_ID.ge(UByte.valueOf(4))).execute();
 				
-				create.update(SB_BOARD_INFO_TB)
+				dsl.update(SB_BOARD_INFO_TB)
 						.set(SB_BOARD_INFO_TB.CNT, 0L)
 						.set(SB_BOARD_INFO_TB.TOTAL, 0L)
 						.set(SB_BOARD_INFO_TB.NEXT_BOARD_NO, UInteger.valueOf(1)).execute();
@@ -300,9 +300,9 @@ public abstract class AbstractBoardTest {
 	@After
 	public void tearDown() {
 		try {			
-			ServerDBUtil.execute(TEST_DBCP_NAME, (conn, create) -> {
+			ServerDBUtil.execute(TEST_DBCP_NAME, (conn, dsl) -> {
 
-				Result<Record4<UByte, Byte, Long, Long>> boardInfoResult = create.select(SB_BOARD_INFO_TB.BOARD_ID, 
+				Result<Record4<UByte, Byte, Long, Long>> boardInfoResult = dsl.select(SB_BOARD_INFO_TB.BOARD_ID, 
 						SB_BOARD_INFO_TB.LIST_TYPE,
 						SB_BOARD_INFO_TB.CNT, SB_BOARD_INFO_TB.TOTAL)
 				.from(SB_BOARD_INFO_TB).orderBy(SB_BOARD_INFO_TB.BOARD_ID.asc())
@@ -317,18 +317,18 @@ public abstract class AbstractBoardTest {
 					
 					BoardListType boardListType = BoardListType.valueOf(boardListTypeValue);	
 					
-					int expectedTotal = create.selectCount()
+					int expectedTotal = dsl.selectCount()
 							.from(SB_BOARD_TB)
 							.where(SB_BOARD_TB.BOARD_ID.eq(boardID)).fetchOne().value1();
 					
 					int expectedCountOfList = -1;
 					
 					if (BoardListType.TREE.equals(boardListType)) {
-						expectedCountOfList = create.selectCount().from(SB_BOARD_TB)
+						expectedCountOfList = dsl.selectCount().from(SB_BOARD_TB)
 								.where(SB_BOARD_TB.BOARD_ID.eq(boardID))
 								.and(SB_BOARD_TB.BOARD_ST.eq(BoardStateType.OK.getValue())).fetchOne().value1();
 					} else {
-						expectedCountOfList = create.selectCount().from(SB_BOARD_TB)
+						expectedCountOfList = dsl.selectCount().from(SB_BOARD_TB)
 								.where(SB_BOARD_TB.BOARD_ID.eq(boardID))
 								.and(SB_BOARD_TB.BOARD_ST.eq(BoardStateType.OK.getValue()))
 								.and(SB_BOARD_TB.PARENT_NO.eq(UInteger.valueOf(0))).fetchOne().value1();

@@ -21,7 +21,6 @@ import kr.pe.codda.impl.message.MemberWithdrawReq.MemberWithdrawReq;
 import kr.pe.codda.impl.message.MessageResultRes.MessageResultRes;
 import kr.pe.codda.weblib.common.AccessedUserInformation;
 import kr.pe.codda.weblib.common.ValueChecker;
-import kr.pe.codda.weblib.common.WebCommonStaticFinalVars;
 import kr.pe.codda.weblib.exception.WebClientException;
 import kr.pe.codda.weblib.jdf.AbstractUserLoginServlet;
 
@@ -91,19 +90,6 @@ public class MemberWithdrawProcessSvl extends AbstractUserLoginServlet {
 	
 	public MessageResultRes doWork(HttpServletRequest req, HttpServletResponse res)
 			throws Exception {
-		
-		ServerSymmetricKeyIF  symmetricKeyFromSessionkey = (ServerSymmetricKeyIF)req
-				.getAttribute(WebCommonStaticFinalVars.REQUEST_KEY_NAME_OF_SYMMETRIC_KEY_FROM_SESSIONKEY);
-		
-		if (null == symmetricKeyFromSessionkey) {
-			String errorMessage = "세션키를 다룰 준비가 안되었습니다";
-			String debugMessage = new StringBuilder()
-					.append("the request attribute key[")
-					.append(WebCommonStaticFinalVars.REQUEST_KEY_NAME_OF_SYMMETRIC_KEY_FROM_SESSIONKEY)
-					.append("]'s value is null").toString();
-			throw new WebClientException(errorMessage, debugMessage);
-		}
-		
 		/**************** 파라미터 시작 *******************/
 		String paramPwdBase64 = req.getParameter("pwd");
 		/**************** 파라미터 종료 *******************/
@@ -125,6 +111,8 @@ public class MemberWithdrawProcessSvl extends AbstractUserLoginServlet {
 					.append("]").toString();
 			throw new WebClientException(errorMessage, debugMessage);
 		}
+		
+		ServerSymmetricKeyIF  symmetricKeyFromSessionkey = buildServerSymmetricKey(req, false);
 		
 		byte[] passwordBytes = symmetricKeyFromSessionkey.decrypt(pwdCipherBytes);
 		

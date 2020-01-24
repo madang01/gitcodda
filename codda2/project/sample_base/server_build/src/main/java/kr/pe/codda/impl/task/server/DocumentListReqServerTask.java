@@ -37,7 +37,6 @@ import kr.pe.codda.common.exception.ServerTaskException;
 import kr.pe.codda.common.message.AbstractMessage;
 import kr.pe.codda.impl.message.DocumentListReq.DocumentListReq;
 import kr.pe.codda.impl.message.DocumentListRes.DocumentListRes;
-import kr.pe.codda.impl.message.MessageResultRes.MessageResultRes;
 import kr.pe.codda.jooq.tables.SbDocHistoryTb;
 import kr.pe.codda.jooq.tables.SbDocTb;
 import kr.pe.codda.server.LoginManagerIF;
@@ -68,47 +67,14 @@ public class DocumentListReqServerTask extends AbstractServerTask {
 		super();
 	}
 
-	/**
-	 * 에러 내용을 담은 출력 메시지 송신
-	 *  
-	 * @param errorMessage 에러 내용
-	 * @param toLetterCarrier 송신 메시지 배달자
-	 * @param inputMessage 입력 메시지
-	 * @throws InterruptedException 인터럽트 발생시 던지는 예외
-	 */
-	private void sendErrorOutputMessage(String errorMessage, ToLetterCarrier toLetterCarrier,
-			AbstractMessage inputMessage) throws InterruptedException {
-		log.warn("{}, inObj={}", errorMessage, inputMessage.toString());
-
-		MessageResultRes messageResultRes = new MessageResultRes();
-		messageResultRes.setTaskMessageID(inputMessage.getMessageID());
-		messageResultRes.setIsSuccess(false);
-		messageResultRes.setResultMessage(errorMessage);
-		toLetterCarrier.addSyncOutputMessage(messageResultRes);
-	}
-
+	
 	@Override
 	public void doTask(String projectName, LoginManagerIF personalLoginManager, ToLetterCarrier toLetterCarrier,
 			AbstractMessage inputMessage) throws Exception {
-		try {
-			AbstractMessage outputMessage = doWork(ServerCommonStaticFinalVars.DEFAULT_DBCP_NAME,
-					(DocumentListReq) inputMessage);
-			toLetterCarrier.addSyncOutputMessage(outputMessage);
-		} catch (ServerTaskException e) {
-			String errorMessage = e.getMessage();
-			log.warn("errmsg=={}, inObj={}", errorMessage, inputMessage.toString());
 
-			sendErrorOutputMessage(errorMessage, toLetterCarrier, inputMessage);
-			return;
-		} catch (Exception e) {
-			String errorMessage = new StringBuilder().append("unknwon errmsg=").append(e.getMessage())
-					.append(", inObj=").append(inputMessage.toString()).toString();
-
-			log.warn(errorMessage, e);
-
-			sendErrorOutputMessage("문서 목록 조회가 실패하였습니다", toLetterCarrier, inputMessage);
-			return;
-		}
+		AbstractMessage outputMessage = doWork(ServerCommonStaticFinalVars.DEFAULT_DBCP_NAME,
+				(DocumentListReq) inputMessage);
+		toLetterCarrier.addSyncOutputMessage(outputMessage);
 	}
 
 	/**
@@ -139,10 +105,10 @@ public class DocumentListReqServerTask extends AbstractServerTask {
 		final java.util.List<DocumentListRes.Document> documentList = new ArrayList<DocumentListRes.Document>();
 		final DocumentListRes documentListRes = new DocumentListRes();		
 		
-		ServerDBUtil.execute(dbcpName, (conn, create) -> {
-			ServerDBUtil.checkUserAccessRights(conn, create, log, "문서 조회 서비스", PermissionType.ADMIN, documentListReq.getRequestedUserID());
+		ServerDBUtil.execute(dbcpName, (conn, dsl) -> {
+			ServerDBUtil.checkUserAccessRights(conn, dsl, log, "문서 조회 서비스", PermissionType.ADMIN, documentListReq.getRequestedUserID());
 
-			Record1<UInteger> seqRecord = create.select(SB_SEQ_TB.SQ_VALUE)
+			Record1<UInteger> seqRecord = dsl.select(SB_SEQ_TB.SQ_VALUE)
 			.from(SB_SEQ_TB)
 			.where(SB_SEQ_TB.SQ_ID.eq(SequenceType.DOCUMENT_NO.getSequenceID()))
 			.fetchOne();
@@ -169,7 +135,7 @@ public class DocumentListReqServerTask extends AbstractServerTask {
 			Result<Record5<UInteger, Byte, String, String, Timestamp>> result = null;
 			
 			if (DocumentSateSearchType.OK.equals(documentSateSearchType)) {
-				result = create.select(a.DOC_NO, a.DOC_STATE, b.FILE_NAME, b.SUBJECT,  b.REG_DT)
+				result = dsl.select(a.DOC_NO, a.DOC_STATE, b.FILE_NAME, b.SUBJECT,  b.REG_DT)
 						.from(a)
 						.join(b)
 						.on(a.DOC_NO.eq(b.DOC_NO)).and(a.LAST_DOC_SQ.eq(b.DOC_SQ))
@@ -178,7 +144,7 @@ public class DocumentListReqServerTask extends AbstractServerTask {
 						.offset(offset)
 						.limit(pageSize).fetch();
 			} else if (DocumentSateSearchType.DELETE.equals(documentSateSearchType)) {
-				result = create.select(a.DOC_NO, a.DOC_STATE, b.FILE_NAME, b.SUBJECT,  b.REG_DT)
+				result = dsl.select(a.DOC_NO, a.DOC_STATE, b.FILE_NAME, b.SUBJECT,  b.REG_DT)
 						.from(a)
 						.join(b)
 						.on(a.DOC_NO.eq(b.DOC_NO)).and(a.LAST_DOC_SQ.eq(b.DOC_SQ))
@@ -187,7 +153,7 @@ public class DocumentListReqServerTask extends AbstractServerTask {
 						.offset(offset)
 						.limit(pageSize).fetch();
 			} else {
-				result = create.select(a.DOC_NO, a.DOC_STATE, b.FILE_NAME, b.SUBJECT, b.REG_DT)
+				result = dsl.select(a.DOC_NO, a.DOC_STATE, b.FILE_NAME, b.SUBJECT, b.REG_DT)
 						.from(a)
 						.join(b)
 						.on(a.DOC_NO.eq(b.DOC_NO)).and(a.LAST_DOC_SQ.eq(b.DOC_SQ))

@@ -26,7 +26,6 @@ import kr.pe.codda.common.exception.DynamicClassCallException;
 import kr.pe.codda.common.exception.NoMoreWrapBufferException;
 import kr.pe.codda.common.exception.NotSupportedException;
 import kr.pe.codda.common.exception.ServerTaskException;
-import kr.pe.codda.common.exception.ServerTaskPermissionException;
 import kr.pe.codda.common.message.AbstractMessage;
 
 /**
@@ -50,12 +49,11 @@ public interface AnyProjectConnectionPoolIF {
 	 * @throws DynamicClassCallException 동적 클래스 관련 에러 발생시 던지는 예외
 	 * @throws BodyFormatException 바디 구성할대 에러 발생시 던지는 예외
 	 * @throws ServerTaskException 서버 비지니스 로직 처리중 에러 발생시 던지는 예외
-	 * @throws ServerTaskPermissionException 서버 비지니스 로직에 대한 접근 권한을 갖고 있지 못할때 던지는 예외
 	 */
 	public AbstractMessage sendSyncInputMessage(MessageCodecMangerIF messageCodecManger, AbstractMessage inputMessage)
 			throws InterruptedException, ConnectionPoolException, 
 			IOException, NoMoreWrapBufferException, DynamicClassCallException,
-			BodyFormatException, ServerTaskException, ServerTaskPermissionException;
+			BodyFormatException, ServerTaskException;
 	
 	/**
 	 * 입력 메시지를 보낸다, WARNING! 동기 연결은 이 메소드를 지원하지 않는다, 참고) 연결이 소유한 '송신 스트림' 에 추가될때까지 대기 시간이 있을 수 있다. 

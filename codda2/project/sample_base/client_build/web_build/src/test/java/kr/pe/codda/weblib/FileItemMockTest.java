@@ -112,8 +112,8 @@ public class FileItemMockTest {
 		try {
 			fileItem = new FileItemMock(selectedUploadFile, "newAttachedFile");
 		} catch (Exception e) {
-			log.log(Level.WARNING, "fail to create a instance of FileItemMock class", e);
-			fail("fail to create a instance of FileItemMock class");
+			log.log(Level.WARNING, "fail to dsl a instance of FileItemMock class", e);
+			fail("fail to dsl a instance of FileItemMock class");
 		}
 
 		log.info(fileItem.toString());
