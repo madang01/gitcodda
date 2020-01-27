@@ -125,7 +125,7 @@ public class BoardMoveReqServerTask extends AbstractServerTask {
 		ServerDBUtil.execute(dbcpName, (conn, dsl) -> {
 
 			@SuppressWarnings("unused")
-			MemberRoleType memberRoleTypeOfRequestedUserID = ServerDBUtil.checkUserAccessRights(conn, dsl, log,
+			MemberRoleType memberRoleTypeOfRequestedUserID = ServerDBUtil.checkUserAccessRights( dsl, log,
 					"게시글 이동 서비스", PermissionType.ADMIN, boardMoveReq.getRequestedUserID());
 
 			Record4<Byte, Byte, Byte, Byte> sourceBoardInforRecord = dsl

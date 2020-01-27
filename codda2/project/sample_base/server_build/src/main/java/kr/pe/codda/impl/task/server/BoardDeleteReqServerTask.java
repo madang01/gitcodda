@@ -70,7 +70,7 @@ public class BoardDeleteReqServerTask extends AbstractServerTask {
 		
 		ServerDBUtil.execute(dbcpName, (conn, dsl) -> {
 
-			MemberRoleType memberRoleTypeOfRequestedUserID = ServerDBUtil.checkUserAccessRights(conn, dsl, log, "게시글 삭제 서비스", PermissionType.GUEST, requestedUserID);
+			MemberRoleType memberRoleTypeOfRequestedUserID = ServerDBUtil.checkUserAccessRights( dsl, log, "게시글 삭제 서비스", PermissionType.GUEST, requestedUserID);
 			
 			Record2<String, Byte> boardInforRecord = dsl
 					.select(SB_BOARD_INFO_TB.BOARD_NAME,

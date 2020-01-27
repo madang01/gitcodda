@@ -57,7 +57,7 @@ public class BoardDownloadFileReqServerTask extends AbstractServerTask {
 		
 		ServerDBUtil.execute(dbcpName, (conn, dsl) -> {
 			
-			ServerDBUtil.checkUserAccessRights(conn, dsl, log, "게시글 첨부 파일 다운로드 서비스", PermissionType.MEMBER, boardDownloadFileReq.getRequestedUserID());
+			ServerDBUtil.checkUserAccessRights( dsl, log, "게시글 첨부 파일 다운로드 서비스", PermissionType.MEMBER, boardDownloadFileReq.getRequestedUserID());
 
 			Record1<Byte> boardRecord = dsl.select(SB_BOARD_TB.BOARD_ST).from(SB_BOARD_TB)
 					.where(SB_BOARD_TB.BOARD_ID.eq(boardID)).and(SB_BOARD_TB.BOARD_NO.eq(boardNo)).forUpdate()

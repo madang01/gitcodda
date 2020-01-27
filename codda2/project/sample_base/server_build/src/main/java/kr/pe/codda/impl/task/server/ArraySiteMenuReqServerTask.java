@@ -55,7 +55,7 @@ public class ArraySiteMenuReqServerTask extends AbstractServerTask {
 		
 		ServerDBUtil.execute(dbcpName, (conn, dsl) -> {
 			
-			ServerDBUtil.checkUserAccessRights(conn, dsl, log, 
+			ServerDBUtil.checkUserAccessRights( dsl, log, 
 					"배열형 메뉴 조회 서비스", PermissionType.ADMIN, arraySiteMenuReq.getRequestedUserID());
 						
 			

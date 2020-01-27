@@ -51,7 +51,7 @@ public class BoardInfoDeleteReqServerTask extends AbstractServerTask {
 		
 		ServerDBUtil.execute(dbcpName, (conn, dsl) -> {
 			
-			ServerDBUtil.checkUserAccessRights(conn, dsl, log, "게시판 정보 삭제 서비스", PermissionType.ADMIN, boardInfoDeleteReq.getRequestedUserID());
+			ServerDBUtil.checkUserAccessRights(dsl, log, "게시판 정보 삭제 서비스", PermissionType.ADMIN, boardInfoDeleteReq.getRequestedUserID());
 			
 			boolean isBoardInfoRecord = dsl
 					.fetchExists(dsl.select().from(SB_BOARD_INFO_TB).where(SB_BOARD_INFO_TB.BOARD_ID.eq(boardID)));

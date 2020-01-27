@@ -97,7 +97,7 @@ public class BoardChangeHistoryReqServerTask extends AbstractServerTask {
 			}
 			
 			
-			ServerDBUtil.checkUserAccessRights(conn, dsl, log,
+			ServerDBUtil.checkUserAccessRights( dsl, log,
 					"게시글 수정 이력 조회 서비스", PermissionType.GUEST, boardChangeHistoryReq.getRequestedUserID());
 			
 			

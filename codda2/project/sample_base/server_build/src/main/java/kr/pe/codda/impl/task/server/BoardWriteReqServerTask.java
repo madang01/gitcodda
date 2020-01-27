@@ -148,7 +148,7 @@ public class BoardWriteReqServerTask extends AbstractServerTask {
 				throw new ServerTaskException(errorMessage);
 			}
 
-			MemberRoleType memberRoleTypeOfRequestedUserID = ServerDBUtil.checkUserAccessRights(conn, dsl, log, "게시판 본문 글 등록 서비스", boardWritePermissionType, boardWriteReq.getRequestedUserID());
+			MemberRoleType memberRoleTypeOfRequestedUserID = ServerDBUtil.checkUserAccessRights(dsl, log, "게시판 본문 글 등록 서비스", boardWritePermissionType, boardWriteReq.getRequestedUserID());
 			
 			if (MemberRoleType.GUEST.equals(memberRoleTypeOfRequestedUserID)) {
 				if (boardPasswordHashBase64.isEmpty()) {

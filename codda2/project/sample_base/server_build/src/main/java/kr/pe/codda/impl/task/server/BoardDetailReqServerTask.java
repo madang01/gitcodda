@@ -118,7 +118,7 @@ public class BoardDetailReqServerTask extends AbstractServerTask {
 			}
 			
 			
-			MemberRoleType memberRoleTypeOfRequestedUserID = ServerDBUtil.checkUserAccessRights(conn, dsl, log,
+			MemberRoleType memberRoleTypeOfRequestedUserID = ServerDBUtil.checkUserAccessRights( dsl, log,
 					"게시글 상세 조회 서비스", PermissionType.GUEST, boardDetailReq.getRequestedUserID());
 
 			SbBoardHistoryTb b = SB_BOARD_HISTORY_TB.as("b");

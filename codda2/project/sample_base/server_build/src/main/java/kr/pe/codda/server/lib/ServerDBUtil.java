@@ -709,21 +709,15 @@ public abstract class ServerDBUtil {
 	 * @param servicePermissionType 서비스 이용 권한 유형
 	 * @param requestedUserID         서비스 요청자
 	 * @return 서비스 요청자의 회원 역활 유형
-	 * @throws ServerTaskException 서비스 이용 권한이 없거나 기타 에러 발생시 던지는 예외
+	 * @throws RollbackServerTaskException 서비스 이용 권한이 없거나 기타 에러 발생시 던지는 예외
 	 */
-	public static MemberRoleType checkUserAccessRights(Connection conn, DSLContext dsl, Logger log,
+	public static MemberRoleType checkUserAccessRights(DSLContext dsl, Logger log,
 			String serviceName, PermissionType servicePermissionType, String requestedUserID)
-			throws ServerTaskException {
+			throws RollbackServerTaskException {
 
 		if (null == requestedUserID) {
-			try {
-				conn.rollback();
-			} catch (Exception e) {
-				log.warn("fail to rollback");
-			}
-
 			String errorMessage = "서비스 요청자를 입력해 주세요";
-			throw new ServerTaskException(errorMessage);
+			throw new RollbackServerTaskException(errorMessage);
 		}
 
 		
@@ -732,15 +726,10 @@ public abstract class ServerDBUtil {
 				.where(SB_MEMBER_TB.USER_ID.eq(requestedUserID)).fetchOne();
 
 		if (null == memberRecord) {
-			try {
-				conn.rollback();
-			} catch (Exception e) {
-				log.warn("fail to rollback");
-			}
 
 			String errorMessage = new StringBuilder("서비스 요청자[").append(requestedUserID).append("]가 회원 테이블에 존재하지 않습니다")
 					.toString();
-			throw new ServerTaskException(errorMessage);
+			throw new RollbackServerTaskException(errorMessage);
 		}
 
 		byte memeberStateOfRequestedUserID = memberRecord.getValue(SB_MEMBER_TB.STATE);
@@ -748,28 +737,18 @@ public abstract class ServerDBUtil {
 		try {
 			memberStateTypeOfRequestedUserID = MemberStateType.valueOf(memeberStateOfRequestedUserID);
 		} catch (IllegalArgumentException e) {
-			try {
-				conn.rollback();
-			} catch (Exception e1) {
-				log.warn("fail to rollback");
-			}
 
 			String errorMessage = new StringBuilder("서비스 요청자[").append(requestedUserID).append("]의 회원 상태[")
 					.append(memberStateTypeOfRequestedUserID.getName()).append("] 값이 잘못되었습니다").toString();
 
-			throw new ServerTaskException(errorMessage);
+			throw new RollbackServerTaskException(errorMessage);
 		}
 
 		if (! MemberStateType.OK.equals(memberStateTypeOfRequestedUserID)) {
-			try {
-				conn.rollback();
-			} catch (Exception e1) {
-				log.warn("fail to rollback");
-			}
 
 			String errorMessage = new StringBuilder("서비스 요청자[").append(requestedUserID).append("]의 회원 상태[")
 					.append(memberStateTypeOfRequestedUserID.getName()).append("]가 정상이 아닙니다").toString();
-			throw new ServerTaskException(errorMessage);
+			throw new RollbackServerTaskException(errorMessage);
 		}
 
 		
@@ -778,40 +757,26 @@ public abstract class ServerDBUtil {
 		MemberRoleType memberRoleTypeOfRequestedUserID = null;
 		try {
 			memberRoleTypeOfRequestedUserID = MemberRoleType.valueOf(memberRoleTypeValueOfRequestedUserID);
-		} catch (IllegalArgumentException e) {
-			try {
-				conn.rollback();
-			} catch (Exception e1) {
-				log.warn("fail to rollback");
-			}
+		} catch (IllegalArgumentException e) {			
 
 			String errorMessage = new StringBuilder("서비스 요청자[").append(requestedUserID).append("]의 멤버 역활 유형[")
 					.append(memberRoleTypeValueOfRequestedUserID).append("]이 잘못되어있습니다").toString();
-			throw new ServerTaskException(errorMessage);
+			throw new RollbackServerTaskException(errorMessage);
 		}
 
 		
 		if (PermissionType.ADMIN.equals(servicePermissionType)) {
 			if (!MemberRoleType.ADMIN.equals(memberRoleTypeOfRequestedUserID)) {
-				try {
-					conn.rollback();
-				} catch (Exception e) {
-					log.warn("fail to rollback");
-				}
+				
 
 				String errorMessage = new StringBuilder().append(serviceName).append("는 관리자 전용 서비스입니다").toString();
-				throw new ServerTaskException(errorMessage);
+				throw new RollbackServerTaskException(errorMessage);
 			}
 		} else if (PermissionType.MEMBER.equals(servicePermissionType)) {
-			if (MemberRoleType.GUEST.equals(memberRoleTypeOfRequestedUserID)) {
-				try {
-					conn.rollback();
-				} catch (Exception e) {
-					log.warn("fail to rollback");
-				}
+			if (MemberRoleType.GUEST.equals(memberRoleTypeOfRequestedUserID)) {				
 
 				String errorMessage = new StringBuilder().append(serviceName).append("는 로그인 해야만 이용할 수 있습니다").toString();
-				throw new ServerTaskException(errorMessage);
+				throw new RollbackServerTaskException(errorMessage);
 			}
 		}
 
@@ -945,6 +910,67 @@ public abstract class ServerDBUtil {
 	}
 	
 	
+	public static <I, O> O doDBWork(String dbcpName, I req, DBTaskIF<I, O> dbTask) throws Exception {
+		DataSource dataSource = DBCPManager.getInstance().getBasicDataSource(dbcpName);
+		
+		Connection conn = null;
+		try {
+			conn = dataSource.getConnection();
+			conn.setAutoCommit(false);
+			
+			
+			DSLContext dsl = DSL.using(conn, SQLDialect.MYSQL, ServerDBUtil.getDBCPSettings(dbcpName));
+			
+			O res =  dbTask.doWork(dsl, req);
+			
+			conn.commit();
+			
+			return res;
+		} catch (RollbackServerTaskException e) {
+			if (null != conn) {
+				try {
+					conn.rollback();
+				} catch(Exception e1) {
+					Logger log = LoggerFactory.getLogger(ServerDBUtil.class);
+					log.warn("fail to rollback", e1);
+				}
+			}
+			
+			throw e;
+		} catch (CommitServerTaskException e) {
+			if (null != conn) {
+				try {
+					conn.commit();
+				} catch(Exception e1) {
+					Logger log = LoggerFactory.getLogger(ServerDBUtil.class);
+					log.warn("fail to commit", e1);
+				}
+			}
+			
+			throw e;
+		} catch (Exception e) {
+			if (null != conn) {
+				try {
+					conn.rollback();
+				} catch (Exception e1) {
+					Logger log = LoggerFactory.getLogger(ServerDBUtil.class);
+					log.warn("fail to rollback", e1);
+				}
+			}
+			
+			throw e;
+		} finally {
+			if (null != conn) {
+				try {
+					conn.close();
+				} catch (Exception e) {
+					Logger log = LoggerFactory.getLogger(ServerDBUtil.class);
+					log.warn("fail to close the db connection", e);
+				}
+			}
+		}
+	}
+	
 	
 	public static void execute(final String dbcpName, 
 			final DBExecutorIF dbExecutor) throws Exception {
@@ -958,8 +984,24 @@ public abstract class ServerDBUtil {
 			DSLContext dsl = DSL.using(conn, SQLDialect.MYSQL, ServerDBUtil.getDBCPSettings(dbcpName));
 			
 			dbExecutor.execute(conn, dsl); 
-		} catch (ServerTaskException e) {
-			throw e;
+		} catch (RollbackServerTaskException e) {
+			if (null != conn) {
+				try {
+					conn.rollback();
+				} catch(Exception e1) {
+					Logger log = LoggerFactory.getLogger(ServerDBUtil.class);
+					log.warn("fail to rollback", e1);
+				}
+			}
+		} catch (CommitServerTaskException e) {
+			if (null != conn) {
+				try {
+					conn.commit();
+				} catch(Exception e1) {
+					Logger log = LoggerFactory.getLogger(ServerDBUtil.class);
+					log.warn("fail to commit", e1);
+				}
+			}
 		} catch (Exception e) {
 			if (null != conn) {
 				try {

@@ -66,7 +66,7 @@ public class BoardInfoAddReqServerTask extends AbstractServerTask {
 		
 		ServerDBUtil.execute(dbcpName, (conn, dsl) -> {
 			
-			ServerDBUtil.checkUserAccessRights(conn, dsl, log, "게시판 정보 추가 서비스", PermissionType.ADMIN, boardInfoAddReq.getRequestedUserID());
+			ServerDBUtil.checkUserAccessRights( dsl, log, "게시판 정보 추가 서비스", PermissionType.ADMIN, boardInfoAddReq.getRequestedUserID());
 			
 			short boardID = dsl.select(JooqSqlUtil.getIfField(SB_BOARD_INFO_TB.BOARD_ID.max(), 0, SB_BOARD_INFO_TB.BOARD_ID.max().add(1)))
 			.from(SB_BOARD_INFO_TB)

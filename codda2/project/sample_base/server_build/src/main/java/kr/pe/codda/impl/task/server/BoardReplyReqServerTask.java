@@ -211,7 +211,7 @@ public class BoardReplyReqServerTask extends AbstractServerTask {
 				throw new ServerTaskException(errorMessage);
 			}
 
-			MemberRoleType memberRoleTypeOfRequestedUserID = ServerDBUtil.checkUserAccessRights(conn, dsl, log,
+			MemberRoleType memberRoleTypeOfRequestedUserID = ServerDBUtil.checkUserAccessRights( dsl, log,
 					"게시판 댓글 등록 서비스", boardReplyPermissionType, boardReplyReq.getRequestedUserID());
 
 			if (MemberRoleType.GUEST.equals(memberRoleTypeOfRequestedUserID)) {

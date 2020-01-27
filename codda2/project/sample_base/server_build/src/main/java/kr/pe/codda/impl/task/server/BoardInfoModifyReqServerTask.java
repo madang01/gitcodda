@@ -69,7 +69,7 @@ public class BoardInfoModifyReqServerTask extends AbstractServerTask {
 		
 		ServerDBUtil.execute(dbcpName, (conn, dsl) -> {
 			
-			ServerDBUtil.checkUserAccessRights(conn, dsl, log, "게시판 정보 수정 서비스", PermissionType.ADMIN, boardInfoModifyReq.getRequestedUserID());
+			ServerDBUtil.checkUserAccessRights(dsl, log, "게시판 정보 수정 서비스", PermissionType.ADMIN, boardInfoModifyReq.getRequestedUserID());
 			
 			Record1<UByte> boardInfoRecord = dsl.select(SB_BOARD_INFO_TB.BOARD_ID).from(SB_BOARD_INFO_TB)
 			.where(SB_BOARD_INFO_TB.BOARD_ID.eq(boardID)).fetchOne();

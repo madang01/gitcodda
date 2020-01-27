@@ -50,9 +50,8 @@ import kr.pe.codda.server.ProjectLoginManagerIF;
 public abstract class AbstractServerTask {
 	// protected Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
 	
-	private final ServerClassLoader taskClassLoader;
+	private final ServerClassLoader serverClassLoader;
 	private final AbstractMessageDecoder inputMessageDecoder;
-	// private HashMap<String, MessageCodecIF> messageID2ServerMessageCodecHash = new HashMap<String, MessageCodecIF>();
 	
 	/**
 	 * 생성자
@@ -108,7 +107,7 @@ public abstract class AbstractServerTask {
 		ClassLoader thisClassLoader = this.getClass().getClassLoader();
 		
 		if ((thisClassLoader instanceof ServerClassLoader)) {
-			taskClassLoader = (ServerClassLoader)thisClassLoader;
+			serverClassLoader = (ServerClassLoader)thisClassLoader;
 		} else {
 			/**
 			 * <pre>
@@ -124,11 +123,11 @@ public abstract class AbstractServerTask {
 			 * </pre> 
 			 */
 			SystemClassDeterminer systemClassDeterminer = new SystemClassDeterminer();
-			taskClassLoader = new ServerClassLoader(".", ".", systemClassDeterminer);
+			serverClassLoader = new ServerClassLoader(".", ".", systemClassDeterminer);
 		}
 		
 		
-		MessageCodecIF messageCodec = taskClassLoader.getServerMessageCodec(messageID);
+		MessageCodecIF messageCodec = serverClassLoader.getServerMessageCodec(messageID);
 		
 		inputMessageDecoder = messageCodec.getMessageDecoder();
 	}
@@ -183,7 +182,6 @@ public abstract class AbstractServerTask {
 			int mailboxID, int mailID, String messageID, Object receviedMiddleObject,
 			MessageProtocolIF messageProtocol,
 			LoginManagerIF fromPersonalLoginManager) throws InterruptedException {
-		
 		// long startTime = System.nanoTime();
 			
 		AbstractMessage inputMessage = null;
@@ -241,7 +239,7 @@ public abstract class AbstractServerTask {
 				inputMessage, 
 				projectLoginManager,
 				messageProtocol,
-				taskClassLoader);				
+				serverClassLoader);				
 		
 		try {
 			doTask(projectName, fromPersonalLoginManager, toLetterCarrier, inputMessage);

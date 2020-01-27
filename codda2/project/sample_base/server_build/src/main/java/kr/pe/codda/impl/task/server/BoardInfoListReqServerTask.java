@@ -55,7 +55,7 @@ public class BoardInfoListReqServerTask extends AbstractServerTask {
 		
 		ServerDBUtil.execute(dbcpName, (conn, dsl) -> {			
 			
-			ServerDBUtil.checkUserAccessRights(conn, dsl, log, "게시판 정보 목록 조회 서비스", PermissionType.ADMIN, boardInfoListReq.getRequestedUserID());
+			ServerDBUtil.checkUserAccessRights(dsl, log, "게시판 정보 목록 조회 서비스", PermissionType.ADMIN, boardInfoListReq.getRequestedUserID());
 			
 			Result<Record9<UByte, String, Byte, Byte, Byte, Byte, Long, Long, UInteger>>  
 			boardInfoListResult = dsl.select(SB_BOARD_INFO_TB.BOARD_ID, 

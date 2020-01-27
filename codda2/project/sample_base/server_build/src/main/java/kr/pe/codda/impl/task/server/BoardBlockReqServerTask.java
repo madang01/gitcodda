@@ -64,7 +64,7 @@ public class BoardBlockReqServerTask extends AbstractServerTask {
 		StringBuilder resultMessageStringBuilder = new StringBuilder();
 
 		ServerDBUtil.execute(dbcpName, (conn, dsl) -> {
-			ServerDBUtil.checkUserAccessRights(conn, dsl, log, "게시글 차단 서비스", PermissionType.ADMIN, requestedUserID);
+			ServerDBUtil.checkUserAccessRights( dsl, log, "게시글 차단 서비스", PermissionType.ADMIN, requestedUserID);
 
 			Record2<String, Byte> boardInforRecord = dsl
 					.select(SB_BOARD_INFO_TB.BOARD_NAME, SB_BOARD_INFO_TB.LIST_TYPE).from(SB_BOARD_INFO_TB)

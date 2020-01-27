@@ -65,7 +65,7 @@ public class BoardUnBlockReqServerTask extends AbstractServerTask {
 		
 		ServerDBUtil.execute(dbcpName, (conn, dsl) -> {
 			
-			ServerDBUtil.checkUserAccessRights(conn, dsl, log, "게시글 차단 해제 서비스", PermissionType.ADMIN,
+			ServerDBUtil.checkUserAccessRights( dsl, log, "게시글 차단 해제 서비스", PermissionType.ADMIN,
 					requestedUserID);
 
 			Record2<String, Byte> boardInforRecord = dsl

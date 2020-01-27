@@ -129,7 +129,7 @@ public class BoardModifyReqServerTask extends AbstractServerTask {
 
 		ServerDBUtil.execute(dbcpName, (conn, dsl) -> {
 			
-			MemberRoleType memberRoleTypeOfRequestedUserID = ServerDBUtil.checkUserAccessRights(conn, dsl, log,
+			MemberRoleType memberRoleTypeOfRequestedUserID = ServerDBUtil.checkUserAccessRights( dsl, log,
 					"게시판 수정 서비스", PermissionType.GUEST, boardModifyReq.getRequestedUserID());
 
 			Record1<Byte> boardInforRecord = dsl.select(SB_BOARD_INFO_TB.LIST_TYPE).from(SB_BOARD_INFO_TB)

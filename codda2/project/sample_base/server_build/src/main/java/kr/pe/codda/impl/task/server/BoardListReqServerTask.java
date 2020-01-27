@@ -80,7 +80,7 @@ public class BoardListReqServerTask extends AbstractServerTask {
 		
 		ServerDBUtil.execute(dbcpName, (conn, dsl) -> {
 			
-			ServerDBUtil.checkUserAccessRights(conn, dsl, log, "게시글 목록 조회 서비스", PermissionType.GUEST, boardListReq.getRequestedUserID());
+			ServerDBUtil.checkUserAccessRights(dsl, log, "게시글 목록 조회 서비스", PermissionType.GUEST, boardListReq.getRequestedUserID());
 			
 			Record3<String, Byte, Byte> boardInforRecord = dsl
 					.select(SB_BOARD_INFO_TB.BOARD_NAME, SB_BOARD_INFO_TB.LIST_TYPE, SB_BOARD_INFO_TB.WRITE_PERMISSION_TYPE)
