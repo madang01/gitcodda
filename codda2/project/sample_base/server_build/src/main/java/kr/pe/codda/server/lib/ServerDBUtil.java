@@ -182,8 +182,8 @@ public abstract class ServerDBUtil {
 			String menuName = menuNameJsonElement.getAsString();
 			String linkURL = linkURLJsonElement.getAsString();
 
-			boolean isMenu = dsl.fetchExists(dsl.select(SB_SITEMENU_TB.MENU_NO).from(SB_SITEMENU_TB)
-					.where(SB_SITEMENU_TB.MENU_NO.eq(menuNo)));
+			boolean isMenu = dsl.fetchExists(
+					dsl.select(SB_SITEMENU_TB.MENU_NO).from(SB_SITEMENU_TB).where(SB_SITEMENU_TB.MENU_NO.eq(menuNo)));
 
 			if (!isMenu) {
 				int countOfInsert = dsl.insertInto(SB_SITEMENU_TB).set(SB_SITEMENU_TB.MENU_NO, menuNo)
@@ -199,9 +199,10 @@ public abstract class ServerDBUtil {
 			}
 		}
 
-		dsl.update(SB_SEQ_TB).set(SB_SEQ_TB.SQ_VALUE,
-				dsl.select(DSL.field("if ({0} is null, {1}, {2})", UInteger.class, SB_SITEMENU_TB.MENU_NO.max(),
-						UInteger.valueOf(1), SB_SITEMENU_TB.MENU_NO.max().add(1))).from(SB_SITEMENU_TB))
+		dsl.update(SB_SEQ_TB)
+				.set(SB_SEQ_TB.SQ_VALUE,
+						dsl.select(DSL.field("if ({0} is null, {1}, {2})", UInteger.class, SB_SITEMENU_TB.MENU_NO.max(),
+								UInteger.valueOf(1), SB_SITEMENU_TB.MENU_NO.max().add(1))).from(SB_SITEMENU_TB))
 				.where(SB_SEQ_TB.SQ_ID.eq(SequenceType.MENU.getSequenceID())).execute();
 	}
 
@@ -306,8 +307,7 @@ public abstract class ServerDBUtil {
 						.set(SB_BOARD_INFO_TB.REPLY_POLICY_TYPE, boardReplyPolictyType)
 						.set(SB_BOARD_INFO_TB.WRITE_PERMISSION_TYPE, boardWritePermissionType)
 						.set(SB_BOARD_INFO_TB.REPLY_PERMISSION_TYPE, boardReplyPermissionType)
-						.set(SB_BOARD_INFO_TB.CNT, 0L)
-						.set(SB_BOARD_INFO_TB.TOTAL, 0L)
+						.set(SB_BOARD_INFO_TB.CNT, 0L).set(SB_BOARD_INFO_TB.TOTAL, 0L)
 						.set(SB_BOARD_INFO_TB.NEXT_BOARD_NO, UInteger.valueOf(1)).execute();
 
 				if (0 == countOfInsert) {
@@ -383,25 +383,23 @@ public abstract class ServerDBUtil {
 
 	}
 
-	
 	/**
 	 * 회원 종류에 따른 회원 등록을 수행한다. 어드민과 일반 회원 등록 관리를 일원화 시킬 목적으로 '회원 등록 서버 서버
 	 * 타스크'(={@link MemberRegisterReqServerTask})가 아닌 이곳 서버 라이브러리에서 관리한다.
 	 * 
-	 * @param dbcpName dbcp 이름(=db schema)
+	 * @param dbcpName       dbcp 이름(=db schema)
 	 * @param memberRoleType 회원 역활
-	 * @param userID 회원 아이디
-	 * @param nickname 별명
-	 * @param email 이메일 주소
-	 * @param passwordBytes 패스워드
-	 * @param ip 아이피 주소
+	 * @param userID         회원 아이디
+	 * @param nickname       별명
+	 * @param email          이메일 주소
+	 * @param passwordBytes  패스워드
+	 * @param ip             아이피 주소
 	 * @param registeredDate 등록일
 	 * @throws Exception
 	 */
 	public static void registerMember(String dbcpName, MemberRoleType memberRoleType, String userID, String nickname,
 			String email, byte[] passwordBytes, Timestamp registeredDate, String ip) throws Exception {
 		Logger log = LoggerFactory.getLogger(ServerDBUtil.class);
-		
 
 		if (null == memberRoleType) {
 			String errorMessage = "the parameter memberRoleType is null";
@@ -411,12 +409,12 @@ public abstract class ServerDBUtil {
 		try {
 			ValueChecker.checkValidUserID(userID);
 			ValueChecker.checkValidNickname(nickname);
-			ValueChecker.checkValidEmail(email);		
-			ValueChecker.checkValidMemberReigsterPwd(passwordBytes);		
+			ValueChecker.checkValidEmail(email);
+			ValueChecker.checkValidMemberReigsterPwd(passwordBytes);
 			ValueChecker.checkValidIP(ip);
 		} catch (IllegalArgumentException e) {
-			throw new ServerTaskException(e.getMessage());
-		}		
+			throw new ParameterServerTaskException(e.getMessage());
+		}
 
 		SecureRandom random = null;
 		try {
@@ -431,34 +429,29 @@ public abstract class ServerDBUtil {
 
 		PasswordPairOfMemberTable passwordPairOfMemberTable = toPasswordPairOfMemberTable(passwordBytes, pwdSaltBytes);
 
-		ServerDBUtil.execute(dbcpName, (conn, dsl) -> {
-			
+		DataSource dataSource = DBCPManager.getInstance().getBasicDataSource(dbcpName);
+
+		Connection conn = null;
+		try {
+			conn = dataSource.getConnection();
+			conn.setAutoCommit(false);
+
+			DSLContext dsl = DSL.using(conn, SQLDialect.MYSQL, ServerDBUtil.getDBCPSettings(dbcpName));
+
 			boolean isSameIDMember = dsl.fetchExists(
 					dsl.select(SB_MEMBER_TB.USER_ID).from(SB_MEMBER_TB).where(SB_MEMBER_TB.USER_ID.eq(userID)));
 
 			if (isSameIDMember) {
-				try {
-					conn.rollback();
-				} catch (Exception e) {
-					log.warn("fail to rollback");
-				}
-
 				String errorMessage = new StringBuilder("기존 회원과 중복되는 아이디[").append(userID).append("] 입니다").toString();
-				throw new ServerTaskException(errorMessage);
+				throw new RollbackServerTaskException(errorMessage);
 			}
 
 			boolean isSameNicknameMember = dsl.fetchExists(
 					dsl.select(SB_MEMBER_TB.NICKNAME).from(SB_MEMBER_TB).where(SB_MEMBER_TB.NICKNAME.eq(nickname)));
 
 			if (isSameNicknameMember) {
-				try {
-					conn.rollback();
-				} catch (Exception e) {
-					log.warn("fail to rollback");
-				}
-
 				String errorMessage = new StringBuilder("기존 회원과 중복되는 별명[").append(nickname).append("] 입니다").toString();
-				throw new ServerTaskException(errorMessage);
+				throw new RollbackServerTaskException(errorMessage);
 			}
 
 			int resultOfInsert = dsl.insertInto(SB_MEMBER_TB).set(SB_MEMBER_TB.USER_ID, userID)
@@ -466,39 +459,62 @@ public abstract class ServerDBUtil {
 					.set(SB_MEMBER_TB.PWD_BASE64, passwordPairOfMemberTable.getPasswordBase64())
 					.set(SB_MEMBER_TB.PWD_SALT_BASE64, passwordPairOfMemberTable.getPasswordSaltBase64())
 					.set(SB_MEMBER_TB.ROLE, memberRoleType.getValue())
-					.set(SB_MEMBER_TB.STATE, MemberStateType.OK.getValue())
-					.set(SB_MEMBER_TB.EMAIL, email)					
-					.set(SB_MEMBER_TB.PWD_FAIL_CNT, UByte.valueOf(0))
-					.set(SB_MEMBER_TB.REG_DT, registeredDate)
+					.set(SB_MEMBER_TB.STATE, MemberStateType.OK.getValue()).set(SB_MEMBER_TB.EMAIL, email)
+					.set(SB_MEMBER_TB.PWD_FAIL_CNT, UByte.valueOf(0)).set(SB_MEMBER_TB.REG_DT, registeredDate)
 					.set(SB_MEMBER_TB.LAST_NICKNAME_MOD_DT, registeredDate)
 					.set(SB_MEMBER_TB.LAST_EMAIL_MOD_DT, registeredDate)
 					.set(SB_MEMBER_TB.LAST_PWD_MOD_DT, registeredDate)
 					.set(SB_MEMBER_TB.LAST_STATE_MOD_DT, registeredDate)
-					.execute();
+					.set(SB_MEMBER_TB.NEXT_ACTIVE_SQ, UInteger.valueOf(0)).execute();
 
 			if (0 == resultOfInsert) {
-				try {
-					conn.rollback();
-				} catch (Exception e) {
-					log.warn("fail to rollback");
-				}
-
 				String errorMessage = "회원 등록하는데 실패하였습니다";
-				throw new ServerTaskException(errorMessage);
-			}			
+				throw new RollbackServerTaskException(errorMessage);
+			}
 
-			conn.commit();
-			
 			String logText = new StringBuilder().append("회원 가입 신청 아이디[").append(userID).append("], 회원 종류[")
 					.append(memberRoleType.getName()).append("]").toString();
-			
-			insertSiteLog(conn, dsl, log, userID, logText, registeredDate, ip);
-			
+
+			insertSiteLog(dsl, userID, logText, registeredDate, ip);
+
 			conn.commit();
-			
-		});
+		} catch (RollbackServerTaskException e) {
+			if (null != conn) {
+				try {
+					conn.rollback();
+				} catch (Exception e1) {
+					log.warn("fail to rollback", e1);
+				}
+			}
+		} catch (CommitServerTaskException e) {
+			if (null != conn) {
+				try {
+					conn.commit();
+				} catch (Exception e1) {
+					log.warn("fail to commit", e1);
+				}
+			}
+		} catch (Exception e) {
+			if (null != conn) {
+				try {
+					conn.rollback();
+				} catch (Exception e1) {
+					log.warn("fail to rollback", e1);
+				}
+			}
+
+			throw e;
+		} finally {
+			if (null != conn) {
+				try {
+					conn.close();
+				} catch (Exception e) {
+					log.warn("fail to close the db connection", e);
+				}
+			}
+		}
+
 	}
-	
 
 	/**
 	 * <pre>
@@ -518,11 +534,11 @@ public abstract class ServerDBUtil {
 	 */
 	public static PasswordPairOfMemberTable toPasswordPairOfMemberTable(byte[] passwordBytes, byte[] pwdSaltBytes)
 			throws NoSuchAlgorithmException {
-		
+
 		MessageDigest md = MessageDigest.getInstance(CommonStaticFinalVars.PASSWORD_ALGORITHM_NAME);
 
 		int limit = pwdSaltBytes.length + passwordBytes.length;
-		
+
 		ByteBuffer passwordByteBuffer = ByteBuffer.allocate(limit);
 		passwordByteBuffer.put(pwdSaltBytes);
 		passwordByteBuffer.put(passwordBytes);
@@ -629,8 +645,8 @@ public abstract class ServerDBUtil {
 	/*
 	 * public static MemberRoleType getValidMemberRoleType(Connection conn,
 	 * DSLContext dsl, InternalLogger log, String requestedUserID) throws
-	 * ServerTaskException { if (null == requestedUserID) { try {
-	 * conn.rollback(); } catch (Exception e) { log.warn("fail to rollback"); }
+	 * ServerTaskException { if (null == requestedUserID) { try { conn.rollback(); }
+	 * catch (Exception e) { log.warn("fail to rollback"); }
 	 * 
 	 * String errorMessage = "서비스 요청자를 입력해 주세요"; throw new
 	 * ServerTaskException(errorMessage); }
@@ -702,25 +718,36 @@ public abstract class ServerDBUtil {
 	 * ----------------------------------------------
 	 * </pre>
 	 * 
-	 * @param conn                    연결 객체
-	 * @param dsl                  jooq DLSContext 객체
-	 * @param log                     로그
-	 * @param serviceName              서비스 이름
+	 * @param conn                  연결 객체
+	 * @param dsl                   jooq DLSContext 객체
+	 * @param serviceName           서비스 이름
 	 * @param servicePermissionType 서비스 이용 권한 유형
-	 * @param requestedUserID         서비스 요청자
+	 * @param requestedUserID       서비스 요청자
 	 * @return 서비스 요청자의 회원 역활 유형
 	 * @throws RollbackServerTaskException 서비스 이용 권한이 없거나 기타 에러 발생시 던지는 예외
 	 */
-	public static MemberRoleType checkUserAccessRights(DSLContext dsl, Logger log,
-			String serviceName, PermissionType servicePermissionType, String requestedUserID)
-			throws RollbackServerTaskException {
+	public static MemberRoleType checkUserAccessRights(DSLContext dsl, String serviceName,
+			PermissionType servicePermissionType, String requestedUserID) throws RollbackServerTaskException {
 
-		if (null == requestedUserID) {
-			String errorMessage = "서비스 요청자를 입력해 주세요";
-			throw new RollbackServerTaskException(errorMessage);
+		if (null == dsl) {
+			String errorMessage = "the parameter dsl is null";
+			throw new IllegalArgumentException(errorMessage);
 		}
 
-		
+		if (null == serviceName) {
+			String errorMessage = "the parameter serviceName is null";
+			throw new IllegalArgumentException(errorMessage);
+		}
+
+		if (null == servicePermissionType) {
+			String errorMessage = "the parameter servicePermissionType is null";
+			throw new IllegalArgumentException(errorMessage);
+		}
+
+		if (null == requestedUserID) {
+			String errorMessage = "the parameter requestedUserID is null";
+			throw new IllegalArgumentException(errorMessage);
+		}
 
 		Record2<Byte, Byte> memberRecord = dsl.select(SB_MEMBER_TB.STATE, SB_MEMBER_TB.ROLE).from(SB_MEMBER_TB)
 				.where(SB_MEMBER_TB.USER_ID.eq(requestedUserID)).fetchOne();
@@ -744,36 +771,33 @@ public abstract class ServerDBUtil {
 			throw new RollbackServerTaskException(errorMessage);
 		}
 
-		if (! MemberStateType.OK.equals(memberStateTypeOfRequestedUserID)) {
+		if (!MemberStateType.OK.equals(memberStateTypeOfRequestedUserID)) {
 
 			String errorMessage = new StringBuilder("서비스 요청자[").append(requestedUserID).append("]의 회원 상태[")
 					.append(memberStateTypeOfRequestedUserID.getName()).append("]가 정상이 아닙니다").toString();
 			throw new RollbackServerTaskException(errorMessage);
 		}
 
-		
 		byte memberRoleTypeValueOfRequestedUserID = memberRecord.getValue(SB_MEMBER_TB.ROLE);
 
 		MemberRoleType memberRoleTypeOfRequestedUserID = null;
 		try {
 			memberRoleTypeOfRequestedUserID = MemberRoleType.valueOf(memberRoleTypeValueOfRequestedUserID);
-		} catch (IllegalArgumentException e) {			
+		} catch (IllegalArgumentException e) {
 
 			String errorMessage = new StringBuilder("서비스 요청자[").append(requestedUserID).append("]의 멤버 역활 유형[")
 					.append(memberRoleTypeValueOfRequestedUserID).append("]이 잘못되어있습니다").toString();
 			throw new RollbackServerTaskException(errorMessage);
 		}
 
-		
 		if (PermissionType.ADMIN.equals(servicePermissionType)) {
 			if (!MemberRoleType.ADMIN.equals(memberRoleTypeOfRequestedUserID)) {
-				
 
 				String errorMessage = new StringBuilder().append(serviceName).append("는 관리자 전용 서비스입니다").toString();
 				throw new RollbackServerTaskException(errorMessage);
 			}
 		} else if (PermissionType.MEMBER.equals(servicePermissionType)) {
-			if (MemberRoleType.GUEST.equals(memberRoleTypeOfRequestedUserID)) {				
+			if (MemberRoleType.GUEST.equals(memberRoleTypeOfRequestedUserID)) {
 
 				String errorMessage = new StringBuilder().append(serviceName).append("는 로그인 해야만 이용할 수 있습니다").toString();
 				throw new RollbackServerTaskException(errorMessage);
@@ -783,225 +807,150 @@ public abstract class ServerDBUtil {
 		return memberRoleTypeOfRequestedUserID;
 	}
 
-	public static void insertSiteLog(Connection conn, DSLContext dsl, Logger log, String userID, 
-			String logText, Timestamp registeredDate, String ip) throws Exception {
-		
+	public static void insertSiteLog(DSLContext dsl, String userID, String logText, Timestamp registeredDate, String ip)
+			throws Exception {
+
 		// SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
 		// String yyyyMMdd = sdf.format(registeredDate);
-		
-		Field<String> yyyyMMdd = DSL.field("date_format({0}, {1})", String.class, registeredDate, DSL.inline("%Y%m%d"));		
-		
+
+		Field<String> yyyyMMdd = DSL.field("date_format({0}, {1})", String.class, registeredDate, DSL.inline("%Y%m%d"));
+
 		/** '일별 로그 순번' 동기화를 위해 락을 건다 */
 		dsl.select(SB_SEQ_TB.SQ_ID).from(SB_SEQ_TB)
-		.where(SB_SEQ_TB.SQ_ID.eq(SequenceType.SITE_LOG_LOCK.getSequenceID()))
-		.forUpdate().fetchOne();
-		
-		long maxOfDayLogSeq = dsl.select(DSL.field("if ({0} is null, {1}, {2})", 
-				Long.class, SB_SITE_LOG_TB.DAY_LOG_SQ.max(), Long.valueOf(0), 
-				SB_SITE_LOG_TB.DAY_LOG_SQ.max()))
-		.from(SB_SITE_LOG_TB)
-		.where(SB_SITE_LOG_TB.YYYYMMDD.eq(yyyyMMdd)).fetchOne().value1();
-		
+				.where(SB_SEQ_TB.SQ_ID.eq(SequenceType.SITE_LOG_LOCK.getSequenceID())).forUpdate().fetchOne();
+
+		long maxOfDayLogSeq = dsl
+				.select(DSL.field("if ({0} is null, {1}, {2})", Long.class, SB_SITE_LOG_TB.DAY_LOG_SQ.max(),
+						Long.valueOf(0), SB_SITE_LOG_TB.DAY_LOG_SQ.max()))
+				.from(SB_SITE_LOG_TB).where(SB_SITE_LOG_TB.YYYYMMDD.eq(yyyyMMdd)).fetchOne().value1();
+
 		if (maxOfDayLogSeq == CommonStaticFinalVars.UNSIGNED_INTEGER_MAX) {
 			throw new ServerTaskException("작업 시점의 SB_SITE_LOG_TB 테이블의 날짜 시퀀스가 최대치에 도달하여 더 이상 로그를 추가할 수 없습니다");
 		}
-		
-		dsl.insertInto(SB_SITE_LOG_TB)
-		.set(SB_SITE_LOG_TB.YYYYMMDD, yyyyMMdd)
-		.set(SB_SITE_LOG_TB.DAY_LOG_SQ, UInteger.valueOf(maxOfDayLogSeq + 1))
-		.set(SB_SITE_LOG_TB.USER_ID, userID)		
-		.set(SB_SITE_LOG_TB.LOG_TXT, logText)		
-		.set(SB_SITE_LOG_TB.REG_DT, registeredDate)
-		.set(SB_SITE_LOG_TB.IP, ip).execute();
+
+		dsl.insertInto(SB_SITE_LOG_TB).set(SB_SITE_LOG_TB.YYYYMMDD, yyyyMMdd)
+				.set(SB_SITE_LOG_TB.DAY_LOG_SQ, UInteger.valueOf(maxOfDayLogSeq + 1))
+				.set(SB_SITE_LOG_TB.USER_ID, userID).set(SB_SITE_LOG_TB.LOG_TXT, logText)
+				.set(SB_SITE_LOG_TB.REG_DT, registeredDate).set(SB_SITE_LOG_TB.IP, ip).execute();
 	}
-	
-	
-	public static void insertMemberActivityHistory(Connection conn, DSLContext dsl, Logger log,
-			String userID, 
-			MemberRoleType memberRoleType, MemberActivityType memberActivityType, UByte boardID, UInteger boardNo,
-			Timestamp registeredDate) throws Exception {
-		
+
+	public static void insertMemberActivityHistory(final DSLContext dsl, String userID, MemberRoleType memberRoleType,
+			MemberActivityType memberActivityType, UByte boardID, UInteger boardNo, Timestamp registeredDate)
+			throws Exception {
+
 		if (MemberRoleType.GUEST.equals(memberRoleType)) {
 			/** 손님은 활동 이력 저장을 하지 않는다 */
 			return;
 		}
-		
+
 		/** '회원 이력 순번' 동기화를 위해 락을 건다 */
-		dsl.select(SB_MEMBER_TB.USER_ID).from(SB_MEMBER_TB)
-		.where(SB_MEMBER_TB.USER_ID.eq(userID))
-		.forUpdate().fetchOne();
-		
-		Long activitySeq = dsl.select(DSL.field("if ({0} is null, {1}, {2})", 
-				Long.class, SB_MEMBER_ACTIVITY_HISTORY_TB.ACTIVITY_SQ.max(), 
-				0, SB_MEMBER_ACTIVITY_HISTORY_TB.ACTIVITY_SQ.max().add(1))).from(SB_MEMBER_ACTIVITY_HISTORY_TB)
-				.where(SB_MEMBER_ACTIVITY_HISTORY_TB.USER_ID.eq(userID)).fetchOne().value1();
-		
-		dsl.insertInto(SB_MEMBER_ACTIVITY_HISTORY_TB)
-		.set(SB_MEMBER_ACTIVITY_HISTORY_TB.USER_ID, userID)
-		.set(SB_MEMBER_ACTIVITY_HISTORY_TB.ACTIVITY_SQ, activitySeq)
-		.set(SB_MEMBER_ACTIVITY_HISTORY_TB.BOARD_ID, boardID)
-		.set(SB_MEMBER_ACTIVITY_HISTORY_TB.BOARD_NO, boardNo)
-		.set(SB_MEMBER_ACTIVITY_HISTORY_TB.ACTIVITY_TYPE, memberActivityType.getValue())
-		.set(SB_MEMBER_ACTIVITY_HISTORY_TB.REG_DT, registeredDate).execute();
+		Record1<UInteger> memberRecord = dsl.select(SB_MEMBER_TB.NEXT_ACTIVE_SQ).from(SB_MEMBER_TB)
+				.where(SB_MEMBER_TB.USER_ID.eq(userID)).forUpdate().fetchOne();
+
+		if (null == memberRecord) {
+			String errorMessage = new StringBuilder().append("회원[").append(userID).append("]이 존재하지 않습니다").toString();
+			throw new RollbackServerTaskException(errorMessage);
+		}
+
+		UInteger activitySeq = memberRecord.value1();
+
+		if (UInteger.MAX_VALUE == activitySeq.longValue()) {
+			String errorMessage = new StringBuilder().append("회원[").append(userID)
+					.append("] 활동 이력이 최대 갯수 만큼 등록되어 더 이상 등록할 수 없습니다").toString();
+			throw new RollbackServerTaskException(errorMessage);
+		}
+
+		dsl.update(SB_MEMBER_TB).set(SB_MEMBER_TB.NEXT_ACTIVE_SQ, SB_MEMBER_TB.NEXT_ACTIVE_SQ.add(1))
+				.where(SB_MEMBER_TB.USER_ID.eq(userID)).execute();
+
+		dsl.insertInto(SB_MEMBER_ACTIVITY_HISTORY_TB).set(SB_MEMBER_ACTIVITY_HISTORY_TB.USER_ID, userID)
+				.set(SB_MEMBER_ACTIVITY_HISTORY_TB.ACTIVITY_SQ, activitySeq)
+				.set(SB_MEMBER_ACTIVITY_HISTORY_TB.BOARD_ID, boardID)
+				.set(SB_MEMBER_ACTIVITY_HISTORY_TB.BOARD_NO, boardNo)
+				.set(SB_MEMBER_ACTIVITY_HISTORY_TB.ACTIVITY_TYPE, memberActivityType.getValue())
+				.set(SB_MEMBER_ACTIVITY_HISTORY_TB.REG_DT, registeredDate).execute();
 	}
 
-	
 	/**
 	 * 지정한 게시글에 속한 그룹의 루트 노드에 해당하는 레코드에 락을 건후 그룹 번호를 반환한다
-	 * @param conn JDBC 연결
-	 * @param dsl DSLContext
-	 * @param log 로거
+	 * 
+	 * @param conn    JDBC 연결
+	 * @param dsl     DSLContext
 	 * @param boardID 게시판 식별자
 	 * @param boardNo 게시글 번호
 	 * @return 지정한 게시글에 속한 그룹 번호
 	 * @throws Exception 에러
 	 */
-	public static UInteger lockGroupOfGivenBoard(Connection conn, DSLContext dsl, Logger log,
-			UByte boardID, UInteger boardNo) throws Exception {
-		/** 그룹 락 시작 */
-		Record1<UInteger> groupRecord = dsl.select(SB_BOARD_TB.GROUP_NO)
-		.from(SB_BOARD_TB).where(SB_BOARD_TB.BOARD_ID.eq(boardID)).and(SB_BOARD_TB.BOARD_NO.eq(boardNo))
-		.fetchOne();
-		
+	public static UInteger lockRootRecordOfBoardGroup(DSLContext dsl, UByte boardID, UInteger boardNo)
+			throws Exception {
+		/** 게시글의 그룹 얻기 */
+		Record1<UInteger> groupRecord = dsl.select(SB_BOARD_TB.GROUP_NO).from(SB_BOARD_TB)
+				.where(SB_BOARD_TB.BOARD_ID.eq(boardID)).and(SB_BOARD_TB.BOARD_NO.eq(boardNo)).fetchOne();
+
 		if (null == groupRecord) {
-			try {
-				conn.rollback();
-			} catch (Exception e) {
-				log.warn("fail to rollback");
-			}
 
-			String errorMessage = new StringBuilder()
-					.append("해당 게시글[boardID=")
-					.append(boardID)
-					.append(", boardNo=")
-					.append(boardNo)
-					.append("]이 존재 하지 않습니다").toString();
-			throw new ServerTaskException(errorMessage);
+			String errorMessage = new StringBuilder().append("해당 게시글[boardID=").append(boardID).append(", boardNo=")
+					.append(boardNo).append("]이 존재 하지 않습니다").toString();
+			throw new RollbackServerTaskException(errorMessage);
 		}
-		
+
 		UInteger groupNo = groupRecord.get(SB_BOARD_TB.GROUP_NO);
-		
-		Record1<UInteger> groupLockRecord = dsl
-		.select(SB_BOARD_TB.BOARD_NO)
-		.from(SB_BOARD_TB).where(SB_BOARD_TB.BOARD_ID.eq(boardID)).and(SB_BOARD_TB.BOARD_NO.eq(groupNo))
-		.forUpdate().fetchOne();
-		
+
+		/** 얻은 게시글의 그룹에 대한 락 걸기 */
+		Record1<UInteger> groupLockRecord = dsl.select(SB_BOARD_TB.BOARD_NO).from(SB_BOARD_TB)
+				.where(SB_BOARD_TB.BOARD_ID.eq(boardID)).and(SB_BOARD_TB.BOARD_NO.eq(groupNo)).forUpdate().fetchOne();
+
 		if (null == groupLockRecord) {
-			try {
-				conn.rollback();
-			} catch (Exception e) {
-				log.warn("fail to rollback");
-			}
+			String errorMessage = new StringBuilder().append("그룹 루트 게시글[boardID=").append(boardID).append(", groupNo=")
+					.append(groupNo).append("]이 존재 하지 않습니다").toString();
 
-			String errorMessage = new StringBuilder()
-					.append("그룹 루트 게시글[boardID=")
-					.append(boardID)
-					.append(", groupNo=")
-					.append(groupNo)
-					.append("]이 존재 하지 않습니다").toString(); 
-					
-					new StringBuilder("그룹 루트 게시글이 존재 하지 않습니다").toString();
-			throw new ServerTaskException(errorMessage);
+			new StringBuilder("그룹 루트 게시글이 존재 하지 않습니다").toString();
+			throw new RollbackServerTaskException(errorMessage);
 		}
-		/** 그룹 락 종료 */
-		
+
 		return groupNo;
-		
 	}
-	
-	
-	public static <I, O> O doDBWork(String dbcpName, I req, DBTaskIF<I, O> dbTask) throws Exception {
-		DataSource dataSource = DBCPManager.getInstance().getBasicDataSource(dbcpName);
-		
-		Connection conn = null;
-		try {
-			conn = dataSource.getConnection();
-			conn.setAutoCommit(false);
-			
-			
-			DSLContext dsl = DSL.using(conn, SQLDialect.MYSQL, ServerDBUtil.getDBCPSettings(dbcpName));
-			
-			O res =  dbTask.doWork(dsl, req);
-			
-			conn.commit();
-			
-			return res;
-		} catch (RollbackServerTaskException e) {
-			if (null != conn) {
-				try {
-					conn.rollback();
-				} catch(Exception e1) {
-					Logger log = LoggerFactory.getLogger(ServerDBUtil.class);
-					log.warn("fail to rollback", e1);
-				}
-			}
-			
-			throw e;
-		} catch (CommitServerTaskException e) {
-			if (null != conn) {
-				try {
-					conn.commit();
-				} catch(Exception e1) {
-					Logger log = LoggerFactory.getLogger(ServerDBUtil.class);
-					log.warn("fail to commit", e1);
-				}
-			}
-			
-			throw e;
-		} catch (Exception e) {
-			if (null != conn) {
-				try {
-					conn.rollback();
-				} catch (Exception e1) {
-					Logger log = LoggerFactory.getLogger(ServerDBUtil.class);
-					log.warn("fail to rollback", e1);
-				}
-			}
-			
-			throw e;
-		} finally {
-			if (null != conn) {
-				try {
-					conn.close();
-				} catch (Exception e) {
-					Logger log = LoggerFactory.getLogger(ServerDBUtil.class);
-					log.warn("fail to close the db connection", e);
-				}
-			}
-		}
-	}
-	
-	
-	public static void execute(final String dbcpName, 
-			final DBExecutorIF dbExecutor) throws Exception {
+
+	public static <I, O> O doDBAutoTransationWork(String dbcpName, DBAutoCommitTaskIF<I, O> dbTask, I req)
+			throws Exception {
 		DataSource dataSource = DBCPManager.getInstance().getBasicDataSource(dbcpName);
 
 		Connection conn = null;
 		try {
 			conn = dataSource.getConnection();
 			conn.setAutoCommit(false);
-			
+
 			DSLContext dsl = DSL.using(conn, SQLDialect.MYSQL, ServerDBUtil.getDBCPSettings(dbcpName));
-			
-			dbExecutor.execute(conn, dsl); 
+
+			O res = dbTask.doWork(dsl, req);
+
+			conn.commit();
+
+			return res;
+		} catch (ParameterServerTaskException e) {
+			throw e;
 		} catch (RollbackServerTaskException e) {
 			if (null != conn) {
 				try {
 					conn.rollback();
-				} catch(Exception e1) {
+				} catch (Exception e1) {
 					Logger log = LoggerFactory.getLogger(ServerDBUtil.class);
 					log.warn("fail to rollback", e1);
 				}
 			}
+
+			throw e;
 		} catch (CommitServerTaskException e) {
 			if (null != conn) {
 				try {
 					conn.commit();
-				} catch(Exception e1) {
+				} catch (Exception e1) {
 					Logger log = LoggerFactory.getLogger(ServerDBUtil.class);
 					log.warn("fail to commit", e1);
 				}
 			}
+
+			throw e;
 		} catch (Exception e) {
 			if (null != conn) {
 				try {
@@ -1011,7 +960,7 @@ public abstract class ServerDBUtil {
 					log.warn("fail to rollback", e1);
 				}
 			}
-			
+
 			throw e;
 		} finally {
 			if (null != conn) {
@@ -1023,5 +972,112 @@ public abstract class ServerDBUtil {
 				}
 			}
 		}
-	}	
+	}
+
+	public static <I, O> O doDBManualTransationWork(String dbcpName, I req, DBManualCommitTaskIF<I, O> dbTask)
+			throws Exception {
+		DataSource dataSource = DBCPManager.getInstance().getBasicDataSource(dbcpName);
+
+		Connection conn = null;
+		try {
+			conn = dataSource.getConnection();
+			conn.setAutoCommit(false);
+
+			TransactionManager transactionManager = new TransactionManager(conn);
+
+			DSLContext dsl = DSL.using(conn, SQLDialect.MYSQL, ServerDBUtil.getDBCPSettings(dbcpName));
+
+			O res = dbTask.doWork(transactionManager, dsl, req);
+
+			if (0 == transactionManager.getCountOfCommit()) {
+				String errorMessage = "DB 작업중 commit 이 호출되지 않아 모든 DB 작업을 취소합니다";
+				throw new RollbackServerTaskException(errorMessage);
+			}
+
+			Logger log = LoggerFactory.getLogger(ServerDBUtil.class);
+
+			log.info("dbcpName={}, req={}, {}", dbcpName, req.toString(), transactionManager.toString());
+
+			return res;
+		} catch (ParameterServerTaskException e) {
+			throw e;
+		} catch (RollbackServerTaskException e) {
+			if (null != conn) {
+				try {
+					conn.rollback();
+				} catch (Exception e1) {
+					Logger log = LoggerFactory.getLogger(ServerDBUtil.class);
+					log.warn("fail to rollback", e1);
+				}
+			}
+
+			throw e;
+		} catch (CommitServerTaskException e) {
+			if (null != conn) {
+				try {
+					conn.commit();
+				} catch (Exception e1) {
+					Logger log = LoggerFactory.getLogger(ServerDBUtil.class);
+					log.warn("fail to commit", e1);
+				}
+			}
+
+			throw e;
+		} catch (Exception e) {
+			if (null != conn) {
+				try {
+					conn.rollback();
+				} catch (Exception e1) {
+					Logger log = LoggerFactory.getLogger(ServerDBUtil.class);
+					log.warn("fail to rollback", e1);
+				}
+			}
+
+			throw e;
+		} finally {
+			if (null != conn) {
+				try {
+					conn.close();
+				} catch (Exception e) {
+					Logger log = LoggerFactory.getLogger(ServerDBUtil.class);
+					log.warn("fail to close the db connection", e);
+				}
+			}
+		}
+	}
+
+	/**
+	 * 
+	 * @param dbcpName
+	 * @param dbExecutor
+	 * @throws Exception
+	 */
+	/*
+	 * public static void execute(final String dbcpName, final DBExecutorIF
+	 * dbExecutor) throws Exception { DataSource dataSource =
+	 * DBCPManager.getInstance().getBasicDataSource(dbcpName);
+	 * 
+	 * Connection conn = null; try { conn = dataSource.getConnection();
+	 * conn.setAutoCommit(false);
+	 * 
+	 * DSLContext dsl = DSL.using(conn, SQLDialect.MYSQL,
+	 * ServerDBUtil.getDBCPSettings(dbcpName));
+	 * 
+	 * dbExecutor.execute(dsl);
+	 * 
+	 * conn.commit(); } catch (RollbackServerTaskException e) { if (null != conn) {
+	 * try { conn.rollback(); } catch(Exception e1) { Logger log =
+	 * LoggerFactory.getLogger(ServerDBUtil.class); log.warn("fail to rollback",
+	 * e1); } } } catch (CommitServerTaskException e) { if (null != conn) { try {
+	 * conn.commit(); } catch(Exception e1) { Logger log =
+	 * LoggerFactory.getLogger(ServerDBUtil.class); log.warn("fail to commit", e1);
+	 * } } } catch (Exception e) { if (null != conn) { try { conn.rollback(); }
+	 * catch (Exception e1) { Logger log =
+	 * LoggerFactory.getLogger(ServerDBUtil.class); log.warn("fail to rollback",
+	 * e1); } }
+	 * 
+	 * throw e; } finally { if (null != conn) { try { conn.close(); } catch
+	 * (Exception e) { Logger log = LoggerFactory.getLogger(ServerDBUtil.class);
+	 * log.warn("fail to close the db connection", e); } } } }
+	 */
 }

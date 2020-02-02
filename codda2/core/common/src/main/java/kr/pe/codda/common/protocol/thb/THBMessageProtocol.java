@@ -292,7 +292,7 @@ public class THBMessageProtocol implements MessageProtocolIF {
 							throw new HeaderFormatException(errorMessage);
 						}
 						
-						if (CommonStaticFinalVars.SERVER_ASYN_MAILBOX_ID == mailboxID) {
+						if (CommonStaticFinalVars.NOCOUNT_ASYN_MAILBOX_ID == mailboxID) {
 							String errorMessage = new StringBuilder()
 									.append("the recevied message[messageID=")
 									.append(messageID)

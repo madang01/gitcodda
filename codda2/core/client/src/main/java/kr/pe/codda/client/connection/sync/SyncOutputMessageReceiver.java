@@ -87,7 +87,7 @@ public class SyncOutputMessageReceiver implements ReceivedMiddleObjectForwarderI
 			return;
 		}
 		
-		if ((CommonStaticFinalVars.CLIENT_ASYN_MAILBOX_ID == mailboxID) || (CommonStaticFinalVars.SERVER_ASYN_MAILBOX_ID == mailboxID)) {
+		if ((CommonStaticFinalVars.COUNT_ASYN_MAILBOX_ID == mailboxID) || (CommonStaticFinalVars.NOCOUNT_ASYN_MAILBOX_ID == mailboxID)) {
 			/** discard message */
 			isError = true;
 			

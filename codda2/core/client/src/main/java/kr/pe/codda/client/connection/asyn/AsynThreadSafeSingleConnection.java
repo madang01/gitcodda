@@ -351,7 +351,7 @@ public class AsynThreadSafeSingleConnection
 			throws InterruptedException {
 		
 		
-		if (CommonStaticFinalVars.SERVER_ASYN_MAILBOX_ID == mailboxID) {
+		if (CommonStaticFinalVars.NOCOUNT_ASYN_MAILBOX_ID == mailboxID) {
 			try {
 				AbstractClientTask clientTask = clientTaskManger.getValidClientTask(messageID);
 				clientTask.execute(hashCode(), projectName, this, mailboxID, mailID, messageID, readableMiddleObject,
@@ -366,7 +366,7 @@ public class AsynThreadSafeSingleConnection
 				messageProtocol.closeReadableMiddleObject(mailboxID, mailID, messageID, readableMiddleObject);
 			}
 			
-		} else if (CommonStaticFinalVars.CLIENT_ASYN_MAILBOX_ID == mailboxID) {
+		} else if (CommonStaticFinalVars.COUNT_ASYN_MAILBOX_ID == mailboxID) {
 			outgoingStream.decreaseOutputMessageCount();
 			
 			try {

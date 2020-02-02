@@ -42,7 +42,7 @@ import org.jooq.types.UInteger;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class SbMemberActivityHistoryTb extends TableImpl<SbMemberActivityHistoryTbRecord> {
 
-    private static final long serialVersionUID = 768247475;
+    private static final long serialVersionUID = 200364964;
 
     /**
      * The reference instance of <code>sb_db.sb_member_activity_history_tb</code>
@@ -65,7 +65,7 @@ public class SbMemberActivityHistoryTb extends TableImpl<SbMemberActivityHistory
     /**
      * The column <code>sb_db.sb_member_activity_history_tb.activity_sq</code>. 활동 순번, 0 부터 시작되며 이후 MAX + 1 이 된다
      */
-    public final TableField<SbMemberActivityHistoryTbRecord, Long> ACTIVITY_SQ = createField("activity_sq", org.jooq.impl.SQLDataType.BIGINT.nullable(false), this, "활동 순번, 0 부터 시작되며 이후 MAX + 1 이 된다");
+    public final TableField<SbMemberActivityHistoryTbRecord, UInteger> ACTIVITY_SQ = createField("activity_sq", org.jooq.impl.SQLDataType.INTEGERUNSIGNED.nullable(false), this, "활동 순번, 0 부터 시작되며 이후 MAX + 1 이 된다");
 
     /**
      * The column <code>sb_db.sb_member_activity_history_tb.board_id</code>. 게시판 식별자,  활동  대상이 되는 게시글의 게시판 식별자

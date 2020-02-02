@@ -25,6 +25,7 @@ import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
 import org.jooq.impl.TableImpl;
 import org.jooq.types.UByte;
+import org.jooq.types.UInteger;
 
 
 /**
@@ -40,7 +41,7 @@ import org.jooq.types.UByte;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class SbMemberTb extends TableImpl<SbMemberTbRecord> {
 
-    private static final long serialVersionUID = -948239134;
+    private static final long serialVersionUID = 987193288;
 
     /**
      * The reference instance of <code>sb_db.sb_member_tb</code>
@@ -119,6 +120,11 @@ public class SbMemberTb extends TableImpl<SbMemberTbRecord> {
      * The column <code>sb_db.sb_member_tb.last_state_mod_dt</code>.
      */
     public final TableField<SbMemberTbRecord, Timestamp> LAST_STATE_MOD_DT = createField("last_state_mod_dt", org.jooq.impl.SQLDataType.TIMESTAMP, this, "");
+
+    /**
+     * The column <code>sb_db.sb_member_tb.next_active_sq</code>. 다음 활동 이력 시퀀스, 0 부터 시작
+     */
+    public final TableField<SbMemberTbRecord, UInteger> NEXT_ACTIVE_SQ = createField("next_active_sq", org.jooq.impl.SQLDataType.INTEGERUNSIGNED, this, "다음 활동 이력 시퀀스, 0 부터 시작");
 
     /**
      * Create a <code>sb_db.sb_member_tb</code> table reference
