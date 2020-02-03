@@ -41,10 +41,19 @@ public class ChildMenuAddReqServerTask extends AbstractServerTask
 	public void doTask(String projectName, LoginManagerIF personalLoginManager, ToLetterCarrier toLetterCarrier,
 			AbstractMessage inputMessage) throws Exception {
 
-		AbstractMessage outputMessage = ServerDBUtil.doDBAutoTransationWork(
+		AbstractMessage outputMessage = ServerDBUtil.execute(
 				ServerCommonStaticFinalVars.DEFAULT_DBCP_NAME, this, (ChildMenuAddReq) inputMessage);
 		toLetterCarrier.addSyncOutputMessage(outputMessage);
 
+	}
+	
+
+	public ChildMenuAddRes doWork(final String dbcpName, final ChildMenuAddReq childMenuAddReq) throws Exception {
+		
+		ChildMenuAddRes outputMessage = ServerDBUtil.execute(dbcpName, this,
+				childMenuAddReq);
+		
+		return outputMessage;
 	}
 
 	@Override

@@ -1,189 +1,25 @@
-2020-01-08 00:19:41.530 INFO  [main] the message information .xsl temporary file[C:\Users\user\AppData\Local\Temp\MessageXSL4653204630344868520.tmp] was created successfully (SingleItemTypeManger.java:230)
-2020-01-08 00:19:41.555 INFO  [main] 
-	int member$1ListSize = 3;
-	if (member$1ListSize < 0) {
-		String errorMessage = new StringBuilder("the var member$1ListSize is less than zero").toString();
-		throw new kr.pe.codda.common.exception.BodyFormatException(errorMessage);
-	}
-
-	Object member$1ArrayMiddleObject = singleItemDecoder.getArrayMiddleObject(pathStack.peek(), "member", member$1ListSize, middleWritableObject);
-	java.util.List<Empty.Member> member$1List = new java.util.ArrayList<Empty.Member>();
-	for (int i1=0; i1 < member$1ListSize; i1++) {
-		pathStack.push(new StringBuilder(pathStack.peek()).append(".").append("Member").append("[").append(i1).append("]").toString());
-		Object member$1MiddleWritableObject= singleItemDecoder.getMiddleObjectFromArrayMiddleObject(pathStack.peek(), member$1ArrayMiddleObject, i1);
-		Empty.Member member$1 = new Empty.Member();
-		member$1List.add(member$1);
-
-		member$1.setUbBytes((byte[])
-		singleItemDecoder.getValue(pathStack.peek()
-			, "ubBytes" // itemName
-			, kr.pe.codda.common.type.SingleItemType.UB_VARIABLE_LENGTH_BYTES // itemType
-			, -1 // itemSize
-			, null // nativeItemCharset
-			, member$1MiddleWritableObject));
-
-		pathStack.pop();
-	}
-
-	empty.setMemberList(member$1List); (DecoderFileContensBuilderTest.java:132)
-2020-01-08 00:19:41.558 INFO  [main] 	int member$1ListSize = 3; (DecoderFileContensBuilderTest.java:66)
-2020-01-08 00:19:41.559 INFO  [main] 	if (member$1ListSize < 0) {
-		String errorMessage = new StringBuilder("the var member$1ListSize is less than zero").toString();
-		throw new kr.pe.codda.common.exception.BodyFormatException(errorMessage);
-	} (DecoderFileContensBuilderTest.java:97)
-2020-01-08 00:19:41.560 INFO  [main] 
-	empty.setUbBytes((byte[])
-	singleItemDecoder.getValue(pathStack.peek()
-		, "ubBytes" // itemName
-		, kr.pe.codda.common.type.SingleItemType.UB_VARIABLE_LENGTH_BYTES // itemType
-		, -1 // itemSize
-		, null // nativeItemCharset
-		, middleWritableObject)); (DecoderFileContensBuilderTest.java:35)
-2020-01-08 00:19:41.561 INFO  [main] 
-	Empty.Vip vip$1 = new Empty.Vip();
-	Object vip$1WritableMiddleObject = singleItemDecoder.getGroupMiddleObject(pathStack.peek(), "vip", middleWritableObject);
-	pathStack.push(new StringBuilder(pathStack.peek()).append(".").append("Vip").toString());
-
-	vip$1.setUbBytes3((byte[])
-	singleItemDecoder.getValue(pathStack.peek()
-		, "ubBytes3" // itemName
-		, kr.pe.codda.common.type.SingleItemType.UB_VARIABLE_LENGTH_BYTES // itemType
-		, -1 // itemSize
-		, null // nativeItemCharset
-		, vip$1WritableMiddleObject));
-
-	pathStack.pop();
-	empty.setVip(vip$1); (DecoderFileContensBuilderTest.java:163)
-2020-01-08 00:19:47.822 INFO  [main] the message information .xsl temporary file[C:\Users\user\AppData\Local\Temp\MessageXSL6497436432815999198.tmp] was created successfully (SingleItemTypeManger.java:230)
-2020-01-08 00:19:47.833 INFO  [main] 
-	empty.setUbBytes((byte[])
-	singleItemDecoder.getValue(pathStack.peek()
-		, "ubBytes" // itemName
-		, kr.pe.codda.common.type.SingleItemType.UB_VARIABLE_LENGTH_BYTES // itemType
-		, -1 // itemSize
-		, null // nativeItemCharset
-		, middleWritableObject)); (DecoderFileContensBuilderTest.java:35)
-2020-01-08 00:20:02.018 INFO  [main] the message information .xsl temporary file[C:\Users\user\AppData\Local\Temp\MessageXSL7806472143081491823.tmp] was created successfully (SingleItemTypeManger.java:230)
-2020-01-08 00:20:02.085 INFO  [main] the temp directory[D:\gitcodda\codda2\temp] where the target messge's io file set will be saved (IOPartDynamicClassFileContentsBuilderManagerTest.java:40)
-2020-01-08 00:20:02.088 INFO  [main] the target message[SelfExnRes]'s io file set creation work start (IOPartDynamicClassFileContentsBuilderManagerTest.java:43)
-2020-01-08 00:20:02.088 INFO  [main] the message information file[D:\gitcodda\codda2\resources\message_info\SelfExnRes.xml] (IOPartDynamicClassFileContentsBuilderManagerTest.java:50)
-2020-01-08 00:20:02.121 WARN  [main] error::org.xml.sax.SAXException: error::parsing result={ messageID=SelfExnRes, direction=FROM_SERVER_TO_CLINET, {}}, org.xml.sax.SAXParseException; lineNumber: 20; columnNumber: 81; cvc-enumeration-valid: 'selfexn error place' 값은 '[exception delivery error place, exception delivery error type, byte, unsigned byte, short, unsigned short, integer, unsigned integer, long, ub pascal string, us pascal string, si pascal string, fixed length string, ub variable length byte[], us variable length byte[], si variable length byte[], fixed length byte[], java sql date, java sql timestamp, boolean]' 목록에 대해 적합한 면이 아닙니다. 목록의 값이어야 합니다. (IOPartDynamicClassFileContentsBuilderManagerTest.java:58)
-org.xml.sax.SAXException: error::parsing result={ messageID=SelfExnRes, direction=FROM_SERVER_TO_CLINET, {}}, org.xml.sax.SAXParseException; lineNumber: 20; columnNumber: 81; cvc-enumeration-valid: 'selfexn error place' 값은 '[exception delivery error place, exception delivery error type, byte, unsigned byte, short, unsigned short, integer, unsigned integer, long, ub pascal string, us pascal string, si pascal string, fixed length string, ub variable length byte[], us variable length byte[], si variable length byte[], fixed length byte[], java sql date, java sql timestamp, boolean]' 목록에 대해 적합한 면이 아닙니다. 목록의 값이어야 합니다.
-	at kr.pe.codda.common.message.builder.info.MessageInfoSAXParser.error(MessageInfoSAXParser.java:403)
-	at com.sun.org.apache.xerces.internal.util.ErrorHandlerWrapper.error(ErrorHandlerWrapper.java:137)
-	at com.sun.org.apache.xerces.internal.impl.XMLErrorReporter.reportError(XMLErrorReporter.java:396)
-	at com.sun.org.apache.xerces.internal.impl.XMLErrorReporter.reportError(XMLErrorReporter.java:327)
-	at com.sun.org.apache.xerces.internal.impl.XMLErrorReporter.reportError(XMLErrorReporter.java:284)
-	at com.sun.org.apache.xerces.internal.impl.xs.XMLSchemaValidator$XSIErrorReporter.reportError(XMLSchemaValidator.java:453)
-	at com.sun.org.apache.xerces.internal.impl.xs.XMLSchemaValidator.reportSchemaError(XMLSchemaValidator.java:3231)
-	at com.sun.org.apache.xerces.internal.impl.xs.XMLSchemaValidator.processOneAttribute(XMLSchemaValidator.java:2826)
-	at com.sun.org.apache.xerces.internal.impl.xs.XMLSchemaValidator.processAttributes(XMLSchemaValidator.java:2763)
-	at com.sun.org.apache.xerces.internal.impl.xs.XMLSchemaValidator.handleStartElement(XMLSchemaValidator.java:2051)
-	at com.sun.org.apache.xerces.internal.impl.xs.XMLSchemaValidator.emptyElement(XMLSchemaValidator.java:761)
-	at com.sun.org.apache.xerces.internal.impl.XMLNSDocumentScannerImpl.scanStartElement(XMLNSDocumentScannerImpl.java:351)
-	at com.sun.org.apache.xerces.internal.impl.XMLDocumentFragmentScannerImpl$FragmentContentDriver.next(XMLDocumentFragmentScannerImpl.java:2784)
-	at com.sun.org.apache.xerces.internal.impl.XMLDocumentScannerImpl.next(XMLDocumentScannerImpl.java:602)
-	at com.sun.org.apache.xerces.internal.impl.XMLNSDocumentScannerImpl.next(XMLNSDocumentScannerImpl.java:112)
-	at com.sun.org.apache.xerces.internal.impl.XMLDocumentFragmentScannerImpl.scanDocument(XMLDocumentFragmentScannerImpl.java:505)
-	at com.sun.org.apache.xerces.internal.parsers.XML11Configuration.parse(XML11Configuration.java:842)
-	at com.sun.org.apache.xerces.internal.parsers.XML11Configuration.parse(XML11Configuration.java:771)
-	at com.sun.org.apache.xerces.internal.parsers.XMLParser.parse(XMLParser.java:141)
-	at com.sun.org.apache.xerces.internal.parsers.AbstractSAXParser.parse(AbstractSAXParser.java:1213)
-	at com.sun.org.apache.xerces.internal.jaxp.SAXParserImpl$JAXPSAXParser.parse(SAXParserImpl.java:643)
-	at com.sun.org.apache.xerces.internal.jaxp.SAXParserImpl.parse(SAXParserImpl.java:327)
-	at javax.xml.parsers.SAXParser.parse(SAXParser.java:195)
-	at kr.pe.codda.common.message.builder.info.MessageInfoSAXParser.parse(MessageInfoSAXParser.java:467)
-	at kr.pe.codda.common.message.builder.IOPartDynamicClassFileContentsBuilderManagerTest.test_설치경로에있는임시디렉토리에메시지정보파일로부터메시지IO관련파일만들기(IOPartDynamicClassFileContentsBuilderManagerTest.java:55)
-	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
-	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
-	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
-	at java.lang.reflect.Method.invoke(Method.java:498)
-	at org.junit.runners.model.FrameworkMethod$1.runReflectiveCall(FrameworkMethod.java:50)
-	at org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:12)
-	at org.junit.runners.model.FrameworkMethod.invokeExplosively(FrameworkMethod.java:47)
-	at org.junit.internal.runners.statements.InvokeMethod.evaluate(InvokeMethod.java:17)
-	at org.junit.internal.runners.statements.RunBefores.evaluate(RunBefores.java:26)
-	at org.junit.internal.runners.statements.RunAfters.evaluate(RunAfters.java:27)
-	at org.junit.runners.ParentRunner.runLeaf(ParentRunner.java:325)
-	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:78)
-	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:57)
-	at org.junit.runners.ParentRunner$3.run(ParentRunner.java:290)
-	at org.junit.runners.ParentRunner$1.schedule(ParentRunner.java:71)
-	at org.junit.runners.ParentRunner.runChildren(ParentRunner.java:288)
-	at org.junit.runners.ParentRunner.access$000(ParentRunner.java:58)
-	at org.junit.runners.ParentRunner$2.evaluate(ParentRunner.java:268)
-	at org.junit.internal.runners.statements.RunBefores.evaluate(RunBefores.java:26)
-	at org.junit.runners.ParentRunner.run(ParentRunner.java:363)
-	at org.eclipse.jdt.internal.junit4.runner.JUnit4TestReference.run(JUnit4TestReference.java:89)
-	at org.eclipse.jdt.internal.junit.runner.TestExecution.run(TestExecution.java:41)
-	at org.eclipse.jdt.internal.junit.runner.RemoteTestRunner.runTests(RemoteTestRunner.java:541)
-	at org.eclipse.jdt.internal.junit.runner.RemoteTestRunner.runTests(RemoteTestRunner.java:763)
-	at org.eclipse.jdt.internal.junit.runner.RemoteTestRunner.run(RemoteTestRunner.java:463)
-	at org.eclipse.jdt.internal.junit.runner.RemoteTestRunner.main(RemoteTestRunner.java:209)
-2020-01-08 00:23:40.883 INFO  [main] the message information .xsl temporary file[C:\Users\user\AppData\Local\Temp\MessageXSL3577093863103199803.tmp] was created successfully (SingleItemTypeManger.java:230)
-2020-01-08 00:23:40.933 INFO  [main] the temp directory[D:\gitcodda\codda2\temp] where the target messge's io file set will be saved (IOPartDynamicClassFileContentsBuilderManagerTest.java:40)
-2020-01-08 00:23:40.935 INFO  [main] the target message[SelfExnRes]'s io file set creation work start (IOPartDynamicClassFileContentsBuilderManagerTest.java:43)
-2020-01-08 00:23:40.935 INFO  [main] the message information file[D:\gitcodda\codda2\resources\message_info\SelfExnRes.xml] (IOPartDynamicClassFileContentsBuilderManagerTest.java:50)
-2020-01-08 00:23:40.953 WARN  [main] fail to save file[the message source file][D:\gitcodda\codda2\temp\SelfExnRes.java]::지정된 경로를 찾을 수 없습니다 (IOPartDynamicClassFileContentsBuilderManagerTest.java:77)
-java.io.IOException: 지정된 경로를 찾을 수 없습니다
-	at java.io.WinNTFileSystem.createFileExclusively(Native Method)
-	at java.io.File.createNewFile(File.java:1012)
-	at kr.pe.codda.common.util.CommonStaticUtil.createNewFile(CommonStaticUtil.java:285)
-	at kr.pe.codda.common.util.CommonStaticUtil.saveFile(CommonStaticUtil.java:401)
-	at kr.pe.codda.common.message.builder.IOPartDynamicClassFileContentsBuilderManagerTest.test_설치경로에있는임시디렉토리에메시지정보파일로부터메시지IO관련파일만들기(IOPartDynamicClassFileContentsBuilderManagerTest.java:72)
-	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
-	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
-	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
-	at java.lang.reflect.Method.invoke(Method.java:498)
-	at org.junit.runners.model.FrameworkMethod$1.runReflectiveCall(FrameworkMethod.java:50)
-	at org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:12)
-	at org.junit.runners.model.FrameworkMethod.invokeExplosively(FrameworkMethod.java:47)
-	at org.junit.internal.runners.statements.InvokeMethod.evaluate(InvokeMethod.java:17)
-	at org.junit.internal.runners.statements.RunBefores.evaluate(RunBefores.java:26)
-	at org.junit.internal.runners.statements.RunAfters.evaluate(RunAfters.java:27)
-	at org.junit.runners.ParentRunner.runLeaf(ParentRunner.java:325)
-	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:78)
-	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:57)
-	at org.junit.runners.ParentRunner$3.run(ParentRunner.java:290)
-	at org.junit.runners.ParentRunner$1.schedule(ParentRunner.java:71)
-	at org.junit.runners.ParentRunner.runChildren(ParentRunner.java:288)
-	at org.junit.runners.ParentRunner.access$000(ParentRunner.java:58)
-	at org.junit.runners.ParentRunner$2.evaluate(ParentRunner.java:268)
-	at org.junit.internal.runners.statements.RunBefores.evaluate(RunBefores.java:26)
-	at org.junit.runners.ParentRunner.run(ParentRunner.java:363)
-	at org.eclipse.jdt.internal.junit4.runner.JUnit4TestReference.run(JUnit4TestReference.java:89)
-	at org.eclipse.jdt.internal.junit.runner.TestExecution.run(TestExecution.java:41)
-	at org.eclipse.jdt.internal.junit.runner.RemoteTestRunner.runTests(RemoteTestRunner.java:541)
-	at org.eclipse.jdt.internal.junit.runner.RemoteTestRunner.runTests(RemoteTestRunner.java:763)
-	at org.eclipse.jdt.internal.junit.runner.RemoteTestRunner.run(RemoteTestRunner.java:463)
-	at org.eclipse.jdt.internal.junit.runner.RemoteTestRunner.main(RemoteTestRunner.java:209)
-2020-01-08 00:24:32.572 INFO  [main] the message information .xsl temporary file[C:\Users\user\AppData\Local\Temp\MessageXSL4141854572850683908.tmp] was created successfully (SingleItemTypeManger.java:230)
-2020-01-08 00:24:32.614 INFO  [main] the temp directory[D:\gitcodda\codda2\temp] where the target messge's io file set will be saved (IOPartDynamicClassFileContentsBuilderManagerTest.java:40)
-2020-01-08 00:24:32.616 INFO  [main] the target message[SelfExnRes]'s io file set creation work start (IOPartDynamicClassFileContentsBuilderManagerTest.java:43)
-2020-01-08 00:24:32.616 INFO  [main] the message information file[D:\gitcodda\codda2\resources\message_info\SelfExnRes.xml] (IOPartDynamicClassFileContentsBuilderManagerTest.java:50)
-2020-01-08 00:24:32.668 INFO  [main] the target message[AllItemType]'s io file set creation work start (IOPartDynamicClassFileContentsBuilderManagerTest.java:43)
-2020-01-08 00:24:32.668 INFO  [main] the message information file[D:\gitcodda\codda2\resources\message_info\AllItemType.xml] (IOPartDynamicClassFileContentsBuilderManagerTest.java:50)
-2020-01-08 00:24:32.733 INFO  [main] the target message[Echo]'s io file set creation work start (IOPartDynamicClassFileContentsBuilderManagerTest.java:43)
-2020-01-08 00:24:32.734 INFO  [main] the message information file[D:\gitcodda\codda2\resources\message_info\Echo.xml] (IOPartDynamicClassFileContentsBuilderManagerTest.java:50)
-2020-01-08 00:24:32.771 INFO  [main] the target message[Empty]'s io file set creation work start (IOPartDynamicClassFileContentsBuilderManagerTest.java:43)
-2020-01-08 00:24:32.771 INFO  [main] the message information file[D:\gitcodda\codda2\resources\message_info\Empty.xml] (IOPartDynamicClassFileContentsBuilderManagerTest.java:50)
-2020-01-08 00:27:15.217 INFO  [main] the message information .xsl temporary file[C:\Users\user\AppData\Local\Temp\MessageXSL2820310662633544777.tmp] was created successfully (SingleItemTypeManger.java:230)
-2020-01-08 00:27:15.263 INFO  [main] the temp directory[D:\gitcodda\codda2\temp] where the target messge's io file set will be saved (IOPartDynamicClassFileContentsBuilderManagerTest.java:40)
-2020-01-08 00:27:15.265 INFO  [main] the target message[ExceptionDeliveryRes]'s io file set creation work start (IOPartDynamicClassFileContentsBuilderManagerTest.java:43)
-2020-01-08 00:27:15.265 INFO  [main] the message information file[D:\gitcodda\codda2\resources\message_info\ExceptionDeliveryRes.xml] (IOPartDynamicClassFileContentsBuilderManagerTest.java:50)
-2020-01-08 00:27:15.338 INFO  [main] the target message[AllItemType]'s io file set creation work start (IOPartDynamicClassFileContentsBuilderManagerTest.java:43)
-2020-01-08 00:27:15.338 INFO  [main] the message information file[D:\gitcodda\codda2\resources\message_info\AllItemType.xml] (IOPartDynamicClassFileContentsBuilderManagerTest.java:50)
-2020-01-08 00:27:15.372 INFO  [main] the target message[Echo]'s io file set creation work start (IOPartDynamicClassFileContentsBuilderManagerTest.java:43)
-2020-01-08 00:27:15.373 INFO  [main] the message information file[D:\gitcodda\codda2\resources\message_info\Echo.xml] (IOPartDynamicClassFileContentsBuilderManagerTest.java:50)
-2020-01-08 00:27:15.379 INFO  [main] the target message[Empty]'s io file set creation work start (IOPartDynamicClassFileContentsBuilderManagerTest.java:43)
-2020-01-08 00:27:15.379 INFO  [main] the message information file[D:\gitcodda\codda2\resources\message_info\Empty.xml] (IOPartDynamicClassFileContentsBuilderManagerTest.java:50)
-2020-01-08 00:27:35.618 INFO  [main] the message information .xsl temporary file[C:\Users\user\AppData\Local\Temp\MessageXSL4187417666637760169.tmp] was created successfully (SingleItemTypeManger.java:230)
-2020-01-08 00:27:35.664 INFO  [main] the temp directory[D:\gitcodda\codda2\temp] where the target messge's io file set will be saved (IOPartDynamicClassFileContentsBuilderManagerTest.java:40)
-2020-01-08 00:27:35.665 INFO  [main] the target message[ExceptionDeliveryRes]'s io file set creation work start (IOPartDynamicClassFileContentsBuilderManagerTest.java:43)
-2020-01-08 00:27:35.666 INFO  [main] the message information file[D:\gitcodda\codda2\resources\message_info\ExceptionDeliveryRes.xml] (IOPartDynamicClassFileContentsBuilderManagerTest.java:50)
-2020-01-08 00:27:35.689 INFO  [main] the target message[AllItemType]'s io file set creation work start (IOPartDynamicClassFileContentsBuilderManagerTest.java:43)
-2020-01-08 00:27:35.689 INFO  [main] the message information file[D:\gitcodda\codda2\resources\message_info\AllItemType.xml] (IOPartDynamicClassFileContentsBuilderManagerTest.java:50)
-2020-01-08 00:27:35.722 INFO  [main] the target message[Echo]'s io file set creation work start (IOPartDynamicClassFileContentsBuilderManagerTest.java:43)
-2020-01-08 00:27:35.722 INFO  [main] the message information file[D:\gitcodda\codda2\resources\message_info\Echo.xml] (IOPartDynamicClassFileContentsBuilderManagerTest.java:50)
-2020-01-08 00:27:35.730 INFO  [main] the target message[Empty]'s io file set creation work start (IOPartDynamicClassFileContentsBuilderManagerTest.java:43)
-2020-01-08 00:27:35.731 INFO  [main] the message information file[D:\gitcodda\codda2\resources\message_info\Empty.xml] (IOPartDynamicClassFileContentsBuilderManagerTest.java:50)
+2020-02-03 10:41:12.483 INFO  [main] this item key[sessionkey.rsa.publickey.file.value's value has null becase its status is inactive (CoddaConfiguration.java:320)
+2020-02-03 10:41:12.505 INFO  [main] this item key[sessionkey.rsa.privatekey.file.value's value has null becase its status is inactive (CoddaConfiguration.java:320)
+2020-02-03 10:41:12.805 INFO  [main] successfully dbcp[sb_db] was registed (DBCPManager.java:199)
+2020-02-03 10:41:12.824 INFO  [main] successfully dbcp[gt_sb_db] was registed (DBCPManager.java:199)
+2020-02-03 10:41:12.835 INFO  [main] successfully dbcp[lt_sb_db] was registed (DBCPManager.java:199)
+2020-02-03 10:41:13.193 INFO  [main] 
+                                      
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@@@@@@@@@@@@@@@@  @@        @@@@@@@@@@
+@@@@@@@@@@@@@@@@@@@@        @@@@@@@@@@
+@@@@@@@@@@@@@@@@  @@  @@    @@@@@@@@@@
+@@@@@@@@@@  @@@@  @@  @@    @@@@@@@@@@
+@@@@@@@@@@        @@        @@@@@@@@@@
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@@@@@@@@@@        @@        @@@@@@@@@@
+@@@@@@@@@@    @@  @@  @@@@  @@@@@@@@@@
+@@@@@@@@@@    @@  @@  @@@@  @@@@@@@@@@
+@@@@@@@@@@        @@  @  @  @@@@@@@@@@
+@@@@@@@@@@        @@        @@@@@@@@@@
+@@@@@@@@@@@@@@@@@@@@@@@  @@@@@@@@@@@@@
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@  Thank you for using jOOQ 3.10.6
+                                       (JooqLogger.java:338)

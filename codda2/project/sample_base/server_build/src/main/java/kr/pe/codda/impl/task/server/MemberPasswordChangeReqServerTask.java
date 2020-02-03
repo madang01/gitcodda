@@ -180,7 +180,7 @@ public class MemberPasswordChangeReqServerTask extends AbstractServerTask
 		memberPasswordChangeInnerReq.setOldPasswordBytes(oldPasswordBytes);
 		memberPasswordChangeInnerReq.setIp(memberPasswordChangeReq.getIp());
 
-		MessageResultRes outputMessage = ServerDBUtil.doDBAutoTransationWork(dbcpName, this,
+		MessageResultRes outputMessage = ServerDBUtil.execute(dbcpName, this,
 				memberPasswordChangeInnerReq);
 
 		return outputMessage;
@@ -188,7 +188,7 @@ public class MemberPasswordChangeReqServerTask extends AbstractServerTask
 	
 
 	public MessageResultRes doWork(String dbcpName, MemberPasswordChangeInnerReq memberPasswordChangeInnerReq) throws Exception {
-		MessageResultRes outputMessage = ServerDBUtil.doDBAutoTransationWork(dbcpName, this,
+		MessageResultRes outputMessage = ServerDBUtil.execute(dbcpName, this,
 				memberPasswordChangeInnerReq);
 
 		return outputMessage;

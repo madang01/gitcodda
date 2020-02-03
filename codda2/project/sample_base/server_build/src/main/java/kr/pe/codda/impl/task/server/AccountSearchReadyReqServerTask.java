@@ -49,7 +49,7 @@ public class AccountSearchReadyReqServerTask extends AbstractServerTask
 		 * inputMessage);
 		 */
 
-		AbstractMessage outputMessage = ServerDBUtil.doDBAutoTransationWork(
+		AbstractMessage outputMessage = ServerDBUtil.execute(
 				ServerCommonStaticFinalVars.DEFAULT_DBCP_NAME, this, (AccountSearchReadyReq) inputMessage);
 
 		toLetterCarrier.addSyncOutputMessage(outputMessage);

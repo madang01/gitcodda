@@ -12,6 +12,7 @@ import kr.pe.codda.impl.message.TreeSiteMenuRes.TreeSiteMenuRes;
 public class TreeSiteMenuReqServerTaskTest extends AbstractBoardTest {
 	// final static String TEST_DBCP_NAME = ServerCommonStaticFinalVars.DEFAULT_DBCP_NAME;
 	
+	
 	@Test
 	public void testDoService_ok() {
 		String requestedUserID = "admin";

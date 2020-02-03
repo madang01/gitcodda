@@ -47,7 +47,7 @@ public class BoardBlockReqServerTask extends AbstractServerTask
 		 * inputMessage);
 		 */
 
-		AbstractMessage outputMessage = ServerDBUtil.doDBAutoTransationWork(
+		AbstractMessage outputMessage = ServerDBUtil.execute(
 				ServerCommonStaticFinalVars.DEFAULT_DBCP_NAME, this, (BoardBlockReq) inputMessage);
 
 		toLetterCarrier.addSyncOutputMessage(outputMessage);

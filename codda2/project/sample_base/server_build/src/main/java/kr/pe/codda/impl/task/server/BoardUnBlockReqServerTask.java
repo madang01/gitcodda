@@ -44,7 +44,7 @@ public class BoardUnBlockReqServerTask extends AbstractServerTask
 	@Override
 	public void doTask(String projectName, LoginManagerIF personalLoginManager, ToLetterCarrier toLetterCarrier,
 			AbstractMessage inputMessage) throws Exception {
-		AbstractMessage outputMessage = ServerDBUtil.doDBAutoTransationWork(
+		AbstractMessage outputMessage = ServerDBUtil.execute(
 				ServerCommonStaticFinalVars.DEFAULT_DBCP_NAME, this, (BoardUnBlockReq) inputMessage);
 		toLetterCarrier.addSyncOutputMessage(outputMessage);
 	}

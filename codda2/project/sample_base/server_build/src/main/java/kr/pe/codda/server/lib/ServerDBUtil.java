@@ -16,6 +16,7 @@ import java.security.SecureRandom;
 import java.sql.Connection;
 import java.sql.Timestamp;
 import java.util.Arrays;
+import java.util.List;
 
 import javax.sql.DataSource;
 
@@ -911,7 +912,33 @@ public abstract class ServerDBUtil {
 		return groupNo;
 	}
 
-	public static <I, O> O doDBAutoTransationWork(String dbcpName, DBAutoCommitTaskIF<I, O> dbTask, I req)
+	/**
+	 * <pre>
+	 * 명시적으로 공통단에서 마지막에 commit 을 보장하는 트랜재션을 묶을 목적의 서버 비지니스 로직 수행 후 결과를 반환한다.
+	 * 
+	 * WARNING! 트랜재션을 묶기 위해서 비지니스 로직 중간에 commit 을 해서은 안된다, {@link DSLContext#parsingConnection()} 등등으로 우회하지 말것
+	 * 
+	 * 참고 : 예외 처리 전략으로 3가지 주요 예외는 각각에 맞게 처리를 한후 예외를 던지고 그외 예외일 경우 rollback 을 해준 후 던진다.
+	 * 이렇게 던져진  예외는 {@link ServerTaskException} 로 클라이언트로 전달된다.
+	 * 
+	 * 첫번째 {@link  RollbackServerTaskException} 는 rollback 을 해 주어야 하는 예외
+	 * 
+	 * 두번재 {@link CommitServerTaskException 는 commit 을 해주어야 하는 예외, 
+	 * 예 로그인시 비밀번호 틀린 경우 에러 상황이지만 틀린 횟수에 대한 DB 작업은 commit 을 해야 한다.
+	 * 
+	 * 세번째 {@link ParameterServerTaskException 파라미터 값 오류시 던지는 예외,
+	 * WARNING! rollback 하는데 비용이 들어 rollback 이 생략된 예외이기때문에 만약 DB 작업 후 호출된다면 문제가 발생할 수 있어 주의가 필요합니다. 
+	 * </pre>
+	 *  
+	 * @param <I> 입력 클래스
+	 * @param <O> 출력 클래스
+	 * @param dbcpName  dbcp 이름
+	 * @param dbTask dB 로 작업하는 서버 비지니 스로직
+	 * @param req 입력값을 담은 객체
+	 * @return 비지니스 로직 수행 결과값을 담은 객체
+	 * @throws Exception 에러 발생시 던지는 예외
+	 */
+	public static <I, O> O execute(String dbcpName, DBAutoCommitTaskIF<I, O> dbTask, I req)
 			throws Exception {
 		DataSource dataSource = DBCPManager.getInstance().getBasicDataSource(dbcpName);
 
@@ -974,7 +1001,29 @@ public abstract class ServerDBUtil {
 		}
 	}
 
-	public static <I, O> O doDBManualTransationWork(String dbcpName, I req, DBManualCommitTaskIF<I, O> dbTask)
+	/**
+	 * 개발자가 직접 commit 을 해야 하는  서버 비지니스 로직을 수행후 결과를 반환한다.
+	 * 
+	 * 참고 : 예외 처리 전략으로 3가지 주요 예외는 각각에 맞게 처리를 한후 예외를 던지고 그외 예외일 경우 rollback 을 해준 후 던진다.
+	 * 이렇게 던져진  예외는 {@link ServerTaskException} 로 클라이언트로 전달된다.
+	 * 
+	 * 첫번째 {@link  RollbackServerTaskException} 는 rollback 을 해 주어야 하는 예외
+	 * 
+	 * 두번재 {@link CommitServerTaskException 는 commit 을 해주어야 하는 예외, 
+	 * 예 로그인시 비밀번호 틀린 경우 에러 상황이지만 틀린 횟수에 대한 DB 작업은 commit 을 해야 한다.
+	 * 
+	 * 세번째 {@link ParameterServerTaskException 파라미터 값 오류시 던지는 예외,
+	 * WARNING! rollback 하는데 비용이 들어 rollback 이 생략된 예외이기때문에 만약 DB 작업 후 호출된다면 문제가 발생할 수 있어 주의가 필요합니다. 
+	 * 
+	 * @param <I> 입력 클래스
+	 * @param <O> 출력 클래스
+	 * @param dbcpName  dbcp 이름
+	 * @param dbTask dB 로 작업하는 서버 비지니 스로직
+	 * @param req 입력값을 담은 객체
+	 * @return 비지니스 로직 수행 결과값을 담은 객체
+	 * @throws Exception Exception 에러 발생시 던지는 예외
+	 */
+	public static <I, O> O execute(String dbcpName, DBManualCommitTaskIF<I, O> dbTask, I req)
 			throws Exception {
 		DataSource dataSource = DBCPManager.getInstance().getBasicDataSource(dbcpName);
 
@@ -1046,38 +1095,114 @@ public abstract class ServerDBUtil {
 		}
 	}
 
-	/**
-	 * 
-	 * @param dbcpName
-	 * @param dbExecutor
-	 * @throws Exception
-	 */
-	/*
-	 * public static void execute(final String dbcpName, final DBExecutorIF
-	 * dbExecutor) throws Exception { DataSource dataSource =
-	 * DBCPManager.getInstance().getBasicDataSource(dbcpName);
-	 * 
-	 * Connection conn = null; try { conn = dataSource.getConnection();
-	 * conn.setAutoCommit(false);
-	 * 
-	 * DSLContext dsl = DSL.using(conn, SQLDialect.MYSQL,
-	 * ServerDBUtil.getDBCPSettings(dbcpName));
-	 * 
-	 * dbExecutor.execute(dsl);
-	 * 
-	 * conn.commit(); } catch (RollbackServerTaskException e) { if (null != conn) {
-	 * try { conn.rollback(); } catch(Exception e1) { Logger log =
-	 * LoggerFactory.getLogger(ServerDBUtil.class); log.warn("fail to rollback",
-	 * e1); } } } catch (CommitServerTaskException e) { if (null != conn) { try {
-	 * conn.commit(); } catch(Exception e1) { Logger log =
-	 * LoggerFactory.getLogger(ServerDBUtil.class); log.warn("fail to commit", e1);
-	 * } } } catch (Exception e) { if (null != conn) { try { conn.rollback(); }
-	 * catch (Exception e1) { Logger log =
-	 * LoggerFactory.getLogger(ServerDBUtil.class); log.warn("fail to rollback",
-	 * e1); } }
-	 * 
-	 * throw e; } finally { if (null != conn) { try { conn.close(); } catch
-	 * (Exception e) { Logger log = LoggerFactory.getLogger(ServerDBUtil.class);
-	 * log.warn("fail to close the db connection", e); } } } }
-	 */
+	public static void execute(final String dbcpName, List<DBExecutorIF> dbExecutorList) throws Exception {
+		DataSource dataSource = DBCPManager.getInstance().getBasicDataSource(dbcpName);
+
+		Connection conn = null;
+		try {
+			conn = dataSource.getConnection();
+			conn.setAutoCommit(false);
+
+			DSLContext dsl = DSL.using(conn, SQLDialect.MYSQL, ServerDBUtil.getDBCPSettings(dbcpName));
+
+			for (DBExecutorIF dbExecutor: dbExecutorList) {
+				dbExecutor.execute(dsl);
+			}
+			
+			conn.commit();
+		} catch (RollbackServerTaskException e) {
+			if (null != conn) {
+				try {
+					conn.rollback();
+				} catch (Exception e1) {
+					Logger log = LoggerFactory.getLogger(ServerDBUtil.class);
+					log.warn("fail to rollback", e1);
+				}
+			}
+		} catch (CommitServerTaskException e) {
+			if (null != conn) {
+				try {
+					conn.commit();
+				} catch (Exception e1) {
+					Logger log = LoggerFactory.getLogger(ServerDBUtil.class);
+					log.warn("fail to commit", e1);
+				}
+			}
+		} catch (Exception e) {
+			if (null != conn) {
+				try {
+					conn.rollback();
+				} catch (Exception e1) {
+					Logger log = LoggerFactory.getLogger(ServerDBUtil.class);
+					log.warn("fail to rollback", e1);
+				}
+			}
+
+			throw e;
+		} finally {
+			if (null != conn) {
+				try {
+					conn.close();
+				} catch (Exception e) {
+					Logger log = LoggerFactory.getLogger(ServerDBUtil.class);
+					log.warn("fail to close the db connection", e);
+				}
+			}
+		}
+	}
+
+	public static void execute(final String dbcpName, final DBExecutorIF dbExecutor) throws Exception {
+		DataSource dataSource = DBCPManager.getInstance().getBasicDataSource(dbcpName);
+
+		Connection conn = null;
+		try {
+			conn = dataSource.getConnection();
+			conn.setAutoCommit(false);
+
+			DSLContext dsl = DSL.using(conn, SQLDialect.MYSQL, ServerDBUtil.getDBCPSettings(dbcpName));
+
+			dbExecutor.execute(dsl);
+
+			conn.commit();
+		} catch (RollbackServerTaskException e) {
+			if (null != conn) {
+				try {
+					conn.rollback();
+				} catch (Exception e1) {
+					Logger log = LoggerFactory.getLogger(ServerDBUtil.class);
+					log.warn("fail to rollback", e1);
+				}
+			}
+		} catch (CommitServerTaskException e) {
+			if (null != conn) {
+				try {
+					conn.commit();
+				} catch (Exception e1) {
+					Logger log = LoggerFactory.getLogger(ServerDBUtil.class);
+					log.warn("fail to commit", e1);
+				}
+			}
+		} catch (Exception e) {
+			if (null != conn) {
+				try {
+					conn.rollback();
+				} catch (Exception e1) {
+					Logger log = LoggerFactory.getLogger(ServerDBUtil.class);
+					log.warn("fail to rollback", e1);
+				}
+			}
+
+			throw e;
+		} finally {
+			if (null != conn) {
+				try {
+					conn.close();
+				} catch (Exception e) {
+					Logger log = LoggerFactory.getLogger(ServerDBUtil.class);
+					log.warn("fail to close the db connection", e);
+				}
+			}
+		}
+	}
+
 }

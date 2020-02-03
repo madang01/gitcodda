@@ -75,7 +75,7 @@ public class DocumentWriteReqServerTask extends AbstractServerTask
 		 * inputMessage); toLetterCarrier.addSyncOutputMessage(outputMessage);
 		 */
 
-		AbstractMessage outputMessage = ServerDBUtil.doDBAutoTransationWork(
+		AbstractMessage outputMessage = ServerDBUtil.execute(
 				ServerCommonStaticFinalVars.DEFAULT_DBCP_NAME, this, (DocumentWriteReq) inputMessage);
 
 		toLetterCarrier.addSyncOutputMessage(outputMessage);

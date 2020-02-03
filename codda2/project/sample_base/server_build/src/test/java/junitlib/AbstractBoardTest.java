@@ -37,7 +37,6 @@ public abstract class AbstractBoardTest {
 	
 	protected final static String installedPathString = "D:\\gitcodda\\codda2";
 	protected final static File installedPath = new File(installedPathString);
-	protected static File wasLibPath = null;
 	protected final static String mainProjectName = "sample_base";
 	
 	protected final static String TEST_DBCP_NAME = ServerCommonStaticFinalVars.GENERAL_TEST_DBCP_NAME;
@@ -132,16 +131,6 @@ public abstract class AbstractBoardTest {
 		
 		if (! installedPath.isDirectory()) {
 			fail("the installed path isn't a directory");
-		}
-		
-		wasLibPath = new File("D:\\apache-tomcat-8.5.32\\lib");
-		// wasLibPath = new File("/usr/share/tomcat8/lib");
-		if (! wasLibPath.exists()) {
-			fail("the was libaray path doesn't exist");
-		}
-		
-		if (! wasLibPath.isDirectory()) {
-			fail("the was libaray path isn't a directory");
 		}
 				
 		System
@@ -268,7 +257,7 @@ public abstract class AbstractBoardTest {
 	@Before
 	public void setUp() {
 		try {			
-			ServerDBUtil.execute(TEST_DBCP_NAME, (conn, dsl) -> {
+			ServerDBUtil.execute(TEST_DBCP_NAME, (dsl) -> {
 
 				dsl.delete(SB_MEMBER_ACTIVITY_HISTORY_TB).execute();
 				dsl.delete(SB_BOARD_VOTE_TB).execute();
@@ -283,9 +272,6 @@ public abstract class AbstractBoardTest {
 						.set(SB_BOARD_INFO_TB.CNT, 0L)
 						.set(SB_BOARD_INFO_TB.TOTAL, 0L)
 						.set(SB_BOARD_INFO_TB.NEXT_BOARD_NO, UInteger.valueOf(1)).execute();
-				
-
-				conn.commit();
 			});
 			
 
@@ -300,7 +286,7 @@ public abstract class AbstractBoardTest {
 	@After
 	public void tearDown() {
 		try {			
-			ServerDBUtil.execute(TEST_DBCP_NAME, (conn, dsl) -> {
+			ServerDBUtil.execute(TEST_DBCP_NAME, (dsl) -> {
 
 				Result<Record4<UByte, Byte, Long, Long>> boardInfoResult = dsl.select(SB_BOARD_INFO_TB.BOARD_ID, 
 						SB_BOARD_INFO_TB.LIST_TYPE,
@@ -336,9 +322,7 @@ public abstract class AbstractBoardTest {
 					
 					assertEquals("전체 글 갯수 비교",  expectedTotal, acutalTotal);
 					assertEquals("목록 글 갯수 비교",  expectedCountOfList, actualCountOfList);
-				}
-
-				conn.commit();				
+				}		
 			});
 			
 

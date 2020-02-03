@@ -198,7 +198,7 @@ public class AccountSearchProcessReqServerTask extends AbstractServerTask implem
 		accountSearchProcessInnerReq.setNewPasswordBytes(newPasswordBytes);
 		accountSearchProcessInnerReq.setIp(accountSearchProcessReq.getIp());
 		
-		AbstractMessage outputMessage = ServerDBUtil.doDBAutoTransationWork(ServerCommonStaticFinalVars.DEFAULT_DBCP_NAME, this, accountSearchProcessInnerReq);
+		AbstractMessage outputMessage = ServerDBUtil.execute(ServerCommonStaticFinalVars.DEFAULT_DBCP_NAME, this, accountSearchProcessInnerReq);
 
 		toLetterCarrier.addSyncOutputMessage(outputMessage);
 

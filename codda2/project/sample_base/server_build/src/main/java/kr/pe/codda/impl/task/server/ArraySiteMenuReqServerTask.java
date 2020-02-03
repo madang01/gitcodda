@@ -43,12 +43,17 @@ public class ArraySiteMenuReqServerTask extends AbstractServerTask
 		// doWork(ServerCommonStaticFinalVars.DEFAULT_DBCP_NAME,
 		// (ArraySiteMenuReq)inputMessage);
 
-		AbstractMessage outputMessage = ServerDBUtil.doDBAutoTransationWork(
+		AbstractMessage outputMessage = ServerDBUtil.execute(
 				ServerCommonStaticFinalVars.DEFAULT_DBCP_NAME, this, (ArraySiteMenuReq) inputMessage);
 
 		toLetterCarrier.addSyncOutputMessage(outputMessage);
 	}
 
+	public ArraySiteMenuRes doWork(String dbcpName, final ArraySiteMenuReq arraySiteMenuReq) throws Exception {
+		ArraySiteMenuRes outputMessage = ServerDBUtil.execute(dbcpName, this, arraySiteMenuReq);
+		return outputMessage;
+	}	
+	
 	public ArraySiteMenuRes doWork(final DSLContext dsl, final ArraySiteMenuReq arraySiteMenuReq) throws Exception {
 		// FIXME!
 		log.info(arraySiteMenuReq.toString());

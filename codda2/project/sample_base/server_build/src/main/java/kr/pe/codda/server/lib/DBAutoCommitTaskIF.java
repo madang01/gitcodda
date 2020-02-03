@@ -20,7 +20,15 @@ import org.jooq.DSLContext;
  */
 public interface DBAutoCommitTaskIF<I, O> {
 	/**
-	 * 입력 I 를 받아 트랜재션 없는 비지니스 로직을 수행하여 결과물을 담은 O 객체를 반환한다. WARNING! 트랜재션이 없다고 해도 자체적으로 레코드락을 걸수있기때문에 묶을때 주의가 필요합니다.
+	 * <pre>
+	 * 입력 값을 담은 I 객체 'req' 를 받아 트랜재션 없는 비지니스 로직을 수행하여 결과물을 담은 O 객체를 반환한다. 
+	 * 
+	 * WARNING! 트랜재션이 없다고 해도 자체적으로 레코드락을 걸수있기때문에 묶을때 주의가 필요합니다.
+	 * 
+	 * WARNING! {@link ServerDBUtil#execute(String, DBAutoCommitTaskIF, Object)} 에서 
+	 * {@link ParameterServerTaskException} 예외는 rollback 하는데 비용이 들어 rollback 이 생략된 예외이기때문에
+	 * 만약 DB 작업 후 호출된다면 문제가 발생할 수 있어 주의가 필요합니다.    
+	 * </pre>
 	 * 
 	 * @param dsl jooq DSLContext 객체로 쿼리문 수행에 필요하다.
 	 * @param req 입력 값을 담은 객체

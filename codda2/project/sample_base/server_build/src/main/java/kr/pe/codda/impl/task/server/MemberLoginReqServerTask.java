@@ -188,7 +188,7 @@ public class MemberLoginReqServerTask extends AbstractServerTask
 		memberLoginInnerReq.setPassword(passwordBytes);
 		memberLoginInnerReq.setIp(memberLoginReq.getIp());
 
-		MemberLoginRes outputMessage = ServerDBUtil.doDBAutoTransationWork(dbcpName, this, memberLoginInnerReq);
+		MemberLoginRes outputMessage = ServerDBUtil.execute(dbcpName, this, memberLoginInnerReq);
 
 		return outputMessage;
 	}
@@ -202,7 +202,7 @@ public class MemberLoginReqServerTask extends AbstractServerTask
 	 * @throws Exception 로그인 실패 혹은 에러 발생시 던지는 예외
 	 */
 	public MemberLoginRes doWork(final String dbcpName, MemberLoginInnerReq memberLoginInnerReq) throws Exception {
-		MemberLoginRes outputMessage = ServerDBUtil.doDBAutoTransationWork(dbcpName, this, memberLoginInnerReq);
+		MemberLoginRes outputMessage = ServerDBUtil.execute(dbcpName, this, memberLoginInnerReq);
 		
 		return outputMessage;
 	}
