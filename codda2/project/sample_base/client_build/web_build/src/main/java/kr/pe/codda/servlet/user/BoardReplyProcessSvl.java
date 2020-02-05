@@ -474,7 +474,9 @@ public class BoardReplyProcessSvl extends AbstractMultipartServlet implements Im
 		AnyProjectConnectionPoolIF mainProjectConnectionPool = ConnectionPoolManager
 				.getInstance().getMainProjectConnectionPool();
 		
-		String newContents = BoardContentsWhiteParserMananger.getInstance().checkWhiteValue(this, paramContents);
+		List<BoardImageFileInformation> boardImageFileInformationList = new ArrayList<BoardImageFileInformation>();
+		
+		String newContents = BoardContentsWhiteParserMananger.getInstance().checkWhiteValue(this, boardImageFileInformationList, paramContents);
 		
 		BoardReplyReq boardReplyReq = new BoardReplyReq();
 		boardReplyReq.setRequestedUserID(accessedUserformation.getUserID());
@@ -507,9 +509,76 @@ public class BoardReplyProcessSvl extends AbstractMultipartServlet implements Im
 		}
 
 		BoardReplyRes boardReplyRes = (BoardReplyRes) outputMessage;
-
+		
 		// log.info("댓글[{}] 등록이 완료되었습니다", boardReplyRes.toString());
+		
+		saveAllBoardImageFile(boardReplyRes, boardImageFileInformationList);		
 
+		saveAllAttachedFile(boardReplyRes, fileItemList);
+		
+
+		return boardReplyRes;
+	}
+	
+	
+	private void saveAllBoardImageFile(BoardReplyRes boardReplyRes, List<BoardImageFileInformation> boardImageFileInformationList) {
+		for (BoardImageFileInformation boardImageFileInformation : boardImageFileInformationList) {
+			String uploadImageFilePathString = WebCommonStaticUtil.buildUploadImageFilePathString(
+					installedPathString, mainProjectName, boardImageFileInformation.getYyyyMMdd(),
+					boardImageFileInformation.getDaySequence());
+			File newUploadImageFile = new File(uploadImageFilePathString);
+			
+			FileOutputStream fos = null;
+			BufferedOutputStream bos = null;			
+			try {
+				
+				fos = new FileOutputStream(newUploadImageFile);
+				bos = new BufferedOutputStream(fos);
+				
+				bos.write(boardImageFileInformation.getBoardImageFileContents());	
+			} catch(Exception e) {
+				
+				String newImgTagSrcAttributeString = new StringBuilder()
+						.append("/servlet/DownloadImage?yyyyMMdd=")
+						.append(boardImageFileInformation.getYyyyMMdd())
+						.append("&daySequence=")
+						.append(boardImageFileInformation.getDaySequence()).toString();
+				
+				String errorMessage = new StringBuilder()
+						.append("fail to save new image file[")
+						.append(uploadImageFilePathString)
+						.append("] whose the image url ")
+						.append(newImgTagSrcAttributeString)
+						.append("' in the board[boardID=")
+						.append(boardReplyRes.getBoardID())
+						.append(", boardNo=")
+						.append(boardReplyRes.getBoardNo())
+						.append("]").toString();
+				
+				log.log(Level.WARNING, errorMessage, e);
+				
+				continue;
+			} finally {
+				if (null != bos) {
+					try {
+						bos.close();
+					} catch(Exception e) {
+						
+					}
+				}
+				
+				if (null != fos) {
+					try {
+						fos.close();
+					} catch(Exception e) {
+						
+					}
+				}
+			}
+		}
+	}
+	
+	private void saveAllAttachedFile(BoardReplyRes boardReplyRes, List<FileItem> fileItemList) {
 		if (! fileItemList.isEmpty()) {
 			int indexOfNewAttachedFileList = 0;
 			short newAttachedFileSeq = 0;
@@ -517,7 +586,7 @@ public class BoardReplyProcessSvl extends AbstractMultipartServlet implements Im
 				if (!fileItem.isFormField()) {
 					String newAttachedFilePathString = WebCommonStaticUtil
 							.buildAttachedFilePathString(installedPathString,
-									mainProjectName, boardID,
+									mainProjectName, boardReplyRes.getBoardID(),
 									boardReplyRes.getBoardNo(), newAttachedFileSeq);
 
 					File newAttachedFile = new File(newAttachedFilePathString);
@@ -541,8 +610,6 @@ public class BoardReplyProcessSvl extends AbstractMultipartServlet implements Im
 				}
 			}
 		}
-
-		return boardReplyRes;
 	}
 		
 	public String getImageFileURL(BoardImageFileInformation boardImageFileInformation) throws WhiteParserException {
@@ -580,32 +647,8 @@ public class BoardReplyProcessSvl extends AbstractMultipartServlet implements Im
 
 			UploadImageRes uploadImageRes = (UploadImageRes) outputMessage;
 			
-			String uploadImageFilePathString = WebCommonStaticUtil.buildUploadImageFilePathString(
-					installedPathString, mainProjectName, uploadImageRes.getYyyyMMdd(),
-					uploadImageRes.getDaySequence());
-			File newUploadImageFile = new File(uploadImageFilePathString);
-			
-			FileOutputStream fos = new FileOutputStream(newUploadImageFile);
-			BufferedOutputStream bos = new BufferedOutputStream(fos);
-			try {				
-				bos.write(imageFileContents);				
-			} finally {
-				if (null != bos) {
-					try {
-						bos.close();
-					} catch(Exception e) {
-						
-					}
-				}
-				
-				if (null != fos) {
-					try {
-						fos.close();
-					} catch(Exception e) {
-						
-					}
-				}
-			}
+			boardImageFileInformation.setYyyyMMdd(uploadImageRes.getYyyyMMdd());
+			boardImageFileInformation.setDaySequence(uploadImageRes.getDaySequence());
 			
 			String newImgTagSrcAttributeString = new StringBuilder()
 					.append("/servlet/DownloadImage?yyyyMMdd=")

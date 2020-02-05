@@ -3,6 +3,8 @@ package kr.pe.codda.weblib.summernote;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Handler;
 import java.util.logging.Level;
@@ -81,9 +83,11 @@ public class BoardContentsWhiteParserManangerTest {
 			}
 			
 		}
+		
+		List<BoardImageFileInformation> boardImageFileInformationList = new ArrayList<BoardImageFileInformation>();
 
 		try {
-			String newContents = BoardContentsWhiteParserMananger.getInstance().checkWhiteValue(new NewImgTagSrcAttributeValueGetter(), unsafe);
+			String newContents = BoardContentsWhiteParserMananger.getInstance().checkWhiteValue(new NewImgTagSrcAttributeValueGetter(), boardImageFileInformationList,  unsafe);
 
 			// assertEquals(unsafe, newContents);
 			log.info(newContents);
@@ -108,9 +112,11 @@ public class BoardContentsWhiteParserManangerTest {
 			}
 		}
 		
+		List<BoardImageFileInformation> boardImageFileInformationList = new ArrayList<BoardImageFileInformation>();
+		
 		try {
 			String newContents = BoardContentsWhiteParserMananger
-					.getInstance().checkWhiteValue(new NewImgTagSrcAttributeValueGetter(), unsafe);
+					.getInstance().checkWhiteValue(new NewImgTagSrcAttributeValueGetter(), boardImageFileInformationList, unsafe);
 
 			log.info(newContents);
 		} catch (Exception e) {
@@ -138,9 +144,11 @@ public class BoardContentsWhiteParserManangerTest {
 				}
 			}
 			
+			List<BoardImageFileInformation> boardImageFileInformationList = new ArrayList<BoardImageFileInformation>();
+			
 			try {
 				String newContents = BoardContentsWhiteParserMananger
-						.getInstance().checkWhiteValue(new NewImgTagSrcAttributeValueGetter(), unsafe);
+						.getInstance().checkWhiteValue(new NewImgTagSrcAttributeValueGetter(), boardImageFileInformationList, unsafe);
 
 				log.info(newContents);
 			} catch (Exception e) {
@@ -164,9 +172,11 @@ public class BoardContentsWhiteParserManangerTest {
 			}
 		}
 		
+		List<BoardImageFileInformation> boardImageFileInformationList = new ArrayList<BoardImageFileInformation>();
+		
 		try {
 			String newContents = BoardContentsWhiteParserMananger
-					.getInstance().checkWhiteValue(new NewImgTagSrcAttributeValueGetter(), unsafe);
+					.getInstance().checkWhiteValue(new NewImgTagSrcAttributeValueGetter(), boardImageFileInformationList, unsafe);
 
 			assertEquals(unsafe, newContents);
 		} catch (Exception e) {
@@ -191,11 +201,16 @@ public class BoardContentsWhiteParserManangerTest {
 			}
 		}
 		
+		List<BoardImageFileInformation> boardImageFileInformationList = new ArrayList<BoardImageFileInformation>();
+		
 		try {
 			String newContents = BoardContentsWhiteParserMananger
-					.getInstance().checkWhiteValue(new NewImgTagSrcAttributeValueGetter(), oldContents);
+					.getInstance().checkWhiteValue(new NewImgTagSrcAttributeValueGetter(), boardImageFileInformationList, oldContents);
 
 			assertEquals(oldContents, newContents);
+			
+			assertEquals(0, boardImageFileInformationList.size());
+			
 		} catch (Exception e) {
 			log.log(Level.WARNING, "error", e);
 
@@ -219,11 +234,18 @@ public class BoardContentsWhiteParserManangerTest {
 		
 		String expectedContents = "<p><img src=\"/servlet/DownloadImage?yyyyMMdd=20200105&amp;daySequence=5\" style=\"width: 1086px;\"></p><p><br></p><p>그림 하나를 그리다</p><p><br></p><p><img src=\"/servlet/DownloadImage?yyyyMMdd=20191229&amp;daySequence=6\" style=\"width: 50%;\"><br></p><p><br></p><p>그림 하나를 그리다.</p>";
 		
+		List<BoardImageFileInformation> boardImageFileInformationList = new ArrayList<BoardImageFileInformation>();
+		
 		try {
 			String acutalContents = BoardContentsWhiteParserMananger
-					.getInstance().checkWhiteValue(new NewImgTagSrcAttributeValueGetter(), contents);
+					.getInstance().checkWhiteValue(new NewImgTagSrcAttributeValueGetter(), boardImageFileInformationList, contents);
 
 			assertEquals(expectedContents, acutalContents);
+			
+			assertEquals(1, boardImageFileInformationList.size());
+			
+			log.info(boardImageFileInformationList.get(0).toString());
+			
 		} catch (Exception e) {
 			log.log(Level.WARNING, "error", e);
 
@@ -245,9 +267,11 @@ public class BoardContentsWhiteParserManangerTest {
 			}
 		}
 		
+		List<BoardImageFileInformation> boardImageFileInformationList = new ArrayList<BoardImageFileInformation>();
+		
 		try {
 			BoardContentsWhiteParserMananger
-					.getInstance().checkWhiteValue(new NewImgTagSrcAttributeValueGetter(), oldContents);
+					.getInstance().checkWhiteValue(new NewImgTagSrcAttributeValueGetter(), boardImageFileInformationList, oldContents);
 
 			fail("no WhiteParserException");
 		} catch (WhiteParserException e) {
@@ -523,10 +547,11 @@ public class BoardContentsWhiteParserManangerTest {
 			}
 		}
 		
+		List<BoardImageFileInformation> boardImageFileInformationList = new ArrayList<BoardImageFileInformation>();
 		
 		try {
 			String acutalContents = BoardContentsWhiteParserMananger
-					.getInstance().checkWhiteValue(new NewImgTagSrcAttributeValueGetter(), contents);
+					.getInstance().checkWhiteValue(new NewImgTagSrcAttributeValueGetter(), boardImageFileInformationList, contents);
 
 			assertEquals(contents, acutalContents);
 			// log.info(acutalContents);

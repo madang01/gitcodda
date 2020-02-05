@@ -20,6 +20,8 @@ package kr.pe.codda.servlet.admin;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 
 import javax.servlet.http.HttpServletRequest;
@@ -113,8 +115,9 @@ public class DocumentModifyProcessSvl extends AbstractAdminLoginServlet implemen
 			throw new WebClientException(errorMessage, debugMessage);
 		}
 		
+		List<BoardImageFileInformation> boardImageFileInformationList = new ArrayList<BoardImageFileInformation>();
 		
-		String newContents = BoardContentsWhiteParserMananger.getInstance().checkWhiteValue(this, paramContents);
+		String newContents = BoardContentsWhiteParserMananger.getInstance().checkWhiteValue(this, boardImageFileInformationList, paramContents);
 		
 		AccessedUserInformation accessedUserInformation = getAccessedUserInformationFromSession(req);
 		
@@ -151,6 +154,11 @@ public class DocumentModifyProcessSvl extends AbstractAdminLoginServlet implemen
 		}
 
 		DocumentModifyRes documentModifyRes = (DocumentModifyRes) outputMessage;
+		
+		
+		
+		saveAllBoardImageFile(documentNo, boardImageFileInformationList);
+		
 
 		req.setAttribute("documentModifyRes", documentModifyRes);
 
@@ -159,6 +167,60 @@ public class DocumentModifyProcessSvl extends AbstractAdminLoginServlet implemen
 		return;
 	}
 
+	
+	private void saveAllBoardImageFile(long documentNo, List<BoardImageFileInformation> boardImageFileInformationList) {
+		for (BoardImageFileInformation boardImageFileInformation : boardImageFileInformationList) {
+			String uploadImageFilePathString = WebCommonStaticUtil.buildUploadImageFilePathString(
+					installedPathString, mainProjectName, boardImageFileInformation.getYyyyMMdd(),
+					boardImageFileInformation.getDaySequence());
+			File newUploadImageFile = new File(uploadImageFilePathString);
+			
+			FileOutputStream fos = null;			
+			BufferedOutputStream bos = null;			
+			try {
+				fos = new FileOutputStream(newUploadImageFile);
+				bos = new BufferedOutputStream(fos);
+				
+				bos.write(boardImageFileInformation.getBoardImageFileContents());
+			} catch(Exception e) {
+				
+				String newImgTagSrcAttributeString = new StringBuilder()
+						.append("/servlet/DownloadImage?yyyyMMdd=")
+						.append(boardImageFileInformation.getYyyyMMdd())
+						.append("&daySequence=")
+						.append(boardImageFileInformation.getDaySequence()).toString();
+				
+				String errorMessage = new StringBuilder()
+						.append("fail to save new image file[")
+						.append(uploadImageFilePathString)
+						.append("] whose the image url ")
+						.append(newImgTagSrcAttributeString)
+						.append("' in the document[documentNo=")
+						.append(documentNo)
+						.append("]").toString();
+				
+				log.log(Level.WARNING, errorMessage, e);
+				
+				continue;
+			} finally {
+				if (null != bos) {
+					try {
+						bos.close();
+					} catch(Exception e) {
+						
+					}
+				}
+				
+				if (null != fos) {
+					try {
+						fos.close();
+					} catch(Exception e) {
+						
+					}
+				}
+			}
+		}
+	}
 	
 	@Override
 	public String getImageFileURL(BoardImageFileInformation boardImageFileInformation) throws WhiteParserException {
@@ -197,32 +259,8 @@ public class DocumentModifyProcessSvl extends AbstractAdminLoginServlet implemen
 
 			UploadImageRes uploadImageRes = (UploadImageRes) outputMessage;
 			
-			String uploadImageFilePathString = WebCommonStaticUtil.buildUploadImageFilePathString(
-					installedPathString, mainProjectName, uploadImageRes.getYyyyMMdd(),
-					uploadImageRes.getDaySequence());
-			File newUploadImageFile = new File(uploadImageFilePathString);
-			
-			FileOutputStream fos = new FileOutputStream(newUploadImageFile);
-			BufferedOutputStream bos = new BufferedOutputStream(fos);
-			try {				
-				bos.write(imageFileContents);				
-			} finally {
-				if (null != bos) {
-					try {
-						bos.close();
-					} catch(Exception e) {
-						
-					}
-				}
-				
-				if (null != fos) {
-					try {
-						fos.close();
-					} catch(Exception e) {
-						
-					}
-				}
-			}			
+			boardImageFileInformation.setYyyyMMdd(uploadImageRes.getYyyyMMdd());
+			boardImageFileInformation.setDaySequence(uploadImageRes.getDaySequence());
 			
 			String newImgTagSrcAttributeValue = new StringBuilder()
 					.append("/servlet/DownloadImage?yyyyMMdd=")

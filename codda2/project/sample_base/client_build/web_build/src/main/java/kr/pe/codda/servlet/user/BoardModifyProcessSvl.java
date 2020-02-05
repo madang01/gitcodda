@@ -501,7 +501,8 @@ public class BoardModifyProcessSvl extends AbstractMultipartServlet implements I
 
 		AccessedUserInformation accessedUserformation = getAccessedUserInformationFromSession(req);		
 
-		String newContents = BoardContentsWhiteParserMananger.getInstance().checkWhiteValue(this, paramContents);
+		List<BoardImageFileInformation> boardImageFileInformationList = new ArrayList<BoardImageFileInformation>();
+		String newContents = BoardContentsWhiteParserMananger.getInstance().checkWhiteValue(this, boardImageFileInformationList, paramContents);
 
 		BoardModifyReq boardModifyReq = new BoardModifyReq();
 		boardModifyReq.setRequestedUserID(accessedUserformation.getUserID());
@@ -542,16 +543,31 @@ public class BoardModifyProcessSvl extends AbstractMultipartServlet implements I
 
 		BoardModifyRes boardModifyRes = (BoardModifyRes) outputMessage;
 
+		
+		moveAllDeletedFileToTempDirectory(boardModifyRes);
+		
+		saveAllBoardImageFile(boardModifyRes, boardImageFileInformationList);
+
+		saveAllAttachedFile(boardModifyRes, nextAttachedFileSeq, fileItemList);
+		
+		// log.info("게시글[{}] 수정이 완료되었습니다", boardModifyRes.toString());
+		
+		
+
+		return boardModifyRes;
+	}
+	
+	private void moveAllDeletedFileToTempDirectory(BoardModifyRes boardModifyRes) {
 		List<BoardModifyRes.DeletedAttachedFile> deletedAttachedFileSeqList = boardModifyRes
 				.getDeletedAttachedFileList();
 		for (BoardModifyRes.DeletedAttachedFile deletedAttachedFile : deletedAttachedFileSeqList) {
 			short deletedAttachedFileSequence = deletedAttachedFile.getAttachedFileSeq();
 
-			String shortFileNameOfDelectedAttachedFile = WebCommonStaticUtil.buildShortFileNameOfAttachedFile(boardID,
-					boardNo, deletedAttachedFileSequence);
+			String shortFileNameOfDelectedAttachedFile = WebCommonStaticUtil.buildShortFileNameOfAttachedFile(boardModifyRes.getBoardID(),
+					boardModifyRes.getBoardNo(), deletedAttachedFileSequence);
 
 			String delectedAttachedFilePathString = WebCommonStaticUtil.buildAttachedFilePathString(installedPathString,
-					mainProjectName, boardID, boardNo, deletedAttachedFileSequence);
+					mainProjectName, boardModifyRes.getBoardID(), boardModifyRes.getBoardNo(), deletedAttachedFileSequence);
 
 			File delectedAttachedFile = new File(delectedAttachedFilePathString);
 
@@ -598,14 +614,15 @@ public class BoardModifyProcessSvl extends AbstractMultipartServlet implements I
 				continue;
 			}
 		}
+	}
 
-		// log.info("게시글[{}] 수정이 완료되었습니다", boardModifyRes.toString());
+	private void saveAllAttachedFile(BoardModifyRes boardModifyRes, short nextAttachedFileSeq, List<FileItem> fileItemList) {
 		int indexOfNewAttachedFileList = 0;
 		short newAttachedFileSeq = nextAttachedFileSeq;
 		for (FileItem fileItem : fileItemList) {
 			if (!fileItem.isFormField()) {
 				String newAttachedFilePathString = WebCommonStaticUtil.buildAttachedFilePathString(installedPathString,
-						mainProjectName, boardID, boardNo, newAttachedFileSeq);
+						mainProjectName, boardModifyRes.getBoardID(), boardModifyRes.getBoardNo(), newAttachedFileSeq);
 
 				File newAttachedFile = new File(newAttachedFilePathString);
 				try {
@@ -624,10 +641,63 @@ public class BoardModifyProcessSvl extends AbstractMultipartServlet implements I
 				indexOfNewAttachedFileList++;
 			}
 		}
-
-		return boardModifyRes;
 	}
-
+	
+	private void saveAllBoardImageFile(BoardModifyRes boardModifyRes, List<BoardImageFileInformation> boardImageFileInformationList) {
+		for (BoardImageFileInformation boardImageFileInformation : boardImageFileInformationList) {
+			String uploadImageFilePathString = WebCommonStaticUtil.buildUploadImageFilePathString(
+					installedPathString, mainProjectName, boardImageFileInformation.getYyyyMMdd(),
+					boardImageFileInformation.getDaySequence());
+			File newUploadImageFile = new File(uploadImageFilePathString);
+			
+			FileOutputStream fos = null;			
+			BufferedOutputStream bos = null;			
+			try {
+				fos = new FileOutputStream(newUploadImageFile);
+				bos = new BufferedOutputStream(fos);
+				
+				bos.write(boardImageFileInformation.getBoardImageFileContents());
+			} catch(Exception e) {
+				
+				String newImgTagSrcAttributeString = new StringBuilder()
+						.append("/servlet/DownloadImage?yyyyMMdd=")
+						.append(boardImageFileInformation.getYyyyMMdd())
+						.append("&daySequence=")
+						.append(boardImageFileInformation.getDaySequence()).toString();
+				
+				String errorMessage = new StringBuilder()
+						.append("fail to save new image file[")
+						.append(uploadImageFilePathString)
+						.append("] whose the image url ")
+						.append(newImgTagSrcAttributeString)
+						.append("' in the board[boardID=")
+						.append(boardModifyRes.getBoardID())
+						.append(", boardNo=")
+						.append(boardModifyRes.getBoardNo())
+						.append("]").toString();
+				
+				log.log(Level.WARNING, errorMessage, e);
+				
+				continue;
+			} finally {
+				if (null != bos) {
+					try {
+						bos.close();
+					} catch(Exception e) {
+						
+					}
+				}
+				
+				if (null != fos) {
+					try {
+						fos.close();
+					} catch(Exception e) {
+						
+					}
+				}
+			}
+		}
+	}
 	
 	public String getImageFileURL(BoardImageFileInformation boardImageFileInformation) throws WhiteParserException {
 		try {
@@ -663,32 +733,27 @@ public class BoardModifyProcessSvl extends AbstractMultipartServlet implements I
 
 			UploadImageRes uploadImageRes = (UploadImageRes) outputMessage;
 			
-			String uploadImageFilePathString = WebCommonStaticUtil.buildUploadImageFilePathString(
-					installedPathString, mainProjectName, uploadImageRes.getYyyyMMdd(),
-					uploadImageRes.getDaySequence());
-			File newUploadImageFile = new File(uploadImageFilePathString);
+			/*
+			 * String uploadImageFilePathString =
+			 * WebCommonStaticUtil.buildUploadImageFilePathString( installedPathString,
+			 * mainProjectName, uploadImageRes.getYyyyMMdd(),
+			 * uploadImageRes.getDaySequence()); File newUploadImageFile = new
+			 * File(uploadImageFilePathString);
+			 * 
+			 * FileOutputStream fos = new FileOutputStream(newUploadImageFile);
+			 * BufferedOutputStream bos = new BufferedOutputStream(fos); try {
+			 * bos.write(imageFileContents); } finally { if (null != bos) { try {
+			 * bos.close(); } catch(Exception e) {
+			 * 
+			 * } }
+			 * 
+			 * if (null != fos) { try { fos.close(); } catch(Exception e) {
+			 * 
+			 * } } }
+			 */
 			
-			FileOutputStream fos = new FileOutputStream(newUploadImageFile);
-			BufferedOutputStream bos = new BufferedOutputStream(fos);
-			try {				
-				bos.write(imageFileContents);				
-			} finally {
-				if (null != bos) {
-					try {
-						bos.close();
-					} catch(Exception e) {
-						
-					}
-				}
-				
-				if (null != fos) {
-					try {
-						fos.close();
-					} catch(Exception e) {
-						
-					}
-				}
-			}
+			boardImageFileInformation.setYyyyMMdd(uploadImageRes.getYyyyMMdd());
+			boardImageFileInformation.setDaySequence(uploadImageRes.getDaySequence());
 			
 			String newImgTagSrcAttributeString = new StringBuilder()
 					.append("/servlet/DownloadImage?yyyyMMdd=")

@@ -3,6 +3,7 @@ package kr.pe.codda.weblib.summernote;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.net.URLConnection;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -20,16 +21,16 @@ public class BoardContentsWhiteParser {
 	private Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
 	
 		
-	/**
-	 * 주어진 '게시글 내용' 에 허락되지 않는 내용이 포함되었는지 검사를 수행하여 만약에 허락되지 않은 내용이 포함되었다면 예외를 던지고 그렇지 않고 허락된 내용만이라면  base64인 이미지 태그의 src 속성값을  주어진 '이미지 파일 URL 반환자'를 통해 얻은 값으로 치환한 게시글를 반환한다.
+	/**주어진 '게시글 내용' 에 허락되지 않는 내용이 포함되었는지 검사를 수행하여 만약에 허락되지 않은 내용이 포함되었다면 예외를 던지고 그렇지 않고 허락된 내용만이라면  base64인 이미지 태그의 src 속성값을  주어진 '이미지 파일 URL 반환자'를 통해 얻은 값으로 치환한 게시글를 반환한다.
 	 * 
-	 * @param imageFileURLGetter 이미지 파일 URL 문자열 반환자     
+	 * @param imageFileURLGetter 이미지 파일 URL 문자열 반환자    
+	 * @param boardImageFileInformationList 게시글 이미지 파일 정보 목록
 	 * @param contents 이미지 태그의 src 속성값이 base64 인 게시글
 	 * @return base64인 이미지 태그의 src 속성값을  주어진 '이미지 파일 URL 반환자'를 통해 얻은 값으로 치환한 게시글
 	 * @throws IllegalArgumentException 파라미터 값이 잘못되었을때 던지는 예외
 	 * @throws WhiteParserException 처리중 에러가 발생할 경우 혹은 허락되지 않은 내용이 포함되었을 경우 던지는 예외
 	 */
-	public String checkWhiteValue(ImageFileURLGetterIF imageFileURLGetter, String contents) throws IllegalArgumentException, WhiteParserException {
+	public String checkWhiteValue(ImageFileURLGetterIF imageFileURLGetter, List<BoardImageFileInformation> boardImageFileInformationList, String contents) throws IllegalArgumentException, WhiteParserException {
 		if (null == imageFileURLGetter) {
 			throw new IllegalArgumentException("the parameter imageFileURLGetter is null");
 		}
@@ -91,10 +92,11 @@ public class BoardContentsWhiteParser {
 					throw new WhiteParserException(errorMessage);
 				}
 				
-				BoardImageFileInformation boardImageFileInformation = new BoardImageFileInformation();
+				
 							
 				ImgTagSrcAtrrWhiteValueChecker imgTagSrcAtrrWhiteValueChecker = (ImgTagSrcAtrrWhiteValueChecker)srcTagAttribute.getAttributeWhiteValueCheker();
 				
+				BoardImageFileInformation boardImageFileInformation =  new BoardImageFileInformation();
 				
 				imgTagSrcAtrrWhiteValueChecker.throwExceptionIfNoWhiteValue(srcAttributeValue, boardImageFileInformation);
 				
@@ -160,6 +162,8 @@ public class BoardContentsWhiteParser {
 					newContnetStringBuilder.append(newImgTagString);
 					
 					fromIndex = endIndex;
+					
+					boardImageFileInformationList.add(boardImageFileInformation);
 				} else {
 					int beginIndex = contents.indexOf("<img", fromIndex);
 					int endIndex = contents.indexOf(">", beginIndex + 10) + 1;

@@ -49,17 +49,14 @@ public class AdminLoginProcessSvl extends AbstractSessionKeyServlet {
 			String debugMessage = null;
 			printErrorMessagePage(req, res, errorMessage, debugMessage);
 			return;
-		}
-		
+		}		
 		
 		if (null == paramPwdCipherBase64) {
 			String errorMessage = "the request parameter paramPwdCipherBase64 is null";
 			String debugMessage = null;
 			printErrorMessagePage(req, res, errorMessage, debugMessage);
 			return;
-		}
-		
-		
+		}	
 		
 		/*if (successURL.indexOf('/') != 0) {
 			String errorMessage = "the request parameter successURL doesn't begin a char '/'";
