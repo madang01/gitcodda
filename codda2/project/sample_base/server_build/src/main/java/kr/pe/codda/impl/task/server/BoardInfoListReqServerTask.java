@@ -13,7 +13,6 @@ import org.jooq.types.UInteger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import kr.pe.codda.common.exception.DynamicClassCallException;
 import kr.pe.codda.common.message.AbstractMessage;
 import kr.pe.codda.impl.message.BoardInfoListReq.BoardInfoListReq;
 import kr.pe.codda.impl.message.BoardInfoListRes.BoardInfoListRes;
@@ -31,10 +30,6 @@ public class BoardInfoListReqServerTask extends AbstractServerTask
 		implements DBAutoCommitTaskIF<BoardInfoListReq, BoardInfoListRes> {
 	private Logger log = LoggerFactory.getLogger(AccountSearchProcessReqServerTask.class);
 
-	public BoardInfoListReqServerTask() throws DynamicClassCallException {
-		super();
-	}
-
 	@Override
 	public void doTask(String projectName, LoginManagerIF personalLoginManager, ToLetterCarrier toLetterCarrier,
 			AbstractMessage inputMessage) throws Exception {
@@ -42,6 +37,13 @@ public class BoardInfoListReqServerTask extends AbstractServerTask
 		AbstractMessage outputMessage = ServerDBUtil.execute(
 				ServerCommonStaticFinalVars.DEFAULT_DBCP_NAME, this, (BoardInfoListReq) inputMessage);
 		toLetterCarrier.addSyncOutputMessage(outputMessage);
+	}
+	
+	public BoardInfoListRes doWork(final String dbcpName, BoardInfoListReq boardInfoListReq) throws Exception {
+		BoardInfoListRes outputMessage = ServerDBUtil.execute(
+				dbcpName, this, boardInfoListReq);
+		
+		return outputMessage;
 	}
 
 	public BoardInfoListRes doWork(final DSLContext dsl, BoardInfoListReq boardInfoListReq) throws Exception {

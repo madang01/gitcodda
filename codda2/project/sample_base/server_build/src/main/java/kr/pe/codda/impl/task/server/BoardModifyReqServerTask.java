@@ -21,7 +21,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import kr.pe.codda.common.etc.CommonStaticFinalVars;
-import kr.pe.codda.common.exception.DynamicClassCallException;
 import kr.pe.codda.common.message.AbstractMessage;
 import kr.pe.codda.impl.message.BoardModifyReq.BoardModifyReq;
 import kr.pe.codda.impl.message.BoardModifyRes.BoardModifyRes;
@@ -44,10 +43,6 @@ public class BoardModifyReqServerTask extends AbstractServerTask
 		implements DBAutoCommitTaskIF<BoardModifyReq, BoardModifyRes> {
 	private Logger log = LoggerFactory.getLogger(AccountSearchProcessReqServerTask.class);
 
-	public BoardModifyReqServerTask() throws DynamicClassCallException {
-		super();
-	}
-
 	@Override
 	public void doTask(String projectName, LoginManagerIF personalLoginManager, ToLetterCarrier toLetterCarrier,
 			AbstractMessage inputMessage) throws Exception {
@@ -57,6 +52,15 @@ public class BoardModifyReqServerTask extends AbstractServerTask
 		toLetterCarrier.addSyncOutputMessage(outputMessage);
 	}
 
+	
+	public BoardModifyRes doWork(final String dbcpName, final BoardModifyReq boardModifyReq) throws Exception {
+		BoardModifyRes outputMessage = ServerDBUtil.execute(
+				dbcpName, this, boardModifyReq);
+		
+		return outputMessage;
+	}
+	
+	@Override
 	public BoardModifyRes doWork(final DSLContext dsl, final BoardModifyReq boardModifyReq) throws Exception {
 		if (null == dsl) {
 			throw new ParameterServerTaskException("the parameter dsl is null");

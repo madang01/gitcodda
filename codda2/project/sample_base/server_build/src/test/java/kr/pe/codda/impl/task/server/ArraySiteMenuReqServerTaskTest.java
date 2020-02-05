@@ -8,7 +8,6 @@ import java.util.concurrent.TimeUnit;
 import org.junit.Test;
 
 import junitlib.AbstractBoardTest;
-import kr.pe.codda.common.exception.DynamicClassCallException;
 import kr.pe.codda.impl.message.ArraySiteMenuReq.ArraySiteMenuReq;
 import kr.pe.codda.impl.message.ArraySiteMenuRes.ArraySiteMenuRes;
 
@@ -23,12 +22,7 @@ public class ArraySiteMenuReqServerTaskTest extends AbstractBoardTest {
 		ArraySiteMenuReq arraySiteMenuReq = new ArraySiteMenuReq();
 		arraySiteMenuReq.setRequestedUserID(requestedUserID);
 		
-		ArraySiteMenuReqServerTask arraySiteMenuReqServerTask = null;
-		try {
-			arraySiteMenuReqServerTask = new ArraySiteMenuReqServerTask();
-		} catch (DynamicClassCallException e1) {
-			fail("dead code");
-		}
+		ArraySiteMenuReqServerTask arraySiteMenuReqServerTask = new ArraySiteMenuReqServerTask();
 		
 		
 		try {

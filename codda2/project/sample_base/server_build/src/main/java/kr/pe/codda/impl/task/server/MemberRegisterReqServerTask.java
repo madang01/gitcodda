@@ -1,10 +1,18 @@
 package kr.pe.codda.impl.task.server;
 
+import static kr.pe.codda.jooq.tables.SbMemberTb.SB_MEMBER_TB;
+
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.sql.Timestamp;
+
+import org.jooq.DSLContext;
+import org.jooq.types.UByte;
+import org.jooq.types.UInteger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import kr.pe.codda.common.etc.CommonStaticFinalVars;
-import kr.pe.codda.common.exception.DynamicClassCallException;
 import kr.pe.codda.common.exception.ServerTaskException;
 import kr.pe.codda.common.exception.SymmetricException;
 import kr.pe.codda.common.message.AbstractMessage;
@@ -12,22 +20,25 @@ import kr.pe.codda.common.sessionkey.ServerSessionkeyIF;
 import kr.pe.codda.common.sessionkey.ServerSessionkeyManager;
 import kr.pe.codda.common.sessionkey.ServerSymmetricKeyIF;
 import kr.pe.codda.common.util.CommonStaticUtil;
+import kr.pe.codda.impl.inner_message.MemberRegisterDecryptionReq;
 import kr.pe.codda.impl.message.MemberRegisterReq.MemberRegisterReq;
 import kr.pe.codda.impl.message.MessageResultRes.MessageResultRes;
 import kr.pe.codda.server.LoginManagerIF;
+import kr.pe.codda.server.lib.DBAutoCommitTaskIF;
 import kr.pe.codda.server.lib.MemberRoleType;
+import kr.pe.codda.server.lib.MemberStateType;
+import kr.pe.codda.server.lib.ParameterServerTaskException;
+import kr.pe.codda.server.lib.PasswordPairOfMemberTable;
+import kr.pe.codda.server.lib.RollbackServerTaskException;
 import kr.pe.codda.server.lib.ServerCommonStaticFinalVars;
 import kr.pe.codda.server.lib.ServerDBUtil;
+import kr.pe.codda.server.lib.ValueChecker;
 import kr.pe.codda.server.task.AbstractServerTask;
 import kr.pe.codda.server.task.ToLetterCarrier;
 
-public class MemberRegisterReqServerTask extends AbstractServerTask {
+public class MemberRegisterReqServerTask extends AbstractServerTask implements DBAutoCommitTaskIF<MemberRegisterDecryptionReq, MessageResultRes> {
 	private Logger log = LoggerFactory.getLogger(AccountSearchProcessReqServerTask.class);
 	
-	public MemberRegisterReqServerTask() throws DynamicClassCallException {
-		super();
-	}
-
 	private String getDecryptedString(byte[] cipherBytes, ServerSymmetricKeyIF serverSymmetricKey)
 			throws InterruptedException, IllegalArgumentException, SymmetricException {
 		byte[] valueBytes = serverSymmetricKey.decrypt(cipherBytes);
@@ -250,12 +261,120 @@ public class MemberRegisterReqServerTask extends AbstractServerTask {
 			String errorMessage = "비밀번호 복호화 실패로 멤버 등록이 실패하였습니다. 상세한 이유는 서버 로그를 확인해 주세요.";
 			throw new ServerTaskException(errorMessage);
 		}
+		
+		
+		MemberRegisterDecryptionReq memberRegisterDecryptionReq = new MemberRegisterDecryptionReq();
+		memberRegisterDecryptionReq.setMemberRoleType(MemberRoleType.MEMBER);
+		memberRegisterDecryptionReq.setUserID(userID);
+		memberRegisterDecryptionReq.setNickname(nickname);
+		memberRegisterDecryptionReq.setEmail(email);
+		memberRegisterDecryptionReq.setPasswordBytes(passwordBytes);
+		memberRegisterDecryptionReq.setRegisteredDate(new java.sql.Timestamp(System.currentTimeMillis()));
+		memberRegisterDecryptionReq.setIp(ip);
 
-		ServerDBUtil.registerMember(dbcpName, MemberRoleType.MEMBER, userID, nickname, email, passwordBytes,
-				new java.sql.Timestamp(System.currentTimeMillis()), ip);
+		MessageResultRes messageResultRes = ServerDBUtil.execute(dbcpName, this, memberRegisterDecryptionReq);
+
+		return messageResultRes;
+	}
+	
+	public MessageResultRes doWork(String dbcpName, MemberRegisterDecryptionReq memberRegisterDecryptionReq) throws Exception {
+		MessageResultRes messageResultRes = ServerDBUtil.execute(dbcpName, this, memberRegisterDecryptionReq);
+		
+		return messageResultRes;
+	}
+
+	@Override
+	public MessageResultRes doWork(DSLContext dsl, MemberRegisterDecryptionReq memberRegisterDecryptionReq) throws Exception {
+		
+		if (null == dsl) {
+			throw new ParameterServerTaskException("the parameter dsl is null");
+		}
+
+		if (null == memberRegisterDecryptionReq) {
+			throw new ParameterServerTaskException("the parameter memberRegisterDecryptionReq is null");
+		}
+		
+		
+		MemberRoleType memberRoleType = memberRegisterDecryptionReq.getMemberRoleType();
+		String userID = memberRegisterDecryptionReq.getUserID();
+		String nickname = memberRegisterDecryptionReq.getNickname();
+		String email = memberRegisterDecryptionReq.getEmail();
+		byte[] passwordBytes = memberRegisterDecryptionReq.getPasswordBytes();
+		Timestamp registeredDate = memberRegisterDecryptionReq.getRegisteredDate();
+		String ip = memberRegisterDecryptionReq.getIp();	
+		String messageID = memberRegisterDecryptionReq.getMessageID();
+		
+		if (null == memberRoleType) {
+			String errorMessage = "the parameter memberRoleType is null";
+			throw new ServerTaskException(errorMessage);
+		}
+
+		try {
+			ValueChecker.checkValidUserID(userID);
+			ValueChecker.checkValidNickname(nickname);
+			ValueChecker.checkValidEmail(email);
+			ValueChecker.checkValidMemberReigsterPwd(passwordBytes);
+			ValueChecker.checkValidIP(ip);
+		} catch (IllegalArgumentException e) {
+			throw new ParameterServerTaskException(e.getMessage());
+		}
+
+		SecureRandom random = null;
+		try {
+			random = SecureRandom.getInstance("SHA1PRNG");
+		} catch (NoSuchAlgorithmException e) {
+			/** dead code */
+			log.error("NoSuchAlgorithmException", e);
+			System.exit(1);
+		}
+		byte[] pwdSaltBytes = new byte[8];
+		random.nextBytes(pwdSaltBytes);
+
+		PasswordPairOfMemberTable passwordPairOfMemberTable = ServerDBUtil.toPasswordPairOfMemberTable(passwordBytes, pwdSaltBytes);
+		
+		
+			boolean isSameIDMember = dsl.fetchExists(
+					dsl.select(SB_MEMBER_TB.USER_ID).from(SB_MEMBER_TB).where(SB_MEMBER_TB.USER_ID.eq(userID)));
+
+			if (isSameIDMember) {
+				String errorMessage = new StringBuilder("기존 회원과 중복되는 아이디[").append(userID).append("] 입니다").toString();
+				throw new RollbackServerTaskException(errorMessage);
+			}
+
+			boolean isSameNicknameMember = dsl.fetchExists(
+					dsl.select(SB_MEMBER_TB.NICKNAME).from(SB_MEMBER_TB).where(SB_MEMBER_TB.NICKNAME.eq(nickname)));
+
+			if (isSameNicknameMember) {
+				String errorMessage = new StringBuilder("기존 회원과 중복되는 별명[").append(nickname).append("] 입니다").toString();
+				throw new RollbackServerTaskException(errorMessage);
+			}
+
+			int resultOfInsert = dsl.insertInto(SB_MEMBER_TB).set(SB_MEMBER_TB.USER_ID, userID)
+					.set(SB_MEMBER_TB.NICKNAME, nickname)
+					.set(SB_MEMBER_TB.PWD_BASE64, passwordPairOfMemberTable.getPasswordBase64())
+					.set(SB_MEMBER_TB.PWD_SALT_BASE64, passwordPairOfMemberTable.getPasswordSaltBase64())
+					.set(SB_MEMBER_TB.ROLE, memberRoleType.getValue())
+					.set(SB_MEMBER_TB.STATE, MemberStateType.OK.getValue()).set(SB_MEMBER_TB.EMAIL, email)
+					.set(SB_MEMBER_TB.PWD_FAIL_CNT, UByte.valueOf(0)).set(SB_MEMBER_TB.REG_DT, registeredDate)
+					.set(SB_MEMBER_TB.LAST_NICKNAME_MOD_DT, registeredDate)
+					.set(SB_MEMBER_TB.LAST_EMAIL_MOD_DT, registeredDate)
+					.set(SB_MEMBER_TB.LAST_PWD_MOD_DT, registeredDate)
+					.set(SB_MEMBER_TB.LAST_STATE_MOD_DT, registeredDate)
+					.set(SB_MEMBER_TB.NEXT_ACTIVE_SQ, UInteger.valueOf(0)).execute();
+
+			if (0 == resultOfInsert) {
+				String errorMessage = "회원 등록하는데 실패하였습니다";
+				throw new RollbackServerTaskException(errorMessage);
+			}
+
+			String logText = new StringBuilder().append("회원 가입 신청 아이디[").append(userID).append("], 회원 종류[")
+					.append(memberRoleType.getName()).append("]").toString();
+
+			ServerDBUtil.insertSiteLog(dsl, userID, logText, registeredDate, ip);
+		
 		
 		MessageResultRes messageResultRes = new MessageResultRes();
-		messageResultRes.setTaskMessageID(memberRegisterReq.getMessageID());
+		messageResultRes.setTaskMessageID(messageID);
 		messageResultRes.setIsSuccess(true);
 		messageResultRes.setResultMessage("회원 가입 성공하였습니다");
 

@@ -18,7 +18,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import junitlib.AbstractBoardTest;
-import kr.pe.codda.common.exception.DynamicClassCallException;
 import kr.pe.codda.common.exception.ServerTaskException;
 import kr.pe.codda.impl.message.BoardBlockReq.BoardBlockReq;
 import kr.pe.codda.impl.message.BoardInfoAddReq.BoardInfoAddReq;
@@ -48,7 +47,7 @@ public class BoardIntegrationTest extends AbstractBoardTest {
 	@Before
 	public void setUp() {
 		try {	
-			ServerDBUtil.execute(TEST_DBCP_NAME, (conn, dsl) -> {
+			ServerDBUtil.execute(TEST_DBCP_NAME, (dsl) -> {
 				
 				dsl.delete(SB_MEMBER_ACTIVITY_HISTORY_TB).execute();
 				dsl.delete(SB_BOARD_VOTE_TB).execute();
@@ -63,8 +62,6 @@ public class BoardIntegrationTest extends AbstractBoardTest {
 						.set(SB_BOARD_INFO_TB.CNT, 0L)
 						.set(SB_BOARD_INFO_TB.TOTAL, 0L)
 						.set(SB_BOARD_INFO_TB.NEXT_BOARD_NO, UInteger.valueOf(1)).execute();
-
-				conn.commit();
 			});
 		} catch (Exception e) {
 			log.warn("error", e);
@@ -75,7 +72,7 @@ public class BoardIntegrationTest extends AbstractBoardTest {
 	@After
 	public void tearDown() {
 		try {			
-			ServerDBUtil.execute(TEST_DBCP_NAME, (conn, dsl) -> {
+			ServerDBUtil.execute(TEST_DBCP_NAME, (dsl) -> {
 				Result<Record4<UByte, Byte, Long, Long>> boardInfoResult = dsl.select(SB_BOARD_INFO_TB.BOARD_ID, 
 						SB_BOARD_INFO_TB.LIST_TYPE,
 						SB_BOARD_INFO_TB.CNT, SB_BOARD_INFO_TB.TOTAL)
@@ -111,8 +108,6 @@ public class BoardIntegrationTest extends AbstractBoardTest {
 					assertEquals("전체 글 갯수 비교",  expectedTotal, acutalTotal);
 					assertEquals("목록 글 갯수 비교",  expectedCountOfList, actualCountOfList);
 				}
-
-				conn.commit();
 			});
 		} catch (Exception e) {
 			log.warn("error", e);
@@ -128,12 +123,8 @@ public class BoardIntegrationTest extends AbstractBoardTest {
 		personalActivityHistoryReq.setPageNo(1);
 		personalActivityHistoryReq.setPageSize(20);
 		
-		PersonalActivityHistoryReqServerTask  personalActivityHistoryReqServerTask = null;
-		try {
-			personalActivityHistoryReqServerTask = new PersonalActivityHistoryReqServerTask();
-		} catch (DynamicClassCallException e1) {
-			fail("dead code");
-		}
+		PersonalActivityHistoryReqServerTask  personalActivityHistoryReqServerTask = new PersonalActivityHistoryReqServerTask();
+		
 		
 		PersonalActivityHistoryRes personalActivityHistoryRes = null;
 		
@@ -161,12 +152,7 @@ public class BoardIntegrationTest extends AbstractBoardTest {
 		boardListReq.setPageNo(pageNo);
 		boardListReq.setPageSize(pageSize);
 
-		BoardListReqServerTask boardListReqServerTask = null;
-		try {
-			boardListReqServerTask = new BoardListReqServerTask();
-		} catch (DynamicClassCallException e1) {
-			fail("dead code");
-		}
+		BoardListReqServerTask boardListReqServerTask = new BoardListReqServerTask();
 
 		try {
 			BoardListRes acutalBoardListRes = boardListReqServerTask.doWork(
@@ -194,19 +180,9 @@ public class BoardIntegrationTest extends AbstractBoardTest {
 		String requestedUserIDForAdmin = "admin";
 		String requestedUserIDForMember = "guest";
 		
-		BoardListReqServerTask boardListReqServerTask = null;
-		try {
-			boardListReqServerTask = new BoardListReqServerTask();
-		} catch (DynamicClassCallException e1) {
-			fail("dead code");
-		}
+		BoardListReqServerTask boardListReqServerTask = new BoardListReqServerTask();
 		
-		BoardInfoAddReqServerTask boardInfoAddReqServerTask = null;
-		try {
-			boardInfoAddReqServerTask = new BoardInfoAddReqServerTask();
-		} catch (DynamicClassCallException e) {
-			fail("dead code");
-		}
+		BoardInfoAddReqServerTask boardInfoAddReqServerTask = new BoardInfoAddReqServerTask();
 		
 		BoardInfoAddReq boardInfoAddReq = new BoardInfoAddReq();
 		boardInfoAddReq.setRequestedUserID(requestedUserIDForAdmin);
@@ -264,19 +240,9 @@ public class BoardIntegrationTest extends AbstractBoardTest {
 		int pageNo = 1;
 		int pageSize = 20;
 		
-		BoardListReqServerTask boardListReqServerTask = null;
-		try {
-			boardListReqServerTask = new BoardListReqServerTask();
-		} catch (DynamicClassCallException e1) {
-			fail("dead code");
-		}
+		BoardListReqServerTask boardListReqServerTask = new BoardListReqServerTask();
 		
-		BoardInfoAddReqServerTask boardInfoAddReqServerTask = null;
-		try {
-			boardInfoAddReqServerTask = new BoardInfoAddReqServerTask();
-		} catch (DynamicClassCallException e) {
-			fail("dead code");
-		}
+		BoardInfoAddReqServerTask boardInfoAddReqServerTask = new BoardInfoAddReqServerTask();
 		
 		BoardInfoAddReq boardInfoAddReq = new BoardInfoAddReq();
 		boardInfoAddReq.setRequestedUserID(requestedUserIDForAdmin);
@@ -567,12 +533,7 @@ public class BoardIntegrationTest extends AbstractBoardTest {
 		blcokBoardBlockReq.setBoardNo(blockBoardTreeNode.getBoardNo());
 		blcokBoardBlockReq.setIp("127.0.0.7");
 
-		BoardBlockReqServerTask boardBlockReqServerTask = null;
-		try {
-			boardBlockReqServerTask = new BoardBlockReqServerTask();
-		} catch (DynamicClassCallException e1) {
-			fail("dead code");
-		}
+		BoardBlockReqServerTask boardBlockReqServerTask = new BoardBlockReqServerTask();
 
 		try {
 			MessageResultRes messageResultRes = boardBlockReqServerTask.doWork(
@@ -622,19 +583,9 @@ public class BoardIntegrationTest extends AbstractBoardTest {
 		int pageNo = 1;
 		int pageSize = 20;
 		
-		BoardListReqServerTask boardListReqServerTask = null;
-		try {
-			boardListReqServerTask = new BoardListReqServerTask();
-		} catch (DynamicClassCallException e1) {
-			fail("dead code");
-		}
+		BoardListReqServerTask boardListReqServerTask = new BoardListReqServerTask();
 		
-		BoardInfoAddReqServerTask boardInfoAddReqServerTask = null;
-		try {
-			boardInfoAddReqServerTask = new BoardInfoAddReqServerTask();
-		} catch (DynamicClassCallException e) {
-			fail("dead code");
-		}
+		BoardInfoAddReqServerTask boardInfoAddReqServerTask = new BoardInfoAddReqServerTask();
 		
 		BoardInfoAddReq boardInfoAddReq = new BoardInfoAddReq();
 		boardInfoAddReq.setRequestedUserID(requestedUserIDForAdmin);
@@ -923,12 +874,7 @@ public class BoardIntegrationTest extends AbstractBoardTest {
 		blcokBoardBlockReq.setBoardNo(blockBoardTreeNode.getBoardNo());
 		blcokBoardBlockReq.setIp("127.0.0.8");
 
-		BoardBlockReqServerTask boardBlockReqServerTask = null;
-		try {
-			boardBlockReqServerTask = new BoardBlockReqServerTask();
-		} catch (DynamicClassCallException e1) {
-			fail("dead code");
-		}
+		BoardBlockReqServerTask boardBlockReqServerTask = new BoardBlockReqServerTask();
 
 		try {
 			MessageResultRes messageResultRes = boardBlockReqServerTask.doWork(
@@ -1114,12 +1060,7 @@ public class BoardIntegrationTest extends AbstractBoardTest {
 		boardListReq.setPageNo(pageNo);
 		boardListReq.setPageSize(pageSize);
 
-		BoardListReqServerTask boardListReqServerTask = null;
-		try {
-			boardListReqServerTask = new BoardListReqServerTask();
-		} catch (DynamicClassCallException e1) {
-			fail("dead code");
-		}
+		BoardListReqServerTask boardListReqServerTask = new BoardListReqServerTask();
 		BoardListRes firstBoardListRes = null;
 
 		try {
@@ -1322,12 +1263,8 @@ public class BoardIntegrationTest extends AbstractBoardTest {
 		boardListReq.setPageNo(pageNo);
 		boardListReq.setPageSize(pageSize);
 	
-		BoardListReqServerTask boardListReqServerTask = null;
-		try {
-			boardListReqServerTask = new BoardListReqServerTask();
-		} catch (DynamicClassCallException e1) {
-			fail("dead code");
-		}
+		BoardListReqServerTask boardListReqServerTask = new BoardListReqServerTask();
+
 		BoardListRes firstBoardListRes = null;
 	
 		try {

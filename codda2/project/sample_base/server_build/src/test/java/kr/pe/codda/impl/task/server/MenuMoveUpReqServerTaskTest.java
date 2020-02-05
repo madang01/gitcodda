@@ -6,7 +6,6 @@ import static org.junit.Assert.fail;
 import org.junit.Test;
 
 import junitlib.AbstractBoardTest;
-import kr.pe.codda.common.exception.DynamicClassCallException;
 import kr.pe.codda.common.exception.ServerTaskException;
 import kr.pe.codda.impl.message.ChildMenuAddReq.ChildMenuAddReq;
 import kr.pe.codda.impl.message.ChildMenuAddRes.ChildMenuAddRes;
@@ -23,12 +22,8 @@ public class MenuMoveUpReqServerTaskTest extends AbstractBoardTest {
 	public void testDoService_ok() {
 		String requestedUserID = "admin";
 		
-		RootMenuAddReqServerTask rootMenuAddReqServerTask = null;
-		try {
-			rootMenuAddReqServerTask = new RootMenuAddReqServerTask();
-		} catch (DynamicClassCallException e1) {
-			fail("dead code");
-		}
+		RootMenuAddReqServerTask rootMenuAddReqServerTask = new RootMenuAddReqServerTask();
+		
 		
 		RootMenuAddRes toRootMenuAddRes = null;
 		RootMenuAddRes fromRootMenuAddRes = null;
@@ -80,12 +75,8 @@ public class MenuMoveUpReqServerTaskTest extends AbstractBoardTest {
 		MenuMoveUpReq menuUpMoveReq = new MenuMoveUpReq();
 		menuUpMoveReq.setRequestedUserID(requestedUserID);
 		menuUpMoveReq.setMenuNo(fromRootMenuAddRes.getMenuNo());
-		MenuMoveUpReqServerTask menuUpMoveReqServerTask = null;
-		try {
-			menuUpMoveReqServerTask = new MenuMoveUpReqServerTask();
-		} catch (DynamicClassCallException e1) {
-			fail("dead code");
-		}
+		MenuMoveUpReqServerTask menuUpMoveReqServerTask = new MenuMoveUpReqServerTask();
+
 		try {
 			MessageResultRes messageResultRes = menuUpMoveReqServerTask.doWork(TEST_DBCP_NAME, menuUpMoveReq);
 			if (! messageResultRes.getIsSuccess()) {
@@ -104,12 +95,7 @@ public class MenuMoveUpReqServerTaskTest extends AbstractBoardTest {
 	public void testDoService_menuNoDoesNotExist() {
 		String requestedUserID = "admin";
 		
-		RootMenuAddReqServerTask rootMenuAddReqServerTask = null;
-		try {
-			rootMenuAddReqServerTask = new RootMenuAddReqServerTask();
-		} catch (DynamicClassCallException e1) {
-			fail("dead code");
-		}
+		RootMenuAddReqServerTask rootMenuAddReqServerTask = new RootMenuAddReqServerTask();
 		
 		RootMenuAddRes fromRootMenuAddRes = null;		
 		{
@@ -127,12 +113,7 @@ public class MenuMoveUpReqServerTaskTest extends AbstractBoardTest {
 			}
 		}
 		
-		MenuDeleteReqServerTask menuDeleteReqServerTask = null;
-		try {
-			menuDeleteReqServerTask = new MenuDeleteReqServerTask();
-		} catch (DynamicClassCallException e1) {
-			fail("dead code");
-		}
+		MenuDeleteReqServerTask menuDeleteReqServerTask = new MenuDeleteReqServerTask();
 		
 		MenuDeleteReq menuDeleteReq = new MenuDeleteReq();
 		menuDeleteReq.setRequestedUserID(requestedUserID);
@@ -153,12 +134,8 @@ public class MenuMoveUpReqServerTaskTest extends AbstractBoardTest {
 		MenuMoveUpReq menuUpMoveReq = new MenuMoveUpReq();
 		menuUpMoveReq.setRequestedUserID(requestedUserID);
 		menuUpMoveReq.setMenuNo(fromRootMenuAddRes.getMenuNo());
-		MenuMoveUpReqServerTask menuUpMoveReqServerTask = null;
-		try {
-			menuUpMoveReqServerTask = new MenuMoveUpReqServerTask();
-		} catch (DynamicClassCallException e1) {
-			fail("dead code");
-		}
+		MenuMoveUpReqServerTask menuUpMoveReqServerTask = new MenuMoveUpReqServerTask();
+
 		try {
 			menuUpMoveReqServerTask.doWork(TEST_DBCP_NAME, menuUpMoveReq);			
 			fail("no ServerTaskException");
@@ -182,12 +159,8 @@ public class MenuMoveUpReqServerTaskTest extends AbstractBoardTest {
 	public void testDoService_상단이동할수없는메뉴() {
 		String requestedUserID = "admin";
 		
-		RootMenuAddReqServerTask rootMenuAddReqServerTask = null;
-		try {
-			rootMenuAddReqServerTask = new RootMenuAddReqServerTask();
-		} catch (DynamicClassCallException e1) {
-			fail("dead code");
-		}
+		RootMenuAddReqServerTask rootMenuAddReqServerTask = new RootMenuAddReqServerTask();
+		
 		
 		RootMenuAddRes rootMenuAddRes = null;		
 		{
@@ -205,12 +178,7 @@ public class MenuMoveUpReqServerTaskTest extends AbstractBoardTest {
 			}
 		}
 		
-		ChildMenuAddReqServerTask childMenuAddReqServerTask = null;
-		try {
-			childMenuAddReqServerTask = new ChildMenuAddReqServerTask();
-		} catch (DynamicClassCallException e1) {
-			fail("dead code");
-		}
+		ChildMenuAddReqServerTask childMenuAddReqServerTask = new ChildMenuAddReqServerTask();
 		
 		ChildMenuAddReq firstChildMenuAddReq = new ChildMenuAddReq();
 		firstChildMenuAddReq.setRequestedUserID(requestedUserID);
@@ -230,12 +198,8 @@ public class MenuMoveUpReqServerTaskTest extends AbstractBoardTest {
 		MenuMoveUpReq menuUpMoveReq = new MenuMoveUpReq();
 		menuUpMoveReq.setRequestedUserID(requestedUserID);
 		menuUpMoveReq.setMenuNo(firstChildMenuAddRes.getMenuNo());
-		MenuMoveUpReqServerTask menuUpMoveReqServerTask = null;
-		try {
-			menuUpMoveReqServerTask = new MenuMoveUpReqServerTask();
-		} catch (DynamicClassCallException e1) {
-			fail("dead code");
-		}
+		MenuMoveUpReqServerTask menuUpMoveReqServerTask = new MenuMoveUpReqServerTask();
+
 		try {
 			menuUpMoveReqServerTask.doWork(TEST_DBCP_NAME, menuUpMoveReq);			
 			fail("no ServerTaskException");

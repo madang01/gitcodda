@@ -15,14 +15,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import kr.pe.codda.common.etc.CommonStaticFinalVars;
-import kr.pe.codda.common.exception.DynamicClassCallException;
 import kr.pe.codda.common.exception.SymmetricException;
 import kr.pe.codda.common.message.AbstractMessage;
 import kr.pe.codda.common.sessionkey.ServerSessionkeyIF;
 import kr.pe.codda.common.sessionkey.ServerSessionkeyManager;
 import kr.pe.codda.common.sessionkey.ServerSymmetricKeyIF;
 import kr.pe.codda.common.util.CommonStaticUtil;
-import kr.pe.codda.impl.inner_message.AccountSearchProcessInnerReq;
+import kr.pe.codda.impl.inner_message.AccountSearchProcessDecryptionReq;
 import kr.pe.codda.impl.message.AccountSearchProcessReq.AccountSearchProcessReq;
 import kr.pe.codda.impl.message.AccountSearchProcessRes.AccountSearchProcessRes;
 import kr.pe.codda.server.LoginManagerIF;
@@ -39,12 +38,9 @@ import kr.pe.codda.server.lib.ValueChecker;
 import kr.pe.codda.server.task.AbstractServerTask;
 import kr.pe.codda.server.task.ToLetterCarrier;
 
-public class AccountSearchProcessReqServerTask extends AbstractServerTask implements DBAutoCommitTaskIF<AccountSearchProcessInnerReq, AccountSearchProcessRes> {
+public class AccountSearchProcessReqServerTask extends AbstractServerTask implements DBAutoCommitTaskIF<AccountSearchProcessDecryptionReq, AccountSearchProcessRes> {
 	private Logger log = LoggerFactory.getLogger(AccountSearchProcessReqServerTask.class);
 
-	public AccountSearchProcessReqServerTask() throws DynamicClassCallException {
-		super();
-	}
 
 	@Override
 	public void doTask(String projectName, LoginManagerIF personalLoginManager, ToLetterCarrier toLetterCarrier,
@@ -191,14 +187,14 @@ public class AccountSearchProcessReqServerTask extends AbstractServerTask implem
 			}
 		}		
 		
-		AccountSearchProcessInnerReq accountSearchProcessInnerReq = new AccountSearchProcessInnerReq();
-		accountSearchProcessInnerReq.setAccountSearchType(accountSearchType);
-		accountSearchProcessInnerReq.setEmail(email);		
-		accountSearchProcessInnerReq.setSecretAuthenticationValue(secretAuthenticationValue);
-		accountSearchProcessInnerReq.setNewPasswordBytes(newPasswordBytes);
-		accountSearchProcessInnerReq.setIp(accountSearchProcessReq.getIp());
+		AccountSearchProcessDecryptionReq accountSearchProcessDecryptionReq = new AccountSearchProcessDecryptionReq();
+		accountSearchProcessDecryptionReq.setAccountSearchType(accountSearchType);
+		accountSearchProcessDecryptionReq.setEmail(email);		
+		accountSearchProcessDecryptionReq.setSecretAuthenticationValue(secretAuthenticationValue);
+		accountSearchProcessDecryptionReq.setNewPasswordBytes(newPasswordBytes);
+		accountSearchProcessDecryptionReq.setIp(accountSearchProcessReq.getIp());
 		
-		AbstractMessage outputMessage = ServerDBUtil.execute(ServerCommonStaticFinalVars.DEFAULT_DBCP_NAME, this, accountSearchProcessInnerReq);
+		AbstractMessage outputMessage = ServerDBUtil.execute(ServerCommonStaticFinalVars.DEFAULT_DBCP_NAME, this, accountSearchProcessDecryptionReq);
 
 		toLetterCarrier.addSyncOutputMessage(outputMessage);
 
@@ -211,21 +207,27 @@ public class AccountSearchProcessReqServerTask extends AbstractServerTask implem
 		return decryptedString;
 	}
 
+	public AccountSearchProcessRes doWork(String dbcpName, AccountSearchProcessDecryptionReq accountSearchProcessDecryptionReq) throws Exception {
+		AccountSearchProcessRes outputMessage = ServerDBUtil.execute(dbcpName, this, accountSearchProcessDecryptionReq);
+		
+		return outputMessage;
+	}
 	
-	public AccountSearchProcessRes doWork(final DSLContext dsl, AccountSearchProcessInnerReq accountSearchProcessInnerReq) throws Exception {
+	@Override
+	public AccountSearchProcessRes doWork(final DSLContext dsl, final AccountSearchProcessDecryptionReq accountSearchProcessDecryptionReq) throws Exception {
 		if (null == dsl) {
 			throw new ParameterServerTaskException("the parameter dsl is null");
 		}
 
-		if (null == accountSearchProcessInnerReq) {
-			throw new ParameterServerTaskException("the parameter accountSearchProcessInnerReq is null");
+		if (null == accountSearchProcessDecryptionReq) {
+			throw new ParameterServerTaskException("the parameter accountSearchProcessDecryptionReq is null");
 		}
 		
-		final AccountSearchType accountSearchType = accountSearchProcessInnerReq.getAccountSearchType();
-		final String email = accountSearchProcessInnerReq.getEmail();		
-		final String secretAuthenticationValue = accountSearchProcessInnerReq.getSecretAuthenticationValue();		
-		final byte[] newPasswordBytes = accountSearchProcessInnerReq.getNewPasswordBytes();
-		final String ip = accountSearchProcessInnerReq.getIp();		
+		final AccountSearchType accountSearchType = accountSearchProcessDecryptionReq.getAccountSearchType();
+		final String email = accountSearchProcessDecryptionReq.getEmail();		
+		final String secretAuthenticationValue = accountSearchProcessDecryptionReq.getSecretAuthenticationValue();		
+		final byte[] newPasswordBytes = accountSearchProcessDecryptionReq.getNewPasswordBytes();
+		final String ip = accountSearchProcessDecryptionReq.getIp();		
 		
 		try {
 			ValueChecker.checkValidEmail(email);

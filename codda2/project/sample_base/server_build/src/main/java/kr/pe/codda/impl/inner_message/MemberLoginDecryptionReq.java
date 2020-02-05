@@ -9,7 +9,7 @@ import kr.pe.codda.impl.message.MemberLoginReq.MemberLoginReq;
  * @author Won Jonghoon
  *
  */
-public class MemberLoginInnerReq {
+public class MemberLoginDecryptionReq {
 	
 	private String memberID;
 	private byte[] passwordBytes;

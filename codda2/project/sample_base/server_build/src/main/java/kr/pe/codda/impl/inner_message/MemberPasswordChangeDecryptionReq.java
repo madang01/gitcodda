@@ -23,7 +23,7 @@ import kr.pe.codda.impl.message.MemberPasswordChangeReq.MemberPasswordChangeReq;
  * @author Won Jonghoon
  *
  */
-public class MemberPasswordChangeInnerReq {
+public class MemberPasswordChangeDecryptionReq {
 
 	private String requestedUserID;
 	private byte[] oldPasswordBytes;

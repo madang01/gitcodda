@@ -10,7 +10,7 @@ import java.util.Calendar;
 import org.junit.Test;
 
 import junitlib.AbstractBoardTest;
-import kr.pe.codda.common.exception.DynamicClassCallException;
+import kr.pe.codda.impl.inner_message.MemberRegisterDecryptionReq;
 import kr.pe.codda.impl.message.MemberSearchReq.MemberSearchReq;
 import kr.pe.codda.impl.message.MemberSearchRes.MemberSearchRes;
 import kr.pe.codda.server.lib.MemberRoleType;
@@ -33,15 +33,13 @@ public class MemberSearchReqServerTaskTest extends AbstractBoardTest {
 		
 		
 		try {
-			ServerDBUtil.execute(TEST_DBCP_NAME, (conn, dsl) -> {
+			ServerDBUtil.execute(TEST_DBCP_NAME, ( dsl) -> {
 				
 				dsl.delete(SB_SITE_LOG_TB)
 				.where(SB_SITE_LOG_TB.USER_ID.eq(testID)).execute();
 				
 				dsl.delete(SB_MEMBER_TB)
 				.where(SB_MEMBER_TB.USER_ID.eq(testID)).execute();
-
-				conn.commit();
 			});
 		} catch (Exception e) {
 			log.warn(e.getMessage(), e);
@@ -56,10 +54,20 @@ public class MemberSearchReqServerTaskTest extends AbstractBoardTest {
 			String nickname = "단위테스터용아이디3";
 			String email = "test03@codda.pe.kr";
 			String ip = "127.0.0.1";
+			
+			MemberRegisterDecryptionReq memberRegisterDecryptionReq = new MemberRegisterDecryptionReq();
+			memberRegisterDecryptionReq.setMemberRoleType(MemberRoleType.MEMBER);
+			memberRegisterDecryptionReq.setUserID(userID);
+			memberRegisterDecryptionReq.setNickname(nickname);
+			memberRegisterDecryptionReq.setEmail(email);
+			memberRegisterDecryptionReq.setPasswordBytes(passwordBytes);
+			memberRegisterDecryptionReq.setRegisteredDate(new java.sql.Timestamp(System.currentTimeMillis()));
+			memberRegisterDecryptionReq.setIp(ip);
+			
+			MemberRegisterReqServerTask memberRegisterReqServerTask = new MemberRegisterReqServerTask();
 
 			try {
-				ServerDBUtil.registerMember(TEST_DBCP_NAME, MemberRoleType.MEMBER, userID, nickname, email,
-						passwordBytes, new java.sql.Timestamp(System.currentTimeMillis()), ip);			
+				memberRegisterReqServerTask.doWork(TEST_DBCP_NAME, memberRegisterDecryptionReq);		
 			} catch (Exception e) {
 				log.warn("unknown error", e);
 				fail("fail to dsl a test ID");
@@ -78,14 +86,7 @@ public class MemberSearchReqServerTaskTest extends AbstractBoardTest {
 		
 		log.info(memberSearchReq.toString());
 		
-		MemberSearchReqServerTask memberManagerReqServerTask = null;
-		
-		try {
-			memberManagerReqServerTask = new MemberSearchReqServerTask();
-		} catch(DynamicClassCallException e) {
-			log.warn("회원 조회 실패", e);
-			fail("dead code, 회원 조회 실패");
-		}
+		MemberSearchReqServerTask memberManagerReqServerTask = new MemberSearchReqServerTask();
 		
 		MemberSearchRes memberSearchRes = null;
 		

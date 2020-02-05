@@ -11,8 +11,9 @@ import java.text.SimpleDateFormat;
 import org.junit.Test;
 
 import junitlib.AbstractBoardTest;
-import kr.pe.codda.common.exception.DynamicClassCallException;
 import kr.pe.codda.common.exception.ServerTaskException;
+import kr.pe.codda.impl.inner_message.MemberRegisterDecryptionReq;
+import kr.pe.codda.impl.inner_message.MemberWithdrawDecryptionReq;
 import kr.pe.codda.impl.message.MemberAllInformationReq.MemberAllInformationReq;
 import kr.pe.codda.impl.message.MemberAllInformationRes.MemberAllInformationRes;
 import kr.pe.codda.impl.message.MemberBlockReq.MemberBlockReq;
@@ -34,9 +35,21 @@ public class MemberIntegrationTest extends AbstractBoardTest {
 		String email = "test01@codda.pe.kr";
 		String ip = "127.0.0.3";
 		
+		MemberRegisterDecryptionReq memberRegisterDecryptionReq = new MemberRegisterDecryptionReq();
+		memberRegisterDecryptionReq.setMemberRoleType(MemberRoleType.MEMBER);
+		memberRegisterDecryptionReq.setUserID(userID);
+		memberRegisterDecryptionReq.setNickname(nickname);
+		memberRegisterDecryptionReq.setEmail(email);
+		memberRegisterDecryptionReq.setPasswordBytes(passwordBytes);
+		memberRegisterDecryptionReq.setRegisteredDate(new java.sql.Timestamp(System.currentTimeMillis()));
+		memberRegisterDecryptionReq.setIp(ip);
+		
+		MemberRegisterReqServerTask memberRegisterReqServerTask = new MemberRegisterReqServerTask();
+		
 		try {
-			ServerDBUtil.registerMember(TEST_DBCP_NAME, MemberRoleType.MEMBER, userID, nickname, 
-					email, passwordBytes, new java.sql.Timestamp(System.currentTimeMillis()), ip);
+			
+			memberRegisterReqServerTask.doWork(TEST_DBCP_NAME, memberRegisterDecryptionReq);
+			
 			fail("no ServerTaskException");
 		} catch (ServerTaskException e) {
 			String acutalErrorMessage = e.getMessage();
@@ -56,9 +69,9 @@ public class MemberIntegrationTest extends AbstractBoardTest {
 		String nickname = "단위테스터용아이디1";
 		String email = "test03@codda.pe.kr";
 		String ip = "127.0.0.3";
-		
+
 		try {
-			ServerDBUtil.execute(TEST_DBCP_NAME, (conn, dsl) -> {
+			ServerDBUtil.execute(TEST_DBCP_NAME, (dsl) -> {
 				
 				dsl.delete(SB_SITE_LOG_TB)
 				.execute();
@@ -70,16 +83,26 @@ public class MemberIntegrationTest extends AbstractBoardTest {
 				dsl.delete(SB_MEMBER_TB)
 				.where(SB_MEMBER_TB.USER_ID.eq(userID))
 				.execute();
-				
-				conn.commit();
 			});
 		} catch(Exception e) {
 			log.warn("unknwon error", e);
 			fail("'회원관련 차단및해제' 단위테스트를 위한 DB 환경 초기화 실패");
 		}
 		
+		
+		MemberRegisterDecryptionReq memberRegisterDecryptionReq = new MemberRegisterDecryptionReq();
+		memberRegisterDecryptionReq.setMemberRoleType(MemberRoleType.MEMBER);
+		memberRegisterDecryptionReq.setUserID(userID);
+		memberRegisterDecryptionReq.setNickname(nickname);
+		memberRegisterDecryptionReq.setEmail(email);
+		memberRegisterDecryptionReq.setPasswordBytes(passwordBytes);
+		memberRegisterDecryptionReq.setRegisteredDate(new java.sql.Timestamp(System.currentTimeMillis()));
+		memberRegisterDecryptionReq.setIp(ip);
+		
+		MemberRegisterReqServerTask memberRegisterReqServerTask = new MemberRegisterReqServerTask();
 		try {
-			ServerDBUtil.registerMember(TEST_DBCP_NAME, MemberRoleType.MEMBER, userID, nickname, email, passwordBytes, new java.sql.Timestamp(System.currentTimeMillis()), ip);
+			memberRegisterReqServerTask.doWork(TEST_DBCP_NAME, memberRegisterDecryptionReq);
+			
 			fail("no ServerTaskException");
 		} catch (ServerTaskException e) {
 			String acutalErrorMessage = e.getMessage();
@@ -101,7 +124,7 @@ public class MemberIntegrationTest extends AbstractBoardTest {
 		String ip = "127.0.0.3";
 		
 		try {
-			ServerDBUtil.execute(TEST_DBCP_NAME, (conn, dsl) -> {
+			ServerDBUtil.execute(TEST_DBCP_NAME, (dsl) -> {
 				
 				dsl.delete(SB_SITE_LOG_TB)
 				.execute();
@@ -113,28 +136,31 @@ public class MemberIntegrationTest extends AbstractBoardTest {
 				dsl.delete(SB_MEMBER_TB)
 				.where(SB_MEMBER_TB.USER_ID.eq(userID))
 				.execute();
-				
-				conn.commit();
 			});
 		} catch(Exception e) {
 			log.warn("unknwon error", e);
 			fail("'회원관련 차단및해제' 단위테스트를 위한 DB 환경 초기화 실패");
 		}
 		
+		
+		MemberRegisterDecryptionReq memberRegisterDecryptionReq = new MemberRegisterDecryptionReq();
+		memberRegisterDecryptionReq.setMemberRoleType(MemberRoleType.MEMBER);
+		memberRegisterDecryptionReq.setUserID(userID);
+		memberRegisterDecryptionReq.setNickname(nickname);
+		memberRegisterDecryptionReq.setEmail(email);
+		memberRegisterDecryptionReq.setPasswordBytes(passwordBytes);
+		memberRegisterDecryptionReq.setRegisteredDate(new java.sql.Timestamp(System.currentTimeMillis()));
+		memberRegisterDecryptionReq.setIp(ip);
+		
+		MemberRegisterReqServerTask memberRegisterReqServerTask = new MemberRegisterReqServerTask();
+		
 		try {
-			ServerDBUtil.registerMember(TEST_DBCP_NAME, MemberRoleType.MEMBER, userID, nickname, email, 
-					passwordBytes, new java.sql.Timestamp(System.currentTimeMillis()), ip);
+			memberRegisterReqServerTask.doWork(TEST_DBCP_NAME, memberRegisterDecryptionReq);
 		} catch (Exception e) {
 			fail("fail to dsl a test ID");
 		}		
 		
-		MemberAllInformationReqServerTask MemberAllInformationReqServerTask = null;
-		try {
-			MemberAllInformationReqServerTask = new MemberAllInformationReqServerTask();
-		} catch (DynamicClassCallException e1) {
-			log.warn("DynamicClassCallException", e1);
-			fail("dead code");
-		}
+		MemberAllInformationReqServerTask MemberAllInformationReqServerTask = new MemberAllInformationReqServerTask();
 		
 		MemberAllInformationReq memberAllInformationReq = new MemberAllInformationReq();
 		memberAllInformationReq.setRequestedUserID("test03");
@@ -178,7 +204,7 @@ public class MemberIntegrationTest extends AbstractBoardTest {
 		String ip = "127.0.0.3";
 		
 		try {
-			ServerDBUtil.execute(TEST_DBCP_NAME, (conn, dsl) -> {
+			ServerDBUtil.execute(TEST_DBCP_NAME, (dsl) -> {
 				
 				dsl.delete(SB_SITE_LOG_TB)
 				.execute();
@@ -190,29 +216,32 @@ public class MemberIntegrationTest extends AbstractBoardTest {
 				dsl.delete(SB_MEMBER_TB)
 				.where(SB_MEMBER_TB.USER_ID.eq(userID))
 				.execute();
-				
-				conn.commit();
 			});
 		} catch(Exception e) {
 			log.warn("unknwon error", e);
 			fail("'회원관련 차단및해제' 단위테스트를 위한 DB 환경 초기화 실패");
 		}
+		
+		MemberRegisterDecryptionReq memberRegisterDecryptionReq = new MemberRegisterDecryptionReq();
+		memberRegisterDecryptionReq.setMemberRoleType(MemberRoleType.ADMIN);
+		memberRegisterDecryptionReq.setUserID(userID);
+		memberRegisterDecryptionReq.setNickname(nickname);
+		memberRegisterDecryptionReq.setEmail(email);
+		memberRegisterDecryptionReq.setPasswordBytes(passwordBytes);
+		memberRegisterDecryptionReq.setRegisteredDate(new java.sql.Timestamp(System.currentTimeMillis()));
+		memberRegisterDecryptionReq.setIp(ip);
+		
+		MemberRegisterReqServerTask memberRegisterReqServerTask = new MemberRegisterReqServerTask();
 
 		try {
-			ServerDBUtil.registerMember(TEST_DBCP_NAME, MemberRoleType.ADMIN, userID, nickname, email, passwordBytes, 
-					new java.sql.Timestamp(System.currentTimeMillis()), ip);
+			
+			memberRegisterReqServerTask.doWork(TEST_DBCP_NAME, memberRegisterDecryptionReq);
 		} catch (Exception e) {
 			log.warn("unknown error", e);
 			fail("fail to dsl a test ID");
 		}
-		
-		
-		MemberAllInformationReqServerTask MemberAllInformationReqServerTask = null;
-		try {
-			MemberAllInformationReqServerTask = new MemberAllInformationReqServerTask();
-		} catch (DynamicClassCallException e1) {
-			fail("dead code");
-		}
+
+		MemberAllInformationReqServerTask MemberAllInformationReqServerTask = new MemberAllInformationReqServerTask();		
 		
 		MemberAllInformationReq memberAllInformationReq = new MemberAllInformationReq();
 		memberAllInformationReq.setRequestedUserID("test03");
@@ -254,12 +283,7 @@ public class MemberIntegrationTest extends AbstractBoardTest {
 		userBlockReq.setTargetUserID("test03");
 		userBlockReq.setIp("127.0.0.3");
 		
-		MemberBlockReqServerTask userBlockReqServerTask = null;
-		try {
-			userBlockReqServerTask = new MemberBlockReqServerTask();
-		} catch (DynamicClassCallException e1) {
-			fail("dead code");
-		}
+		MemberBlockReqServerTask userBlockReqServerTask = new MemberBlockReqServerTask();
 		
 		try {
 			userBlockReqServerTask.doWork(TEST_DBCP_NAME, userBlockReq);
@@ -282,12 +306,7 @@ public class MemberIntegrationTest extends AbstractBoardTest {
 		userBlockReq.setTargetUserID("test03");
 		userBlockReq.setIp("127.0.0.3");
 		
-		MemberBlockReqServerTask userBlockReqServerTask = null;
-		try {
-			userBlockReqServerTask = new MemberBlockReqServerTask();
-		} catch (DynamicClassCallException e1) {
-			fail("dead code");
-		}
+		MemberBlockReqServerTask userBlockReqServerTask = new MemberBlockReqServerTask();
 		
 		try {
 			userBlockReqServerTask.doWork(TEST_DBCP_NAME, userBlockReq);
@@ -311,12 +330,7 @@ public class MemberIntegrationTest extends AbstractBoardTest {
 		userBlockReq.setTargetUserID("testAA");
 		userBlockReq.setIp("127.0.0.3");
 		
-		MemberBlockReqServerTask userBlockReqServerTask = null;
-		try {
-			userBlockReqServerTask = new MemberBlockReqServerTask();
-		} catch (DynamicClassCallException e1) {
-			fail("dead code");
-		}
+		MemberBlockReqServerTask userBlockReqServerTask = new MemberBlockReqServerTask();
 		
 		try {
 			userBlockReqServerTask.doWork(TEST_DBCP_NAME, userBlockReq);
@@ -344,7 +358,7 @@ public class MemberIntegrationTest extends AbstractBoardTest {
 		String ip = "127.0.0.3";
 		
 		try {
-			ServerDBUtil.execute(TEST_DBCP_NAME, (conn, dsl) -> {
+			ServerDBUtil.execute(TEST_DBCP_NAME, (dsl) -> {
 				
 				dsl.delete(SB_SITE_LOG_TB)
 				.execute();
@@ -356,17 +370,25 @@ public class MemberIntegrationTest extends AbstractBoardTest {
 				dsl.delete(SB_MEMBER_TB)
 				.where(SB_MEMBER_TB.USER_ID.eq(userID))
 				.execute();
-				
-				conn.commit();
 			});
 		} catch(Exception e) {
 			log.warn("unknwon error", e);
 			fail("'회원관련 차단및해제' 단위테스트를 위한 DB 환경 초기화 실패");
 		}
 		
+		MemberRegisterDecryptionReq memberRegisterDecryptionReq = new MemberRegisterDecryptionReq();
+		memberRegisterDecryptionReq.setMemberRoleType(MemberRoleType.ADMIN);
+		memberRegisterDecryptionReq.setUserID(userID);
+		memberRegisterDecryptionReq.setNickname(nickname);
+		memberRegisterDecryptionReq.setEmail(email);
+		memberRegisterDecryptionReq.setPasswordBytes(passwordBytes);
+		memberRegisterDecryptionReq.setRegisteredDate(new java.sql.Timestamp(System.currentTimeMillis()));
+		memberRegisterDecryptionReq.setIp(ip);
+		
+		MemberRegisterReqServerTask memberRegisterReqServerTask = new MemberRegisterReqServerTask();
+		
 		try {
-			ServerDBUtil.registerMember(TEST_DBCP_NAME, MemberRoleType.ADMIN, userID, nickname, email, 
-					passwordBytes, new java.sql.Timestamp(System.currentTimeMillis()), ip);
+			memberRegisterReqServerTask.doWork(TEST_DBCP_NAME, memberRegisterDecryptionReq);
 		} catch (Exception e) {
 			log.warn("unknown error", e);
 			fail("fail to dsl a test ID");
@@ -377,13 +399,7 @@ public class MemberIntegrationTest extends AbstractBoardTest {
 		userBlockReq.setTargetUserID("test03");
 		userBlockReq.setIp(ip);
 		
-		MemberBlockReqServerTask userBlockReqServerTask = null;
-		try {
-			userBlockReqServerTask = new MemberBlockReqServerTask();
-		} catch (DynamicClassCallException e1) {
-			log.info("DynamicClassCallException", e1);
-			fail("dead code");
-		}
+		MemberBlockReqServerTask userBlockReqServerTask = new MemberBlockReqServerTask();
 		
 		try {
 			userBlockReqServerTask.doWork(TEST_DBCP_NAME, userBlockReq);
@@ -413,7 +429,7 @@ public class MemberIntegrationTest extends AbstractBoardTest {
 		String ip = "127.0.0.3";
 		
 		try {
-			ServerDBUtil.execute(TEST_DBCP_NAME, (conn, dsl) -> {
+			ServerDBUtil.execute(TEST_DBCP_NAME, (dsl) -> {
 				
 				dsl.delete(SB_SITE_LOG_TB)
 				.execute();
@@ -425,17 +441,26 @@ public class MemberIntegrationTest extends AbstractBoardTest {
 				dsl.delete(SB_MEMBER_TB)
 				.where(SB_MEMBER_TB.USER_ID.eq(userID))
 				.execute();
-				
-				conn.commit();
 			});
 		} catch(Exception e) {
 			log.warn("unknwon error", e);
 			fail("'회원관련 차단및해제' 단위테스트를 위한 DB 환경 초기화 실패");
 		}
 		
+		MemberRegisterDecryptionReq memberRegisterDecryptionReq = new MemberRegisterDecryptionReq();
+		memberRegisterDecryptionReq.setMemberRoleType(MemberRoleType.MEMBER);
+		memberRegisterDecryptionReq.setUserID(userID);
+		memberRegisterDecryptionReq.setNickname(nickname);
+		memberRegisterDecryptionReq.setEmail(email);
+		memberRegisterDecryptionReq.setPasswordBytes(passwordBytes);
+		memberRegisterDecryptionReq.setRegisteredDate(new java.sql.Timestamp(System.currentTimeMillis()));
+		memberRegisterDecryptionReq.setIp(ip);
+		
+		MemberRegisterReqServerTask memberRegisterReqServerTask = new MemberRegisterReqServerTask();
+		
 		try {
-			ServerDBUtil.registerMember(TEST_DBCP_NAME, MemberRoleType.MEMBER, userID, nickname, email, 
-					passwordBytes, new java.sql.Timestamp(System.currentTimeMillis()), ip);
+			
+			memberRegisterReqServerTask.doWork(TEST_DBCP_NAME, memberRegisterDecryptionReq);
 		} catch (Exception e) {
 			log.warn("unknown error", e);
 			fail("fail to dsl a test ID");
@@ -446,12 +471,7 @@ public class MemberIntegrationTest extends AbstractBoardTest {
 		userBlockReq.setTargetUserID("test03");
 		userBlockReq.setIp(ip);
 		
-		MemberBlockReqServerTask userBlockReqServerTask = null;
-		try {
-			userBlockReqServerTask = new MemberBlockReqServerTask();
-		} catch (DynamicClassCallException e1) {
-			fail("dead code");
-		}
+		MemberBlockReqServerTask userBlockReqServerTask = new MemberBlockReqServerTask();
 		
 		try {
 			userBlockReqServerTask.doWork(TEST_DBCP_NAME, userBlockReq);
@@ -464,12 +484,7 @@ public class MemberIntegrationTest extends AbstractBoardTest {
 		memberAllInformationReq.setRequestedUserID("admin");
 		memberAllInformationReq.setTargetUserID("test03");
 		
-		MemberAllInformationReqServerTask MemberAllInformationReqServerTask = null;
-		try {
-			MemberAllInformationReqServerTask = new MemberAllInformationReqServerTask();
-		} catch (DynamicClassCallException e1) {
-			fail("dead code");
-		}
+		MemberAllInformationReqServerTask MemberAllInformationReqServerTask = new MemberAllInformationReqServerTask();
 		
 		try {
 			MemberAllInformationRes userInformationRes = MemberAllInformationReqServerTask.doWork(TEST_DBCP_NAME, memberAllInformationReq);
@@ -531,7 +546,7 @@ public class MemberIntegrationTest extends AbstractBoardTest {
 		
 		
 		try {
-			ServerDBUtil.execute(TEST_DBCP_NAME, (conn, dsl) -> {
+			ServerDBUtil.execute(TEST_DBCP_NAME, (dsl) -> {
 				
 				dsl.delete(SB_SITE_LOG_TB)
 				.execute();
@@ -544,17 +559,25 @@ public class MemberIntegrationTest extends AbstractBoardTest {
 				dsl.delete(SB_MEMBER_TB)
 				.where(SB_MEMBER_TB.USER_ID.eq(userID))
 				.execute();
-				
-				conn.commit();
 			});
 		} catch(Exception e) {
 			log.warn("unknwon error", e);
 			fail("'회원관련 차단및해제' 단위테스트를 위한 DB 환경 초기화 실패");
 		}
+		
+		MemberRegisterDecryptionReq memberRegisterDecryptionReq = new MemberRegisterDecryptionReq();
+		memberRegisterDecryptionReq.setMemberRoleType(MemberRoleType.MEMBER);
+		memberRegisterDecryptionReq.setUserID(userID);
+		memberRegisterDecryptionReq.setNickname(nickname);
+		memberRegisterDecryptionReq.setEmail(email);
+		memberRegisterDecryptionReq.setPasswordBytes(passwordBytes);
+		memberRegisterDecryptionReq.setRegisteredDate(new java.sql.Timestamp(System.currentTimeMillis()));
+		memberRegisterDecryptionReq.setIp(ip);
+		
+		MemberRegisterReqServerTask memberRegisterReqServerTask = new MemberRegisterReqServerTask();
 				
 		try {
-			ServerDBUtil.registerMember(TEST_DBCP_NAME, MemberRoleType.MEMBER, userID, nickname, email, 
-					passwordBytes, new java.sql.Timestamp(System.currentTimeMillis()), ip);
+			memberRegisterReqServerTask.doWork(TEST_DBCP_NAME, memberRegisterDecryptionReq);
 		} catch (Exception e) {
 			log.warn("unknown error", e);
 			fail("fail to dsl a test ID");
@@ -565,12 +588,7 @@ public class MemberIntegrationTest extends AbstractBoardTest {
 		userBlockReq.setTargetUserID("test03");
 		userBlockReq.setIp(ip);
 		
-		MemberBlockReqServerTask userBlockReqServerTask = null;
-		try {
-			userBlockReqServerTask = new MemberBlockReqServerTask();
-		} catch (DynamicClassCallException e1) {
-			fail("dead code");
-		}
+		MemberBlockReqServerTask userBlockReqServerTask = new MemberBlockReqServerTask();
 		
 		try {
 			userBlockReqServerTask.doWork(TEST_DBCP_NAME, userBlockReq);		
@@ -583,12 +601,7 @@ public class MemberIntegrationTest extends AbstractBoardTest {
 		memberAllInformationReq.setRequestedUserID("admin");
 		memberAllInformationReq.setTargetUserID("test03");
 		
-		MemberAllInformationReqServerTask MemberAllInformationReqServerTask = null;
-		try {
-			MemberAllInformationReqServerTask = new MemberAllInformationReqServerTask();
-		} catch (DynamicClassCallException e1) {
-			fail("dead code");
-		}
+		MemberAllInformationReqServerTask MemberAllInformationReqServerTask = new MemberAllInformationReqServerTask();
 		
 		try {
 			MemberAllInformationRes userInformationRes = MemberAllInformationReqServerTask.doWork(TEST_DBCP_NAME, memberAllInformationReq);
@@ -617,12 +630,7 @@ public class MemberIntegrationTest extends AbstractBoardTest {
 		userUnBlockReq.setTargetUserID("test03");
 		userUnBlockReq.setIp("127.0.0.3");
 		
-		MemberUnBlockReqServerTask userUnBlockReqServerTask = null;
-		try {
-			userUnBlockReqServerTask = new MemberUnBlockReqServerTask();
-		} catch (DynamicClassCallException e1) {
-			fail("dead code");
-		}
+		MemberUnBlockReqServerTask userUnBlockReqServerTask = new MemberUnBlockReqServerTask();
 		
 		try {
 			userUnBlockReqServerTask.doWork(TEST_DBCP_NAME, userUnBlockReq);
@@ -645,12 +653,7 @@ public class MemberIntegrationTest extends AbstractBoardTest {
 		userUnBlockReq.setTargetUserID("test03");
 		userUnBlockReq.setIp("127.0.0.3");
 		
-		MemberUnBlockReqServerTask userUnBlockReqServerTask = null;
-		try {
-			userUnBlockReqServerTask = new MemberUnBlockReqServerTask();
-		} catch (DynamicClassCallException e1) {
-			fail("dead code");
-		}
+		MemberUnBlockReqServerTask userUnBlockReqServerTask = new MemberUnBlockReqServerTask();
 		
 		try {
 			userUnBlockReqServerTask.doWork(TEST_DBCP_NAME, userUnBlockReq);
@@ -673,12 +676,7 @@ public class MemberIntegrationTest extends AbstractBoardTest {
 		userUnBlockReq.setTargetUserID("testAA");
 		userUnBlockReq.setIp("127.0.0.3");
 		
-		MemberUnBlockReqServerTask userUnBlockReqServerTask = null;
-		try {
-			userUnBlockReqServerTask = new MemberUnBlockReqServerTask();
-		} catch (DynamicClassCallException e1) {
-			fail("dead code");
-		}
+		MemberUnBlockReqServerTask userUnBlockReqServerTask = new MemberUnBlockReqServerTask();
 		
 		try {
 			userUnBlockReqServerTask.doWork(TEST_DBCP_NAME, userUnBlockReq);
@@ -705,7 +703,7 @@ public class MemberIntegrationTest extends AbstractBoardTest {
 		String ip = "127.0.0.3";
 		
 		try {
-			ServerDBUtil.execute(TEST_DBCP_NAME, (conn, dsl) -> {
+			ServerDBUtil.execute(TEST_DBCP_NAME, (dsl) -> {
 				
 				dsl.delete(SB_SITE_LOG_TB)
 				.execute();
@@ -717,17 +715,26 @@ public class MemberIntegrationTest extends AbstractBoardTest {
 				dsl.delete(SB_MEMBER_TB)
 				.where(SB_MEMBER_TB.USER_ID.eq(userID))
 				.execute();
-				
-				conn.commit();
 			});
 		} catch(Exception e) {
 			log.warn("unknwon error", e);
 			fail("'회원관련 차단및해제' 단위테스트를 위한 DB 환경 초기화 실패");
 		}
+		
+		MemberRegisterDecryptionReq memberRegisterDecryptionReq = new MemberRegisterDecryptionReq();
+		memberRegisterDecryptionReq.setMemberRoleType(MemberRoleType.ADMIN);
+		memberRegisterDecryptionReq.setUserID(userID);
+		memberRegisterDecryptionReq.setNickname(nickname);
+		memberRegisterDecryptionReq.setEmail(email);
+		memberRegisterDecryptionReq.setPasswordBytes(passwordBytes);
+		memberRegisterDecryptionReq.setRegisteredDate(new java.sql.Timestamp(System.currentTimeMillis()));
+		memberRegisterDecryptionReq.setIp(ip);
+		
+		MemberRegisterReqServerTask memberRegisterReqServerTask = new MemberRegisterReqServerTask();
 	
 		try {
-			ServerDBUtil.registerMember(TEST_DBCP_NAME, MemberRoleType.ADMIN, userID, nickname, email, 
-					passwordBytes, new java.sql.Timestamp(System.currentTimeMillis()), ip);
+			
+			memberRegisterReqServerTask.doWork(TEST_DBCP_NAME, memberRegisterDecryptionReq);
 		} catch (Exception e) {
 			log.warn("unknown error", e);
 			fail("fail to dsl a test ID");
@@ -738,12 +745,7 @@ public class MemberIntegrationTest extends AbstractBoardTest {
 		userUnBlockReq.setTargetUserID(userID);
 		userUnBlockReq.setIp(ip);
 		
-		MemberUnBlockReqServerTask userUnBlockReqServerTask = null;
-		try {
-			userUnBlockReqServerTask = new MemberUnBlockReqServerTask();
-		} catch (DynamicClassCallException e1) {
-			fail("dead code");
-		}
+		MemberUnBlockReqServerTask userUnBlockReqServerTask = new MemberUnBlockReqServerTask();
 		
 		try {
 			userUnBlockReqServerTask.doWork(TEST_DBCP_NAME, userUnBlockReq);
@@ -772,7 +774,7 @@ public class MemberIntegrationTest extends AbstractBoardTest {
 		String ip = "127.0.0.3";
 		
 		try {
-			ServerDBUtil.execute(TEST_DBCP_NAME, (conn, dsl) -> {
+			ServerDBUtil.execute(TEST_DBCP_NAME, (dsl) -> {
 				
 				dsl.delete(SB_SITE_LOG_TB)
 				.execute();
@@ -785,17 +787,26 @@ public class MemberIntegrationTest extends AbstractBoardTest {
 				dsl.delete(SB_MEMBER_TB)
 				.where(SB_MEMBER_TB.USER_ID.eq(userID))
 				.execute();
-				
-				conn.commit();
 			});
 		} catch(Exception e) {
 			log.warn("unknwon error", e);
 			fail("'회원관련 차단및해제' 단위테스트를 위한 DB 환경 초기화 실패");
 		}
 		
+		MemberRegisterDecryptionReq memberRegisterDecryptionReq = new MemberRegisterDecryptionReq();
+		memberRegisterDecryptionReq.setMemberRoleType(MemberRoleType.MEMBER);
+		memberRegisterDecryptionReq.setUserID(userID);
+		memberRegisterDecryptionReq.setNickname(nickname);
+		memberRegisterDecryptionReq.setEmail(email);
+		memberRegisterDecryptionReq.setPasswordBytes(passwordBytes);
+		memberRegisterDecryptionReq.setRegisteredDate(new java.sql.Timestamp(System.currentTimeMillis()));
+		memberRegisterDecryptionReq.setIp(ip);
+		
+		MemberRegisterReqServerTask memberRegisterReqServerTask = new MemberRegisterReqServerTask();
+		
 		try {
-			ServerDBUtil.registerMember(TEST_DBCP_NAME, MemberRoleType.MEMBER, userID, nickname, email, 
-					passwordBytes, new java.sql.Timestamp(System.currentTimeMillis()), ip);
+			
+			memberRegisterReqServerTask.doWork(TEST_DBCP_NAME, memberRegisterDecryptionReq);
 		} catch (Exception e) {
 			log.warn("unknown error", e);
 			fail("fail to dsl a test ID");
@@ -806,12 +817,7 @@ public class MemberIntegrationTest extends AbstractBoardTest {
 		userUnBlockReq.setTargetUserID(userID);
 		userUnBlockReq.setIp(ip);
 		
-		MemberUnBlockReqServerTask userUnBlockReqServerTask = null;
-		try {
-			userUnBlockReqServerTask = new MemberUnBlockReqServerTask();
-		} catch (DynamicClassCallException e1) {
-			fail("dead code");
-		}
+		MemberUnBlockReqServerTask userUnBlockReqServerTask = new MemberUnBlockReqServerTask();
 		
 		try {
 			userUnBlockReqServerTask.doWork(TEST_DBCP_NAME, userUnBlockReq);
@@ -840,7 +846,7 @@ public class MemberIntegrationTest extends AbstractBoardTest {
 		String ip = "127.0.0.3";
 		
 		try {
-			ServerDBUtil.execute(TEST_DBCP_NAME, (conn, dsl) -> {
+			ServerDBUtil.execute(TEST_DBCP_NAME, (dsl) -> {
 				
 				dsl.delete(SB_SITE_LOG_TB)
 				.execute();
@@ -852,17 +858,25 @@ public class MemberIntegrationTest extends AbstractBoardTest {
 				dsl.delete(SB_MEMBER_TB)
 				.where(SB_MEMBER_TB.USER_ID.eq(userID))
 				.execute();
-				
-				conn.commit();
 			});
 		} catch(Exception e) {
 			log.warn("unknwon error", e);
 			fail("'회원관련 차단및해제' 단위테스트를 위한 DB 환경 초기화 실패");
 		}
 		
+		MemberRegisterDecryptionReq memberRegisterDecryptionReq = new MemberRegisterDecryptionReq();
+		memberRegisterDecryptionReq.setMemberRoleType(MemberRoleType.MEMBER);
+		memberRegisterDecryptionReq.setUserID(userID);
+		memberRegisterDecryptionReq.setNickname(nickname);
+		memberRegisterDecryptionReq.setEmail(email);
+		memberRegisterDecryptionReq.setPasswordBytes(passwordBytes);
+		memberRegisterDecryptionReq.setRegisteredDate(new java.sql.Timestamp(System.currentTimeMillis()));
+		memberRegisterDecryptionReq.setIp(ip);
+		
+		MemberRegisterReqServerTask memberRegisterReqServerTask = new MemberRegisterReqServerTask();
+		
 		try {
-			ServerDBUtil.registerMember(TEST_DBCP_NAME, MemberRoleType.MEMBER, userID, nickname, email, 
-					passwordBytes, new java.sql.Timestamp(System.currentTimeMillis()), ip);
+			memberRegisterReqServerTask.doWork(TEST_DBCP_NAME, memberRegisterDecryptionReq);
 		} catch (Exception e) {
 			log.warn("unknown error", e);
 			fail("fail to dsl a test ID");
@@ -873,12 +887,8 @@ public class MemberIntegrationTest extends AbstractBoardTest {
 		userBlockReq.setTargetUserID(userID);
 		userBlockReq.setIp(ip);
 		
-		MemberBlockReqServerTask userBlockReqServerTask = null;
-		try {
-			userBlockReqServerTask = new MemberBlockReqServerTask();
-		} catch (DynamicClassCallException e2) {
-			fail("dead code");
-		}		
+		MemberBlockReqServerTask userBlockReqServerTask = new MemberBlockReqServerTask();
+				
 		try {
 			userBlockReqServerTask.doWork(TEST_DBCP_NAME, userBlockReq);
 		} catch (Exception e)  {
@@ -890,12 +900,7 @@ public class MemberIntegrationTest extends AbstractBoardTest {
 		memberAllInformationReq.setRequestedUserID("admin");
 		memberAllInformationReq.setTargetUserID(userID);
 		
-		MemberAllInformationReqServerTask MemberAllInformationReqServerTask = null;
-		try {
-			MemberAllInformationReqServerTask = new MemberAllInformationReqServerTask();
-		} catch (DynamicClassCallException e1) {
-			fail("dead code");
-		}
+		MemberAllInformationReqServerTask MemberAllInformationReqServerTask = new MemberAllInformationReqServerTask();		
 		
 		try {
 			MemberAllInformationRes userInformationRes = MemberAllInformationReqServerTask.doWork(TEST_DBCP_NAME, memberAllInformationReq);
@@ -912,12 +917,7 @@ public class MemberIntegrationTest extends AbstractBoardTest {
 		userUnBlockReq.setTargetUserID(userID);
 		userUnBlockReq.setIp(ip);
 		
-		MemberUnBlockReqServerTask userUnBlockReqServerTask = null;
-		try {
-			userUnBlockReqServerTask = new MemberUnBlockReqServerTask();
-		} catch (DynamicClassCallException e1) {
-			fail("dead code");
-		}
+		MemberUnBlockReqServerTask userUnBlockReqServerTask = new MemberUnBlockReqServerTask();
 		
 		try {
 			userUnBlockReqServerTask.doWork(TEST_DBCP_NAME, userUnBlockReq);
@@ -943,11 +943,15 @@ public class MemberIntegrationTest extends AbstractBoardTest {
 		byte[] passwordBytes = {(byte)'t', (byte)'e', (byte)'s', (byte)'t', (byte)'1', (byte)'2', (byte)'3', (byte)'4', (byte)'$'};
 		String ip = "127.0.0.4";
 		
+		MemberWithdrawDecryptionReq memberWithdrawDecryptionReq = new MemberWithdrawDecryptionReq();
+		memberWithdrawDecryptionReq.setRequestedUserID(requestedUserID);
+		memberWithdrawDecryptionReq.setIp(ip);
+		memberWithdrawDecryptionReq.setPasswordBytes(passwordBytes);
+		
 		try {
 			MemberWithdrawReqServerTask memberWithdrawReqServerTask = new MemberWithdrawReqServerTask();
 			
-			memberWithdrawReqServerTask.withdrawMember(TEST_DBCP_NAME, log, requestedUserID, passwordBytes, 
-					new java.sql.Timestamp(System.currentTimeMillis()), ip);
+			memberWithdrawReqServerTask.doWork(TEST_DBCP_NAME, memberWithdrawDecryptionReq);
 			
 			fail("no ServerTaskException");
 		} catch (ServerTaskException e) {
@@ -969,11 +973,15 @@ public class MemberIntegrationTest extends AbstractBoardTest {
 		byte[] passwordBytes = {(byte)'t', (byte)'e', (byte)'s', (byte)'t', (byte)'1', (byte)'2', (byte)'3', (byte)'4', (byte)'$'};
 		String ip = "127.0.0.4";
 		
+		MemberWithdrawDecryptionReq memberWithdrawDecryptionReq = new MemberWithdrawDecryptionReq();
+		memberWithdrawDecryptionReq.setRequestedUserID(requestedUserID);
+		memberWithdrawDecryptionReq.setIp(ip);
+		memberWithdrawDecryptionReq.setPasswordBytes(passwordBytes);
+		
 		try {
 			MemberWithdrawReqServerTask memberWithdrawReqServerTask = new MemberWithdrawReqServerTask();
 			
-			memberWithdrawReqServerTask.withdrawMember(TEST_DBCP_NAME, log, requestedUserID, passwordBytes, 
-					new java.sql.Timestamp(System.currentTimeMillis()), ip);
+			memberWithdrawReqServerTask.doWork(TEST_DBCP_NAME, memberWithdrawDecryptionReq);
 			
 			fail("no ServerTaskException");
 		} catch (ServerTaskException e) {
@@ -996,7 +1004,7 @@ public class MemberIntegrationTest extends AbstractBoardTest {
 		String ip = "127.0.0.3";
 		
 		try {
-			ServerDBUtil.execute(TEST_DBCP_NAME, (conn, dsl) -> {
+			ServerDBUtil.execute(TEST_DBCP_NAME, (dsl) -> {
 				
 				dsl.delete(SB_SITE_LOG_TB)
 				.execute();
@@ -1008,17 +1016,27 @@ public class MemberIntegrationTest extends AbstractBoardTest {
 				dsl.delete(SB_MEMBER_TB)
 				.where(SB_MEMBER_TB.USER_ID.eq(userID))
 				.execute();
-				
-				conn.commit();
 			});
 		} catch(Exception e) {
 			log.warn("unknwon error", e);
 			fail("'회원관련 차단및해제' 단위테스트를 위한 DB 환경 초기화 실패");
 		}
 		
+		MemberRegisterDecryptionReq memberRegisterDecryptionReq = new MemberRegisterDecryptionReq();
+		memberRegisterDecryptionReq.setMemberRoleType(MemberRoleType.MEMBER);
+		memberRegisterDecryptionReq.setUserID(userID);
+		memberRegisterDecryptionReq.setNickname(nickname);
+		memberRegisterDecryptionReq.setEmail(email);
+		memberRegisterDecryptionReq.setPasswordBytes(passwordBytes);
+		memberRegisterDecryptionReq.setRegisteredDate(new java.sql.Timestamp(System.currentTimeMillis()));
+		memberRegisterDecryptionReq.setIp(ip);
+		
+		MemberRegisterReqServerTask memberRegisterReqServerTask = new MemberRegisterReqServerTask();
+		
+		
 		try {
-			ServerDBUtil.registerMember(TEST_DBCP_NAME, MemberRoleType.MEMBER, userID, nickname, email, 
-					passwordBytes, new java.sql.Timestamp(System.currentTimeMillis()), ip);
+			
+			memberRegisterReqServerTask.doWork(TEST_DBCP_NAME, memberRegisterDecryptionReq);
 		} catch (Exception e) {
 			log.warn("unknown error", e);
 			fail("fail to dsl a test ID");
@@ -1029,12 +1047,8 @@ public class MemberIntegrationTest extends AbstractBoardTest {
 		userBlockReq.setTargetUserID(userID);
 		userBlockReq.setIp(ip);
 		
-		MemberBlockReqServerTask userBlockReqServerTask = null;
-		try {
-			userBlockReqServerTask = new MemberBlockReqServerTask();
-		} catch (DynamicClassCallException e2) {
-			fail("dead code");
-		}		
+		MemberBlockReqServerTask userBlockReqServerTask = new MemberBlockReqServerTask();
+
 		try {
 			userBlockReqServerTask.doWork(TEST_DBCP_NAME, userBlockReq);
 		} catch (Exception e)  {
@@ -1044,11 +1058,15 @@ public class MemberIntegrationTest extends AbstractBoardTest {
 		
 		passwordBytes = new byte[]{(byte)'t', (byte)'e', (byte)'s', (byte)'t', (byte)'1', (byte)'2', (byte)'3', (byte)'4', (byte)'$'};
 		
+		MemberWithdrawDecryptionReq memberWithdrawDecryptionReq = new MemberWithdrawDecryptionReq();
+		memberWithdrawDecryptionReq.setRequestedUserID(userID);
+		memberWithdrawDecryptionReq.setIp(ip);
+		memberWithdrawDecryptionReq.setPasswordBytes(passwordBytes);
+		
 		try {
 			MemberWithdrawReqServerTask memberWithdrawReqServerTask = new MemberWithdrawReqServerTask();
 			
-			memberWithdrawReqServerTask.withdrawMember(TEST_DBCP_NAME, log, userID, passwordBytes, 
-					new java.sql.Timestamp(System.currentTimeMillis()), ip);
+			memberWithdrawReqServerTask.doWork(TEST_DBCP_NAME, memberWithdrawDecryptionReq);
 			
 			fail("no ServerTaskException");
 		} catch (ServerTaskException e) {
@@ -1075,7 +1093,7 @@ public class MemberIntegrationTest extends AbstractBoardTest {
 		String ip = "127.0.0.3";
 		
 		try {
-			ServerDBUtil.execute(TEST_DBCP_NAME, (conn, dsl) -> {
+			ServerDBUtil.execute(TEST_DBCP_NAME, (dsl) -> {
 				
 				dsl.delete(SB_SITE_LOG_TB)
 				.execute();
@@ -1087,17 +1105,26 @@ public class MemberIntegrationTest extends AbstractBoardTest {
 				dsl.delete(SB_MEMBER_TB)
 				.where(SB_MEMBER_TB.USER_ID.eq(userID))
 				.execute();
-				
-				conn.commit();
 			});
 		} catch(Exception e) {
 			log.warn("unknwon error", e);
 			fail("'회원관련 차단및해제' 단위테스트를 위한 DB 환경 초기화 실패");
 		}
 		
+		MemberRegisterDecryptionReq memberRegisterDecryptionReq = new MemberRegisterDecryptionReq();
+		memberRegisterDecryptionReq.setMemberRoleType(MemberRoleType.MEMBER);
+		memberRegisterDecryptionReq.setUserID(userID);
+		memberRegisterDecryptionReq.setNickname(nickname);
+		memberRegisterDecryptionReq.setEmail(email);
+		memberRegisterDecryptionReq.setPasswordBytes(passwordBytes);
+		memberRegisterDecryptionReq.setRegisteredDate(new java.sql.Timestamp(System.currentTimeMillis()));
+		memberRegisterDecryptionReq.setIp(ip);
+		
+		MemberRegisterReqServerTask memberRegisterReqServerTask = new MemberRegisterReqServerTask();
+		
 		try {
-			ServerDBUtil.registerMember(TEST_DBCP_NAME, MemberRoleType.MEMBER, userID, nickname, email, 
-					passwordBytes, new java.sql.Timestamp(System.currentTimeMillis()), ip);
+			
+			memberRegisterReqServerTask.doWork(TEST_DBCP_NAME, memberRegisterDecryptionReq);
 		} catch (Exception e) {
 			log.warn("unknown error", e);
 			fail("fail to dsl a test ID");
@@ -1107,11 +1134,15 @@ public class MemberIntegrationTest extends AbstractBoardTest {
 		/** 회원 가입시 비밀번호 초기화가 이루어 지므로 값을 복구해 준다 */
 		passwordBytes = new byte[]{(byte)'t', (byte)'e', (byte)'s', (byte)'t', (byte)'1', (byte)'2', (byte)'3', (byte)'4', (byte)'$'};
 		
+		MemberWithdrawDecryptionReq memberWithdrawDecryptionReq = new MemberWithdrawDecryptionReq();
+		memberWithdrawDecryptionReq.setRequestedUserID(userID);
+		memberWithdrawDecryptionReq.setIp(ip);
+		memberWithdrawDecryptionReq.setPasswordBytes(passwordBytes);
+		
 		try {
 			MemberWithdrawReqServerTask memberWithdrawReqServerTask = new MemberWithdrawReqServerTask();
 			
-			memberWithdrawReqServerTask.withdrawMember(TEST_DBCP_NAME, log, userID, passwordBytes, 
-					new java.sql.Timestamp(System.currentTimeMillis()), ip);		
+			memberWithdrawReqServerTask.doWork(TEST_DBCP_NAME, memberWithdrawDecryptionReq);	
 		} catch (Exception e)  {
 			log.warn("unknown error", e);
 			fail("회원 탈퇴 실패::errmsg="+e.getMessage());
@@ -1121,12 +1152,7 @@ public class MemberIntegrationTest extends AbstractBoardTest {
 		memberAllInformationReq.setRequestedUserID("admin");
 		memberAllInformationReq.setTargetUserID(userID);
 		
-		MemberAllInformationReqServerTask MemberAllInformationReqServerTask = null;
-		try {
-			MemberAllInformationReqServerTask = new MemberAllInformationReqServerTask();
-		} catch (DynamicClassCallException e1) {
-			fail("dead code");
-		}
+		MemberAllInformationReqServerTask MemberAllInformationReqServerTask = new MemberAllInformationReqServerTask();
 		
 		try {
 			MemberAllInformationRes userInformationRes = MemberAllInformationReqServerTask.doWork(TEST_DBCP_NAME, memberAllInformationReq);

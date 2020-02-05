@@ -9,7 +9,7 @@ import kr.pe.codda.server.lib.AccountSearchType;
  * @author Won Jonghoon
  *
  */
-public class AccountSearchProcessInnerReq {
+public class AccountSearchProcessDecryptionReq {
 	private AccountSearchType accountSearchType;
 	private String email;
 	private String secretAuthenticationValue;

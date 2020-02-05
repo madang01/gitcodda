@@ -10,7 +10,6 @@ import org.jooq.types.UInteger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import kr.pe.codda.common.exception.DynamicClassCallException;
 import kr.pe.codda.common.exception.ServerTaskException;
 import kr.pe.codda.common.message.AbstractMessage;
 import kr.pe.codda.impl.message.BoardDownloadFileReq.BoardDownloadFileReq;
@@ -30,10 +29,6 @@ import kr.pe.codda.server.task.ToLetterCarrier;
 public class BoardDownloadFileReqServerTask extends AbstractServerTask
 		implements DBAutoCommitTaskIF<BoardDownloadFileReq, BoardDownloadFileRes> {
 	private Logger log = LoggerFactory.getLogger(AccountSearchProcessReqServerTask.class);
-
-	public BoardDownloadFileReqServerTask() throws DynamicClassCallException {
-		super();
-	}
 
 	@Override
 	public void doTask(String projectName, LoginManagerIF personalLoginManager, ToLetterCarrier toLetterCarrier,

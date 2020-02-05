@@ -20,7 +20,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import kr.pe.codda.common.etc.CommonStaticFinalVars;
-import kr.pe.codda.common.exception.DynamicClassCallException;
 import kr.pe.codda.common.exception.ServerTaskException;
 import kr.pe.codda.common.message.AbstractMessage;
 import kr.pe.codda.impl.message.BoardReplyReq.BoardReplyReq;
@@ -45,10 +44,6 @@ public class BoardReplyReqServerTask extends AbstractServerTask
 		implements DBAutoCommitTaskIF<BoardReplyReq, BoardReplyRes> {
 	private Logger log = LoggerFactory.getLogger(AccountSearchProcessReqServerTask.class);
 
-	public BoardReplyReqServerTask() throws DynamicClassCallException {
-		super();
-	}
-
 	@Override
 	public void doTask(String projectName, LoginManagerIF personalLoginManager, ToLetterCarrier toLetterCarrier,
 			AbstractMessage inputMessage) throws Exception {
@@ -56,6 +51,14 @@ public class BoardReplyReqServerTask extends AbstractServerTask
 		AbstractMessage outputMessage = ServerDBUtil.execute(
 				ServerCommonStaticFinalVars.DEFAULT_DBCP_NAME, this, (BoardReplyReq) inputMessage);
 		toLetterCarrier.addSyncOutputMessage(outputMessage);
+	}
+	
+	public BoardReplyRes doWork(String dbcpName, final BoardReplyReq boardReplyReq) throws Exception {
+		BoardReplyRes outputMessage = ServerDBUtil.execute(
+				dbcpName, this, boardReplyReq);
+		
+		return outputMessage;
+		
 	}
 
 	@Override

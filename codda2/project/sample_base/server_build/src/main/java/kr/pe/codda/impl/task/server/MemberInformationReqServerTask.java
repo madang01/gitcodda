@@ -9,7 +9,6 @@ import org.jooq.Record9;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import kr.pe.codda.common.exception.DynamicClassCallException;
 import kr.pe.codda.common.message.AbstractMessage;
 import kr.pe.codda.impl.message.MemberInformationReq.MemberInformationReq;
 import kr.pe.codda.impl.message.MemberInformationRes.MemberInformationRes;
@@ -35,10 +34,7 @@ public class MemberInformationReqServerTask extends AbstractServerTask
 		implements DBAutoCommitTaskIF<MemberInformationReq, MemberInformationRes> {
 	private Logger log = LoggerFactory.getLogger(AccountSearchProcessReqServerTask.class);
 
-	public MemberInformationReqServerTask() throws DynamicClassCallException {
-		super();
-	}
-
+	
 	@Override
 	public void doTask(String projectName, LoginManagerIF personalLoginManager, ToLetterCarrier toLetterCarrier,
 			AbstractMessage inputMessage) throws Exception {

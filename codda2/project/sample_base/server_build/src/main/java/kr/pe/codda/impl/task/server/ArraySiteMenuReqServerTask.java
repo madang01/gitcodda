@@ -13,7 +13,6 @@ import org.jooq.types.UInteger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import kr.pe.codda.common.exception.DynamicClassCallException;
 import kr.pe.codda.common.message.AbstractMessage;
 import kr.pe.codda.impl.message.ArraySiteMenuReq.ArraySiteMenuReq;
 import kr.pe.codda.impl.message.ArraySiteMenuRes.ArraySiteMenuRes;
@@ -32,9 +31,6 @@ public class ArraySiteMenuReqServerTask extends AbstractServerTask
 	private Logger log = LoggerFactory.getLogger(AccountSearchProcessReqServerTask.class);
 	// final UInteger rootParnetNo = UInteger.valueOf(0);
 
-	public ArraySiteMenuReqServerTask() throws DynamicClassCallException {
-		super();
-	}
 
 	@Override
 	public void doTask(String projectName, LoginManagerIF personalLoginManager, ToLetterCarrier toLetterCarrier,

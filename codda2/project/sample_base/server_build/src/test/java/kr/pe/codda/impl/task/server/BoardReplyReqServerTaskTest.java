@@ -16,7 +16,6 @@ import org.junit.Test;
 
 import junitlib.AbstractBoardTest;
 import kr.pe.codda.common.etc.CommonStaticFinalVars;
-import kr.pe.codda.common.exception.DynamicClassCallException;
 import kr.pe.codda.common.exception.ServerTaskException;
 import kr.pe.codda.common.util.CommonStaticUtil;
 import kr.pe.codda.impl.message.BoardDetailReq.BoardDetailReq;
@@ -78,12 +77,7 @@ public class BoardReplyReqServerTaskTest extends AbstractBoardTest {
 			boardReplyReq.setNewAttachedFileList(newAttachedFileList);
 		}
 	
-		BoardReplyReqServerTask boardReplyReqServerTask = null;
-		try {
-			boardReplyReqServerTask = new BoardReplyReqServerTask();
-		} catch (DynamicClassCallException e1) {
-			fail("dead code");
-		}
+		BoardReplyReqServerTask boardReplyReqServerTask = new BoardReplyReqServerTask();
 	
 		try {
 			boardReplyReqServerTask.doWork(TEST_DBCP_NAME, boardReplyReq);
@@ -109,12 +103,7 @@ public class BoardReplyReqServerTaskTest extends AbstractBoardTest {
 		String requestedUserIDForAdmin = "admin";
 		String requestedUserIDForMember = "test01";
 		
-		BoardInfoAddReqServerTask boardInfoAddReqServerTask = null;
-		try {
-			boardInfoAddReqServerTask = new BoardInfoAddReqServerTask();
-		} catch (DynamicClassCallException e) {
-			fail("dead code");
-		}
+		BoardInfoAddReqServerTask boardInfoAddReqServerTask = new BoardInfoAddReqServerTask();
 		
 		BoardInfoAddReq boardInfoAddReq = new BoardInfoAddReq();
 		boardInfoAddReq.setRequestedUserID(requestedUserIDForAdmin);
@@ -135,14 +124,11 @@ public class BoardReplyReqServerTaskTest extends AbstractBoardTest {
 		
 		final UByte boardID = UByte.valueOf(boardInfoAddRes.getBoardID());
 		
-		try {
-			
-			ServerDBUtil.execute(TEST_DBCP_NAME, (conn, dsl) -> {
+		try {			
+			ServerDBUtil.execute(TEST_DBCP_NAME, (dsl) -> {
 				dsl.update(SB_BOARD_INFO_TB).set(SB_BOARD_INFO_TB.NEXT_BOARD_NO, UInteger.valueOf(CommonStaticFinalVars.UNSIGNED_INTEGER_MAX))
 				.where(SB_BOARD_INFO_TB.BOARD_ID.eq(boardID))
 				.execute();	
-				
-				conn.commit();
 			});			
 		} catch(Exception e) {
 			log.warn(e.getMessage(), e);
@@ -165,12 +151,7 @@ public class BoardReplyReqServerTaskTest extends AbstractBoardTest {
 			boardReplyReq.setNewAttachedFileList(newAttachedFileList);
 		}
 
-		BoardReplyReqServerTask boardReplyReqServerTask = null;
-		try {
-			boardReplyReqServerTask = new BoardReplyReqServerTask();
-		} catch (DynamicClassCallException e1) {
-			fail("dead code");
-		}
+		BoardReplyReqServerTask boardReplyReqServerTask = new BoardReplyReqServerTask();
 
 		try {
 			boardReplyReqServerTask.doWork(TEST_DBCP_NAME, boardReplyReq);
@@ -194,12 +175,7 @@ public class BoardReplyReqServerTaskTest extends AbstractBoardTest {
 		String requestedUserIDForAdmin = "admin";
 		String requestedUserIDForMember = "test01";
 		
-		BoardInfoAddReqServerTask boardInfoAddReqServerTask = null;
-		try {
-			boardInfoAddReqServerTask = new BoardInfoAddReqServerTask();
-		} catch (DynamicClassCallException e) {
-			fail("dead code");
-		}
+		BoardInfoAddReqServerTask boardInfoAddReqServerTask = new BoardInfoAddReqServerTask();
 		
 		BoardInfoAddReq boardInfoAddReq = new BoardInfoAddReq();
 		boardInfoAddReq.setRequestedUserID(requestedUserIDForAdmin);
@@ -233,12 +209,7 @@ public class BoardReplyReqServerTaskTest extends AbstractBoardTest {
 			boardReplyReq.setNewAttachedFileList(newAttachedFileList);
 		}
 
-		BoardReplyReqServerTask boardReplyReqServerTask = null;
-		try {
-			boardReplyReqServerTask = new BoardReplyReqServerTask();
-		} catch (DynamicClassCallException e1) {
-			fail("dead code");
-		}
+		BoardReplyReqServerTask boardReplyReqServerTask = new BoardReplyReqServerTask();
 
 		try {
 			boardReplyReqServerTask.doWork(TEST_DBCP_NAME, boardReplyReq);
@@ -263,12 +234,7 @@ public class BoardReplyReqServerTaskTest extends AbstractBoardTest {
 		String requestedUserIDForAdmin = "admin";
 		String requestedUserIDForMember = "test01";
 		
-		BoardInfoAddReqServerTask boardInfoAddReqServerTask = null;
-		try {
-			boardInfoAddReqServerTask = new BoardInfoAddReqServerTask();
-		} catch (DynamicClassCallException e) {
-			fail("dead code");
-		}
+		BoardInfoAddReqServerTask boardInfoAddReqServerTask = new BoardInfoAddReqServerTask();
 		
 		BoardInfoAddReq boardInfoAddReq = new BoardInfoAddReq();
 		boardInfoAddReq.setRequestedUserID(requestedUserIDForAdmin);
@@ -302,12 +268,7 @@ public class BoardReplyReqServerTaskTest extends AbstractBoardTest {
 			boardReplyReq.setNewAttachedFileList(newAttachedFileList);
 		}
 
-		BoardReplyReqServerTask boardReplyReqServerTask = null;
-		try {
-			boardReplyReqServerTask = new BoardReplyReqServerTask();
-		} catch (DynamicClassCallException e1) {
-			fail("dead code");
-		}
+		BoardReplyReqServerTask boardReplyReqServerTask = new BoardReplyReqServerTask();
 
 		try {
 			boardReplyReqServerTask.doWork(TEST_DBCP_NAME, boardReplyReq);
@@ -330,12 +291,7 @@ public class BoardReplyReqServerTaskTest extends AbstractBoardTest {
 		String requestedUserIDForAdmin = "admin";
 		String requestedUserIDForGuest = "guest";
 		
-		BoardInfoAddReqServerTask boardInfoAddReqServerTask = null;
-		try {
-			boardInfoAddReqServerTask = new BoardInfoAddReqServerTask();
-		} catch (DynamicClassCallException e) {
-			fail("dead code");
-		}
+		BoardInfoAddReqServerTask boardInfoAddReqServerTask = new BoardInfoAddReqServerTask();
 		
 		BoardInfoAddReq boardInfoAddReq = new BoardInfoAddReq();
 		boardInfoAddReq.setRequestedUserID(requestedUserIDForAdmin);
@@ -370,12 +326,7 @@ public class BoardReplyReqServerTaskTest extends AbstractBoardTest {
 			boardReplyReq.setNewAttachedFileList(newAttachedFileList);
 		}
 
-		BoardReplyReqServerTask boardReplyReqServerTask = null;
-		try {
-			boardReplyReqServerTask = new BoardReplyReqServerTask();
-		} catch (DynamicClassCallException e1) {
-			fail("dead code");
-		}
+		BoardReplyReqServerTask boardReplyReqServerTask = new BoardReplyReqServerTask();
 
 		try {
 			boardReplyReqServerTask.doWork(TEST_DBCP_NAME, boardReplyReq);
@@ -398,12 +349,7 @@ public class BoardReplyReqServerTaskTest extends AbstractBoardTest {
 		String requestedUserIDForAdmin = "admin";
 		String requestedUserIDForGuest = "guest";
 		
-		BoardInfoAddReqServerTask boardInfoAddReqServerTask = null;
-		try {
-			boardInfoAddReqServerTask = new BoardInfoAddReqServerTask();
-		} catch (DynamicClassCallException e) {
-			fail("dead code");
-		}
+		BoardInfoAddReqServerTask boardInfoAddReqServerTask = new BoardInfoAddReqServerTask();
 		
 		BoardInfoAddReq boardInfoAddReq = new BoardInfoAddReq();
 		boardInfoAddReq.setRequestedUserID(requestedUserIDForAdmin);
@@ -437,12 +383,7 @@ public class BoardReplyReqServerTaskTest extends AbstractBoardTest {
 			boardReplyReq.setNewAttachedFileList(newAttachedFileList);
 		}
 
-		BoardReplyReqServerTask boardReplyReqServerTask = null;
-		try {
-			boardReplyReqServerTask = new BoardReplyReqServerTask();
-		} catch (DynamicClassCallException e1) {
-			fail("dead code");
-		}
+		BoardReplyReqServerTask boardReplyReqServerTask = new BoardReplyReqServerTask();
 
 		try {
 			boardReplyReqServerTask.doWork(TEST_DBCP_NAME, boardReplyReq);
@@ -466,12 +407,7 @@ public class BoardReplyReqServerTaskTest extends AbstractBoardTest {
 		String requestedUserIDForAdmin = "admin";
 		String requestedUserIDForMember = "test01";
 		
-		BoardInfoAddReqServerTask boardInfoAddReqServerTask = null;
-		try {
-			boardInfoAddReqServerTask = new BoardInfoAddReqServerTask();
-		} catch (DynamicClassCallException e) {
-			fail("dead code");
-		}
+		BoardInfoAddReqServerTask boardInfoAddReqServerTask = new BoardInfoAddReqServerTask();
 		
 		BoardInfoAddReq boardInfoAddReq = new BoardInfoAddReq();
 		boardInfoAddReq.setRequestedUserID(requestedUserIDForAdmin);
@@ -505,12 +441,7 @@ public class BoardReplyReqServerTaskTest extends AbstractBoardTest {
 			boardReplyReq.setNewAttachedFileList(newAttachedFileList);
 		}
 
-		BoardReplyReqServerTask boardReplyReqServerTask = null;
-		try {
-			boardReplyReqServerTask = new BoardReplyReqServerTask();
-		} catch (DynamicClassCallException e1) {
-			fail("dead code");
-		}
+		BoardReplyReqServerTask boardReplyReqServerTask = new BoardReplyReqServerTask();
 
 		try {
 			boardReplyReqServerTask.doWork(TEST_DBCP_NAME, boardReplyReq);
@@ -534,12 +465,7 @@ public class BoardReplyReqServerTaskTest extends AbstractBoardTest {
 		String requestedUserIDForMember = "test01";
 		
 		
-		BoardInfoAddReqServerTask boardInfoAddReqServerTask = null;
-		try {
-			boardInfoAddReqServerTask = new BoardInfoAddReqServerTask();
-		} catch (DynamicClassCallException e) {
-			fail("dead code");
-		}
+		BoardInfoAddReqServerTask boardInfoAddReqServerTask = new BoardInfoAddReqServerTask();
 		
 		BoardInfoAddReq boardInfoAddReq = new BoardInfoAddReq();
 		boardInfoAddReq.setRequestedUserID(requestedUserIDForAdmin);
@@ -579,12 +505,7 @@ public class BoardReplyReqServerTaskTest extends AbstractBoardTest {
 				.setNewAttachedFileCnt((short) attachedFileList.size());
 		boardWriteReq.setNewAttachedFileList(attachedFileList);
 
-		BoardWriteReqServerTask boardWriteReqServerTask = null;
-		try {
-			boardWriteReqServerTask = new BoardWriteReqServerTask();
-		} catch (DynamicClassCallException e1) {
-			fail("dead code");
-		}
+		BoardWriteReqServerTask boardWriteReqServerTask = new BoardWriteReqServerTask();
 		
 		BoardWriteRes boardWriteRes = null;
 		try {
@@ -613,12 +534,7 @@ public class BoardReplyReqServerTaskTest extends AbstractBoardTest {
 			boardReplyReq.setNewAttachedFileList(newAttachedFileList);
 		}
 
-		BoardReplyReqServerTask boardReplyReqServerTask = null;
-		try {
-			boardReplyReqServerTask = new BoardReplyReqServerTask();
-		} catch (DynamicClassCallException e1) {
-			fail("dead code");
-		}
+		BoardReplyReqServerTask boardReplyReqServerTask = new BoardReplyReqServerTask();
 		
 		BoardReplyRes boardReplyRes = null;
 
@@ -636,12 +552,8 @@ public class BoardReplyReqServerTaskTest extends AbstractBoardTest {
 		boardDetailReq.setBoardNo(boardReplyRes.getBoardNo());
 		
 
-		BoardDetailReqServerTask boardDetailReqServerTask = null;
-		try {
-			boardDetailReqServerTask = new BoardDetailReqServerTask();
-		} catch (DynamicClassCallException e1) {
-			fail("dead code");
-		}
+		BoardDetailReqServerTask boardDetailReqServerTask = new BoardDetailReqServerTask();
+
 		try {
 			BoardDetailRes boardDetailRes = boardDetailReqServerTask.doWork(
 					TEST_DBCP_NAME, boardDetailReq);
@@ -684,12 +596,7 @@ public class BoardReplyReqServerTaskTest extends AbstractBoardTest {
 		String requestedUserIDForAdmin = "admin";
 		String requestedUserIDForGuest = "guest";
 		
-		BoardInfoAddReqServerTask boardInfoAddReqServerTask = null;
-		try {
-			boardInfoAddReqServerTask = new BoardInfoAddReqServerTask();
-		} catch (DynamicClassCallException e) {
-			fail("dead code");
-		}
+		BoardInfoAddReqServerTask boardInfoAddReqServerTask = new BoardInfoAddReqServerTask();
 		
 		BoardInfoAddReq boardInfoAddReq = new BoardInfoAddReq();
 		boardInfoAddReq.setRequestedUserID(requestedUserIDForAdmin);
@@ -723,12 +630,7 @@ public class BoardReplyReqServerTaskTest extends AbstractBoardTest {
 			boardReplyReq.setNewAttachedFileList(newAttachedFileList);
 		}
 
-		BoardReplyReqServerTask boardReplyReqServerTask = null;
-		try {
-			boardReplyReqServerTask = new BoardReplyReqServerTask();
-		} catch (DynamicClassCallException e1) {
-			fail("dead code");
-		}
+		BoardReplyReqServerTask boardReplyReqServerTask = new BoardReplyReqServerTask();
 
 		try {
 			boardReplyReqServerTask.doWork(TEST_DBCP_NAME, boardReplyReq);
@@ -752,12 +654,7 @@ public class BoardReplyReqServerTaskTest extends AbstractBoardTest {
 		String requestedUserIDForMember = "test01";
 		
 		
-		BoardInfoAddReqServerTask boardInfoAddReqServerTask = null;
-		try {
-			boardInfoAddReqServerTask = new BoardInfoAddReqServerTask();
-		} catch (DynamicClassCallException e) {
-			fail("dead code");
-		}
+		BoardInfoAddReqServerTask boardInfoAddReqServerTask = new BoardInfoAddReqServerTask();
 		
 		BoardInfoAddReq boardInfoAddReq = new BoardInfoAddReq();
 		boardInfoAddReq.setRequestedUserID(requestedUserIDForAdmin);
@@ -797,12 +694,7 @@ public class BoardReplyReqServerTaskTest extends AbstractBoardTest {
 				.setNewAttachedFileCnt((short) attachedFileList.size());
 		boardWriteReq.setNewAttachedFileList(attachedFileList);
 
-		BoardWriteReqServerTask boardWriteReqServerTask = null;
-		try {
-			boardWriteReqServerTask = new BoardWriteReqServerTask();
-		} catch (DynamicClassCallException e1) {
-			fail("dead code");
-		}
+		BoardWriteReqServerTask boardWriteReqServerTask = new BoardWriteReqServerTask();
 		
 		BoardWriteRes boardWriteRes = null;
 		try {
@@ -831,12 +723,7 @@ public class BoardReplyReqServerTaskTest extends AbstractBoardTest {
 			boardReplyReq.setNewAttachedFileList(newAttachedFileList);
 		}
 
-		BoardReplyReqServerTask boardReplyReqServerTask = null;
-		try {
-			boardReplyReqServerTask = new BoardReplyReqServerTask();
-		} catch (DynamicClassCallException e1) {
-			fail("dead code");
-		}
+		BoardReplyReqServerTask boardReplyReqServerTask = new BoardReplyReqServerTask();
 		
 		BoardReplyRes boardReplyRes = null;
 
@@ -854,12 +741,8 @@ public class BoardReplyReqServerTaskTest extends AbstractBoardTest {
 		boardDetailReq.setBoardNo(boardReplyRes.getBoardNo());
 		
 
-		BoardDetailReqServerTask boardDetailReqServerTask = null;
-		try {
-			boardDetailReqServerTask = new BoardDetailReqServerTask();
-		} catch (DynamicClassCallException e1) {
-			fail("dead code");
-		}
+		BoardDetailReqServerTask boardDetailReqServerTask = new BoardDetailReqServerTask();
+
 		try {
 			BoardDetailRes boardDetailRes = boardDetailReqServerTask.doWork(
 					TEST_DBCP_NAME, boardDetailReq);
@@ -902,12 +785,7 @@ public class BoardReplyReqServerTaskTest extends AbstractBoardTest {
 		String requestedUserIDForMember = "test01";
 		
 		
-		BoardInfoAddReqServerTask boardInfoAddReqServerTask = null;
-		try {
-			boardInfoAddReqServerTask = new BoardInfoAddReqServerTask();
-		} catch (DynamicClassCallException e) {
-			fail("dead code");
-		}
+		BoardInfoAddReqServerTask boardInfoAddReqServerTask = new BoardInfoAddReqServerTask();
 		
 		BoardInfoAddReq boardInfoAddReq = new BoardInfoAddReq();
 		boardInfoAddReq.setRequestedUserID(requestedUserIDForAdmin);
@@ -947,12 +825,7 @@ public class BoardReplyReqServerTaskTest extends AbstractBoardTest {
 				.setNewAttachedFileCnt((short) attachedFileList.size());
 		boardWriteReq.setNewAttachedFileList(attachedFileList);
 
-		BoardWriteReqServerTask boardWriteReqServerTask = null;
-		try {
-			boardWriteReqServerTask = new BoardWriteReqServerTask();
-		} catch (DynamicClassCallException e1) {
-			fail("dead code");
-		}
+		BoardWriteReqServerTask boardWriteReqServerTask = new BoardWriteReqServerTask();
 		
 		BoardWriteRes boardWriteRes = null;
 		try {
@@ -981,12 +854,7 @@ public class BoardReplyReqServerTaskTest extends AbstractBoardTest {
 			boardReplyReq.setNewAttachedFileList(newAttachedFileList);
 		}
 
-		BoardReplyReqServerTask boardReplyReqServerTask = null;
-		try {
-			boardReplyReqServerTask = new BoardReplyReqServerTask();
-		} catch (DynamicClassCallException e1) {
-			fail("dead code");
-		}
+		BoardReplyReqServerTask boardReplyReqServerTask = new BoardReplyReqServerTask();
 		
 		BoardReplyRes boardReplyRes = null;
 
@@ -1004,12 +872,8 @@ public class BoardReplyReqServerTaskTest extends AbstractBoardTest {
 		boardDetailReq.setBoardNo(boardReplyRes.getBoardNo());
 		
 
-		BoardDetailReqServerTask boardDetailReqServerTask = null;
-		try {
-			boardDetailReqServerTask = new BoardDetailReqServerTask();
-		} catch (DynamicClassCallException e1) {
-			fail("dead code");
-		}
+		BoardDetailReqServerTask boardDetailReqServerTask = new BoardDetailReqServerTask();
+
 		try {
 			BoardDetailRes boardDetailRes = boardDetailReqServerTask.doWork(
 					TEST_DBCP_NAME, boardDetailReq);
@@ -1052,12 +916,7 @@ public class BoardReplyReqServerTaskTest extends AbstractBoardTest {
 		String requestedUserIDForAdmin = "admin";
 		String requestedUserIDForGuest = "guest";
 		
-		BoardInfoAddReqServerTask boardInfoAddReqServerTask = null;
-		try {
-			boardInfoAddReqServerTask = new BoardInfoAddReqServerTask();
-		} catch (DynamicClassCallException e) {
-			fail("dead code");
-		}
+		BoardInfoAddReqServerTask boardInfoAddReqServerTask = new BoardInfoAddReqServerTask();
 		
 		BoardInfoAddReq boardInfoAddReq = new BoardInfoAddReq();
 		boardInfoAddReq.setRequestedUserID(requestedUserIDForAdmin);
@@ -1091,12 +950,7 @@ public class BoardReplyReqServerTaskTest extends AbstractBoardTest {
 			boardReplyReq.setNewAttachedFileList(newAttachedFileList);
 		}
 
-		BoardReplyReqServerTask boardReplyReqServerTask = null;
-		try {
-			boardReplyReqServerTask = new BoardReplyReqServerTask();
-		} catch (DynamicClassCallException e1) {
-			fail("dead code");
-		}
+		BoardReplyReqServerTask boardReplyReqServerTask = new BoardReplyReqServerTask();
 
 		try {
 			boardReplyReqServerTask.doWork(TEST_DBCP_NAME, boardReplyReq);
@@ -1137,12 +991,7 @@ public class BoardReplyReqServerTaskTest extends AbstractBoardTest {
 		String boardPwdHashBase64 = CommonStaticUtil.Base64Encoder.encodeToString(md.digest());
 		
 		
-		BoardInfoAddReqServerTask boardInfoAddReqServerTask = null;
-		try {
-			boardInfoAddReqServerTask = new BoardInfoAddReqServerTask();
-		} catch (DynamicClassCallException e) {
-			fail("dead code");
-		}
+		BoardInfoAddReqServerTask boardInfoAddReqServerTask = new BoardInfoAddReqServerTask();
 		
 		BoardInfoAddReq boardInfoAddReq = new BoardInfoAddReq();
 		boardInfoAddReq.setRequestedUserID(requestedUserIDForAdmin);
@@ -1182,12 +1031,7 @@ public class BoardReplyReqServerTaskTest extends AbstractBoardTest {
 				.setNewAttachedFileCnt((short) attachedFileList.size());
 		boardWriteReq.setNewAttachedFileList(attachedFileList);
 
-		BoardWriteReqServerTask boardWriteReqServerTask = null;
-		try {
-			boardWriteReqServerTask = new BoardWriteReqServerTask();
-		} catch (DynamicClassCallException e1) {
-			fail("dead code");
-		}
+		BoardWriteReqServerTask boardWriteReqServerTask = new BoardWriteReqServerTask();
 		
 		BoardWriteRes boardWriteRes = null;
 		try {
@@ -1217,12 +1061,7 @@ public class BoardReplyReqServerTaskTest extends AbstractBoardTest {
 			boardReplyReq.setNewAttachedFileList(newAttachedFileList);
 		}
 
-		BoardReplyReqServerTask boardReplyReqServerTask = null;
-		try {
-			boardReplyReqServerTask = new BoardReplyReqServerTask();
-		} catch (DynamicClassCallException e1) {
-			fail("dead code");
-		}
+		BoardReplyReqServerTask boardReplyReqServerTask = new BoardReplyReqServerTask();
 		
 		BoardReplyRes boardReplyRes = null;
 
@@ -1240,12 +1079,8 @@ public class BoardReplyReqServerTaskTest extends AbstractBoardTest {
 		boardDetailReq.setBoardNo(boardReplyRes.getBoardNo());
 		
 
-		BoardDetailReqServerTask boardDetailReqServerTask = null;
-		try {
-			boardDetailReqServerTask = new BoardDetailReqServerTask();
-		} catch (DynamicClassCallException e1) {
-			fail("dead code");
-		}
+		BoardDetailReqServerTask boardDetailReqServerTask = new BoardDetailReqServerTask();
+		
 		try {
 			BoardDetailRes boardDetailRes = boardDetailReqServerTask.doWork(
 					TEST_DBCP_NAME, boardDetailReq);
@@ -1303,12 +1138,7 @@ public class BoardReplyReqServerTaskTest extends AbstractBoardTest {
 		String boardPwdHashBase64 = CommonStaticUtil.Base64Encoder.encodeToString(md.digest());
 		
 		
-		BoardInfoAddReqServerTask boardInfoAddReqServerTask = null;
-		try {
-			boardInfoAddReqServerTask = new BoardInfoAddReqServerTask();
-		} catch (DynamicClassCallException e) {
-			fail("dead code");
-		}
+		BoardInfoAddReqServerTask boardInfoAddReqServerTask = new BoardInfoAddReqServerTask();
 		
 		BoardInfoAddReq boardInfoAddReq = new BoardInfoAddReq();
 		boardInfoAddReq.setRequestedUserID(requestedUserIDForAdmin);
@@ -1348,12 +1178,7 @@ public class BoardReplyReqServerTaskTest extends AbstractBoardTest {
 				.setNewAttachedFileCnt((short) attachedFileList.size());
 		boardWriteReq.setNewAttachedFileList(attachedFileList);
 
-		BoardWriteReqServerTask boardWriteReqServerTask = null;
-		try {
-			boardWriteReqServerTask = new BoardWriteReqServerTask();
-		} catch (DynamicClassCallException e1) {
-			fail("dead code");
-		}
+		BoardWriteReqServerTask boardWriteReqServerTask = new BoardWriteReqServerTask();
 		
 		BoardWriteRes boardWriteRes = null;
 		try {
@@ -1383,12 +1208,7 @@ public class BoardReplyReqServerTaskTest extends AbstractBoardTest {
 			boardReplyReq.setNewAttachedFileList(newAttachedFileList);
 		}
 
-		BoardReplyReqServerTask boardReplyReqServerTask = null;
-		try {
-			boardReplyReqServerTask = new BoardReplyReqServerTask();
-		} catch (DynamicClassCallException e1) {
-			fail("dead code");
-		}
+		BoardReplyReqServerTask boardReplyReqServerTask = new BoardReplyReqServerTask();
 		
 		BoardReplyRes boardReplyRes = null;
 
@@ -1406,12 +1226,8 @@ public class BoardReplyReqServerTaskTest extends AbstractBoardTest {
 		boardDetailReq.setBoardNo(boardReplyRes.getBoardNo());
 		
 
-		BoardDetailReqServerTask boardDetailReqServerTask = null;
-		try {
-			boardDetailReqServerTask = new BoardDetailReqServerTask();
-		} catch (DynamicClassCallException e1) {
-			fail("dead code");
-		}
+		BoardDetailReqServerTask boardDetailReqServerTask = new BoardDetailReqServerTask();
+
 		try {
 			BoardDetailRes boardDetailRes = boardDetailReqServerTask.doWork(
 					TEST_DBCP_NAME, boardDetailReq);
@@ -1470,12 +1286,7 @@ public class BoardReplyReqServerTaskTest extends AbstractBoardTest {
 		String boardPwdHashBase64 = CommonStaticUtil.Base64Encoder.encodeToString(md.digest());
 		
 		
-		BoardInfoAddReqServerTask boardInfoAddReqServerTask = null;
-		try {
-			boardInfoAddReqServerTask = new BoardInfoAddReqServerTask();
-		} catch (DynamicClassCallException e) {
-			fail("dead code");
-		}
+		BoardInfoAddReqServerTask boardInfoAddReqServerTask = new BoardInfoAddReqServerTask();
 		
 		BoardInfoAddReq boardInfoAddReq = new BoardInfoAddReq();
 		boardInfoAddReq.setRequestedUserID(requestedUserIDForAdmin);
@@ -1515,12 +1326,7 @@ public class BoardReplyReqServerTaskTest extends AbstractBoardTest {
 				.setNewAttachedFileCnt((short) attachedFileList.size());
 		boardWriteReq.setNewAttachedFileList(attachedFileList);
 
-		BoardWriteReqServerTask boardWriteReqServerTask = null;
-		try {
-			boardWriteReqServerTask = new BoardWriteReqServerTask();
-		} catch (DynamicClassCallException e1) {
-			fail("dead code");
-		}
+		BoardWriteReqServerTask boardWriteReqServerTask = new BoardWriteReqServerTask();
 		
 		BoardWriteRes boardWriteRes = null;
 		try {
@@ -1550,12 +1356,7 @@ public class BoardReplyReqServerTaskTest extends AbstractBoardTest {
 			boardReplyReq.setNewAttachedFileList(newAttachedFileList);
 		}
 
-		BoardReplyReqServerTask boardReplyReqServerTask = null;
-		try {
-			boardReplyReqServerTask = new BoardReplyReqServerTask();
-		} catch (DynamicClassCallException e1) {
-			fail("dead code");
-		}
+		BoardReplyReqServerTask boardReplyReqServerTask = new BoardReplyReqServerTask();
 		
 		BoardReplyRes boardReplyRes = null;
 
@@ -1573,12 +1374,8 @@ public class BoardReplyReqServerTaskTest extends AbstractBoardTest {
 		boardDetailReq.setBoardNo(boardReplyRes.getBoardNo());
 		
 
-		BoardDetailReqServerTask boardDetailReqServerTask = null;
-		try {
-			boardDetailReqServerTask = new BoardDetailReqServerTask();
-		} catch (DynamicClassCallException e1) {
-			fail("dead code");
-		}
+		BoardDetailReqServerTask boardDetailReqServerTask = new BoardDetailReqServerTask();
+
 		try {
 			BoardDetailRes boardDetailRes = boardDetailReqServerTask.doWork(
 					TEST_DBCP_NAME, boardDetailReq);
@@ -1653,12 +1450,7 @@ public class BoardReplyReqServerTaskTest extends AbstractBoardTest {
 			boardReplyReq.setNewAttachedFileList(newAttachedFileList);
 		}
 
-		BoardReplyReqServerTask boardReplyReqServerTask = null;
-		try {
-			boardReplyReqServerTask = new BoardReplyReqServerTask();
-		} catch (DynamicClassCallException e1) {
-			fail("dead code");
-		}
+		BoardReplyReqServerTask boardReplyReqServerTask = new BoardReplyReqServerTask();
 
 		try {
 			boardReplyReqServerTask.doWork(TEST_DBCP_NAME, boardReplyReq);
@@ -1711,12 +1503,7 @@ public class BoardReplyReqServerTaskTest extends AbstractBoardTest {
 					.setNewAttachedFileCnt((short) attachedFileList.size());
 			boardWriteReq.setNewAttachedFileList(attachedFileList);
 
-			BoardWriteReqServerTask boardWriteReqServerTask = null;
-			try {
-				boardWriteReqServerTask = new BoardWriteReqServerTask();
-			} catch (DynamicClassCallException e1) {
-				fail("dead code");
-			}
+			BoardWriteReqServerTask boardWriteReqServerTask = new BoardWriteReqServerTask();
 			
 			try {
 				boardWriteRes = boardWriteReqServerTask.doWork(TEST_DBCP_NAME,
@@ -1765,12 +1552,7 @@ public class BoardReplyReqServerTaskTest extends AbstractBoardTest {
 			boardReplyReq.setNewAttachedFileList(newAttachedFileList);
 		}
 
-		BoardReplyReqServerTask boardReplyReqServerTask = null;
-		try {
-			boardReplyReqServerTask = new BoardReplyReqServerTask();
-		} catch (DynamicClassCallException e2) {
-			fail("dead code");
-		}
+		BoardReplyReqServerTask boardReplyReqServerTask = new BoardReplyReqServerTask();
 
 		BoardReplyRes boardReplyRes = null;
 		try {
@@ -1791,12 +1573,8 @@ public class BoardReplyReqServerTaskTest extends AbstractBoardTest {
 		boardDetailReq.setBoardNo(boardReplyRes.getBoardNo());
 		
 
-		BoardDetailReqServerTask boardDetailReqServerTask = null;
-		try {
-			boardDetailReqServerTask = new BoardDetailReqServerTask();
-		} catch (DynamicClassCallException e1) {
-			fail("dead code");
-		}
+		BoardDetailReqServerTask boardDetailReqServerTask = new BoardDetailReqServerTask();
+
 		try {
 			BoardDetailRes boardDetailRes = boardDetailReqServerTask.doWork(
 					TEST_DBCP_NAME, boardDetailReq);
@@ -2003,12 +1781,7 @@ public class BoardReplyReqServerTaskTest extends AbstractBoardTest {
 			boardReplyReq.setNewAttachedFileList(newAttachedFileList);
 		}
 
-		BoardReplyReqServerTask boardReplyReqServerTask = null;
-		try {
-			boardReplyReqServerTask = new BoardReplyReqServerTask();
-		} catch (DynamicClassCallException e1) {
-			fail("dead code");
-		}
+		BoardReplyReqServerTask boardReplyReqServerTask = new BoardReplyReqServerTask();
 
 		BoardReplyRes boardReplyRes = null;
 		try {
@@ -2032,12 +1805,8 @@ public class BoardReplyReqServerTaskTest extends AbstractBoardTest {
 		boardListReq.setPageNo(pageNo);
 		boardListReq.setPageSize(pageSize);
 
-		BoardListReqServerTask boardListReqServerTask = null;
-		try {
-			boardListReqServerTask = new BoardListReqServerTask();
-		} catch (DynamicClassCallException e1) {
-			fail("dead code");
-		}
+		BoardListReqServerTask boardListReqServerTask = new BoardListReqServerTask();
+
 		BoardListRes afterBoardListRes = null;
 
 		try {

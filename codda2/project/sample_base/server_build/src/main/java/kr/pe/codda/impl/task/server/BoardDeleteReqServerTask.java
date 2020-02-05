@@ -12,7 +12,6 @@ import org.jooq.types.UInteger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import kr.pe.codda.common.exception.DynamicClassCallException;
 import kr.pe.codda.common.message.AbstractMessage;
 import kr.pe.codda.impl.message.BoardDeleteReq.BoardDeleteReq;
 import kr.pe.codda.impl.message.MessageResultRes.MessageResultRes;
@@ -40,11 +39,7 @@ import kr.pe.codda.server.task.ToLetterCarrier;
 public class BoardDeleteReqServerTask extends AbstractServerTask
 		implements DBAutoCommitTaskIF<BoardDeleteReq, MessageResultRes> {
 	private Logger log = LoggerFactory.getLogger(AccountSearchProcessReqServerTask.class);
-
-	public BoardDeleteReqServerTask() throws DynamicClassCallException {
-		super();
-	}
-
+	
 	@Override
 	public void doTask(String projectName, LoginManagerIF personalLoginManager, ToLetterCarrier toLetterCarrier,
 			AbstractMessage inputMessage) throws Exception {
@@ -52,6 +47,15 @@ public class BoardDeleteReqServerTask extends AbstractServerTask
 		AbstractMessage outputMessage = ServerDBUtil.execute(
 				ServerCommonStaticFinalVars.DEFAULT_DBCP_NAME, this, (BoardDeleteReq) inputMessage);
 		toLetterCarrier.addSyncOutputMessage(outputMessage);
+	}
+	
+public MessageResultRes doWork(final String dbcpName, final BoardDeleteReq boardDeleteReq) throws Exception {
+		
+		MessageResultRes outputMessage = ServerDBUtil.execute(
+				dbcpName, this, boardDeleteReq);
+		
+		return outputMessage;
+		
 	}
 
 	@Override

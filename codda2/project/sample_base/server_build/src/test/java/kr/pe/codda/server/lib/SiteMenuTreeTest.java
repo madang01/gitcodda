@@ -11,7 +11,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import junitlib.AbstractBoardTest;
-import kr.pe.codda.common.exception.DynamicClassCallException;
 import kr.pe.codda.impl.message.ArraySiteMenuReq.ArraySiteMenuReq;
 import kr.pe.codda.impl.message.ArraySiteMenuRes.ArraySiteMenuRes;
 import kr.pe.codda.impl.task.server.ArraySiteMenuReqServerTask;
@@ -229,12 +228,8 @@ public class SiteMenuTreeTest extends AbstractBoardTest {
 		SiteMenuTree siteMenuTree = virtualSiteMenuTreeBuilder.build();
 		siteMenuTree.toDBRecord(TEST_DBCP_NAME);
 		
-		ArraySiteMenuReqServerTask arraySiteMenuReqServerTask = null;
-		try {
-			arraySiteMenuReqServerTask = new ArraySiteMenuReqServerTask();
-		} catch (DynamicClassCallException e1) {
-			fail("dead code");
-		}
+		ArraySiteMenuReqServerTask arraySiteMenuReqServerTask = new ArraySiteMenuReqServerTask();
+		
 		ArraySiteMenuReq arraySiteMenuReq = new ArraySiteMenuReq();
 		arraySiteMenuReq.setRequestedUserID("admin");
 		ArraySiteMenuRes arraySiteMenuRes = null;
@@ -509,12 +504,8 @@ public class SiteMenuTreeTest extends AbstractBoardTest {
 		SiteMenuTree siteMenuTree = virtualSiteMenuTreeBuilder.build();
 		siteMenuTree.toDBRecord(TEST_DBCP_NAME);
 		
-		ArraySiteMenuReqServerTask arraySiteMenuReqServerTask = null;
-		try {
-			arraySiteMenuReqServerTask = new ArraySiteMenuReqServerTask();
-		} catch (DynamicClassCallException e1) {
-			fail("dead code");
-		}
+		ArraySiteMenuReqServerTask arraySiteMenuReqServerTask = new ArraySiteMenuReqServerTask();
+		
 		ArraySiteMenuReq arraySiteMenuReq = new ArraySiteMenuReq();
 		arraySiteMenuReq.setRequestedUserID("admin");
 		ArraySiteMenuRes arraySiteMenuRes = null;

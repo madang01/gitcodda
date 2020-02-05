@@ -8,7 +8,6 @@ import org.jooq.types.UInteger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import kr.pe.codda.common.exception.DynamicClassCallException;
 import kr.pe.codda.common.message.AbstractMessage;
 import kr.pe.codda.impl.message.MenuModifyReq.MenuModifyReq;
 import kr.pe.codda.impl.message.MessageResultRes.MessageResultRes;
@@ -26,10 +25,6 @@ import kr.pe.codda.server.task.ToLetterCarrier;
 public class MenuModifyReqServerTask extends AbstractServerTask
 		implements DBAutoCommitTaskIF<MenuModifyReq, MessageResultRes> {
 	private Logger log = LoggerFactory.getLogger(AccountSearchProcessReqServerTask.class);
-
-	public MenuModifyReqServerTask() throws DynamicClassCallException {
-		super();
-	}
 
 	@Override
 	public void doTask(String projectName, LoginManagerIF personalLoginManager, ToLetterCarrier toLetterCarrier,

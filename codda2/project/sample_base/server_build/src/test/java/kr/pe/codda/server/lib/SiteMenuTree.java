@@ -8,7 +8,6 @@ import java.util.HashMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import kr.pe.codda.common.exception.DynamicClassCallException;
 import kr.pe.codda.impl.message.ChildMenuAddReq.ChildMenuAddReq;
 import kr.pe.codda.impl.message.ChildMenuAddRes.ChildMenuAddRes;
 import kr.pe.codda.impl.message.RootMenuAddReq.RootMenuAddReq;
@@ -25,13 +24,10 @@ public class SiteMenuTree {
 	
 	
 	public SiteMenuTree() {
-		try {
+		
 			rootMenuAddReqServerTask = new RootMenuAddReqServerTask();
 			childMenuAddReqServerTask = new ChildMenuAddReqServerTask();
-		} catch (DynamicClassCallException e) {
-			log.error("dead code", e);
-			System.exit(1);
-		}
+		
 	}
 	
 	private final HashMap<String, SiteMenuTreeNode> menuNameToTreeNodeHash =

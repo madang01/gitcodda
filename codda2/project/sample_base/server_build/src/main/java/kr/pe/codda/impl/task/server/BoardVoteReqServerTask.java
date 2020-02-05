@@ -12,7 +12,6 @@ import org.jooq.types.UInteger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import kr.pe.codda.common.exception.DynamicClassCallException;
 import kr.pe.codda.common.message.AbstractMessage;
 import kr.pe.codda.impl.message.BoardVoteReq.BoardVoteReq;
 import kr.pe.codda.impl.message.MessageResultRes.MessageResultRes;
@@ -33,16 +32,20 @@ public class BoardVoteReqServerTask extends AbstractServerTask
 		implements DBAutoCommitTaskIF<BoardVoteReq, MessageResultRes> {
 	private Logger log = LoggerFactory.getLogger(AccountSearchProcessReqServerTask.class);
 
-	public BoardVoteReqServerTask() throws DynamicClassCallException {
-		super();
-	}
-
 	@Override
 	public void doTask(String projectName, LoginManagerIF personalLoginManager, ToLetterCarrier toLetterCarrier,
 			AbstractMessage inputMessage) throws Exception {
 		AbstractMessage outputMessage = ServerDBUtil.execute(
 				ServerCommonStaticFinalVars.DEFAULT_DBCP_NAME, this, (BoardVoteReq) inputMessage);
 		toLetterCarrier.addSyncOutputMessage(outputMessage);
+	}
+	
+	
+	public MessageResultRes doWork(final String dbcpName, BoardVoteReq boardVoteReq) throws Exception {
+		MessageResultRes outputMessage = ServerDBUtil.execute(
+				dbcpName, this, boardVoteReq);
+		
+		return outputMessage;
 	}
 
 	@Override

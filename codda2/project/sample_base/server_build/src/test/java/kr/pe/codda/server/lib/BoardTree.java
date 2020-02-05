@@ -10,7 +10,6 @@ import java.util.Stack;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import kr.pe.codda.common.exception.DynamicClassCallException;
 import kr.pe.codda.common.exception.ServerTaskException;
 import kr.pe.codda.impl.message.BoardReplyReq.BoardReplyReq;
 import kr.pe.codda.impl.message.BoardReplyRes.BoardReplyRes;
@@ -25,8 +24,8 @@ public class BoardTree {
 	private final Stack<BoardTreeNode> boardTreeNodeStack =
 			new Stack<BoardTreeNode>();
 	
-	private  BoardWriteReqServerTask boardWriteReqServerTask = null;
-	private  BoardReplyReqServerTask boardReplyReqServerTask = null;	
+	private  final BoardWriteReqServerTask boardWriteReqServerTask;
+	private  final BoardReplyReqServerTask boardReplyReqServerTask;	
 	
 	private final List<BoardTreeNode> rootBoardTreeNodeList = new ArrayList<BoardTreeNode>();
 	
@@ -34,18 +33,8 @@ public class BoardTree {
 			new HashMap<String, BoardTreeNode>();
 	
 	public BoardTree() {
-		try {
 			boardWriteReqServerTask = new BoardWriteReqServerTask();
-		} catch (DynamicClassCallException e) {
-			log.error("dead code", e);
-			System.exit(1);
-		}
-		try {
 			boardReplyReqServerTask = new BoardReplyReqServerTask();
-		} catch (DynamicClassCallException e) {
-			log.error("dead code");
-			System.exit(1);
-		}
 	}
 	
 	

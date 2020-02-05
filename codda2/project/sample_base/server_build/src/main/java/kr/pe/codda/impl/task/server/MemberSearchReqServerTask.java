@@ -17,7 +17,6 @@ import org.jooq.types.UByte;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import kr.pe.codda.common.exception.DynamicClassCallException;
 import kr.pe.codda.common.message.AbstractMessage;
 import kr.pe.codda.impl.message.MemberSearchReq.MemberSearchReq;
 import kr.pe.codda.impl.message.MemberSearchRes.MemberSearchRes;
@@ -37,10 +36,6 @@ public class MemberSearchReqServerTask extends AbstractServerTask
 		implements DBAutoCommitTaskIF<MemberSearchReq, MemberSearchRes> {
 	private Logger log = LoggerFactory.getLogger(AccountSearchProcessReqServerTask.class);
 
-	public MemberSearchReqServerTask() throws DynamicClassCallException {
-		super();
-	}
-
 	@Override
 	public void doTask(String projectName, LoginManagerIF personalLoginManager, ToLetterCarrier toLetterCarrier,
 			AbstractMessage inputMessage) throws Exception {
@@ -48,6 +43,12 @@ public class MemberSearchReqServerTask extends AbstractServerTask
 		AbstractMessage outputMessage = ServerDBUtil.execute(
 				ServerCommonStaticFinalVars.DEFAULT_DBCP_NAME, this, (MemberSearchReq) inputMessage);
 		toLetterCarrier.addSyncOutputMessage(outputMessage);
+	}
+	
+	
+	public MemberSearchRes doWork(final String dbcpName, MemberSearchReq memberSearchReq) throws Exception {
+		MemberSearchRes outputMessage = ServerDBUtil.execute(dbcpName, this, memberSearchReq);		
+		return outputMessage;
 	}
 
 	@Override

@@ -9,14 +9,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import kr.pe.codda.common.etc.CommonStaticFinalVars;
-import kr.pe.codda.common.exception.DynamicClassCallException;
 import kr.pe.codda.common.exception.SymmetricException;
 import kr.pe.codda.common.message.AbstractMessage;
 import kr.pe.codda.common.sessionkey.ServerSessionkeyIF;
 import kr.pe.codda.common.sessionkey.ServerSessionkeyManager;
 import kr.pe.codda.common.sessionkey.ServerSymmetricKeyIF;
 import kr.pe.codda.common.util.CommonStaticUtil;
-import kr.pe.codda.impl.inner_message.MemberLoginInnerReq;
+import kr.pe.codda.impl.inner_message.MemberLoginDecryptionReq;
 import kr.pe.codda.impl.message.MemberLoginReq.MemberLoginReq;
 import kr.pe.codda.impl.message.MemberLoginRes.MemberLoginRes;
 import kr.pe.codda.server.LoginManagerIF;
@@ -40,12 +39,8 @@ import kr.pe.codda.server.task.ToLetterCarrier;
  *
  */
 public class MemberLoginReqServerTask extends AbstractServerTask
-		implements DBAutoCommitTaskIF<MemberLoginInnerReq, MemberLoginRes> {
+		implements DBAutoCommitTaskIF<MemberLoginDecryptionReq, MemberLoginRes> {
 	private Logger log = LoggerFactory.getLogger(AccountSearchProcessReqServerTask.class);
-
-	public MemberLoginReqServerTask() throws DynamicClassCallException {
-		super();
-	}
 
 	private String getDecryptedString(byte[] cipherBytes, ServerSymmetricKeyIF serverSymmetricKey)
 			throws InterruptedException, IllegalArgumentException, SymmetricException {
@@ -182,13 +177,13 @@ public class MemberLoginReqServerTask extends AbstractServerTask
 			throw new ParameterServerTaskException(errorMessage);
 		}
 
-		MemberLoginInnerReq memberLoginInnerReq = new MemberLoginInnerReq();
+		MemberLoginDecryptionReq memberLoginDecryptionReq = new MemberLoginDecryptionReq();
 
-		memberLoginInnerReq.setMemberID(memberID);
-		memberLoginInnerReq.setPassword(passwordBytes);
-		memberLoginInnerReq.setIp(memberLoginReq.getIp());
+		memberLoginDecryptionReq.setMemberID(memberID);
+		memberLoginDecryptionReq.setPassword(passwordBytes);
+		memberLoginDecryptionReq.setIp(memberLoginReq.getIp());
 
-		MemberLoginRes outputMessage = ServerDBUtil.execute(dbcpName, this, memberLoginInnerReq);
+		MemberLoginRes outputMessage = ServerDBUtil.execute(dbcpName, this, memberLoginDecryptionReq);
 
 		return outputMessage;
 	}
@@ -197,33 +192,33 @@ public class MemberLoginReqServerTask extends AbstractServerTask
 	 * 단위 테스트용 메소드로 복호화된 로그인 입력 메시지를 입력 받아 로그인 처리후 로그인 성공 출력 메시지를 반환한다, 로그인 실패시 예외를 던진다.
 	 * 
 	 * @param dbcpName dbcp 이름
-	 * @param memberLoginInnerReq 복호화된 로그인 입력 메시지
+	 * @param memberLoginDecryptionReq 복호화된 로그인 입력 메시지
 	 * @return 로그인 성공 출력 메시지
 	 * @throws Exception 로그인 실패 혹은 에러 발생시 던지는 예외
 	 */
-	public MemberLoginRes doWork(final String dbcpName, MemberLoginInnerReq memberLoginInnerReq) throws Exception {
-		MemberLoginRes outputMessage = ServerDBUtil.execute(dbcpName, this, memberLoginInnerReq);
+	public MemberLoginRes doWork(final String dbcpName, MemberLoginDecryptionReq memberLoginDecryptionReq) throws Exception {
+		MemberLoginRes outputMessage = ServerDBUtil.execute(dbcpName, this, memberLoginDecryptionReq);
 		
 		return outputMessage;
 	}
 
 	@Override
-	public MemberLoginRes doWork(final DSLContext dsl, MemberLoginInnerReq memberLoginInnerReq) throws Exception {
+	public MemberLoginRes doWork(final DSLContext dsl, MemberLoginDecryptionReq memberLoginDecryptionReq) throws Exception {
 		if (null == dsl) {
 			throw new ParameterServerTaskException("the parameter dsl is null");
 		}
 
-		if (null == memberLoginInnerReq) {
-			throw new ParameterServerTaskException("the parameter memberLoginInnerReq is null");
+		if (null == memberLoginDecryptionReq) {
+			throw new ParameterServerTaskException("the parameter memberLoginDecryptionReq is null");
 		}
 		
 		
 		// FIXME!
-		log.info(memberLoginInnerReq.toString());
+		log.info(memberLoginDecryptionReq.toString());
 
-		final String memberID = memberLoginInnerReq.getMemberID();
-		final byte[] passwordBytes = memberLoginInnerReq.getPassword();
-		final String ip = memberLoginInnerReq.getIp();
+		final String memberID = memberLoginDecryptionReq.getMemberID();
+		final byte[] passwordBytes = memberLoginDecryptionReq.getPassword();
+		final String ip = memberLoginDecryptionReq.getIp();
 
 		try {
 			ValueChecker.checkValidUserID(memberID);

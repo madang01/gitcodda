@@ -1,11 +1,11 @@
 package kr.pe.codda.impl.task.server;
 
-import static kr.pe.codda.jooq.tables.SbMemberActivityHistoryTb.SB_MEMBER_ACTIVITY_HISTORY_TB;
-import static kr.pe.codda.jooq.tables.SbBoardVoteTb.SB_BOARD_VOTE_TB;
 import static kr.pe.codda.jooq.tables.SbBoardFilelistTb.SB_BOARD_FILELIST_TB;
 import static kr.pe.codda.jooq.tables.SbBoardHistoryTb.SB_BOARD_HISTORY_TB;
-import static kr.pe.codda.jooq.tables.SbBoardTb.SB_BOARD_TB;
 import static kr.pe.codda.jooq.tables.SbBoardInfoTb.SB_BOARD_INFO_TB;
+import static kr.pe.codda.jooq.tables.SbBoardTb.SB_BOARD_TB;
+import static kr.pe.codda.jooq.tables.SbBoardVoteTb.SB_BOARD_VOTE_TB;
+import static kr.pe.codda.jooq.tables.SbMemberActivityHistoryTb.SB_MEMBER_ACTIVITY_HISTORY_TB;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
@@ -19,7 +19,6 @@ import org.junit.Test;
 
 import junitlib.AbstractBoardTest;
 import kr.pe.codda.common.etc.CommonStaticFinalVars;
-import kr.pe.codda.common.exception.DynamicClassCallException;
 import kr.pe.codda.common.exception.ServerTaskException;
 import kr.pe.codda.impl.message.BoardInfoAddReq.BoardInfoAddReq;
 import kr.pe.codda.impl.message.BoardInfoAddRes.BoardInfoAddRes;
@@ -43,7 +42,7 @@ public class BoardInfoIntegrationTest extends AbstractBoardTest	 {
 	@Before
 	public void setUp() {
 		try {
-			ServerDBUtil.execute(TEST_DBCP_NAME, (conn, dsl) -> {
+			ServerDBUtil.execute(TEST_DBCP_NAME, (dsl) -> {
 				dsl.delete(SB_MEMBER_ACTIVITY_HISTORY_TB).execute();
 				dsl.delete(SB_BOARD_VOTE_TB).execute();
 				dsl.delete(SB_BOARD_FILELIST_TB).execute();
@@ -57,8 +56,6 @@ public class BoardInfoIntegrationTest extends AbstractBoardTest	 {
 						.set(SB_BOARD_INFO_TB.CNT, 0L)
 						.set(SB_BOARD_INFO_TB.TOTAL, 0L)
 						.set(SB_BOARD_INFO_TB.NEXT_BOARD_NO, UInteger.valueOf(1)).execute();
-
-				conn.commit();
 			});
 		} catch (Exception e) {
 			log.warn(e.getMessage(), e);
@@ -71,12 +68,8 @@ public class BoardInfoIntegrationTest extends AbstractBoardTest	 {
 	public void 게시판정보목록조회_일반인() {
 		String requestedUserIDForUser = "test01";
 		
-		BoardInfoListReqServerTask boardInfoListReqServerTask = null;
-		try {
-			boardInfoListReqServerTask = new BoardInfoListReqServerTask();
-		} catch (DynamicClassCallException e) {
-			fail("dead code");
-		}
+		BoardInfoListReqServerTask boardInfoListReqServerTask = new BoardInfoListReqServerTask();
+		
 		
 		BoardInfoListReq boardInfoListReq = new BoardInfoListReq();
 		boardInfoListReq.setRequestedUserID(requestedUserIDForUser);
@@ -101,13 +94,8 @@ public class BoardInfoIntegrationTest extends AbstractBoardTest	 {
 	public void 게시판정보목록조회_정상() {
 		String requestedUserIDForAdmin = "admin";
 		
-		BoardInfoListReqServerTask boardInfoListReqServerTask = null;
-		try {
-			boardInfoListReqServerTask = new BoardInfoListReqServerTask();
-		} catch (DynamicClassCallException e) {
-			fail("dead code");
-		}
-		
+		BoardInfoListReqServerTask boardInfoListReqServerTask = new BoardInfoListReqServerTask();
+
 		BoardInfoListReq boardInfoListReq = new BoardInfoListReq();
 		boardInfoListReq.setRequestedUserID(requestedUserIDForAdmin);
 		
@@ -127,12 +115,7 @@ public class BoardInfoIntegrationTest extends AbstractBoardTest	 {
 	public void 게시판정보추가_일반인() {
 		String requestedUserIDForUser = "test01";
 		
-		BoardInfoAddReqServerTask boardInfoAddReqServerTask = null;
-		try {
-			boardInfoAddReqServerTask = new BoardInfoAddReqServerTask();
-		} catch (DynamicClassCallException e) {
-			fail("dead code");
-		}
+		BoardInfoAddReqServerTask boardInfoAddReqServerTask = new BoardInfoAddReqServerTask();		
 		
 		BoardInfoAddReq boardInfoAddReq = new BoardInfoAddReq();
 		boardInfoAddReq.setRequestedUserID(requestedUserIDForUser);
@@ -173,7 +156,7 @@ public class BoardInfoIntegrationTest extends AbstractBoardTest	 {
 		maxBoardInfoAddReq.setBoardReplyPermissionType(PermissionType.MEMBER.getValue());
 		
 		try {
-			ServerDBUtil.execute(TEST_DBCP_NAME, (conn, dsl) -> {
+			ServerDBUtil.execute(TEST_DBCP_NAME, (dsl) -> {
 				dsl.insertInto(SB_BOARD_INFO_TB).set(SB_BOARD_INFO_TB.BOARD_ID, UByte.valueOf(CommonStaticFinalVars.UNSIGNED_BYTE_MAX))
 				.set(SB_BOARD_INFO_TB.BOARD_NAME, "게시판 식별자 최대값 게시판")
 				.set(SB_BOARD_INFO_TB.LIST_TYPE, BoardListType.TREE.getValue())
@@ -182,8 +165,6 @@ public class BoardInfoIntegrationTest extends AbstractBoardTest	 {
 				.set(SB_BOARD_INFO_TB.REPLY_PERMISSION_TYPE, PermissionType.MEMBER.getValue())
 				.set(SB_BOARD_INFO_TB.CNT, 0L).set(SB_BOARD_INFO_TB.TOTAL, 0L)
 				.set(SB_BOARD_INFO_TB.NEXT_BOARD_NO, UInteger.valueOf(1)).execute();
-				
-				conn.commit();
 			});
 		} catch (Exception e) {
 			log.warn("error", e);
@@ -191,12 +172,8 @@ public class BoardInfoIntegrationTest extends AbstractBoardTest	 {
 		}
 		
 		
-		BoardInfoAddReqServerTask boardInfoAddReqServerTask = null;
-		try {
-			boardInfoAddReqServerTask = new BoardInfoAddReqServerTask();
-		} catch (DynamicClassCallException e) {
-			fail("dead code");
-		}
+		BoardInfoAddReqServerTask boardInfoAddReqServerTask = new BoardInfoAddReqServerTask();
+		
 		
 		BoardInfoAddReq boardInfoAddReq = new BoardInfoAddReq();
 		boardInfoAddReq.setRequestedUserID(requestedUserIDForAdmin);
@@ -230,12 +207,8 @@ public class BoardInfoIntegrationTest extends AbstractBoardTest	 {
 	public void 게시판정보추가_정상() {
 		String requestedUserIDForAdmin = "admin";
 		
-		BoardInfoAddReqServerTask boardInfoAddReqServerTask = null;
-		try {
-			boardInfoAddReqServerTask = new BoardInfoAddReqServerTask();
-		} catch (DynamicClassCallException e) {
-			fail("dead code");
-		}
+		BoardInfoAddReqServerTask boardInfoAddReqServerTask = new BoardInfoAddReqServerTask();
+		
 		
 		BoardInfoAddReq boardInfoAddReq = new BoardInfoAddReq();
 		boardInfoAddReq.setRequestedUserID(requestedUserIDForAdmin);
@@ -256,12 +229,7 @@ public class BoardInfoIntegrationTest extends AbstractBoardTest	 {
 		
 		boolean isSuccess = false;
 		
-		BoardInfoListReqServerTask boardInfoListReqServerTask = null;
-		try {
-			boardInfoListReqServerTask = new BoardInfoListReqServerTask();
-		} catch (DynamicClassCallException e) {
-			fail("dead code");
-		}
+		BoardInfoListReqServerTask boardInfoListReqServerTask = new BoardInfoListReqServerTask();		
 		
 		BoardInfoListReq boardInfoListReq = new BoardInfoListReq();
 		boardInfoListReq.setRequestedUserID(requestedUserIDForAdmin);
@@ -303,12 +271,7 @@ public class BoardInfoIntegrationTest extends AbstractBoardTest	 {
 		boardInfoDeleteReq.setBoardID((short)5);
 		boardInfoDeleteReq.setRequestedUserID(requestedUserIDForUser);
 		
-		BoardInfoDeleteReqServerTask boardInfoDeleteReqServerTask = null;
-		try {
-			boardInfoDeleteReqServerTask = new BoardInfoDeleteReqServerTask();
-		} catch (DynamicClassCallException e) {
-			fail("dead code");
-		}
+		BoardInfoDeleteReqServerTask boardInfoDeleteReqServerTask = new BoardInfoDeleteReqServerTask();
 		
 		try {
 			boardInfoDeleteReqServerTask.doWork(TEST_DBCP_NAME, boardInfoDeleteReq);
@@ -334,12 +297,7 @@ public class BoardInfoIntegrationTest extends AbstractBoardTest	 {
 		boardInfoDeleteReq.setBoardID((short)10);
 		boardInfoDeleteReq.setRequestedUserID(requestedUserIDForAdmin);
 		
-		BoardInfoDeleteReqServerTask boardInfoDeleteReqServerTask = null;
-		try {
-			boardInfoDeleteReqServerTask = new BoardInfoDeleteReqServerTask();
-		} catch (DynamicClassCallException e) {
-			fail("dead code");
-		}
+		BoardInfoDeleteReqServerTask boardInfoDeleteReqServerTask = new BoardInfoDeleteReqServerTask();
 		
 		try {
 			boardInfoDeleteReqServerTask.doWork(TEST_DBCP_NAME, boardInfoDeleteReq);
@@ -362,12 +320,7 @@ public class BoardInfoIntegrationTest extends AbstractBoardTest	 {
 		String requestedUserIDForUser = "test01";
 		String requestedUserIDForAdmin = "admin";
 		
-		BoardInfoAddReqServerTask boardInfoAddReqServerTask = null;
-		try {
-			boardInfoAddReqServerTask = new BoardInfoAddReqServerTask();
-		} catch (DynamicClassCallException e) {
-			fail("dead code");
-		}
+		BoardInfoAddReqServerTask boardInfoAddReqServerTask = new BoardInfoAddReqServerTask();		
 		
 		BoardInfoAddReq boardInfoAddReq = new BoardInfoAddReq();
 		boardInfoAddReq.setRequestedUserID(requestedUserIDForAdmin);
@@ -386,12 +339,8 @@ public class BoardInfoIntegrationTest extends AbstractBoardTest	 {
 			fail("fail to execuate doTask");
 		}
 		
-		BoardWriteReqServerTask boardWriteReqServerTask = null;
-		try {
-			boardWriteReqServerTask = new BoardWriteReqServerTask();
-		} catch (DynamicClassCallException e1) {
-			fail("dead code");
-		}
+		BoardWriteReqServerTask boardWriteReqServerTask = new BoardWriteReqServerTask();
+		
 
 		BoardWriteReq boardWriteReq = new BoardWriteReq();
 		boardWriteReq.setRequestedUserID(requestedUserIDForUser);
@@ -424,12 +373,7 @@ public class BoardInfoIntegrationTest extends AbstractBoardTest	 {
 		boardInfoDeleteReq.setBoardID(boardInfoAddRes.getBoardID());
 		boardInfoDeleteReq.setRequestedUserID(requestedUserIDForAdmin);
 		
-		BoardInfoDeleteReqServerTask boardInfoDeleteReqServerTask = null;
-		try {
-			boardInfoDeleteReqServerTask = new BoardInfoDeleteReqServerTask();
-		} catch (DynamicClassCallException e) {
-			fail("dead code");
-		}
+		BoardInfoDeleteReqServerTask boardInfoDeleteReqServerTask = new BoardInfoDeleteReqServerTask();
 		
 		try {
 			boardInfoDeleteReqServerTask.doWork(TEST_DBCP_NAME, boardInfoDeleteReq);
@@ -451,12 +395,7 @@ public class BoardInfoIntegrationTest extends AbstractBoardTest	 {
 	public void 게시판정보삭제_정상() {
 		String requestedUserIDForAdmin = "admin";
 		
-		BoardInfoAddReqServerTask boardInfoAddReqServerTask = null;
-		try {
-			boardInfoAddReqServerTask = new BoardInfoAddReqServerTask();
-		} catch (DynamicClassCallException e) {
-			fail("dead code");
-		}
+		BoardInfoAddReqServerTask boardInfoAddReqServerTask = new BoardInfoAddReqServerTask();
 		
 		BoardInfoAddReq boardInfoAddReq = new BoardInfoAddReq();
 		boardInfoAddReq.setRequestedUserID(requestedUserIDForAdmin);
@@ -479,12 +418,7 @@ public class BoardInfoIntegrationTest extends AbstractBoardTest	 {
 		boardInfoDeleteReq.setBoardID(boardInfoAddRes.getBoardID());
 		boardInfoDeleteReq.setRequestedUserID(requestedUserIDForAdmin);
 		
-		BoardInfoDeleteReqServerTask boardInfoDeleteReqServerTask = null;
-		try {
-			boardInfoDeleteReqServerTask = new BoardInfoDeleteReqServerTask();
-		} catch (DynamicClassCallException e) {
-			fail("dead code");
-		}
+		BoardInfoDeleteReqServerTask boardInfoDeleteReqServerTask = new BoardInfoDeleteReqServerTask();
 		
 		MessageResultRes messageResultRes = null;
 		try {
@@ -499,12 +433,7 @@ public class BoardInfoIntegrationTest extends AbstractBoardTest	 {
 		}
 		
 		
-		BoardInfoListReqServerTask boardInfoListReqServerTask = null;
-		try {
-			boardInfoListReqServerTask = new BoardInfoListReqServerTask();
-		} catch (DynamicClassCallException e) {
-			fail("dead code");
-		}
+		BoardInfoListReqServerTask boardInfoListReqServerTask = new BoardInfoListReqServerTask();
 		
 		BoardInfoListReq boardInfoListReq = new BoardInfoListReq();
 		boardInfoListReq.setRequestedUserID(requestedUserIDForAdmin);
@@ -530,12 +459,7 @@ public class BoardInfoIntegrationTest extends AbstractBoardTest	 {
 	public void 게시판정보수정_일반인() {
 		String requestedUserIDForUser = "test01";
 		
-		BoardInfoModifyReqServerTask boardInfoModifyReqServerTask = null;
-		try {
-			boardInfoModifyReqServerTask = new BoardInfoModifyReqServerTask();
-		} catch (DynamicClassCallException e) {
-			fail("dead code");
-		}
+		BoardInfoModifyReqServerTask boardInfoModifyReqServerTask = new BoardInfoModifyReqServerTask();
 		
 		BoardInfoModifyReq boardInfoModifyReq = new BoardInfoModifyReq();
 		boardInfoModifyReq.setRequestedUserID(requestedUserIDForUser);
@@ -565,12 +489,7 @@ public class BoardInfoIntegrationTest extends AbstractBoardTest	 {
 	public void 게시판정보수정_게시판정보미존재() {
 		String requestedUserIDForAdmin = "admin";
 		
-		BoardInfoModifyReqServerTask boardInfoModifyReqServerTask = null;
-		try {
-			boardInfoModifyReqServerTask = new BoardInfoModifyReqServerTask();
-		} catch (DynamicClassCallException e) {
-			fail("dead code");
-		}
+		BoardInfoModifyReqServerTask boardInfoModifyReqServerTask = new BoardInfoModifyReqServerTask();
 		
 		BoardInfoModifyReq boardInfoModifyReq = new BoardInfoModifyReq();
 		boardInfoModifyReq.setRequestedUserID(requestedUserIDForAdmin);
@@ -601,12 +520,7 @@ public class BoardInfoIntegrationTest extends AbstractBoardTest	 {
 	public void 게시판정보수정_정상() {
 		String requestedUserIDForAdmin = "admin";
 		
-		BoardInfoAddReqServerTask boardInfoAddReqServerTask = null;
-		try {
-			boardInfoAddReqServerTask = new BoardInfoAddReqServerTask();
-		} catch (DynamicClassCallException e) {
-			fail("dead code");
-		}
+		BoardInfoAddReqServerTask boardInfoAddReqServerTask = new BoardInfoAddReqServerTask();
 		
 		BoardInfoAddReq boardInfoAddReq = new BoardInfoAddReq();
 		boardInfoAddReq.setRequestedUserID(requestedUserIDForAdmin);
@@ -625,12 +539,7 @@ public class BoardInfoIntegrationTest extends AbstractBoardTest	 {
 			fail("fail to execuate doTask");
 		}
 		
-		BoardInfoModifyReqServerTask boardInfoModifyReqServerTask = null;
-		try {
-			boardInfoModifyReqServerTask = new BoardInfoModifyReqServerTask();
-		} catch (DynamicClassCallException e) {
-			fail("dead code");
-		}
+		BoardInfoModifyReqServerTask boardInfoModifyReqServerTask = new BoardInfoModifyReqServerTask();
 		
 		BoardInfoModifyReq boardInfoModifyReq = new BoardInfoModifyReq();
 		boardInfoModifyReq.setRequestedUserID(requestedUserIDForAdmin);
@@ -650,12 +559,7 @@ public class BoardInfoIntegrationTest extends AbstractBoardTest	 {
 		
 		boolean isSuccess = false;
 		
-		BoardInfoListReqServerTask boardInfoListReqServerTask = null;
-		try {
-			boardInfoListReqServerTask = new BoardInfoListReqServerTask();
-		} catch (DynamicClassCallException e) {
-			fail("dead code");
-		}
+		BoardInfoListReqServerTask boardInfoListReqServerTask = new BoardInfoListReqServerTask();
 		
 		BoardInfoListReq boardInfoListReq = new BoardInfoListReq();
 		boardInfoListReq.setRequestedUserID(requestedUserIDForAdmin);

@@ -12,14 +12,13 @@ import org.jooq.types.UByte;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import kr.pe.codda.common.exception.DynamicClassCallException;
 import kr.pe.codda.common.exception.SymmetricException;
 import kr.pe.codda.common.message.AbstractMessage;
 import kr.pe.codda.common.sessionkey.ServerSessionkeyIF;
 import kr.pe.codda.common.sessionkey.ServerSessionkeyManager;
 import kr.pe.codda.common.sessionkey.ServerSymmetricKeyIF;
 import kr.pe.codda.common.util.CommonStaticUtil;
-import kr.pe.codda.impl.inner_message.MemberPasswordChangeInnerReq;
+import kr.pe.codda.impl.inner_message.MemberPasswordChangeDecryptionReq;
 import kr.pe.codda.impl.message.MemberPasswordChangeReq.MemberPasswordChangeReq;
 import kr.pe.codda.impl.message.MessageResultRes.MessageResultRes;
 import kr.pe.codda.server.LoginManagerIF;
@@ -42,12 +41,8 @@ import kr.pe.codda.server.task.ToLetterCarrier;
  *
  */
 public class MemberPasswordChangeReqServerTask extends AbstractServerTask
-		implements DBAutoCommitTaskIF<MemberPasswordChangeInnerReq, MessageResultRes> {
+		implements DBAutoCommitTaskIF<MemberPasswordChangeDecryptionReq, MessageResultRes> {
 	private Logger log = LoggerFactory.getLogger(AccountSearchProcessReqServerTask.class);
-
-	public MemberPasswordChangeReqServerTask() throws DynamicClassCallException {
-		super();
-	}
 
 	@Override
 	public void doTask(String projectName, LoginManagerIF personalLoginManager, ToLetterCarrier toLetterCarrier,
@@ -174,41 +169,41 @@ public class MemberPasswordChangeReqServerTask extends AbstractServerTask
 			throw new ParameterServerTaskException(errorMessage);
 		}
 
-		MemberPasswordChangeInnerReq memberPasswordChangeInnerReq = new MemberPasswordChangeInnerReq();
-		memberPasswordChangeInnerReq.setRequestedUserID(memberPasswordChangeReq.getRequestedUserID());
-		memberPasswordChangeInnerReq.setNewPasswordBytes(newPasswordBytes);
-		memberPasswordChangeInnerReq.setOldPasswordBytes(oldPasswordBytes);
-		memberPasswordChangeInnerReq.setIp(memberPasswordChangeReq.getIp());
+		MemberPasswordChangeDecryptionReq memberPasswordChangeDecryptionReq = new MemberPasswordChangeDecryptionReq();
+		memberPasswordChangeDecryptionReq.setRequestedUserID(memberPasswordChangeReq.getRequestedUserID());
+		memberPasswordChangeDecryptionReq.setNewPasswordBytes(newPasswordBytes);
+		memberPasswordChangeDecryptionReq.setOldPasswordBytes(oldPasswordBytes);
+		memberPasswordChangeDecryptionReq.setIp(memberPasswordChangeReq.getIp());
 
 		MessageResultRes outputMessage = ServerDBUtil.execute(dbcpName, this,
-				memberPasswordChangeInnerReq);
+				memberPasswordChangeDecryptionReq);
 
 		return outputMessage;
 	}
 	
 
-	public MessageResultRes doWork(String dbcpName, MemberPasswordChangeInnerReq memberPasswordChangeInnerReq) throws Exception {
+	public MessageResultRes doWork(String dbcpName, MemberPasswordChangeDecryptionReq memberPasswordChangeDecryptionReq) throws Exception {
 		MessageResultRes outputMessage = ServerDBUtil.execute(dbcpName, this,
-				memberPasswordChangeInnerReq);
+				memberPasswordChangeDecryptionReq);
 
 		return outputMessage;
 	}
 
 	@Override
-	public MessageResultRes doWork(final DSLContext dsl, MemberPasswordChangeInnerReq memberPasswordChangeInnerReq)
+	public MessageResultRes doWork(final DSLContext dsl, MemberPasswordChangeDecryptionReq memberPasswordChangeDecryptionReq)
 			throws Exception {
 		if (null == dsl) {
 			throw new ParameterServerTaskException("the parameter dsl is null");
 		}
 
-		if (null == memberPasswordChangeInnerReq) {
-			throw new ParameterServerTaskException("the parameter memberPasswordChangeReq is null");
+		if (null == memberPasswordChangeDecryptionReq) {
+			throw new ParameterServerTaskException("the parameter memberPasswordChangeDecryptionReq is null");
 		}
 
-		String requestedUserID = memberPasswordChangeInnerReq.getRequestedUserID();
-		byte[] oldPasswordBytes = memberPasswordChangeInnerReq.getOldPasswordBytes();
-		byte[] newPasswordBytes = memberPasswordChangeInnerReq.getNewPasswordBytes();
-		String ip = memberPasswordChangeInnerReq.getIp();
+		String requestedUserID = memberPasswordChangeDecryptionReq.getRequestedUserID();
+		byte[] oldPasswordBytes = memberPasswordChangeDecryptionReq.getOldPasswordBytes();
+		byte[] newPasswordBytes = memberPasswordChangeDecryptionReq.getNewPasswordBytes();
+		String ip = memberPasswordChangeDecryptionReq.getIp();
 
 		try {
 			ValueChecker.checkValidRequestedUserID(requestedUserID);
@@ -225,12 +220,12 @@ public class MemberPasswordChangeReqServerTask extends AbstractServerTask
 		Record6<String, Byte, Byte, UByte, String, String> memberRecord = dsl
 				.select(SB_MEMBER_TB.NICKNAME, SB_MEMBER_TB.ROLE, SB_MEMBER_TB.STATE, SB_MEMBER_TB.PWD_FAIL_CNT,
 						SB_MEMBER_TB.PWD_BASE64, SB_MEMBER_TB.PWD_SALT_BASE64)
-				.from(SB_MEMBER_TB).where(SB_MEMBER_TB.USER_ID.eq(memberPasswordChangeInnerReq.getRequestedUserID()))
+				.from(SB_MEMBER_TB).where(SB_MEMBER_TB.USER_ID.eq(memberPasswordChangeDecryptionReq.getRequestedUserID()))
 				.forUpdate().fetchOne();
 
 		if (null == memberRecord) {
 			String errorMessage = new StringBuilder("비밀번호 변경 요청자[")
-					.append(memberPasswordChangeInnerReq.getRequestedUserID()).append("]가 존재하지 않습니다").toString();
+					.append(memberPasswordChangeDecryptionReq.getRequestedUserID()).append("]가 존재하지 않습니다").toString();
 			throw new RollbackServerTaskException(errorMessage);
 		}
 
@@ -246,7 +241,7 @@ public class MemberPasswordChangeReqServerTask extends AbstractServerTask
 			memberRoleType = MemberRoleType.valueOf(memberRole);
 		} catch (IllegalArgumentException e) {
 
-			String errorMessage = new StringBuilder("회원[").append(memberPasswordChangeInnerReq.getRequestedUserID())
+			String errorMessage = new StringBuilder("회원[").append(memberPasswordChangeDecryptionReq.getRequestedUserID())
 					.append("]의 멤버 구분[").append(memberRole).append("]이 잘못되었습니다").toString();
 
 			// log.warn(errorMessage);
@@ -267,7 +262,7 @@ public class MemberPasswordChangeReqServerTask extends AbstractServerTask
 		} catch (IllegalArgumentException e) {
 
 			String errorMessage = new StringBuilder("비밀번호 변경 요청자[")
-					.append(memberPasswordChangeInnerReq.getRequestedUserID()).append("]의 멤버 상태[").append(memberState)
+					.append(memberPasswordChangeDecryptionReq.getRequestedUserID()).append("]의 멤버 상태[").append(memberState)
 					.append("]가 잘못되었습니다").toString();
 			throw new RollbackServerTaskException(errorMessage);
 		}
@@ -275,7 +270,7 @@ public class MemberPasswordChangeReqServerTask extends AbstractServerTask
 		if (!MemberStateType.OK.equals(memberStateType)) {
 
 			String errorMessage = new StringBuilder().append("비밀번호 변경 요청자[")
-					.append(memberPasswordChangeInnerReq.getRequestedUserID()).append("] 상태[")
+					.append(memberPasswordChangeDecryptionReq.getRequestedUserID()).append("] 상태[")
 					.append(memberStateType.getName()).append("]가 정상이 아닙니다").toString();
 			throw new RollbackServerTaskException(errorMessage);
 		}
@@ -296,7 +291,7 @@ public class MemberPasswordChangeReqServerTask extends AbstractServerTask
 		if (!pwdBase64.equals(oldPasswordPairOfMemberTable.getPasswordBase64())) {
 			int countOfPwdFailedCountUpdate = dsl.update(SB_MEMBER_TB)
 					.set(SB_MEMBER_TB.PWD_FAIL_CNT, UByte.valueOf(pwdFailedCount + 1))
-					.where(SB_MEMBER_TB.USER_ID.eq(memberPasswordChangeInnerReq.getRequestedUserID())).execute();
+					.where(SB_MEMBER_TB.USER_ID.eq(memberPasswordChangeDecryptionReq.getRequestedUserID())).execute();
 
 			if (0 == countOfPwdFailedCountUpdate) {
 
@@ -304,8 +299,8 @@ public class MemberPasswordChangeReqServerTask extends AbstractServerTask
 				throw new RollbackServerTaskException(errorMessage);
 			}
 
-			ServerDBUtil.insertSiteLog(dsl, memberPasswordChangeInnerReq.getRequestedUserID(), "비밀번호 변경 비밀번호 틀림",
-					new java.sql.Timestamp(System.currentTimeMillis()), memberPasswordChangeInnerReq.getIp());
+			ServerDBUtil.insertSiteLog(dsl, memberPasswordChangeDecryptionReq.getRequestedUserID(), "비밀번호 변경 비밀번호 틀림",
+					new java.sql.Timestamp(System.currentTimeMillis()), memberPasswordChangeDecryptionReq.getIp());
 
 			String errorMessage = "비밀 번호가 틀렸습니다";
 			throw new CommitServerTaskException(errorMessage);
@@ -331,15 +326,15 @@ public class MemberPasswordChangeReqServerTask extends AbstractServerTask
 		dsl.update(SB_MEMBER_TB).set(SB_MEMBER_TB.PWD_BASE64, newPasswordPairOfMemberTable.getPasswordBase64())
 				.set(SB_MEMBER_TB.PWD_SALT_BASE64, newPasswordPairOfMemberTable.getPasswordSaltBase64())
 				.set(SB_MEMBER_TB.LAST_PWD_MOD_DT, lastPwdModifiedDate)
-				.where(SB_MEMBER_TB.USER_ID.eq(memberPasswordChangeInnerReq.getRequestedUserID())).execute();
+				.where(SB_MEMBER_TB.USER_ID.eq(memberPasswordChangeDecryptionReq.getRequestedUserID())).execute();
 
-		ServerDBUtil.insertSiteLog(dsl, memberPasswordChangeInnerReq.getRequestedUserID(), "비밀번호 변경 완료",
-				lastPwdModifiedDate, memberPasswordChangeInnerReq.getIp());
+		ServerDBUtil.insertSiteLog(dsl, memberPasswordChangeDecryptionReq.getRequestedUserID(), "비밀번호 변경 완료",
+				lastPwdModifiedDate, memberPasswordChangeDecryptionReq.getIp());
 
 		resultMessageStringBuilder.append(nickname).append("님의 비밀번호 변경 처리가 완료되었습니다");
 
 		MessageResultRes messageResultRes = new MessageResultRes();
-		messageResultRes.setTaskMessageID(memberPasswordChangeInnerReq.getMessageID());
+		messageResultRes.setTaskMessageID(memberPasswordChangeDecryptionReq.getMessageID());
 		messageResultRes.setIsSuccess(true);
 		messageResultRes.setResultMessage(resultMessageStringBuilder.toString());
 

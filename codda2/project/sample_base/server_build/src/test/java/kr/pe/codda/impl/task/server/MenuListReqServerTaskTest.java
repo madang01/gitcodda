@@ -8,7 +8,6 @@ import java.util.Set;
 import org.junit.Test;
 
 import junitlib.AbstractBoardTest;
-import kr.pe.codda.common.exception.DynamicClassCallException;
 import kr.pe.codda.impl.message.ArraySiteMenuReq.ArraySiteMenuReq;
 import kr.pe.codda.impl.message.ArraySiteMenuRes.ArraySiteMenuRes;
 import kr.pe.codda.impl.message.RootMenuAddReq.RootMenuAddReq;
@@ -21,12 +20,7 @@ public class MenuListReqServerTaskTest extends AbstractBoardTest {
 	public void testDoServie_ok() {
 		String requestedUserID = "admin";
 		
-		ArraySiteMenuReqServerTask arraySiteMenuReqServerTask = null;
-		try {
-			arraySiteMenuReqServerTask = new ArraySiteMenuReqServerTask();
-		} catch (DynamicClassCallException e1) {
-			fail("dead code");
-		}
+		ArraySiteMenuReqServerTask arraySiteMenuReqServerTask = new ArraySiteMenuReqServerTask();
 		
 		ArraySiteMenuReq arraySiteMenuReq = new ArraySiteMenuReq();
 		arraySiteMenuReq.setRequestedUserID(requestedUserID);
@@ -53,12 +47,7 @@ public class MenuListReqServerTaskTest extends AbstractBoardTest {
 	public void testDoServie_두번루트메뉴등록하여목록점검() {
 		String requestedUserID = "admin";
 		
-		ArraySiteMenuReqServerTask menuListReqServerTask = null;
-		try {
-			menuListReqServerTask = new ArraySiteMenuReqServerTask();
-		} catch (DynamicClassCallException e1) {
-			fail("dead code");
-		}
+		ArraySiteMenuReqServerTask menuListReqServerTask = new ArraySiteMenuReqServerTask();
 
 		ArraySiteMenuReq menuListReq = new ArraySiteMenuReq();
 		menuListReq.setRequestedUserID(requestedUserID);
@@ -72,12 +61,7 @@ public class MenuListReqServerTaskTest extends AbstractBoardTest {
 			fail("fail to get a output message 'ArraySiteMenuRes'");
 		}		
 		
-		RootMenuAddReqServerTask rootMenuAddReqServerTask = null;
-		try {
-			rootMenuAddReqServerTask = new RootMenuAddReqServerTask();
-		} catch (DynamicClassCallException e1) {
-			fail("dead code");
-		}
+		RootMenuAddReqServerTask rootMenuAddReqServerTask = new RootMenuAddReqServerTask();
 		
 		RootMenuAddReq firstRootMenuAddReq = new RootMenuAddReq();
 		firstRootMenuAddReq.setRequestedUserID(requestedUserID);

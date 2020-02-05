@@ -1,8 +1,8 @@
 package kr.pe.codda.impl.task.server;
 
-import static kr.pe.codda.jooq.tables.SbSiteLogTb.SB_SITE_LOG_TB;
 import static kr.pe.codda.jooq.tables.SbAccountSerarchTb.SB_ACCOUNT_SERARCH_TB;
 import static kr.pe.codda.jooq.tables.SbMemberTb.SB_MEMBER_TB;
+import static kr.pe.codda.jooq.tables.SbSiteLogTb.SB_SITE_LOG_TB;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
@@ -12,8 +12,9 @@ import com.icegreen.greenmail.util.GreenMail;
 import com.icegreen.greenmail.util.ServerSetup;
 
 import junitlib.AbstractBoardTest;
-import kr.pe.codda.common.exception.DynamicClassCallException;
 import kr.pe.codda.common.exception.ServerTaskException;
+import kr.pe.codda.impl.inner_message.AccountSearchProcessDecryptionReq;
+import kr.pe.codda.impl.inner_message.MemberRegisterDecryptionReq;
 import kr.pe.codda.impl.message.AccountSearchReadyReq.AccountSearchReadyReq;
 import kr.pe.codda.impl.message.MessageResultRes.MessageResultRes;
 import kr.pe.codda.server.lib.AccountSearchType;
@@ -33,12 +34,8 @@ public class AccountSearchReadyReqServerTaskTest extends AbstractBoardTest {
 		passwordSearchReadyReq.setEmail(email);
 		passwordSearchReadyReq.setIp(ip);
 		
-		AccountSearchReadyReqServerTask passwordSearchReadyReqServerTask = null;
-		try {
-			passwordSearchReadyReqServerTask = new AccountSearchReadyReqServerTask();
-		} catch (DynamicClassCallException e1) {
-			fail("dead code");
-		}
+		AccountSearchReadyReqServerTask passwordSearchReadyReqServerTask = new AccountSearchReadyReqServerTask();
+		
 		
 		try {
 			
@@ -63,7 +60,7 @@ public class AccountSearchReadyReqServerTaskTest extends AbstractBoardTest {
 		String ip = "127.0.0.1";
 		
 		try {		
-			ServerDBUtil.execute(TEST_DBCP_NAME, (conn, dsl) -> {
+			ServerDBUtil.execute(TEST_DBCP_NAME, (dsl) -> {
 				
 				dsl.delete(SB_SITE_LOG_TB)
 				.execute();
@@ -75,8 +72,6 @@ public class AccountSearchReadyReqServerTaskTest extends AbstractBoardTest {
 				dsl.delete(SB_MEMBER_TB)
 				.where(SB_MEMBER_TB.USER_ID.eq(testID))
 				.execute();
-				
-				conn.commit();
 			});
 		} catch (Exception e) {
 			log.warn(e.getMessage(), e);
@@ -90,10 +85,19 @@ public class AccountSearchReadyReqServerTaskTest extends AbstractBoardTest {
 					(byte) '4', (byte) '$' };
 			String nickname = "이메일테스터";
 			
-
+			MemberRegisterDecryptionReq memberRegisterDecryptionReq = new MemberRegisterDecryptionReq();
+			memberRegisterDecryptionReq.setMemberRoleType(MemberRoleType.MEMBER);
+			memberRegisterDecryptionReq.setUserID(testID);
+			memberRegisterDecryptionReq.setNickname(nickname);
+			memberRegisterDecryptionReq.setEmail(email);
+			memberRegisterDecryptionReq.setPasswordBytes(passwordBytes);
+			memberRegisterDecryptionReq.setRegisteredDate(new java.sql.Timestamp(System.currentTimeMillis()));
+			memberRegisterDecryptionReq.setIp(ip);
+			
+			MemberRegisterReqServerTask memberRegisterReqServerTask = new MemberRegisterReqServerTask();
 			try {
-				ServerDBUtil.registerMember(TEST_DBCP_NAME, MemberRoleType.MEMBER, testID, nickname, email,
-						passwordBytes, new java.sql.Timestamp(System.currentTimeMillis()), ip);
+				
+				ServerDBUtil.execute(TEST_DBCP_NAME, memberRegisterReqServerTask, memberRegisterDecryptionReq);
 			} catch (ServerTaskException e) {
 				String expectedErrorMessage = new StringBuilder("기존 회원과 중복되는 아이디[").append(testID).append("] 입니다")
 						.toString();
@@ -116,12 +120,7 @@ public class AccountSearchReadyReqServerTaskTest extends AbstractBoardTest {
 			passwordSearchReadyReq.setEmail(email);
 			passwordSearchReadyReq.setIp(ip);		
 			
-			AccountSearchReadyReqServerTask passwordSearchReadyReqServerTask = null;
-			try {
-				passwordSearchReadyReqServerTask = new AccountSearchReadyReqServerTask();
-			} catch (DynamicClassCallException e1) {
-				fail("dead code");
-			}
+			AccountSearchReadyReqServerTask passwordSearchReadyReqServerTask = new AccountSearchReadyReqServerTask();
 			
 			try {			
 				MessageResultRes messageResultRes = passwordSearchReadyReqServerTask.doWork(TEST_DBCP_NAME, passwordSearchReadyReq);
@@ -134,17 +133,20 @@ public class AccountSearchReadyReqServerTaskTest extends AbstractBoardTest {
 				fail("비밀번호 찾기 준비 실패");
 			}
 			
-			AccountSearchProcessReqServerTask passwordSearchProcessReqServerTask = null;
-			try {
-				passwordSearchProcessReqServerTask = new AccountSearchProcessReqServerTask();
-			} catch (DynamicClassCallException e1) {
-				fail("dead code");
-			}
+			AccountSearchProcessReqServerTask passwordSearchProcessReqServerTask = new AccountSearchProcessReqServerTask();
+			
+			
+			AccountSearchProcessDecryptionReq accountSearchProcessDecryptionReq = new AccountSearchProcessDecryptionReq();
+			accountSearchProcessDecryptionReq.setAccountSearchType(AccountSearchType.ID);
+			accountSearchProcessDecryptionReq.setEmail(email);
+			accountSearchProcessDecryptionReq.setNewPasswordBytes(null);
+			accountSearchProcessDecryptionReq.setSecretAuthenticationValue("aa");
+			accountSearchProcessDecryptionReq.setIp(ip);
 			
 			for (int i=0; i < ServerCommonStaticFinalVars.MAX_WRONG_PASSWORD_COUNT_OF_PASSWORD_SEARCH_SERVICE; i++) {
 				try {
-					passwordSearchProcessReqServerTask.doPasswordChangeProcess(TEST_DBCP_NAME, log, AccountSearchType.ID, 
-							email, "aa", null, ip);
+					passwordSearchProcessReqServerTask.doWork(TEST_DBCP_NAME, accountSearchProcessDecryptionReq);
+					
 					
 					fail("no ServerTaskException");
 				} catch(ServerTaskException e) {
@@ -163,8 +165,7 @@ public class AccountSearchReadyReqServerTaskTest extends AbstractBoardTest {
 			
 			
 			try {
-				passwordSearchProcessReqServerTask.doPasswordChangeProcess(TEST_DBCP_NAME, log, AccountSearchType.ID, 
-						email, "aa", null, ip);
+				passwordSearchProcessReqServerTask.doWork(TEST_DBCP_NAME, accountSearchProcessDecryptionReq);
 				
 				fail("no ServerTaskException");
 			} catch(ServerTaskException e) {
@@ -205,7 +206,7 @@ public class AccountSearchReadyReqServerTaskTest extends AbstractBoardTest {
 		String ip = "127.0.0.1";
 		
 		try {		
-			ServerDBUtil.execute(TEST_DBCP_NAME, (conn, dsl) -> {
+			ServerDBUtil.execute(TEST_DBCP_NAME, (dsl) -> {
 				
 				dsl.delete(SB_SITE_LOG_TB)
 				.execute();
@@ -217,8 +218,6 @@ public class AccountSearchReadyReqServerTaskTest extends AbstractBoardTest {
 				dsl.delete(SB_MEMBER_TB)
 				.where(SB_MEMBER_TB.USER_ID.eq(testID))
 				.execute();
-				
-				conn.commit();
 			});
 		} catch (Exception e) {
 			log.warn(e.getMessage(), e);
@@ -232,10 +231,19 @@ public class AccountSearchReadyReqServerTaskTest extends AbstractBoardTest {
 					(byte) '4', (byte) '$' };
 			String nickname = "이메일테스터";
 			
+			MemberRegisterDecryptionReq memberRegisterDecryptionReq = new MemberRegisterDecryptionReq();
+			memberRegisterDecryptionReq.setMemberRoleType(MemberRoleType.MEMBER);
+			memberRegisterDecryptionReq.setUserID(testID);
+			memberRegisterDecryptionReq.setNickname(nickname);
+			memberRegisterDecryptionReq.setEmail(email);
+			memberRegisterDecryptionReq.setPasswordBytes(passwordBytes);
+			memberRegisterDecryptionReq.setRegisteredDate(new java.sql.Timestamp(System.currentTimeMillis()));
+			memberRegisterDecryptionReq.setIp(ip);
+			
+			MemberRegisterReqServerTask memberRegisterReqServerTask = new MemberRegisterReqServerTask();
 
 			try {
-				ServerDBUtil.registerMember(TEST_DBCP_NAME, MemberRoleType.MEMBER, testID, nickname, email,
-						passwordBytes, new java.sql.Timestamp(System.currentTimeMillis()), ip);
+				ServerDBUtil.execute(TEST_DBCP_NAME, memberRegisterReqServerTask, memberRegisterDecryptionReq);
 			} catch (ServerTaskException e) {
 				String expectedErrorMessage = new StringBuilder("기존 회원과 중복되는 아이디[").append(testID).append("] 입니다")
 						.toString();
@@ -258,12 +266,7 @@ public class AccountSearchReadyReqServerTaskTest extends AbstractBoardTest {
 			passwordSearchReadyReq.setIp(ip);
 			passwordSearchReadyReq.setAccountSearchType(AccountSearchType.ID.getValue());
 			
-			AccountSearchReadyReqServerTask passwordSearchReadyReqServerTask = null;
-			try {
-				passwordSearchReadyReqServerTask = new AccountSearchReadyReqServerTask();
-			} catch (DynamicClassCallException e1) {
-				fail("dead code");
-			}
+			AccountSearchReadyReqServerTask passwordSearchReadyReqServerTask = new AccountSearchReadyReqServerTask();
 			
 			try {
 				for (int i=0; i < ServerCommonStaticFinalVars.MAX_RETRY_COUNT_OF_PASSWORD_SEARCH_SERVICE; i++) {
@@ -308,7 +311,7 @@ public class AccountSearchReadyReqServerTaskTest extends AbstractBoardTest {
 		String ip = "127.0.0.1";
 		
 		try {		
-			ServerDBUtil.execute(TEST_DBCP_NAME, (conn, dsl) -> {
+			ServerDBUtil.execute(TEST_DBCP_NAME, (dsl) -> {
 				
 				dsl.delete(SB_SITE_LOG_TB)
 				.execute();
@@ -320,8 +323,6 @@ public class AccountSearchReadyReqServerTaskTest extends AbstractBoardTest {
 				dsl.delete(SB_MEMBER_TB)
 				.where(SB_MEMBER_TB.USER_ID.eq(testID))
 				.execute();
-				
-				conn.commit();
 			});
 		} catch (Exception e) {
 			log.warn(e.getMessage(), e);
@@ -335,10 +336,20 @@ public class AccountSearchReadyReqServerTaskTest extends AbstractBoardTest {
 					(byte) '4', (byte) '$' };
 			String nickname = "이메일테스터";
 			
+			MemberRegisterDecryptionReq memberRegisterDecryptionReq = new MemberRegisterDecryptionReq();
+			memberRegisterDecryptionReq.setMemberRoleType(MemberRoleType.MEMBER);
+			memberRegisterDecryptionReq.setUserID(testID);
+			memberRegisterDecryptionReq.setNickname(nickname);
+			memberRegisterDecryptionReq.setEmail(email);
+			memberRegisterDecryptionReq.setPasswordBytes(passwordBytes);
+			memberRegisterDecryptionReq.setRegisteredDate(new java.sql.Timestamp(System.currentTimeMillis()));
+			memberRegisterDecryptionReq.setIp(ip);
+			
+			MemberRegisterReqServerTask memberRegisterReqServerTask = new MemberRegisterReqServerTask();
+			
 
 			try {
-				ServerDBUtil.registerMember(TEST_DBCP_NAME, MemberRoleType.MEMBER, testID, nickname, email,
-						passwordBytes, new java.sql.Timestamp(System.currentTimeMillis()), ip);
+				ServerDBUtil.execute(TEST_DBCP_NAME, memberRegisterReqServerTask, memberRegisterDecryptionReq);
 			} catch (ServerTaskException e) {
 				String expectedErrorMessage = new StringBuilder("기존 회원과 중복되는 아이디[").append(testID).append("] 입니다")
 						.toString();
@@ -361,12 +372,7 @@ public class AccountSearchReadyReqServerTaskTest extends AbstractBoardTest {
 			passwordSearchReadyReq.setIp(ip);
 			passwordSearchReadyReq.setAccountSearchType(AccountSearchType.ID.getValue());
 			
-			AccountSearchReadyReqServerTask passwordSearchReadyReqServerTask = null;
-			try {
-				passwordSearchReadyReqServerTask = new AccountSearchReadyReqServerTask();
-			} catch (DynamicClassCallException e1) {
-				fail("dead code");
-			}
+			AccountSearchReadyReqServerTask passwordSearchReadyReqServerTask = new AccountSearchReadyReqServerTask();
 			
 			try {			
 				MessageResultRes messageResultRes = passwordSearchReadyReqServerTask.doWork(TEST_DBCP_NAME, passwordSearchReadyReq);

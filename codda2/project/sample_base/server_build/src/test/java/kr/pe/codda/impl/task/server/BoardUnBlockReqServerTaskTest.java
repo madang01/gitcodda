@@ -9,7 +9,6 @@ import java.util.List;
 import org.junit.Test;
 
 import junitlib.AbstractBoardTest;
-import kr.pe.codda.common.exception.DynamicClassCallException;
 import kr.pe.codda.common.exception.ServerTaskException;
 import kr.pe.codda.impl.message.BoardBlockReq.BoardBlockReq;
 import kr.pe.codda.impl.message.BoardDeleteReq.BoardDeleteReq;
@@ -33,12 +32,8 @@ public class BoardUnBlockReqServerTaskTest extends AbstractBoardTest {
 		final short boardID = 3;
 		String requestedUserIDForGuest = "guest";
 	
-		BoardUnBlockReqServerTask boardUnBlockReqServerTask = null;
-		try {
-			boardUnBlockReqServerTask = new BoardUnBlockReqServerTask();
-		} catch (DynamicClassCallException e1) {
-			fail("dead code");
-		}
+		BoardUnBlockReqServerTask boardUnBlockReqServerTask = new BoardUnBlockReqServerTask();
+
 		BoardUnBlockReq boardUnBlockReq = new BoardUnBlockReq();
 		boardUnBlockReq.setRequestedUserID(requestedUserIDForGuest);
 		boardUnBlockReq.setIp("172.8.0.12");
@@ -67,12 +62,8 @@ public class BoardUnBlockReqServerTaskTest extends AbstractBoardTest {
 		final short boardID = 3;
 		String requestedUserIDForMember = "test01";
 	
-		BoardUnBlockReqServerTask boardUnBlockReqServerTask = null;
-		try {
-			boardUnBlockReqServerTask = new BoardUnBlockReqServerTask();
-		} catch (DynamicClassCallException e1) {
-			fail("dead code");
-		}
+		BoardUnBlockReqServerTask boardUnBlockReqServerTask = new BoardUnBlockReqServerTask();
+
 		BoardUnBlockReq boardUnBlockReq = new BoardUnBlockReq();
 		boardUnBlockReq.setRequestedUserID(requestedUserIDForMember);
 		boardUnBlockReq.setIp("172.3.0.19");
@@ -102,12 +93,8 @@ public class BoardUnBlockReqServerTaskTest extends AbstractBoardTest {
 		String requestedUserIDForAdmin = "admin";
 		short badBoardID = 7;
 
-		BoardUnBlockReqServerTask boardUnBlockReqServerTask = null;
-		try {
-			boardUnBlockReqServerTask = new BoardUnBlockReqServerTask();
-		} catch (DynamicClassCallException e1) {
-			fail("dead code");
-		}
+		BoardUnBlockReqServerTask boardUnBlockReqServerTask = new BoardUnBlockReqServerTask();
+		
 		BoardUnBlockReq boardUnBlockReq = new BoardUnBlockReq();
 		boardUnBlockReq.setRequestedUserID(requestedUserIDForAdmin);
 		boardUnBlockReq.setIp("172.3.0.20");
@@ -137,12 +124,8 @@ public class BoardUnBlockReqServerTaskTest extends AbstractBoardTest {
 		final short boardID = 3;
 		String requestedUserIDForAdmin = "admin";
 
-		BoardUnBlockReqServerTask boardUnBlockReqServerTask = null;
-		try {
-			boardUnBlockReqServerTask = new BoardUnBlockReqServerTask();
-		} catch (DynamicClassCallException e1) {
-			fail("dead code");
-		}
+		BoardUnBlockReqServerTask boardUnBlockReqServerTask = new BoardUnBlockReqServerTask();
+
 		BoardUnBlockReq boardUnBlockReq = new BoardUnBlockReq();
 		boardUnBlockReq.setRequestedUserID(requestedUserIDForAdmin);
 		boardUnBlockReq.setIp("172.16.0.1");
@@ -178,12 +161,7 @@ public class BoardUnBlockReqServerTaskTest extends AbstractBoardTest {
 		String requestedUserIDForMember = "test01";
 		String requestedUserIDForAdmin = "admin";
 
-		BoardWriteReqServerTask boardWriteReqServerTask = null;
-		try {
-			boardWriteReqServerTask = new BoardWriteReqServerTask();
-		} catch (DynamicClassCallException e1) {
-			fail("dead code");
-		}
+		BoardWriteReqServerTask boardWriteReqServerTask = new BoardWriteReqServerTask();
 
 		BoardWriteReq boardWriteReq = new BoardWriteReq();
 		boardWriteReq.setRequestedUserID(requestedUserIDForMember);
@@ -210,12 +188,8 @@ public class BoardUnBlockReqServerTaskTest extends AbstractBoardTest {
 			fail("fail to execuate doTask");
 		}
 
-		BoardUnBlockReqServerTask boardUnBlockReqServerTask = null;
-		try {
-			boardUnBlockReqServerTask = new BoardUnBlockReqServerTask();
-		} catch (DynamicClassCallException e1) {
-			fail("dead code");
-		}
+		BoardUnBlockReqServerTask boardUnBlockReqServerTask = new BoardUnBlockReqServerTask();
+		
 		BoardUnBlockReq boardUnBlockReq = new BoardUnBlockReq();
 		boardUnBlockReq.setRequestedUserID(requestedUserIDForAdmin);
 		boardUnBlockReq.setIp("172.1.3.20");
@@ -402,12 +376,8 @@ public class BoardUnBlockReqServerTaskTest extends AbstractBoardTest {
 			fail("삭제 대상 글(제목:루트1_자식2_자식1_자식2_자식1) 찾기 실패");
 		}
 
-		BoardDeleteReqServerTask boardDeleteReqServerTask = null;
-		try {
-			boardDeleteReqServerTask = new BoardDeleteReqServerTask();
-		} catch (DynamicClassCallException e1) {
-			fail("dead code");
-		}
+		BoardDeleteReqServerTask boardDeleteReqServerTask = new BoardDeleteReqServerTask();
+
 		BoardDeleteReq boardDeleteReq = new BoardDeleteReq();
 		boardDeleteReq.setRequestedUserID(deleteBoardTreeNode.getWriterID());
 		boardDeleteReq.setIp("172.3.4.11");
@@ -429,12 +399,7 @@ public class BoardUnBlockReqServerTaskTest extends AbstractBoardTest {
 			fail("fail to execuate doTask");
 		}
 
-		BoardBlockReqServerTask boardBlockReqServerTask = null;
-		try {
-			boardBlockReqServerTask = new BoardBlockReqServerTask();
-		} catch (DynamicClassCallException e1) {
-			fail("dead code");
-		}
+		BoardBlockReqServerTask boardBlockReqServerTask = new BoardBlockReqServerTask();
 
 		BoardBlockReq firstBlcokBoardBlockReq = new BoardBlockReq();
 		firstBlcokBoardBlockReq.setRequestedUserID("admin");
@@ -482,12 +447,7 @@ public class BoardUnBlockReqServerTaskTest extends AbstractBoardTest {
 			fail("fail to execuate doTask");
 		}
 
-		BoardUnBlockReqServerTask boardUnBlockReqServerTask = null;
-		try {
-			boardUnBlockReqServerTask = new BoardUnBlockReqServerTask();
-		} catch (DynamicClassCallException e1) {
-			fail("dead code");
-		}
+		BoardUnBlockReqServerTask boardUnBlockReqServerTask = new BoardUnBlockReqServerTask();
 
 		BoardUnBlockReq boardUnBlockReq = new BoardUnBlockReq();
 		boardUnBlockReq.setRequestedUserID("admin");
@@ -511,12 +471,8 @@ public class BoardUnBlockReqServerTaskTest extends AbstractBoardTest {
 		boardListReq.setPageNo(pageNo);
 		boardListReq.setPageSize(pageSize);
 
-		BoardListReqServerTask boardListReqServerTask = null;
-		try {
-			boardListReqServerTask = new BoardListReqServerTask();
-		} catch (DynamicClassCallException e1) {
-			fail("dead code");
-		}
+		BoardListReqServerTask boardListReqServerTask = new BoardListReqServerTask();
+		
 		BoardListRes boardListRes = null;
 
 		try {
@@ -750,12 +706,7 @@ public class BoardUnBlockReqServerTaskTest extends AbstractBoardTest {
 		blcokBoardBlockReq.setBoardID(blockBoardTreeNode.getBoardID());
 		blcokBoardBlockReq.setBoardNo(blockBoardTreeNode.getBoardNo());
 
-		BoardBlockReqServerTask boardBlockReqServerTask = null;
-		try {
-			boardBlockReqServerTask = new BoardBlockReqServerTask();
-		} catch (DynamicClassCallException e1) {
-			fail("dead code");
-		}
+		BoardBlockReqServerTask boardBlockReqServerTask = new BoardBlockReqServerTask();
 
 		try {
 			MessageResultRes messageResultRes = boardBlockReqServerTask.doWork(
@@ -779,12 +730,8 @@ public class BoardUnBlockReqServerTaskTest extends AbstractBoardTest {
 			boardDetailReq.setBoardNo(blockBoardTreeNode.getBoardNo());
 			
 
-			BoardDetailReqServerTask boardDetailReqServerTask = null;
-			try {
-				boardDetailReqServerTask = new BoardDetailReqServerTask();
-			} catch (DynamicClassCallException e1) {
-				fail("dead code");
-			}
+			BoardDetailReqServerTask boardDetailReqServerTask = new BoardDetailReqServerTask();
+
 			try {
 				BoardDetailRes boardDetailRes = boardDetailReqServerTask
 						.doWork(TEST_DBCP_NAME, boardDetailReq);
@@ -807,12 +754,8 @@ public class BoardUnBlockReqServerTaskTest extends AbstractBoardTest {
 			boardDetailReq.setBoardNo(treeBlock1BoardTreeNode.getBoardNo());
 			
 
-			BoardDetailReqServerTask boardDetailReqServerTask = null;
-			try {
-				boardDetailReqServerTask = new BoardDetailReqServerTask();
-			} catch (DynamicClassCallException e1) {
-				fail("dead code");
-			}
+			BoardDetailReqServerTask boardDetailReqServerTask = new BoardDetailReqServerTask();
+
 			try {
 				BoardDetailRes boardDetailRes = boardDetailReqServerTask
 						.doWork(TEST_DBCP_NAME, boardDetailReq);
@@ -828,12 +771,8 @@ public class BoardUnBlockReqServerTaskTest extends AbstractBoardTest {
 			}
 		}
 
-		BoardUnBlockReqServerTask boardUnBlockReqServerTask = null;
-		try {
-			boardUnBlockReqServerTask = new BoardUnBlockReqServerTask();
-		} catch (DynamicClassCallException e2) {
-			fail("dead code");
-		}
+		BoardUnBlockReqServerTask boardUnBlockReqServerTask = new BoardUnBlockReqServerTask();
+
 		BoardUnBlockReq boardUnBlockReq = new BoardUnBlockReq();
 		boardUnBlockReq.setRequestedUserID("admin");
 		boardUnBlockReq.setIp("172.3.4.16");
@@ -854,12 +793,8 @@ public class BoardUnBlockReqServerTaskTest extends AbstractBoardTest {
 			boardDetailReq.setBoardNo(blockBoardTreeNode.getBoardNo());
 			
 
-			BoardDetailReqServerTask boardDetailReqServerTask = null;
-			try {
-				boardDetailReqServerTask = new BoardDetailReqServerTask();
-			} catch (DynamicClassCallException e1) {
-				fail("dead code");
-			}
+			BoardDetailReqServerTask boardDetailReqServerTask = new BoardDetailReqServerTask();
+
 			try {
 				BoardDetailRes boardDetailRes = boardDetailReqServerTask
 						.doWork(TEST_DBCP_NAME, boardDetailReq);
@@ -882,12 +817,8 @@ public class BoardUnBlockReqServerTaskTest extends AbstractBoardTest {
 			boardDetailReq.setBoardNo(treeBlock1BoardTreeNode.getBoardNo());
 			
 
-			BoardDetailReqServerTask boardDetailReqServerTask = null;
-			try {
-				boardDetailReqServerTask = new BoardDetailReqServerTask();
-			} catch (DynamicClassCallException e1) {
-				fail("dead code");
-			}
+			BoardDetailReqServerTask boardDetailReqServerTask = new BoardDetailReqServerTask();
+
 			try {
 				BoardDetailRes boardDetailRes = boardDetailReqServerTask
 						.doWork(TEST_DBCP_NAME, boardDetailReq);

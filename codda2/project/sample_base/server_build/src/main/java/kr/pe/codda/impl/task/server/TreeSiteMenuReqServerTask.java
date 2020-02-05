@@ -14,7 +14,6 @@ import org.jooq.types.UInteger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import kr.pe.codda.common.exception.DynamicClassCallException;
 import kr.pe.codda.common.message.AbstractMessage;
 import kr.pe.codda.impl.message.TreeSiteMenuReq.TreeSiteMenuReq;
 import kr.pe.codda.impl.message.TreeSiteMenuRes.TreeSiteMenuRes;
@@ -34,10 +33,6 @@ public class TreeSiteMenuReqServerTask extends AbstractServerTask
 	private Logger log = LoggerFactory.getLogger(AccountSearchProcessReqServerTask.class);
 	// final UInteger rootParnetNo = UInteger.valueOf(0);
 
-	public TreeSiteMenuReqServerTask() throws DynamicClassCallException {
-		super();
-	}
-
 	@Override
 	public void doTask(String projectName, LoginManagerIF personalLoginManager, ToLetterCarrier toLetterCarrier,
 			AbstractMessage inputMessage) throws Exception {
@@ -46,6 +41,13 @@ public class TreeSiteMenuReqServerTask extends AbstractServerTask
 				(TreeSiteMenuReq) inputMessage);
 
 		toLetterCarrier.addSyncOutputMessage(outputMessage);
+	}
+	
+	
+	public TreeSiteMenuRes doWork(final String dbcpName, final TreeSiteMenuReq treeSiteMenuReq) throws Exception {
+		TreeSiteMenuRes outputMessage = ServerDBUtil.execute(dbcpName, this,treeSiteMenuReq);
+		
+		return outputMessage;
 	}
 
 	@Override

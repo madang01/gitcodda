@@ -10,14 +10,13 @@ import org.jooq.types.UByte;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import kr.pe.codda.common.exception.DynamicClassCallException;
 import kr.pe.codda.common.exception.SymmetricException;
 import kr.pe.codda.common.message.AbstractMessage;
 import kr.pe.codda.common.sessionkey.ServerSessionkeyIF;
 import kr.pe.codda.common.sessionkey.ServerSessionkeyManager;
 import kr.pe.codda.common.sessionkey.ServerSymmetricKeyIF;
 import kr.pe.codda.common.util.CommonStaticUtil;
-import kr.pe.codda.impl.inner_message.MemberWithdrawInnerReq;
+import kr.pe.codda.impl.inner_message.MemberWithdrawDecryptionReq;
 import kr.pe.codda.impl.message.MemberWithdrawReq.MemberWithdrawReq;
 import kr.pe.codda.impl.message.MessageResultRes.MessageResultRes;
 import kr.pe.codda.server.LoginManagerIF;
@@ -35,12 +34,8 @@ import kr.pe.codda.server.task.AbstractServerTask;
 import kr.pe.codda.server.task.ToLetterCarrier;
 
 public class MemberWithdrawReqServerTask extends AbstractServerTask
-		implements DBAutoCommitTaskIF<MemberWithdrawInnerReq, MessageResultRes> {
+		implements DBAutoCommitTaskIF<MemberWithdrawDecryptionReq, MessageResultRes> {
 	private Logger log = LoggerFactory.getLogger(AccountSearchProcessReqServerTask.class);
-
-	public MemberWithdrawReqServerTask() throws DynamicClassCallException {
-		super();
-	}
 
 	@Override
 	public void doTask(String projectName, LoginManagerIF personalLoginManager, ToLetterCarrier toLetterCarrier,
@@ -50,7 +45,9 @@ public class MemberWithdrawReqServerTask extends AbstractServerTask
 				(MemberWithdrawReq) inputMessage);
 		toLetterCarrier.addSyncOutputMessage(outputMessage);
 	}
-
+	
+	
+	
 	public MessageResultRes doWork(String dbcpName, MemberWithdrawReq memberWithdrawReq) throws Exception {
 		// FIXME!
 		log.info(memberWithdrawReq.toString());
@@ -143,32 +140,39 @@ public class MemberWithdrawReqServerTask extends AbstractServerTask
 			throw new ParameterServerTaskException(errorMessage);
 		}
 
-		MemberWithdrawInnerReq memberWithdrawInnerReq = new MemberWithdrawInnerReq();
-		memberWithdrawInnerReq.setRequestedUserID(memberWithdrawReq.getRequestedUserID());
-		memberWithdrawInnerReq.setIp(memberWithdrawReq.getIp());
-		memberWithdrawInnerReq.setPasswordBytes(passwordBytes);
+		MemberWithdrawDecryptionReq memberWithdrawDecryptionReq = new MemberWithdrawDecryptionReq();
+		memberWithdrawDecryptionReq.setRequestedUserID(memberWithdrawReq.getRequestedUserID());
+		memberWithdrawDecryptionReq.setIp(memberWithdrawReq.getIp());
+		memberWithdrawDecryptionReq.setPasswordBytes(passwordBytes);
 
 		MessageResultRes outputMessage = ServerDBUtil
-				.execute(ServerCommonStaticFinalVars.DEFAULT_DBCP_NAME, this, memberWithdrawInnerReq);
+				.execute(ServerCommonStaticFinalVars.DEFAULT_DBCP_NAME, this, memberWithdrawDecryptionReq);
 
 		return outputMessage;
 	}
+	
+	public MessageResultRes doWork(String dbcpName, MemberWithdrawDecryptionReq memberWithdrawDecryptionReq) throws Exception {
+		MessageResultRes outputMessage = ServerDBUtil.execute(dbcpName, this, memberWithdrawDecryptionReq);
+		
+		return outputMessage;
+		
+	}
 
 	@Override
-	public MessageResultRes doWork(final DSLContext dsl, final MemberWithdrawInnerReq memberWithdrawInnerReq) throws Exception {
+	public MessageResultRes doWork(final DSLContext dsl, final MemberWithdrawDecryptionReq memberWithdrawDecryptionReq) throws Exception {
 		
 		if (null == dsl) {
 			throw new ParameterServerTaskException("the parameter dsl is null");
 		}
 
-		if (null == memberWithdrawInnerReq) {
-			throw new ParameterServerTaskException("the parameter memberWithdrawInnerReq is null");
+		if (null == memberWithdrawDecryptionReq) {
+			throw new ParameterServerTaskException("the parameter memberWithdrawDecryptionReq is null");
 		}
 
-		final String requestedUserID = memberWithdrawInnerReq.getRequestedUserID();
-		final String ip = memberWithdrawInnerReq.getIp();
-		final byte[] passwordBytes = memberWithdrawInnerReq.getPasswordBytes();
-		final String messageID = memberWithdrawInnerReq.getMessageID();
+		final String requestedUserID = memberWithdrawDecryptionReq.getRequestedUserID();
+		final String ip = memberWithdrawDecryptionReq.getIp();
+		final byte[] passwordBytes = memberWithdrawDecryptionReq.getPasswordBytes();
+		final String messageID = memberWithdrawDecryptionReq.getMessageID();
 
 		try {
 			ValueChecker.checkValidRequestedUserID(requestedUserID);

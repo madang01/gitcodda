@@ -12,7 +12,6 @@ import java.io.File;
 import java.nio.ByteBuffer;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
 import java.sql.Connection;
 import java.sql.Timestamp;
 import java.util.Arrays;
@@ -48,7 +47,6 @@ import kr.pe.codda.common.etc.CommonStaticFinalVars;
 import kr.pe.codda.common.exception.DBCPDataSourceNotFoundException;
 import kr.pe.codda.common.exception.ServerTaskException;
 import kr.pe.codda.common.util.CommonStaticUtil;
-import kr.pe.codda.impl.task.server.MemberRegisterReqServerTask;
 import kr.pe.codda.server.dbcp.DBCPManager;
 
 public abstract class ServerDBUtil {
@@ -384,138 +382,6 @@ public abstract class ServerDBUtil {
 
 	}
 
-	/**
-	 * 회원 종류에 따른 회원 등록을 수행한다. 어드민과 일반 회원 등록 관리를 일원화 시킬 목적으로 '회원 등록 서버 서버
-	 * 타스크'(={@link MemberRegisterReqServerTask})가 아닌 이곳 서버 라이브러리에서 관리한다.
-	 * 
-	 * @param dbcpName       dbcp 이름(=db schema)
-	 * @param memberRoleType 회원 역활
-	 * @param userID         회원 아이디
-	 * @param nickname       별명
-	 * @param email          이메일 주소
-	 * @param passwordBytes  패스워드
-	 * @param ip             아이피 주소
-	 * @param registeredDate 등록일
-	 * @throws Exception
-	 */
-	public static void registerMember(String dbcpName, MemberRoleType memberRoleType, String userID, String nickname,
-			String email, byte[] passwordBytes, Timestamp registeredDate, String ip) throws Exception {
-		Logger log = LoggerFactory.getLogger(ServerDBUtil.class);
-
-		if (null == memberRoleType) {
-			String errorMessage = "the parameter memberRoleType is null";
-			throw new ServerTaskException(errorMessage);
-		}
-
-		try {
-			ValueChecker.checkValidUserID(userID);
-			ValueChecker.checkValidNickname(nickname);
-			ValueChecker.checkValidEmail(email);
-			ValueChecker.checkValidMemberReigsterPwd(passwordBytes);
-			ValueChecker.checkValidIP(ip);
-		} catch (IllegalArgumentException e) {
-			throw new ParameterServerTaskException(e.getMessage());
-		}
-
-		SecureRandom random = null;
-		try {
-			random = SecureRandom.getInstance("SHA1PRNG");
-		} catch (NoSuchAlgorithmException e) {
-			/** dead code */
-			log.error("NoSuchAlgorithmException", e);
-			System.exit(1);
-		}
-		byte[] pwdSaltBytes = new byte[8];
-		random.nextBytes(pwdSaltBytes);
-
-		PasswordPairOfMemberTable passwordPairOfMemberTable = toPasswordPairOfMemberTable(passwordBytes, pwdSaltBytes);
-
-		DataSource dataSource = DBCPManager.getInstance().getBasicDataSource(dbcpName);
-
-		Connection conn = null;
-		try {
-			conn = dataSource.getConnection();
-			conn.setAutoCommit(false);
-
-			DSLContext dsl = DSL.using(conn, SQLDialect.MYSQL, ServerDBUtil.getDBCPSettings(dbcpName));
-
-			boolean isSameIDMember = dsl.fetchExists(
-					dsl.select(SB_MEMBER_TB.USER_ID).from(SB_MEMBER_TB).where(SB_MEMBER_TB.USER_ID.eq(userID)));
-
-			if (isSameIDMember) {
-				String errorMessage = new StringBuilder("기존 회원과 중복되는 아이디[").append(userID).append("] 입니다").toString();
-				throw new RollbackServerTaskException(errorMessage);
-			}
-
-			boolean isSameNicknameMember = dsl.fetchExists(
-					dsl.select(SB_MEMBER_TB.NICKNAME).from(SB_MEMBER_TB).where(SB_MEMBER_TB.NICKNAME.eq(nickname)));
-
-			if (isSameNicknameMember) {
-				String errorMessage = new StringBuilder("기존 회원과 중복되는 별명[").append(nickname).append("] 입니다").toString();
-				throw new RollbackServerTaskException(errorMessage);
-			}
-
-			int resultOfInsert = dsl.insertInto(SB_MEMBER_TB).set(SB_MEMBER_TB.USER_ID, userID)
-					.set(SB_MEMBER_TB.NICKNAME, nickname)
-					.set(SB_MEMBER_TB.PWD_BASE64, passwordPairOfMemberTable.getPasswordBase64())
-					.set(SB_MEMBER_TB.PWD_SALT_BASE64, passwordPairOfMemberTable.getPasswordSaltBase64())
-					.set(SB_MEMBER_TB.ROLE, memberRoleType.getValue())
-					.set(SB_MEMBER_TB.STATE, MemberStateType.OK.getValue()).set(SB_MEMBER_TB.EMAIL, email)
-					.set(SB_MEMBER_TB.PWD_FAIL_CNT, UByte.valueOf(0)).set(SB_MEMBER_TB.REG_DT, registeredDate)
-					.set(SB_MEMBER_TB.LAST_NICKNAME_MOD_DT, registeredDate)
-					.set(SB_MEMBER_TB.LAST_EMAIL_MOD_DT, registeredDate)
-					.set(SB_MEMBER_TB.LAST_PWD_MOD_DT, registeredDate)
-					.set(SB_MEMBER_TB.LAST_STATE_MOD_DT, registeredDate)
-					.set(SB_MEMBER_TB.NEXT_ACTIVE_SQ, UInteger.valueOf(0)).execute();
-
-			if (0 == resultOfInsert) {
-				String errorMessage = "회원 등록하는데 실패하였습니다";
-				throw new RollbackServerTaskException(errorMessage);
-			}
-
-			String logText = new StringBuilder().append("회원 가입 신청 아이디[").append(userID).append("], 회원 종류[")
-					.append(memberRoleType.getName()).append("]").toString();
-
-			insertSiteLog(dsl, userID, logText, registeredDate, ip);
-
-			conn.commit();
-		} catch (RollbackServerTaskException e) {
-			if (null != conn) {
-				try {
-					conn.rollback();
-				} catch (Exception e1) {
-					log.warn("fail to rollback", e1);
-				}
-			}
-		} catch (CommitServerTaskException e) {
-			if (null != conn) {
-				try {
-					conn.commit();
-				} catch (Exception e1) {
-					log.warn("fail to commit", e1);
-				}
-			}
-		} catch (Exception e) {
-			if (null != conn) {
-				try {
-					conn.rollback();
-				} catch (Exception e1) {
-					log.warn("fail to rollback", e1);
-				}
-			}
-
-			throw e;
-		} finally {
-			if (null != conn) {
-				try {
-					conn.close();
-				} catch (Exception e) {
-					log.warn("fail to close the db connection", e);
-				}
-			}
-		}
-
-	}
 
 	/**
 	 * <pre>
@@ -1119,6 +985,7 @@ public abstract class ServerDBUtil {
 					log.warn("fail to rollback", e1);
 				}
 			}
+			throw e;
 		} catch (CommitServerTaskException e) {
 			if (null != conn) {
 				try {
@@ -1128,6 +995,7 @@ public abstract class ServerDBUtil {
 					log.warn("fail to commit", e1);
 				}
 			}
+			throw e;
 		} catch (Exception e) {
 			if (null != conn) {
 				try {
@@ -1161,9 +1029,10 @@ public abstract class ServerDBUtil {
 
 			DSLContext dsl = DSL.using(conn, SQLDialect.MYSQL, ServerDBUtil.getDBCPSettings(dbcpName));
 
-			dbExecutor.execute(dsl);
-
+			dbExecutor.execute(dsl);		
+			
 			conn.commit();
+			
 		} catch (RollbackServerTaskException e) {
 			if (null != conn) {
 				try {
@@ -1173,6 +1042,8 @@ public abstract class ServerDBUtil {
 					log.warn("fail to rollback", e1);
 				}
 			}
+			
+			throw e;
 		} catch (CommitServerTaskException e) {
 			if (null != conn) {
 				try {
@@ -1182,6 +1053,7 @@ public abstract class ServerDBUtil {
 					log.warn("fail to commit", e1);
 				}
 			}
+			throw e;
 		} catch (Exception e) {
 			if (null != conn) {
 				try {

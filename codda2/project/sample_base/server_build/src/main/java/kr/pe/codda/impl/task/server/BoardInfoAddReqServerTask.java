@@ -9,7 +9,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import kr.pe.codda.common.etc.CommonStaticFinalVars;
-import kr.pe.codda.common.exception.DynamicClassCallException;
 import kr.pe.codda.common.message.AbstractMessage;
 import kr.pe.codda.impl.message.BoardInfoAddReq.BoardInfoAddReq;
 import kr.pe.codda.impl.message.BoardInfoAddRes.BoardInfoAddRes;
@@ -30,10 +29,6 @@ import kr.pe.codda.server.task.ToLetterCarrier;
 public class BoardInfoAddReqServerTask extends AbstractServerTask implements DBAutoCommitTaskIF<BoardInfoAddReq, BoardInfoAddRes> {
 	private Logger log = LoggerFactory.getLogger(AccountSearchProcessReqServerTask.class);
 
-	public BoardInfoAddReqServerTask() throws DynamicClassCallException {
-		super();
-	}
-	
 	@Override
 	public void doTask(String projectName, LoginManagerIF personalLoginManager, ToLetterCarrier toLetterCarrier,
 			AbstractMessage inputMessage) throws Exception {
@@ -41,6 +36,12 @@ public class BoardInfoAddReqServerTask extends AbstractServerTask implements DBA
 		AbstractMessage outputMessage = ServerDBUtil.execute(
 				ServerCommonStaticFinalVars.DEFAULT_DBCP_NAME, this, (BoardInfoAddReq) inputMessage);
 		toLetterCarrier.addSyncOutputMessage(outputMessage);
+	}
+	
+	public BoardInfoAddRes doWork(final String dbcpName, final BoardInfoAddReq boardInfoAddReq) throws Exception {
+		BoardInfoAddRes outputMessage = ServerDBUtil.execute(dbcpName, this, boardInfoAddReq);
+		
+		return outputMessage;
 	}
 	
 	public BoardInfoAddRes doWork(final DSLContext dsl, final BoardInfoAddReq boardInfoAddReq) throws Exception {

@@ -16,7 +16,6 @@ import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import junitlib.AbstractBoardTest;
 import kr.pe.codda.common.etc.CommonStaticFinalVars;
-import kr.pe.codda.common.exception.DynamicClassCallException;
 import kr.pe.codda.common.exception.ServerTaskException;
 import kr.pe.codda.impl.message.ArraySiteMenuReq.ArraySiteMenuReq;
 import kr.pe.codda.impl.message.ArraySiteMenuRes.ArraySiteMenuRes;
@@ -51,13 +50,11 @@ public class SiteMenuIntegrationTest extends AbstractBoardTest {
 	public void setUp() {
 		UByte menuSequenceID = SequenceType.MENU.getSequenceID();
 		try {
-			ServerDBUtil.execute(TEST_DBCP_NAME, (conn, dsl) -> {
+			ServerDBUtil.execute(TEST_DBCP_NAME, (dsl) -> {
 				dsl.update(SB_SEQ_TB).set(SB_SEQ_TB.SQ_VALUE, UInteger.valueOf(1))
 						.where(SB_SEQ_TB.SQ_ID.eq(menuSequenceID)).execute();
 
 				dsl.delete(SB_SITEMENU_TB).execute();
-
-				conn.commit();
 			});
 		} catch (Exception e) {
 			log.warn(e.getMessage(), e);
@@ -75,12 +72,7 @@ public class SiteMenuIntegrationTest extends AbstractBoardTest {
 	public void 사이트메뉴배열형목록조회_일반인() {
 		String requestedUserIDForUser = "test01";
 
-		ArraySiteMenuReqServerTask arraySiteMenuReqServerTask = null;
-		try {
-			arraySiteMenuReqServerTask = new ArraySiteMenuReqServerTask();
-		} catch (DynamicClassCallException e1) {
-			fail("dead code");
-		}
+		ArraySiteMenuReqServerTask arraySiteMenuReqServerTask = new ArraySiteMenuReqServerTask();
 
 		ArraySiteMenuReq arraySiteMenuReq = new ArraySiteMenuReq();
 		arraySiteMenuReq.setRequestedUserID(requestedUserIDForUser);
@@ -109,12 +101,7 @@ public class SiteMenuIntegrationTest extends AbstractBoardTest {
 	public void 사이트메뉴계층형조회_일반인() {
 		String requestedUserIDForUser = "test01";
 
-		TreeSiteMenuReqServerTask treeSiteMenuReqServerTask = null;
-		try {
-			treeSiteMenuReqServerTask = new TreeSiteMenuReqServerTask();
-		} catch (DynamicClassCallException e1) {
-			fail("dead code");
-		}
+		TreeSiteMenuReqServerTask treeSiteMenuReqServerTask = new TreeSiteMenuReqServerTask();
 
 		TreeSiteMenuReq treeSiteMenuReq = new TreeSiteMenuReq();
 		treeSiteMenuReq.setRequestedUserID(requestedUserIDForUser);
@@ -141,12 +128,7 @@ public class SiteMenuIntegrationTest extends AbstractBoardTest {
 	public void 초기상태에서_사이트메뉴배열형목록조회와_계층형조회비교() {
 		String requestedUserIDForAdmin = "admin";
 
-		ArraySiteMenuReqServerTask arraySiteMenuReqServerTask = null;
-		try {
-			arraySiteMenuReqServerTask = new ArraySiteMenuReqServerTask();
-		} catch (DynamicClassCallException e1) {
-			fail("dead code");
-		}
+		ArraySiteMenuReqServerTask arraySiteMenuReqServerTask = new ArraySiteMenuReqServerTask();
 
 		ArraySiteMenuReq arraySiteMenuReq = new ArraySiteMenuReq();
 		arraySiteMenuReq.setRequestedUserID(requestedUserIDForAdmin);
@@ -166,12 +148,7 @@ public class SiteMenuIntegrationTest extends AbstractBoardTest {
 			fail(errorMessage);
 		}
 
-		TreeSiteMenuReqServerTask treeSiteMenuReqServerTask = null;
-		try {
-			treeSiteMenuReqServerTask = new TreeSiteMenuReqServerTask();
-		} catch (DynamicClassCallException e1) {
-			fail("dead code");
-		}
+		TreeSiteMenuReqServerTask treeSiteMenuReqServerTask = new TreeSiteMenuReqServerTask();
 
 		TreeSiteMenuReq treeSiteMenuReq = new TreeSiteMenuReq();
 		treeSiteMenuReq.setRequestedUserID(requestedUserIDForAdmin);
@@ -201,16 +178,9 @@ public class SiteMenuIntegrationTest extends AbstractBoardTest {
 		 */
 		// final long menuNoForMoveUpDownTest = 14L;
 
-		ArraySiteMenuReqServerTask arraySiteMenuReqServerTask = null;
-		MenuMoveUpReqServerTask menuUpMoveReqServerTask = null;
-		MenuMoveDownReqServerTask menuDownMoveReqServerTask = null;
-		try {
-			arraySiteMenuReqServerTask = new ArraySiteMenuReqServerTask();
-			menuUpMoveReqServerTask = new MenuMoveUpReqServerTask();
-			menuDownMoveReqServerTask = new MenuMoveDownReqServerTask();
-		} catch (DynamicClassCallException e1) {
-			fail("dead code");
-		}
+		ArraySiteMenuReqServerTask arraySiteMenuReqServerTask = new ArraySiteMenuReqServerTask();
+		MenuMoveUpReqServerTask menuUpMoveReqServerTask = new MenuMoveUpReqServerTask();
+		MenuMoveDownReqServerTask menuDownMoveReqServerTask = new MenuMoveDownReqServerTask();
 
 		class VirtualSiteMenuTreeBuilder implements VirtualSiteMenuTreeBuilderIF {
 
@@ -559,16 +529,9 @@ public class SiteMenuIntegrationTest extends AbstractBoardTest {
 		 * WARNING! 메뉴 이동 테스트 대상 메뉴는 메뉴 깊이 3을 갖는 '세션키 테스트' 와 'RSA 테스트' 이다. 입력한 메뉴 순서는
 		 * '세션키 테스트' 이고 다음이 'RSA 테스트' 이다.
 		 */
-		ArraySiteMenuReqServerTask arraySiteMenuReqServerTask = null;
-		MenuMoveUpReqServerTask menuUpMoveReqServerTask = null;
-		MenuMoveDownReqServerTask menuDownMoveReqServerTask = null;
-		try {
-			arraySiteMenuReqServerTask = new ArraySiteMenuReqServerTask();
-			menuUpMoveReqServerTask = new MenuMoveUpReqServerTask();
-			menuDownMoveReqServerTask = new MenuMoveDownReqServerTask();
-		} catch (DynamicClassCallException e1) {
-			fail("dead code");
-		}
+		ArraySiteMenuReqServerTask arraySiteMenuReqServerTask = new ArraySiteMenuReqServerTask();
+		MenuMoveUpReqServerTask menuUpMoveReqServerTask = new MenuMoveUpReqServerTask();
+		MenuMoveDownReqServerTask menuDownMoveReqServerTask = new MenuMoveDownReqServerTask();
 
 		class VirtualSiteMenuTreeBuilder implements VirtualSiteMenuTreeBuilderIF {
 
@@ -917,12 +880,8 @@ public class SiteMenuIntegrationTest extends AbstractBoardTest {
 		 */
 		String requestedUserIDForAdmin = "admin";
 
-		RootMenuAddReqServerTask rootMenuAddReqServerTask = null;
-		try {
-			rootMenuAddReqServerTask = new RootMenuAddReqServerTask();
-		} catch (DynamicClassCallException e1) {
-			fail("dead code");
-		}
+		RootMenuAddReqServerTask rootMenuAddReqServerTask = new RootMenuAddReqServerTask();
+		
 
 		for (int i = 0; i < CommonStaticFinalVars.UNSIGNED_BYTE_MAX; i++) {
 			RootMenuAddReq rootMenuAddReq = new RootMenuAddReq();
@@ -971,12 +930,7 @@ public class SiteMenuIntegrationTest extends AbstractBoardTest {
 		Level oldLogLevel = logger.getLevel();
 		logger.setLevel(Level.OFF);
 
-		RootMenuAddReqServerTask rootMenuAddReqServerTask = null;
-		try {
-			rootMenuAddReqServerTask = new RootMenuAddReqServerTask();
-		} catch (DynamicClassCallException e1) {
-			fail("dead code");
-		}
+		RootMenuAddReqServerTask rootMenuAddReqServerTask = new RootMenuAddReqServerTask();
 
 		for (int i = 0; (i + 1) < CommonStaticFinalVars.UNSIGNED_BYTE_MAX; i++) {
 			RootMenuAddReq rootMenuAddReq = new RootMenuAddReq();
@@ -1010,12 +964,7 @@ public class SiteMenuIntegrationTest extends AbstractBoardTest {
 			fail(errorMessage);
 		}
 
-		ChildMenuAddReqServerTask childMenuAddReqServerTask = null;
-		try {
-			childMenuAddReqServerTask = new ChildMenuAddReqServerTask();
-		} catch (DynamicClassCallException e1) {
-			fail("dead code");
-		}
+		ChildMenuAddReqServerTask childMenuAddReqServerTask = new ChildMenuAddReqServerTask();
 
 		ChildMenuAddReq firstChildMenuAddReq = new ChildMenuAddReq();
 		firstChildMenuAddReq.setRequestedUserID(requestedUserIDForAdmin);
@@ -1045,12 +994,7 @@ public class SiteMenuIntegrationTest extends AbstractBoardTest {
 		String requestedUserIDForAdmin = "admin";
 		final long parentMenuNo = 10;
 
-		ChildMenuAddReqServerTask childMenuAddReqServerTask = null;
-		try {
-			childMenuAddReqServerTask = new ChildMenuAddReqServerTask();
-		} catch (DynamicClassCallException e1) {
-			fail("dead code");
-		}
+		ChildMenuAddReqServerTask childMenuAddReqServerTask = new ChildMenuAddReqServerTask();
 
 		ChildMenuAddReq firstChildMenuAddReq = new ChildMenuAddReq();
 		firstChildMenuAddReq.setRequestedUserID(requestedUserIDForAdmin);
@@ -1078,12 +1022,7 @@ public class SiteMenuIntegrationTest extends AbstractBoardTest {
 	public void 메뉴삭제테스트_2개루트메뉴등록후1개만삭제한경우() {
 		String requestedUserIDForAdmin = "admin";
 
-		RootMenuAddReqServerTask rootMenuAddReqServerTask = null;
-		try {
-			rootMenuAddReqServerTask = new RootMenuAddReqServerTask();
-		} catch (DynamicClassCallException e1) {
-			fail("dead code");
-		}
+		RootMenuAddReqServerTask rootMenuAddReqServerTask = new RootMenuAddReqServerTask();
 
 		RootMenuAddReq rootMenuAddReqForDelete = new RootMenuAddReq();
 		rootMenuAddReqForDelete.setRequestedUserID(requestedUserIDForAdmin);
@@ -1111,12 +1050,7 @@ public class SiteMenuIntegrationTest extends AbstractBoardTest {
 			fail("fail to get a output message 'RootMenuAddRes'");
 		}
 
-		MenuDeleteReqServerTask menuDeleteReqServerTask = null;
-		try {
-			menuDeleteReqServerTask = new MenuDeleteReqServerTask();
-		} catch (DynamicClassCallException e1) {
-			fail("dead code");
-		}
+		MenuDeleteReqServerTask menuDeleteReqServerTask = new MenuDeleteReqServerTask();
 
 		MenuDeleteReq menuDeleteReq = new MenuDeleteReq();
 		menuDeleteReq.setRequestedUserID(requestedUserIDForAdmin);
@@ -1134,12 +1068,8 @@ public class SiteMenuIntegrationTest extends AbstractBoardTest {
 			fail(messageResultRes.getResultMessage());
 		}
 
-		ArraySiteMenuReqServerTask arraySiteMenuReqServerTask = null;
-		try {
-			arraySiteMenuReqServerTask = new ArraySiteMenuReqServerTask();
-		} catch (DynamicClassCallException e1) {
-			fail("dead code");
-		}
+		ArraySiteMenuReqServerTask arraySiteMenuReqServerTask = new ArraySiteMenuReqServerTask();
+
 		ArraySiteMenuReq arraySiteMenuReq = new ArraySiteMenuReq();
 		arraySiteMenuReq.setRequestedUserID(requestedUserIDForAdmin);
 		try {
@@ -1169,12 +1099,7 @@ public class SiteMenuIntegrationTest extends AbstractBoardTest {
 	public void 메뉴삭제테스트_삭제할대상메뉴없는경우() {
 		String requestedUserIDForAdmin = "admin";
 
-		MenuDeleteReqServerTask menuDeleteReqServerTask = null;
-		try {
-			menuDeleteReqServerTask = new MenuDeleteReqServerTask();
-		} catch (DynamicClassCallException e1) {
-			fail("dead code");
-		}
+		MenuDeleteReqServerTask menuDeleteReqServerTask = new MenuDeleteReqServerTask();
 
 		MenuDeleteReq menuDeleteReq = new MenuDeleteReq();
 		menuDeleteReq.setRequestedUserID(requestedUserIDForAdmin);
@@ -1199,12 +1124,7 @@ public class SiteMenuIntegrationTest extends AbstractBoardTest {
 	public void 메뉴삭제테스트_자식이있는메뉴삭제할경우() {
 		String requestedUserIDForAdmin = "admin";
 
-		RootMenuAddReqServerTask rootMenuAddReqServerTask = null;
-		try {
-			rootMenuAddReqServerTask = new RootMenuAddReqServerTask();
-		} catch (DynamicClassCallException e1) {
-			fail("dead code");
-		}
+		RootMenuAddReqServerTask rootMenuAddReqServerTask = new RootMenuAddReqServerTask();
 
 		RootMenuAddReq rootMenuAddReq = new RootMenuAddReq();
 		rootMenuAddReq.setRequestedUserID(requestedUserIDForAdmin);
@@ -1219,12 +1139,8 @@ public class SiteMenuIntegrationTest extends AbstractBoardTest {
 			fail("fail to get a output message 'RootMenuAddRes'");
 		}
 
-		ChildMenuAddReqServerTask childMenuAddReqServerTask = null;
-		try {
-			childMenuAddReqServerTask = new ChildMenuAddReqServerTask();
-		} catch (DynamicClassCallException e1) {
-			fail("dead code");
-		}
+		ChildMenuAddReqServerTask childMenuAddReqServerTask = new ChildMenuAddReqServerTask();
+
 		ChildMenuAddReq childMenuAddReq = new ChildMenuAddReq();
 		childMenuAddReq.setRequestedUserID(requestedUserIDForAdmin);
 		childMenuAddReq.setParentNo(rootMenuAddRes.getMenuNo());
@@ -1239,12 +1155,7 @@ public class SiteMenuIntegrationTest extends AbstractBoardTest {
 			fail("fail to get a output message 'RootMenuAddRes'");
 		}
 
-		MenuDeleteReqServerTask menuDeleteReqServerTask = null;
-		try {
-			menuDeleteReqServerTask = new MenuDeleteReqServerTask();
-		} catch (DynamicClassCallException e1) {
-			fail("dead code");
-		}
+		MenuDeleteReqServerTask menuDeleteReqServerTask = new MenuDeleteReqServerTask();
 
 		MenuDeleteReq menuDeleteReq = new MenuDeleteReq();
 		menuDeleteReq.setRequestedUserID(requestedUserIDForAdmin);

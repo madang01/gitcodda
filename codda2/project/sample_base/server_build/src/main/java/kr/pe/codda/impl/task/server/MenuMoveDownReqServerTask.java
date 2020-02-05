@@ -18,7 +18,6 @@ import org.jooq.types.UInteger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import kr.pe.codda.common.exception.DynamicClassCallException;
 import kr.pe.codda.common.message.AbstractMessage;
 import kr.pe.codda.impl.message.MenuMoveDownReq.MenuMoveDownReq;
 import kr.pe.codda.impl.message.MessageResultRes.MessageResultRes;
@@ -38,10 +37,6 @@ public class MenuMoveDownReqServerTask extends AbstractServerTask
 		implements DBAutoCommitTaskIF<MenuMoveDownReq, MessageResultRes> {
 	private Logger log = LoggerFactory.getLogger(AccountSearchProcessReqServerTask.class);
 
-	public MenuMoveDownReqServerTask() throws DynamicClassCallException {
-		super();
-	}
-
 	@Override
 	public void doTask(String projectName, LoginManagerIF personalLoginManager, ToLetterCarrier toLetterCarrier,
 			AbstractMessage inputMessage) throws Exception {
@@ -52,6 +47,12 @@ public class MenuMoveDownReqServerTask extends AbstractServerTask
 		toLetterCarrier.addSyncOutputMessage(outputMessage);
 	}
 
+	public MessageResultRes doWork(final String dbcpName, final MenuMoveDownReq menuMoveDownReq) throws Exception {
+		MessageResultRes outputMessage = ServerDBUtil.execute(dbcpName, this, menuMoveDownReq);
+		
+		return outputMessage;
+	}
+	
 	@Override
 	public MessageResultRes doWork(final DSLContext dsl, final MenuMoveDownReq menuMoveDownReq) throws Exception {
 		if (null == dsl) {

@@ -25,7 +25,7 @@ import kr.pe.codda.impl.message.MemberWithdrawReq.MemberWithdrawReq;
  * @author Won Jonghoon
  *
  */
-public class MemberWithdrawInnerReq {
+public class MemberWithdrawDecryptionReq {
 	private String requestedUserID;
 	private String ip;
 	private byte[] passwordBytes;

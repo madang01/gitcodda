@@ -8,7 +8,6 @@ import org.jooq.types.UByte;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import kr.pe.codda.common.exception.DynamicClassCallException;
 import kr.pe.codda.common.message.AbstractMessage;
 import kr.pe.codda.impl.message.BoardInfoModifyReq.BoardInfoModifyReq;
 import kr.pe.codda.impl.message.MessageResultRes.MessageResultRes;
@@ -33,11 +32,7 @@ import kr.pe.codda.server.task.ToLetterCarrier;
 public class BoardInfoModifyReqServerTask extends AbstractServerTask
 		implements DBAutoCommitTaskIF<BoardInfoModifyReq, MessageResultRes> {
 	private Logger log = LoggerFactory.getLogger(AccountSearchProcessReqServerTask.class);
-
-	public BoardInfoModifyReqServerTask() throws DynamicClassCallException {
-		super();
-	}
-
+	
 	@Override
 	public void doTask(String projectName, LoginManagerIF personalLoginManager, ToLetterCarrier toLetterCarrier,
 			AbstractMessage inputMessage) throws Exception {
@@ -47,6 +42,13 @@ public class BoardInfoModifyReqServerTask extends AbstractServerTask
 		toLetterCarrier.addSyncOutputMessage(outputMessage);
 	}
 
+	
+	public MessageResultRes doWork(final String dbcpName, final BoardInfoModifyReq boardInfoModifyReq) throws Exception {
+		MessageResultRes outputMessage = ServerDBUtil.execute(dbcpName, this, boardInfoModifyReq);
+		
+		return outputMessage;
+	}
+	
 	@Override
 	public MessageResultRes doWork(final DSLContext dsl, final BoardInfoModifyReq boardInfoModifyReq) throws Exception {
 		if (null == dsl) {

@@ -8,7 +8,6 @@ import org.jooq.types.UByte;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import kr.pe.codda.common.exception.DynamicClassCallException;
 import kr.pe.codda.common.message.AbstractMessage;
 import kr.pe.codda.impl.message.BoardInfoDeleteReq.BoardInfoDeleteReq;
 import kr.pe.codda.impl.message.MessageResultRes.MessageResultRes;
@@ -27,10 +26,6 @@ public class BoardInfoDeleteReqServerTask extends AbstractServerTask
 		implements DBAutoCommitTaskIF<BoardInfoDeleteReq, MessageResultRes> {
 	private Logger log = LoggerFactory.getLogger(AccountSearchProcessReqServerTask.class);
 
-	public BoardInfoDeleteReqServerTask() throws DynamicClassCallException {
-		super();
-	}
-
 	@Override
 	public void doTask(String projectName, LoginManagerIF personalLoginManager, ToLetterCarrier toLetterCarrier,
 			AbstractMessage inputMessage) throws Exception {
@@ -40,6 +35,14 @@ public class BoardInfoDeleteReqServerTask extends AbstractServerTask
 		toLetterCarrier.addSyncOutputMessage(outputMessage);
 	}
 
+	public MessageResultRes doWork(final String dbcpName, final BoardInfoDeleteReq boardInfoDeleteReq) throws Exception {
+		MessageResultRes outputMessage = ServerDBUtil.execute(
+				dbcpName, this, boardInfoDeleteReq);
+		
+		return outputMessage;
+	}
+	
+	@Override
 	public MessageResultRes doWork(final DSLContext dsl, final BoardInfoDeleteReq boardInfoDeleteReq) throws Exception {
 		if (null == dsl) {
 			throw new ParameterServerTaskException("the parameter dsl is null");

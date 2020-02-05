@@ -12,14 +12,15 @@ import org.junit.After;
 import org.junit.Test;
 
 import junitlib.AbstractBoardTest;
-import kr.pe.codda.common.exception.DynamicClassCallException;
 import kr.pe.codda.common.exception.ServerTaskException;
+import kr.pe.codda.impl.inner_message.MemberRegisterDecryptionReq;
 import kr.pe.codda.impl.message.ArraySiteMenuReq.ArraySiteMenuReq;
 import kr.pe.codda.impl.message.ArraySiteMenuRes.ArraySiteMenuRes;
 import kr.pe.codda.impl.message.ArraySiteMenuRes.ArraySiteMenuRes.Menu;
 import kr.pe.codda.impl.message.MemberBlockReq.MemberBlockReq;
 import kr.pe.codda.impl.task.server.ArraySiteMenuReqServerTask;
 import kr.pe.codda.impl.task.server.MemberBlockReqServerTask;
+import kr.pe.codda.impl.task.server.MemberRegisterReqServerTask;
 
 public class ServerDBUtilTest extends AbstractBoardTest {
 	private final static String TEST_DBCP_NAME = ServerCommonStaticFinalVars.GENERAL_TEST_DBCP_NAME;
@@ -72,12 +73,11 @@ public class ServerDBUtilTest extends AbstractBoardTest {
 
 	private void initMenuDB() {
 		try {
-			ServerDBUtil.execute(TEST_DBCP_NAME, (conn, dsl) -> {
+			ServerDBUtil.execute(TEST_DBCP_NAME, (dsl) -> {
 				dsl.update(SB_SEQ_TB).set(SB_SEQ_TB.SQ_VALUE, UInteger.valueOf(1)).execute();
 
 				dsl.delete(SB_SITEMENU_TB).execute();
 
-				conn.commit();
 			});
 		} catch(Exception e) {
 			log.warn("unknown error", e);
@@ -279,12 +279,8 @@ public class ServerDBUtilTest extends AbstractBoardTest {
 		SiteMenuTree virtualSiteMenuTree = virtualSiteMenuTreeBuilder.build();
 		virtualSiteMenuTree.toDBRecord(TEST_DBCP_NAME);
 
-		ArraySiteMenuReqServerTask arraySiteMenuReqServerTask = null;
-		try {
-			arraySiteMenuReqServerTask = new ArraySiteMenuReqServerTask();
-		} catch (DynamicClassCallException e2) {
-			fail("dead code");
-		}
+		ArraySiteMenuReqServerTask arraySiteMenuReqServerTask = new ArraySiteMenuReqServerTask();
+		
 		ArraySiteMenuReq arraySiteMenuReq = new ArraySiteMenuReq();
 		arraySiteMenuReq.setRequestedUserID("admin");
 		
@@ -303,7 +299,7 @@ public class ServerDBUtilTest extends AbstractBoardTest {
 		
 		
 		try {
-			ServerDBUtil.execute(TEST_DBCP_NAME, (conn, dsl) -> {
+			ServerDBUtil.execute(TEST_DBCP_NAME, (dsl) -> {
 				for (ArraySiteMenuRes.Menu siteMenu : arrayTypeMenuList) {
 
 					UByte expectedFromOrderSeq = ServerDBUtil.getToOrderSeqOfRelativeRootMenu(dsl,
@@ -335,12 +331,15 @@ public class ServerDBUtilTest extends AbstractBoardTest {
 		final String requestedUserID = "testAA";
 		
 		try {
-			ServerDBUtil.execute(TEST_DBCP_NAME, (conn, dsl) -> {
+			ServerDBUtil.execute(TEST_DBCP_NAME, (dsl) -> {
 				
-				ServerDBUtil.checkUserAccessRights(conn, dsl, log, "회원 미 존재 테스트 서비스", PermissionType.MEMBER,
+				dsl.delete(SB_MEMBER_TB).where(SB_MEMBER_TB.USER_ID.eq(requestedUserID)).execute();
+				
+				ServerDBUtil.checkUserAccessRights(dsl, "회원 미 존재 테스트 서비스", PermissionType.MEMBER,
 						requestedUserID);
-				fail("ServerTaskException");
 			});
+			
+			fail("ServerTaskException");
 		} catch (ServerTaskException e) {
 			String actualErrorMessag = e.getMessage();
 
@@ -365,15 +364,22 @@ public class ServerDBUtilTest extends AbstractBoardTest {
 		String email = "test03@codda.pe.kr";
 		String ip = "127.0.0.3";
 		
-		try {
-			ServerDBUtil.execute(TEST_DBCP_NAME, (conn, dsl) -> {
+		final MemberRegisterDecryptionReq memberRegisterDecryptionReq = new MemberRegisterDecryptionReq();
+		memberRegisterDecryptionReq.setMemberRoleType(MemberRoleType.MEMBER);
+		memberRegisterDecryptionReq.setUserID(requestedUserID);
+		memberRegisterDecryptionReq.setNickname(nickname);
+		memberRegisterDecryptionReq.setEmail(email);
+		memberRegisterDecryptionReq.setPasswordBytes(passwordBytes);
+		memberRegisterDecryptionReq.setRegisteredDate(new java.sql.Timestamp(System.currentTimeMillis()));
+		memberRegisterDecryptionReq.setIp(ip);
+		
+		MemberRegisterReqServerTask memberRegisterReqServerTask = new MemberRegisterReqServerTask();
+		
+		try {			
+			ServerDBUtil.execute(TEST_DBCP_NAME, (dsl) -> {
 				dsl.delete(SB_MEMBER_TB).where(SB_MEMBER_TB.USER_ID.eq(requestedUserID)).execute();
-
-				conn.commit();				
-				
-				ServerDBUtil.registerMember(TEST_DBCP_NAME, MemberRoleType.MEMBER, requestedUserID, nickname, email,
-						passwordBytes, new java.sql.Timestamp(System.currentTimeMillis()), ip);
-				
+				memberRegisterReqServerTask.doWork(dsl, memberRegisterDecryptionReq);
+			
 				MemberBlockReq memberBlockReq = new MemberBlockReq();
 				memberBlockReq.setRequestedUserID("admin");
 				memberBlockReq.setIp(ip);
@@ -382,13 +388,13 @@ public class ServerDBUtilTest extends AbstractBoardTest {
 
 				MemberBlockReqServerTask userBlockReqServerTask = new MemberBlockReqServerTask();
 				
-				userBlockReqServerTask.doWork(TEST_DBCP_NAME, memberBlockReq);
-				
-				ServerDBUtil.checkUserAccessRights(conn, dsl, log, "회원 상태가 비정상 테스트 서비스", PermissionType.MEMBER,
+				userBlockReqServerTask.doWork(dsl, memberBlockReq);
+			
+				ServerDBUtil.checkUserAccessRights(dsl, "회원 상태가 비정상 테스트 서비스", PermissionType.MEMBER,
 						requestedUserID);
-				
-				fail("ServerTaskException");
 			});
+			
+			fail("ServerTaskException");
 		} catch (ServerTaskException e) {
 			String actualErrorMessag = e.getMessage();
 
@@ -407,32 +413,38 @@ public class ServerDBUtilTest extends AbstractBoardTest {
 		final String TEST_DBCP_NAME = ServerCommonStaticFinalVars.GENERAL_TEST_DBCP_NAME;
 		final String requestedUserID = "test03";
 		
+		MemberRegisterReqServerTask memberRegisterReqServerTask = new MemberRegisterReqServerTask();
+		
+		byte[] passwordBytes = { (byte) 't', (byte) 'e', (byte) 's', (byte) 't', (byte) '1', (byte) '2', (byte) '3',
+				(byte) '4', (byte) '$' };
+		String nickname = "단위테스터용아이디3";
+		String email = "test03@codda.pe.kr";
+		String ip = "127.0.0.3";
+		
+		final MemberRegisterDecryptionReq memberRegisterDecryptionReq = new MemberRegisterDecryptionReq();
+		memberRegisterDecryptionReq.setMemberRoleType(MemberRoleType.MEMBER);
+		memberRegisterDecryptionReq.setUserID(requestedUserID);
+		memberRegisterDecryptionReq.setNickname(nickname);
+		memberRegisterDecryptionReq.setEmail(email);
+		memberRegisterDecryptionReq.setPasswordBytes(passwordBytes);
+		memberRegisterDecryptionReq.setRegisteredDate(new java.sql.Timestamp(System.currentTimeMillis()));
+		memberRegisterDecryptionReq.setIp(ip);
+		
 		try {
-			ServerDBUtil.execute(TEST_DBCP_NAME, (conn, dsl) -> {
-				dsl.delete(SB_MEMBER_TB).where(SB_MEMBER_TB.USER_ID.eq(requestedUserID)).execute();
+			ServerDBUtil.execute(TEST_DBCP_NAME, (dsl) -> {
+				dsl.delete(SB_MEMBER_TB).where(SB_MEMBER_TB.USER_ID.eq(requestedUserID)).execute();				
 
-				conn.commit();
-
-				byte[] passwordBytes = { (byte) 't', (byte) 'e', (byte) 's', (byte) 't', (byte) '1', (byte) '2', (byte) '3',
-						(byte) '4', (byte) '$' };
-				String nickname = "단위테스터용아이디3";
-				String email = "test03@codda.pe.kr";
-				String ip = "127.0.0.3";
-
-				ServerDBUtil.registerMember(TEST_DBCP_NAME, MemberRoleType.MEMBER, requestedUserID, nickname, email,
-						passwordBytes, new java.sql.Timestamp(System.currentTimeMillis()), ip);
+				memberRegisterReqServerTask.doWork(dsl, memberRegisterDecryptionReq);
 
 				dsl.update(SB_MEMBER_TB)
 				.set(SB_MEMBER_TB.ROLE, (byte)'K').where(SB_MEMBER_TB.USER_ID.eq(requestedUserID))
 						.execute();
 				
-				conn.commit();
-
-				ServerDBUtil.checkUserAccessRights(conn, dsl, log, "회원 역활 유형이 손님인 테스트 서비스", PermissionType.MEMBER,
+				ServerDBUtil.checkUserAccessRights(dsl, "회원 역활 유형이 손님인 테스트 서비스", PermissionType.MEMBER,
 						requestedUserID);				
-				
-				fail("ServerTaskException");
 			});
+			
+			fail("ServerTaskException");
 		} catch (ServerTaskException e) {
 			String actualErrorMessag = e.getMessage();
 
@@ -450,26 +462,35 @@ public class ServerDBUtilTest extends AbstractBoardTest {
 	public void testCheckUserAccessRights_회원역활값이손님인경우() {
 		final String TEST_DBCP_NAME = ServerCommonStaticFinalVars.GENERAL_TEST_DBCP_NAME;
 		final String requestedUserID = "test03";
+		
+		MemberRegisterReqServerTask memberRegisterReqServerTask = new MemberRegisterReqServerTask();
+		
+		byte[] passwordBytes = { (byte) 't', (byte) 'e', (byte) 's', (byte) 't', (byte) '1', (byte) '2', (byte) '3',
+				(byte) '4', (byte) '$' };
+		String nickname = "단위테스터용아이디3";
+		String email = "test03@codda.pe.kr";
+		String ip = "127.0.0.3";
+		
+		final MemberRegisterDecryptionReq memberRegisterDecryptionReq = new MemberRegisterDecryptionReq();
+		memberRegisterDecryptionReq.setMemberRoleType(MemberRoleType.GUEST);
+		memberRegisterDecryptionReq.setUserID(requestedUserID);
+		memberRegisterDecryptionReq.setNickname(nickname);
+		memberRegisterDecryptionReq.setEmail(email);
+		memberRegisterDecryptionReq.setPasswordBytes(passwordBytes);
+		memberRegisterDecryptionReq.setRegisteredDate(new java.sql.Timestamp(System.currentTimeMillis()));
+		memberRegisterDecryptionReq.setIp(ip);
+		
 		try {
-			ServerDBUtil.execute(TEST_DBCP_NAME, (conn, dsl) -> {
-				dsl.delete(SB_MEMBER_TB).where(SB_MEMBER_TB.USER_ID.eq(requestedUserID)).execute();
-
-				conn.commit();
-
-				byte[] passwordBytes = { (byte) 't', (byte) 'e', (byte) 's', (byte) 't', (byte) '1', (byte) '2', (byte) '3',
-						(byte) '4', (byte) '$' };
-				String nickname = "단위테스터용아이디3";
-				String email = "test03@codda.pe.kr";
-				String ip = "127.0.0.3";
+			ServerDBUtil.execute(TEST_DBCP_NAME, (dsl) -> {
+				dsl.delete(SB_MEMBER_TB).where(SB_MEMBER_TB.USER_ID.eq(requestedUserID)).execute();				
 				
-				ServerDBUtil.registerMember(TEST_DBCP_NAME, MemberRoleType.GUEST, requestedUserID, nickname, email,
-						passwordBytes, new java.sql.Timestamp(System.currentTimeMillis()), ip);
+				memberRegisterReqServerTask.doWork(dsl, memberRegisterDecryptionReq);
 				
-				ServerDBUtil.checkUserAccessRights(conn, dsl, log, "회원 역활 유형이 손님인 테스트 서비스", PermissionType.MEMBER,
+				ServerDBUtil.checkUserAccessRights(dsl, "회원 역활 유형이 손님인 테스트 서비스", PermissionType.MEMBER,
 						requestedUserID);
-				
-				fail("ServerTaskException");
 			});
+			
+			fail("ServerTaskException");
 		} catch (ServerTaskException e) {
 			String actualErrorMessag = e.getMessage();
 
@@ -488,12 +509,11 @@ public class ServerDBUtilTest extends AbstractBoardTest {
 		String requestedUserID = "admin";
 		
 		try {
-			ServerDBUtil.execute(TEST_DBCP_NAME, (conn, dsl) -> {				
+			ServerDBUtil.execute(TEST_DBCP_NAME, (dsl) -> {				
 
-				ServerDBUtil.checkUserAccessRights(conn, dsl, log, "관리저 전용 서비스에 관리자 접근 테스트 서비스",
+				ServerDBUtil.checkUserAccessRights(dsl, "관리저 전용 서비스에 관리자 접근 테스트 서비스",
 						PermissionType.ADMIN, requestedUserID);
 				
-				conn.commit();
 			});
 		} catch (Exception e) {
 			log.warn("unknown error", e);
@@ -508,13 +528,12 @@ public class ServerDBUtilTest extends AbstractBoardTest {
 		String requestedUserID = "test01";
 		
 		try {
-			ServerDBUtil.execute(TEST_DBCP_NAME, (conn, dsl) -> {				
-
-				ServerDBUtil.checkUserAccessRights(conn, dsl, log, "관리저 전용 서비스에 일반인 접근 테스트 서비스",
-						PermissionType.ADMIN, requestedUserID);
-
-				fail("no ServerTaskException");
+			ServerDBUtil.execute(TEST_DBCP_NAME, (dsl) -> {
+				ServerDBUtil.checkUserAccessRights(dsl, "관리저 전용 서비스에 일반인 접근 테스트 서비스",
+						PermissionType.ADMIN, requestedUserID);				
 			});
+			
+			fail("no ServerTaskException");
 		} catch (ServerTaskException e) {
 			String actualErrorMessag = e.getMessage();
 
@@ -533,12 +552,12 @@ public class ServerDBUtilTest extends AbstractBoardTest {
 		String requestedUserID = "guest";
 		
 		try {			
-			ServerDBUtil.execute(TEST_DBCP_NAME, (conn, dsl) -> {
-				ServerDBUtil.checkUserAccessRights(conn, dsl, log, "관리저 전용 서비스에 손님 접근 테스트 서비스",
+			ServerDBUtil.execute(TEST_DBCP_NAME, (dsl) -> {
+				ServerDBUtil.checkUserAccessRights(dsl, "관리저 전용 서비스에 손님 접근 테스트 서비스",
 						PermissionType.ADMIN, requestedUserID);
-
-				fail("no ServerTaskException");
 			});
+			
+			fail("no ServerTaskException");
 		} catch (ServerTaskException e) {
 			String actualErrorMessag = e.getMessage();
 
@@ -557,11 +576,10 @@ public class ServerDBUtilTest extends AbstractBoardTest {
 		String requestedUserID = "admin";
 		
 		try {
-			ServerDBUtil.execute(TEST_DBCP_NAME, (conn, dsl) -> {
-				ServerDBUtil.checkUserAccessRights(conn, dsl, log, "일반 사용자 서비스에 관리자 접근 테스트 서비스",
+			ServerDBUtil.execute(TEST_DBCP_NAME, (dsl) -> {
+				ServerDBUtil.checkUserAccessRights(dsl, "일반 사용자 서비스에 관리자 접근 테스트 서비스",
 						PermissionType.MEMBER, requestedUserID);
 				
-				conn.commit();
 			});
 		} catch (Exception e) {
 			log.warn("unknown error", e);
@@ -575,12 +593,11 @@ public class ServerDBUtilTest extends AbstractBoardTest {
 		String requestedUserID = "test01";
 		
 		try {
-			ServerDBUtil.execute(TEST_DBCP_NAME, (conn, dsl) -> {
+			ServerDBUtil.execute(TEST_DBCP_NAME, (dsl) -> {
 				
-				ServerDBUtil.checkUserAccessRights(conn, dsl, log, "일반 사용자 서비스에 관리자 접근 테스트 서비스",
+				ServerDBUtil.checkUserAccessRights(dsl, "일반 사용자 서비스에 관리자 접근 테스트 서비스",
 						PermissionType.MEMBER, requestedUserID);
 				
-				conn.commit();
 			});
 		} catch (Exception e) {
 			log.warn("unknown error", e);
@@ -595,13 +612,12 @@ public class ServerDBUtilTest extends AbstractBoardTest {
 		String requestedUserID = "guest";
 		
 		try {
-			ServerDBUtil.execute(TEST_DBCP_NAME, (conn, dsl) -> {
-				
-				ServerDBUtil.checkUserAccessRights(conn, dsl, log, "일반 사용자 서비스에 손님 접근 테스트 서비스", PermissionType.MEMBER,
-						requestedUserID);
-
-				fail("no ServerTaskException");
+			ServerDBUtil.execute(TEST_DBCP_NAME, (dsl) -> {				
+				ServerDBUtil.checkUserAccessRights(dsl, "일반 사용자 서비스에 손님 접근 테스트 서비스", PermissionType.MEMBER,
+						requestedUserID);				
 			});
+			
+			fail("no ServerTaskException");
 		} catch (ServerTaskException e) {
 			String actualErrorMessag = e.getMessage();
 
@@ -620,11 +636,10 @@ public class ServerDBUtilTest extends AbstractBoardTest {
 		String requestedUserID = "admin";
 		try {
 			
-			ServerDBUtil.execute(TEST_DBCP_NAME, (conn, dsl) -> {
-				ServerDBUtil.checkUserAccessRights(conn, dsl, log, "손님 권한일때 손님으로 접근 테스트 서비스", 
+			ServerDBUtil.execute(TEST_DBCP_NAME, (dsl) -> {
+				ServerDBUtil.checkUserAccessRights(dsl, "손님 권한일때 손님으로 접근 테스트 서비스", 
 						PermissionType.GUEST, requestedUserID);	
 				
-				conn.commit();
 			});
 		} catch (Exception e) {
 			log.warn("unknown error", e);
@@ -639,11 +654,10 @@ public class ServerDBUtilTest extends AbstractBoardTest {
 		String requestedUserID = "test01";
 		try {
 			
-			ServerDBUtil.execute(TEST_DBCP_NAME, (conn, dsl) -> {
-				ServerDBUtil.checkUserAccessRights(conn, dsl, log, "손님 권한일때 일반회원 접근 테스트 서비스", 
+			ServerDBUtil.execute(TEST_DBCP_NAME, (dsl) -> {
+				ServerDBUtil.checkUserAccessRights(dsl, "손님 권한일때 일반회원 접근 테스트 서비스", 
 						PermissionType.GUEST, requestedUserID);	
 				
-				conn.commit();
 			});
 		} catch (Exception e) {
 			log.warn("unknown error", e);
@@ -659,11 +673,10 @@ public class ServerDBUtilTest extends AbstractBoardTest {
 		String requestedUserID = "guest";
 		try {
 			
-			ServerDBUtil.execute(TEST_DBCP_NAME, (conn, dsl) -> {
-				ServerDBUtil.checkUserAccessRights(conn, dsl, log, "손님 권한일때 손님으로 접근 테스트 서비스", 
+			ServerDBUtil.execute(TEST_DBCP_NAME, (dsl) -> {
+				ServerDBUtil.checkUserAccessRights(dsl, "손님 권한일때 손님으로 접근 테스트 서비스", 
 						PermissionType.GUEST, requestedUserID);	
 				
-				conn.commit();
 			});
 		} catch (Exception e) {
 			log.warn("unknown error", e);

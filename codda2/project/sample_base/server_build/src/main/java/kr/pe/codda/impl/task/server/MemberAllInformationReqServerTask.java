@@ -5,12 +5,11 @@ import static kr.pe.codda.jooq.tables.SbMemberTb.SB_MEMBER_TB;
 import java.sql.Timestamp;
 
 import org.jooq.DSLContext;
-import org.jooq.Record9;
+import org.jooq.Record10;
 import org.jooq.types.UByte;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import kr.pe.codda.common.exception.DynamicClassCallException;
 import kr.pe.codda.common.message.AbstractMessage;
 import kr.pe.codda.impl.message.MemberAllInformationReq.MemberAllInformationReq;
 import kr.pe.codda.impl.message.MemberAllInformationRes.MemberAllInformationRes;
@@ -30,10 +29,6 @@ public class MemberAllInformationReqServerTask extends AbstractServerTask
 		implements DBAutoCommitTaskIF<MemberAllInformationReq, MemberAllInformationRes> {
 	private Logger log = LoggerFactory.getLogger(AccountSearchProcessReqServerTask.class);
 
-	public MemberAllInformationReqServerTask() throws DynamicClassCallException {
-		super();
-	}
-
 	@Override
 	public void doTask(String projectName, LoginManagerIF personalLoginManager, ToLetterCarrier toLetterCarrier,
 			AbstractMessage inputMessage) throws Exception {
@@ -43,10 +38,15 @@ public class MemberAllInformationReqServerTask extends AbstractServerTask
 
 		toLetterCarrier.addSyncOutputMessage(outputMessage);
 	}
+	
+	public MemberAllInformationRes doWork(final String dbcpName, final MemberAllInformationReq userInformationReq) throws Exception {
+		MemberAllInformationRes outputMessage = ServerDBUtil.execute(dbcpName, this, userInformationReq);
+		
+		return outputMessage;
+	}
 
 	@Override
-	public MemberAllInformationRes doWork(final DSLContext dsl, final MemberAllInformationReq userInformationReq)
-			throws Exception {
+	public MemberAllInformationRes doWork(final DSLContext dsl, final MemberAllInformationReq userInformationReq) throws Exception {
 		if (null == dsl) {
 			throw new ParameterServerTaskException("the parameter dsl is null");
 		}
@@ -80,10 +80,10 @@ public class MemberAllInformationReqServerTask extends AbstractServerTask
 			}
 		}
 
-		Record9<String, Byte, Byte, String, UByte, Timestamp, Timestamp, Timestamp, Timestamp> memberRecordOfTargetUserID = dsl
+		Record10<String, Byte, Byte, String, UByte, Timestamp, Timestamp, Timestamp, Timestamp, Timestamp> memberRecordOfTargetUserID = dsl
 				.select(SB_MEMBER_TB.NICKNAME, SB_MEMBER_TB.STATE, SB_MEMBER_TB.ROLE, SB_MEMBER_TB.EMAIL,
 						SB_MEMBER_TB.PWD_FAIL_CNT, SB_MEMBER_TB.REG_DT, SB_MEMBER_TB.LAST_NICKNAME_MOD_DT,
-						SB_MEMBER_TB.LAST_EMAIL_MOD_DT, SB_MEMBER_TB.LAST_PWD_MOD_DT)
+						SB_MEMBER_TB.LAST_EMAIL_MOD_DT, SB_MEMBER_TB.LAST_PWD_MOD_DT, SB_MEMBER_TB.LAST_STATE_MOD_DT)
 				.from(SB_MEMBER_TB).where(SB_MEMBER_TB.USER_ID.eq(targetUserID)).fetchOne();
 
 		if (null == memberRecordOfTargetUserID) {

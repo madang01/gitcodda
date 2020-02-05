@@ -24,7 +24,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import kr.pe.codda.common.etc.CommonStaticFinalVars;
-import kr.pe.codda.common.exception.DynamicClassCallException;
 import kr.pe.codda.common.message.AbstractMessage;
 import kr.pe.codda.impl.message.BoardMoveReq.BoardMoveReq;
 import kr.pe.codda.impl.message.BoardMoveRes.BoardMoveRes;
@@ -45,19 +44,7 @@ import kr.pe.codda.server.task.ToLetterCarrier;
 public class BoardMoveReqServerTask extends AbstractServerTask
 		implements DBAutoCommitTaskIF<BoardMoveReq, BoardMoveRes> {
 	private Logger log = LoggerFactory.getLogger(AccountSearchProcessReqServerTask.class);
-
-	public BoardMoveReqServerTask() throws DynamicClassCallException {
-		super();
-	}
-
-	@Override
-	public void doTask(String projectName, LoginManagerIF personalLoginManager, ToLetterCarrier toLetterCarrier,
-			AbstractMessage inputMessage) throws Exception {
-		AbstractMessage outputMessage = ServerDBUtil.execute(
-				ServerCommonStaticFinalVars.DEFAULT_DBCP_NAME, this, (BoardMoveReq) inputMessage);
-		toLetterCarrier.addSyncOutputMessage(outputMessage);
-	}
-
+	
 	private void checkValidAllArgument(BoardMoveReq boardMoveReq) throws ParameterServerTaskException {
 		try {
 			ValueChecker.checkValidRequestedUserID(boardMoveReq.getRequestedUserID());
@@ -110,6 +97,21 @@ public class BoardMoveReqServerTask extends AbstractServerTask
 
 	}
 
+	@Override
+	public void doTask(String projectName, LoginManagerIF personalLoginManager, ToLetterCarrier toLetterCarrier,
+			AbstractMessage inputMessage) throws Exception {
+		AbstractMessage outputMessage = ServerDBUtil.execute(
+				ServerCommonStaticFinalVars.DEFAULT_DBCP_NAME, this, (BoardMoveReq) inputMessage);
+		toLetterCarrier.addSyncOutputMessage(outputMessage);
+	}
+	
+	
+	public BoardMoveRes doWork(final String dbcpName, final BoardMoveReq boardMoveReq) throws Exception {
+		BoardMoveRes outputMessage = ServerDBUtil.execute(dbcpName, this, boardMoveReq);
+		
+		return outputMessage;
+	}
+	
 	@Override
 	public BoardMoveRes doWork(final DSLContext dsl, final BoardMoveReq boardMoveReq) throws Exception {
 		if (null == dsl) {

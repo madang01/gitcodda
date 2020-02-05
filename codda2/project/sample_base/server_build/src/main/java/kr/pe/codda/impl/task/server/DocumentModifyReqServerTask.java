@@ -29,7 +29,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import kr.pe.codda.common.etc.CommonStaticFinalVars;
-import kr.pe.codda.common.exception.DynamicClassCallException;
 import kr.pe.codda.common.message.AbstractMessage;
 import kr.pe.codda.impl.message.DocumentModifyReq.DocumentModifyReq;
 import kr.pe.codda.impl.message.DocumentModifyRes.DocumentModifyRes;
@@ -54,15 +53,7 @@ import kr.pe.codda.server.task.ToLetterCarrier;
 public class DocumentModifyReqServerTask extends AbstractServerTask
 		implements DBAutoCommitTaskIF<DocumentModifyReq, DocumentModifyRes> {
 	private Logger log = LoggerFactory.getLogger(DocumentWriteReqServerTask.class);
-
-	/**
-	 * 생성자
-	 * 
-	 * @throws DynamicClassCallException 동적 호출 작업중 에러 발생시 던지는 예외
-	 */
-	public DocumentModifyReqServerTask() throws DynamicClassCallException {
-		super();
-	}
+	
 
 	@Override
 	public void doTask(String projectName, LoginManagerIF personalLoginManager, ToLetterCarrier toLetterCarrier,

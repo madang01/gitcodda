@@ -23,7 +23,6 @@ import org.jooq.types.UInteger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import kr.pe.codda.common.exception.DynamicClassCallException;
 import kr.pe.codda.common.message.AbstractMessage;
 import kr.pe.codda.impl.message.PersonalActivityHistoryReq.PersonalActivityHistoryReq;
 import kr.pe.codda.impl.message.PersonalActivityHistoryRes.PersonalActivityHistoryRes;
@@ -46,10 +45,6 @@ public class PersonalActivityHistoryReqServerTask extends AbstractServerTask
 		implements DBAutoCommitTaskIF<PersonalActivityHistoryReq, PersonalActivityHistoryRes> {
 	private Logger log = LoggerFactory.getLogger(AccountSearchProcessReqServerTask.class);
 
-	public PersonalActivityHistoryReqServerTask() throws DynamicClassCallException {
-		super();
-	}
-
 	@Override
 	public void doTask(String projectName, LoginManagerIF personalLoginManager, ToLetterCarrier toLetterCarrier,
 			AbstractMessage inputMessage) throws Exception {
@@ -59,6 +54,15 @@ public class PersonalActivityHistoryReqServerTask extends AbstractServerTask
 
 		toLetterCarrier.addSyncOutputMessage(outputMessage);
 
+	}
+	
+	public PersonalActivityHistoryRes doWork(final String dbcpName,
+			final PersonalActivityHistoryReq personalActivityHistoryReq) throws Exception {
+		
+		PersonalActivityHistoryRes outputMessage = ServerDBUtil.execute(dbcpName, this, personalActivityHistoryReq);
+		
+		return outputMessage;
+		
 	}
 
 	@Override

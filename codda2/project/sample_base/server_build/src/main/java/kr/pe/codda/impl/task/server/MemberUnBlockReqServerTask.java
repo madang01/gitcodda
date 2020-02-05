@@ -9,7 +9,6 @@ import org.jooq.Record2;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import kr.pe.codda.common.exception.DynamicClassCallException;
 import kr.pe.codda.common.message.AbstractMessage;
 import kr.pe.codda.impl.message.MemberUnBlockReq.MemberUnBlockReq;
 import kr.pe.codda.impl.message.MessageResultRes.MessageResultRes;
@@ -30,10 +29,6 @@ public class MemberUnBlockReqServerTask extends AbstractServerTask
 		implements DBAutoCommitTaskIF<MemberUnBlockReq, MessageResultRes> {
 	private Logger log = LoggerFactory.getLogger(AccountSearchProcessReqServerTask.class);
 
-	public MemberUnBlockReqServerTask() throws DynamicClassCallException {
-		super();
-	}
-
 	@Override
 	public void doTask(String projectName, LoginManagerIF personalLoginManager, ToLetterCarrier toLetterCarrier,
 			AbstractMessage inputMessage) throws Exception {
@@ -43,8 +38,14 @@ public class MemberUnBlockReqServerTask extends AbstractServerTask
 		toLetterCarrier.addSyncOutputMessage(outputMessage);
 	}
 
+	public MessageResultRes doWork(final String dbcpName, final MemberUnBlockReq memberUnBlockReq) throws Exception {
+		MessageResultRes outputMessage = ServerDBUtil.execute(dbcpName, this, memberUnBlockReq);
+		
+		return outputMessage;
+	}
+	
 	@Override
-	public MessageResultRes doWork(final DSLContext dsl, MemberUnBlockReq memberUnBlockReq) throws Exception {
+	public MessageResultRes doWork(final DSLContext dsl, final MemberUnBlockReq memberUnBlockReq) throws Exception {
 
 		if (null == dsl) {
 			throw new ParameterServerTaskException("the parameter dsl is null");

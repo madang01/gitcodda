@@ -6,6 +6,8 @@ import org.slf4j.LoggerFactory;
 
 import kr.pe.codda.common.etc.CommonStaticFinalVars;
 import kr.pe.codda.common.exception.ServerTaskException;
+import kr.pe.codda.impl.inner_message.MemberRegisterDecryptionReq;
+import kr.pe.codda.impl.task.server.MemberRegisterReqServerTask;
 import kr.pe.codda.server.AnyProjectServer;
 import kr.pe.codda.server.MainServerManager;
 import kr.pe.codda.server.lib.MemberRoleType;
@@ -18,6 +20,8 @@ public class ServerMain {
 		Logger log = LoggerFactory.getLogger(CommonStaticFinalVars.BASE_PACKAGE_NAME);
 		
 		try {
+			MemberRegisterReqServerTask memberRegisterReqServerTask = new MemberRegisterReqServerTask();
+			
 			ServerDBUtil.initializeDBEnvoroment(ServerCommonStaticFinalVars.DEFAULT_DBCP_NAME);
 			
 			{
@@ -28,11 +32,24 @@ public class ServerMain {
 				String nickname = "관리자";
 				String email = "admin@codda.pe.kr";
 				String ip = "127.0.0.1";
+				
+				
 
+				MemberRegisterDecryptionReq memberRegisterDecryptionReq = new MemberRegisterDecryptionReq();
+				memberRegisterDecryptionReq.setMemberRoleType(MemberRoleType.MEMBER);
+				memberRegisterDecryptionReq.setUserID(userID);
+				memberRegisterDecryptionReq.setNickname(nickname);
+				memberRegisterDecryptionReq.setEmail(email);
+				memberRegisterDecryptionReq.setPasswordBytes(passwordBytes);
+				memberRegisterDecryptionReq.setRegisteredDate(new java.sql.Timestamp(System.currentTimeMillis()));
+				memberRegisterDecryptionReq.setIp(ip);
+				
 				try {
-				ServerDBUtil.registerMember(ServerCommonStaticFinalVars.DEFAULT_DBCP_NAME,
-						MemberRoleType.ADMIN, userID, nickname, email, 
-						passwordBytes, new java.sql.Timestamp(System.currentTimeMillis()), ip);
+					ServerDBUtil.execute(ServerCommonStaticFinalVars.DEFAULT_DBCP_NAME, (dsl) -> {
+						
+						memberRegisterReqServerTask.doWork(dsl, memberRegisterDecryptionReq);
+					});
+					
 				} catch (ServerTaskException e) {
 					String expectedErrorMessage = new StringBuilder("기존 회원과 중복되는 아이디[")
 							.append(userID)
@@ -56,11 +73,21 @@ public class ServerMain {
 				String nickname = "손님";
 				String email = "guest@codda.pe.kr";
 				String ip = "127.0.0.1";
+				
+				MemberRegisterDecryptionReq memberRegisterDecryptionReq = new MemberRegisterDecryptionReq();
+				memberRegisterDecryptionReq.setMemberRoleType(MemberRoleType.MEMBER);
+				memberRegisterDecryptionReq.setUserID(userID);
+				memberRegisterDecryptionReq.setNickname(nickname);
+				memberRegisterDecryptionReq.setEmail(email);
+				memberRegisterDecryptionReq.setPasswordBytes(passwordBytes);
+				memberRegisterDecryptionReq.setRegisteredDate(new java.sql.Timestamp(System.currentTimeMillis()));
+				memberRegisterDecryptionReq.setIp(ip);
 
 				try {
-					ServerDBUtil.registerMember(ServerCommonStaticFinalVars.DEFAULT_DBCP_NAME,
-							MemberRoleType.GUEST, userID, nickname, email, 
-							passwordBytes, new java.sql.Timestamp(System.currentTimeMillis()), ip);
+					ServerDBUtil.execute(ServerCommonStaticFinalVars.DEFAULT_DBCP_NAME, (dsl) -> {
+						
+						memberRegisterReqServerTask.doWork(dsl, memberRegisterDecryptionReq);
+					});
 				} catch (ServerTaskException e) {
 					String expectedErrorMessage = new StringBuilder("기존 회원과 중복되는 아이디[")
 							.append(userID)

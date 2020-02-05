@@ -8,7 +8,6 @@ import org.jooq.types.UInteger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import kr.pe.codda.common.exception.DynamicClassCallException;
 import kr.pe.codda.common.message.AbstractMessage;
 import kr.pe.codda.impl.message.DownloadImageReq.DownloadImageReq;
 import kr.pe.codda.impl.message.DownloadImageRes.DownloadImageRes;
@@ -24,10 +23,6 @@ import kr.pe.codda.server.task.ToLetterCarrier;
 public class DownloadImageReqServerTask extends AbstractServerTask
 		implements DBAutoCommitTaskIF<DownloadImageReq, DownloadImageRes> {
 	private Logger log = LoggerFactory.getLogger(DownloadImageReqServerTask.class);
-
-	public DownloadImageReqServerTask() throws DynamicClassCallException {
-		super();
-	}
 
 	@Override
 	public void doTask(String projectName, LoginManagerIF personalLoginManager, ToLetterCarrier toLetterCarrier,

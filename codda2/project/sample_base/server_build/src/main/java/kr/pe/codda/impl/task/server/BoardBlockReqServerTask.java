@@ -12,7 +12,6 @@ import org.jooq.types.UShort;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import kr.pe.codda.common.exception.DynamicClassCallException;
 import kr.pe.codda.common.message.AbstractMessage;
 import kr.pe.codda.impl.message.BoardBlockReq.BoardBlockReq;
 import kr.pe.codda.impl.message.MessageResultRes.MessageResultRes;
@@ -32,11 +31,7 @@ import kr.pe.codda.server.task.ToLetterCarrier;
 public class BoardBlockReqServerTask extends AbstractServerTask
 		implements DBAutoCommitTaskIF<BoardBlockReq, MessageResultRes> {
 	private Logger log = LoggerFactory.getLogger(AccountSearchProcessReqServerTask.class);
-
-	public BoardBlockReqServerTask() throws DynamicClassCallException {
-		super();
-	}
-
+	
 	@Override
 	public void doTask(String projectName, LoginManagerIF personalLoginManager, ToLetterCarrier toLetterCarrier,
 			AbstractMessage inputMessage) throws Exception {
@@ -55,6 +50,15 @@ public class BoardBlockReqServerTask extends AbstractServerTask
 
 	private boolean isChildNode(UShort fromGroupSeq, UShort toGroupSeq) {
 		return (fromGroupSeq.intValue() != toGroupSeq.intValue());
+	}
+	
+	public MessageResultRes doWork(final String dbcpName, final BoardBlockReq boardBlockReq) throws Exception {
+		
+		MessageResultRes outputMessage = ServerDBUtil.execute(
+				dbcpName, this, boardBlockReq);
+		
+		return outputMessage;
+		
 	}
 
 	public MessageResultRes doWork(final DSLContext dsl, final BoardBlockReq boardBlockReq) throws Exception {

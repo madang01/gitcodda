@@ -11,7 +11,6 @@ import org.jooq.types.UInteger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import kr.pe.codda.common.exception.DynamicClassCallException;
 import kr.pe.codda.common.message.AbstractMessage;
 import kr.pe.codda.impl.message.MenuDeleteReq.MenuDeleteReq;
 import kr.pe.codda.impl.message.MessageResultRes.MessageResultRes;
@@ -31,10 +30,6 @@ public class MenuDeleteReqServerTask extends AbstractServerTask
 		implements DBAutoCommitTaskIF<MenuDeleteReq, MessageResultRes> {
 	private Logger log = LoggerFactory.getLogger(AccountSearchProcessReqServerTask.class);
 
-	public MenuDeleteReqServerTask() throws DynamicClassCallException {
-		super();
-	}
-
 	@Override
 	public void doTask(String projectName, LoginManagerIF personalLoginManager, ToLetterCarrier toLetterCarrier,
 			AbstractMessage inputMessage) throws Exception {
@@ -42,6 +37,12 @@ public class MenuDeleteReqServerTask extends AbstractServerTask
 		AbstractMessage outputMessage = ServerDBUtil.execute(
 				ServerCommonStaticFinalVars.DEFAULT_DBCP_NAME, this, (MenuDeleteReq) inputMessage);
 		toLetterCarrier.addSyncOutputMessage(outputMessage);
+	}
+	
+	public MessageResultRes doWork(final String dbcpName, MenuDeleteReq menuDeleteReq) throws Exception {
+		MessageResultRes outputMessage = ServerDBUtil.execute(dbcpName, this, menuDeleteReq);
+		
+		return outputMessage;
 	}
 
 	@Override

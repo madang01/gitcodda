@@ -11,7 +11,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import kr.pe.codda.common.etc.CommonStaticFinalVars;
-import kr.pe.codda.common.exception.DynamicClassCallException;
 import kr.pe.codda.common.exception.ServerTaskException;
 import kr.pe.codda.common.message.AbstractMessage;
 import kr.pe.codda.impl.message.RootMenuAddReq.RootMenuAddReq;
@@ -33,10 +32,6 @@ public class RootMenuAddReqServerTask extends AbstractServerTask
 		implements DBAutoCommitTaskIF<RootMenuAddReq, RootMenuAddRes> {
 
 	private Logger log = LoggerFactory.getLogger(AccountSearchProcessReqServerTask.class);
-
-	public RootMenuAddReqServerTask() throws DynamicClassCallException {
-		super();
-	}
 
 	@Override
 	public void doTask(String projectName, LoginManagerIF personalLoginManager, ToLetterCarrier toLetterCarrier,
