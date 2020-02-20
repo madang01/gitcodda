@@ -34,7 +34,7 @@ import kr.pe.codda.common.etc.StreamCharsetFamily;
 import kr.pe.codda.common.exception.NoMoreWrapBufferException;
 import kr.pe.codda.common.io.WrapBufferPoolIF;
 import kr.pe.codda.common.protocol.MessageProtocolIF;
-import kr.pe.codda.server.classloader.ServerTaskMangerIF;
+import kr.pe.codda.server.task.ServerTaskMangerIF;
 
 /**
  * 서버 입출력 이벤트 제어기

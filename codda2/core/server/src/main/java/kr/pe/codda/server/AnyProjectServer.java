@@ -16,6 +16,7 @@
  *******************************************************************************/
 package kr.pe.codda.server;
 
+import java.io.File;
 import java.nio.ByteOrder;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -32,7 +33,8 @@ import kr.pe.codda.common.protocol.dhb.DHBMessageProtocol;
 import kr.pe.codda.common.protocol.thb.THBMessageProtocol;
 import kr.pe.codda.common.type.MessageProtocolType;
 import kr.pe.codda.server.classloader.ServerClassLoaderFactory;
-import kr.pe.codda.server.classloader.ServerTaskManger;
+import kr.pe.codda.server.task.DynamicClassWatcher;
+import kr.pe.codda.server.task.ServerTaskManger;
 
 
 /**
@@ -136,7 +138,18 @@ public class AnyProjectServer {
 		ServerClassLoaderFactory serverClassLoaderFactory = 
 				new ServerClassLoaderFactory(serverAPPINFClassPathString, projectResourcesPathString);
 		
-		serverTaskManager = new ServerTaskManger(serverClassLoaderFactory);		
+		serverTaskManager = new ServerTaskManger(serverClassLoaderFactory);
+		
+		try {
+			File serverAPPINFClassPath = new File(serverAPPINFClassPathString);
+			DynamicClassWatcher dynamicClassWatcher = new DynamicClassWatcher(serverAPPINFClassPath, true, serverTaskManager);
+			
+			dynamicClassWatcher.start();
+		} catch (Exception e) {
+			String errorMessage = new StringBuilder().append("서버 동적 클래스 경로  변경 감시자 생성및 실행이 실패하였습니다").toString();
+			log.log(Level.SEVERE, errorMessage, e);
+			System.exit(1);
+		}
 		
 		serverIOEventController = new ServerIOEventController(mainProjectName,
 				serverHost, serverPort,

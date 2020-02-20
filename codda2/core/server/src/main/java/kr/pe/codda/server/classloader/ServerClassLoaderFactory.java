@@ -20,7 +20,6 @@ import java.io.File;
 
 import kr.pe.codda.common.classloader.SystemClassDeterminer;
 import kr.pe.codda.common.classloader.SystemClassVerifierIF;
-import kr.pe.codda.common.classloader.ServerClassLoader;
 import kr.pe.codda.common.exception.CoddaConfigurationException;
 
 /**
@@ -93,6 +92,19 @@ public class ServerClassLoaderFactory {
 	 * @return 신규 서버 클래스 로더 객체
 	 */
 	public ServerClassLoader createServerClassLoader() {
-		return new ServerClassLoader(serverAPPINFClassPathString, projectResourcesPathString, excludedDynamicClassManager);
+		return new ServerClassLoader(this, projectResourcesPathString, excludedDynamicClassManager);
+	}
+	
+	/**
+	 * 동적으로 로딩할 주어진 클래스 이름을 가지는 클래스 파일 경로를 반환한다.
+	 * 
+	 * @param classFullName
+	 *            클래스 파일 경로를 얻고자 하는 클래스 이름
+	 * @return 주어진 클래스 이름을 가지는 클래스 파일 경로
+	 */
+	public String getClassFilePathString(String classFullName) {
+		String classFileName = new StringBuilder(serverAPPINFClassPathString).append(File.separator)
+				.append(classFullName.replace(".", File.separator)).append(".class").toString();
+		return classFileName;
 	}
 }

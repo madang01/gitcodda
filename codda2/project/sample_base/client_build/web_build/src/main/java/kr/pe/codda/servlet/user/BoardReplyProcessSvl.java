@@ -520,7 +520,12 @@ public class BoardReplyProcessSvl extends AbstractMultipartServlet implements Im
 		return boardReplyRes;
 	}
 	
-	
+	/**
+	 * 게시글에 포함된 이미지 파일을 저장한다.
+	 * 
+	 * @param boardReplyRes 게시판 댓글 응답 메시지
+	 * @param boardImageFileInformationList 게시글 이미지 파일 정보 목록
+	 */
 	private void saveAllBoardImageFile(BoardReplyRes boardReplyRes, List<BoardImageFileInformation> boardImageFileInformationList) {
 		for (BoardImageFileInformation boardImageFileInformation : boardImageFileInformationList) {
 			String uploadImageFilePathString = WebCommonStaticUtil.buildUploadImageFilePathString(

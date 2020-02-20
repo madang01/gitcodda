@@ -496,8 +496,8 @@ function goVote(boardNo) {
 	
 	var g = document.voteFrm;
 	
-	g.<%=WebCommonStaticFinalVars.PARAMETER_KEY_NAME_OF_SESSION_KEY%>.value = getSessionkeyBase64FromSessionStorage();		
-	g.<%=WebCommonStaticFinalVars.PARAMETER_KEY_NAME_OF_SESSION_KEY_IV%>.value = CryptoJS.enc.Base64.stringify(iv);
+	g.<%= WebCommonStaticFinalVars.PARAMETER_KEY_NAME_OF_SESSION_KEY%>.value = getSessionkeyBase64FromSessionStorage();		
+	g.<%= WebCommonStaticFinalVars.PARAMETER_KEY_NAME_OF_SESSION_KEY_IV%>.value = CryptoJS.enc.Base64.stringify(iv);
 	
 	g.boardNo.value = boardNo;
 			
@@ -1131,7 +1131,7 @@ function goPersonalActivityHistory(targetUserID) {
 	}
 }
 
-<%if (MemberRoleType.ADMIN.equals(accessedUserformation.getMemberRoleType())) {%>
+<% if (MemberRoleType.ADMIN.equals(accessedUserformation.getMemberRoleType())) { %>
 
 	function goBlock(boardNo) {	
 		var iv = buildIV();

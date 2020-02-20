@@ -19,7 +19,6 @@ package kr.pe.codda.server.task;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import kr.pe.codda.common.classloader.ServerClassLoader;
 import kr.pe.codda.common.etc.CommonStaticFinalVars;
 import kr.pe.codda.common.exception.BodyFormatException;
 import kr.pe.codda.common.exception.DynamicClassCallException;
@@ -32,6 +31,7 @@ import kr.pe.codda.common.type.ExceptionDelivery;
 import kr.pe.codda.server.AcceptedConnection;
 import kr.pe.codda.server.LoginManagerIF;
 import kr.pe.codda.server.ProjectLoginManagerIF;
+import kr.pe.codda.server.classloader.ServerClassLoader;
 
 /**
  * <pre>
@@ -83,6 +83,10 @@ public abstract class AbstractServerTask {
 		return serverMessageCodec.getMessageEncoder();
 	}	
 	*/
+	
+	public ServerClassLoader getServerClassLoader() {
+		return serverClassLoader;
+	}
 	
 	/**
 	 * 비지니스 로직을 수행한다. 내부적으로는 {@link #doTask(String, LoginManagerIF, ToLetterCarrier, AbstractMessage)} 를 호출한다.
