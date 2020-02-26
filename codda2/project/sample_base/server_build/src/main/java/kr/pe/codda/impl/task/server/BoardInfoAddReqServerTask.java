@@ -27,7 +27,7 @@ import kr.pe.codda.server.task.AbstractServerTask;
 import kr.pe.codda.server.task.ToLetterCarrier;
 
 public class BoardInfoAddReqServerTask extends AbstractServerTask implements DBAutoCommitTaskIF<BoardInfoAddReq, BoardInfoAddRes> {
-	private Logger log = LoggerFactory.getLogger(AccountSearchProcessReqServerTask.class);
+	private Logger log = LoggerFactory.getLogger(BoardInfoAddReqServerTask.class);
 
 	@Override
 	public void doTask(String projectName, LoginManagerIF personalLoginManager, ToLetterCarrier toLetterCarrier,

@@ -28,7 +28,7 @@ import kr.pe.codda.server.task.ToLetterCarrier;
 
 public class MenuDeleteReqServerTask extends AbstractServerTask
 		implements DBAutoCommitTaskIF<MenuDeleteReq, MessageResultRes> {
-	private Logger log = LoggerFactory.getLogger(AccountSearchProcessReqServerTask.class);
+	private Logger log = LoggerFactory.getLogger(MenuDeleteReqServerTask.class);
 
 	@Override
 	public void doTask(String projectName, LoginManagerIF personalLoginManager, ToLetterCarrier toLetterCarrier,

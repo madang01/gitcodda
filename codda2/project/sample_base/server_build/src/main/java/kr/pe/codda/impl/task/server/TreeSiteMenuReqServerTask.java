@@ -30,7 +30,7 @@ import kr.pe.codda.server.task.ToLetterCarrier;
 
 public class TreeSiteMenuReqServerTask extends AbstractServerTask
 		implements DBAutoCommitTaskIF<TreeSiteMenuReq, TreeSiteMenuRes> {
-	private Logger log = LoggerFactory.getLogger(AccountSearchProcessReqServerTask.class);
+	private Logger log = LoggerFactory.getLogger(TreeSiteMenuReqServerTask.class);
 	// final UInteger rootParnetNo = UInteger.valueOf(0);
 
 	@Override

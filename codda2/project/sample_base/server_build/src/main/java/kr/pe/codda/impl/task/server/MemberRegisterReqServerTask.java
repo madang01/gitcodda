@@ -37,7 +37,7 @@ import kr.pe.codda.server.task.AbstractServerTask;
 import kr.pe.codda.server.task.ToLetterCarrier;
 
 public class MemberRegisterReqServerTask extends AbstractServerTask implements DBAutoCommitTaskIF<MemberRegisterDecryptionReq, MessageResultRes> {
-	private Logger log = LoggerFactory.getLogger(AccountSearchProcessReqServerTask.class);
+	private Logger log = LoggerFactory.getLogger(MemberRegisterReqServerTask.class);
 	
 	private String getDecryptedString(byte[] cipherBytes, ServerSymmetricKeyIF serverSymmetricKey)
 			throws InterruptedException, IllegalArgumentException, SymmetricException {

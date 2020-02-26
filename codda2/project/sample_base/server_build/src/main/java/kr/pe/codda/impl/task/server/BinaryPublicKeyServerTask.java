@@ -9,7 +9,7 @@ import kr.pe.codda.server.task.AbstractServerTask;
 import kr.pe.codda.server.task.ToLetterCarrier;
 
 public class BinaryPublicKeyServerTask extends AbstractServerTask {
-	// private Logger log = LoggerFactory.getLogger(AccountSearchProcessReqServerTask.class);
+	// private Logger log = LoggerFactory.getLogger(BinaryPublicKeyServerTask.class);
 
 
 	@Override

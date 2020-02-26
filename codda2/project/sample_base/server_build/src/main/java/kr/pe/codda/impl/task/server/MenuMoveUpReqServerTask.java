@@ -35,7 +35,7 @@ import kr.pe.codda.server.task.ToLetterCarrier;
 
 public class MenuMoveUpReqServerTask extends AbstractServerTask
 		implements DBAutoCommitTaskIF<MenuMoveUpReq, MessageResultRes> {
-	private Logger log = LoggerFactory.getLogger(AccountSearchProcessReqServerTask.class);
+	private Logger log = LoggerFactory.getLogger(MenuMoveUpReqServerTask.class);
 
 	@Override
 	public void doTask(String projectName, LoginManagerIF personalLoginManager, ToLetterCarrier toLetterCarrier,

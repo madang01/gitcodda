@@ -28,9 +28,17 @@ import kr.pe.codda.common.exception.CoddaConfigurationException;
  *
  */
 public class ServerClassLoaderFactory {
-	private String serverAPPINFClassPathString = null;
-	private String projectResourcesPathString = null;
+	private final String serverAPPINFClassPathString;
+	private final String projectResourcesPathString;
 	private SystemClassVerifierIF excludedDynamicClassManager = new SystemClassDeterminer();
+	
+	
+	private final String serverAPPINFClassPathStringForClassFullName;
+	
+	private final int lengthOfServerAPPINFClassPathStringForClassFullName;	
+	private final int minOfAppInfClassFilePathStringLength;
+	
+	
 	
 	/**
 	 * 생성자
@@ -86,6 +94,13 @@ public class ServerClassLoaderFactory {
 		
 		this.serverAPPINFClassPathString = serverAPPINFClassPathString;
 		this.projectResourcesPathString = projectResourcesPathString;
+		
+		
+		serverAPPINFClassPathStringForClassFullName = new StringBuilder()
+				.append(serverAPPINFClassPathString)
+				.append(File.separatorChar).toString();
+		lengthOfServerAPPINFClassPathStringForClassFullName = serverAPPINFClassPathStringForClassFullName.length();
+		minOfAppInfClassFilePathStringLength = lengthOfServerAPPINFClassPathStringForClassFullName + 1 + ".class".length();
 	}
 	
 	/**
@@ -106,5 +121,55 @@ public class ServerClassLoaderFactory {
 		String classFileName = new StringBuilder(serverAPPINFClassPathString).append(File.separator)
 				.append(classFullName.replace(".", File.separator)).append(".class").toString();
 		return classFileName;
+	}
+	
+	/**
+	 * 서버 동적 클래스 파일들이 위치하는 APP-INF 파일인 경우 해당 경로를 기준으로 하는 클래스 전체 이름을 반환한다.
+	 * 단, APP-INF 경로 밑에 파일이 아닌 경우 {@link IllegalArgumentException} 를 던진다. 
+	 * 
+	 * @param appInfClassFile APP-INF 파일
+	 * @return APP-INF 파일인 경우 해당 경로를 기준으로 하는 클래스 전체 이름
+	 * @throws IllegalArgumentException 파라마터 'APP-INF 파일' 이 null 인 경우 혹은 APP-INF 경로 밑의 파일이 아닌 경우 던지는 예외
+	 */
+	public String toClassFullNameIfAppInfClassFile(File appInfClassFile) throws IllegalArgumentException {
+		if (null == appInfClassFile) {
+			throw new IllegalArgumentException("the parameter appInfClassFile is null");
+		}
+
+		String appInfClassFilePathString = appInfClassFile.getAbsolutePath();
+		
+		if (! appInfClassFilePathString.endsWith(".class")) {
+			String errorMessage = new StringBuilder()
+					.append("the parameter appInfClassFile[")
+					.append(appInfClassFilePathString)
+					.append("] is not a class file").toString();
+			throw new IllegalArgumentException(errorMessage);
+		}
+		
+		int appInfClassFilePathStringLength = appInfClassFilePathString.length();
+		
+		if (appInfClassFilePathStringLength < minOfAppInfClassFilePathStringLength) {
+			String errorMessage = new StringBuilder()
+					.append("the parameter appInfClassFile[")
+					.append(appInfClassFilePathString)
+					.append("]'s length is less than min[")
+					.append(minOfAppInfClassFilePathStringLength)
+					.append("]").toString();
+			throw new IllegalArgumentException(errorMessage);
+		}
+		
+		if (! appInfClassFilePathString.startsWith(serverAPPINFClassPathStringForClassFullName)) {
+			String errorMessage = new StringBuilder()
+					.append("the parameter appInfClassFile[")
+					.append(appInfClassFilePathString)
+					.append("] is not a APP-INF file").toString();
+			throw new IllegalArgumentException(errorMessage);
+		}
+		
+		String middle = appInfClassFilePathString.substring(lengthOfServerAPPINFClassPathStringForClassFullName, appInfClassFilePathString.length() - ".class".length());
+
+		String classFulleName = middle.replace(File.separatorChar, '.');
+
+		return classFulleName;
 	}
 }

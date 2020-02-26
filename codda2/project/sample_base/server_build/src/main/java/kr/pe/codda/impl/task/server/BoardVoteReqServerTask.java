@@ -30,7 +30,7 @@ import kr.pe.codda.server.task.ToLetterCarrier;
 
 public class BoardVoteReqServerTask extends AbstractServerTask
 		implements DBAutoCommitTaskIF<BoardVoteReq, MessageResultRes> {
-	private Logger log = LoggerFactory.getLogger(AccountSearchProcessReqServerTask.class);
+	private Logger log = LoggerFactory.getLogger(BoardVoteReqServerTask.class);
 
 	@Override
 	public void doTask(String projectName, LoginManagerIF personalLoginManager, ToLetterCarrier toLetterCarrier,

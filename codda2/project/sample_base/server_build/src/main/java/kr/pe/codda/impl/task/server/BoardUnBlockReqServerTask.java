@@ -34,7 +34,7 @@ import kr.pe.codda.server.task.ToLetterCarrier;
 
 public class BoardUnBlockReqServerTask extends AbstractServerTask
 		implements DBAutoCommitTaskIF<BoardUnBlockReq, MessageResultRes> {
-	private Logger log = LoggerFactory.getLogger(AccountSearchProcessReqServerTask.class);
+	private Logger log = LoggerFactory.getLogger(BoardUnBlockReqServerTask.class);
 
 	@Override
 	public void doTask(String projectName, LoginManagerIF personalLoginManager, ToLetterCarrier toLetterCarrier,

@@ -32,6 +32,7 @@
 	<union id="core.server.jarlibs">		
 		<fileset file="${dir.core.server.build}/lib/main/ex/commons-dbcp2-2.0.1.jar" />
 		<fileset file="${dir.core.server.build}/lib/main/ex/commons-pool2-2.5.0.jar" />
+		<fileset file="${dir.core.server.build}/lib/main/ex/javassist.jar" />
 	</union>
 
 	<union id="core.all.jarlibs">

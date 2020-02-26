@@ -43,7 +43,7 @@ import kr.pe.codda.server.task.ToLetterCarrier;
 
 public class BoardMoveReqServerTask extends AbstractServerTask
 		implements DBAutoCommitTaskIF<BoardMoveReq, BoardMoveRes> {
-	private Logger log = LoggerFactory.getLogger(AccountSearchProcessReqServerTask.class);
+	private Logger log = LoggerFactory.getLogger(BoardMoveReqServerTask.class);
 	
 	private void checkValidAllArgument(BoardMoveReq boardMoveReq) throws ParameterServerTaskException {
 		try {

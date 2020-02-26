@@ -11,8 +11,6 @@ import java.util.Arrays;
 import org.jooq.Record1;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.icegreen.greenmail.util.GreenMail;
 import com.icegreen.greenmail.util.ServerSetup;
@@ -38,7 +36,7 @@ import kr.pe.codda.server.lib.ServerCommonStaticFinalVars;
 import kr.pe.codda.server.lib.ServerDBUtil;
 
 public class AccountSearchProcessReqServerTaskTest extends AbstractBoardTest {
-	private static Logger log = LoggerFactory.getLogger(AccountSearchProcessReqServerTask.class);
+	
 
 	@Test
 	public void 비밀번호찾기처리_존재하지않은회원() {

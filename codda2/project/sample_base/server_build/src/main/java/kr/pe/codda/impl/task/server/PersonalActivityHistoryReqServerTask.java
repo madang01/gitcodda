@@ -43,7 +43,7 @@ import kr.pe.codda.server.task.ToLetterCarrier;
 
 public class PersonalActivityHistoryReqServerTask extends AbstractServerTask
 		implements DBAutoCommitTaskIF<PersonalActivityHistoryReq, PersonalActivityHistoryRes> {
-	private Logger log = LoggerFactory.getLogger(AccountSearchProcessReqServerTask.class);
+	private Logger log = LoggerFactory.getLogger(PersonalActivityHistoryReqServerTask.class);
 
 	@Override
 	public void doTask(String projectName, LoginManagerIF personalLoginManager, ToLetterCarrier toLetterCarrier,

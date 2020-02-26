@@ -28,7 +28,7 @@ import kr.pe.codda.server.task.ToLetterCarrier;
 
 public class UploadImageReqServerTask extends AbstractServerTask
 		implements DBAutoCommitTaskIF<UploadImageReq, UploadImageRes> {
-	private Logger log = LoggerFactory.getLogger(AccountSearchProcessReqServerTask.class);
+	private Logger log = LoggerFactory.getLogger(UploadImageReqServerTask.class);
 
 	@Override
 	public void doTask(String projectName, LoginManagerIF personalLoginManager, ToLetterCarrier toLetterCarrier,

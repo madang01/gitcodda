@@ -32,7 +32,7 @@ import kr.pe.codda.server.task.ToLetterCarrier;
 
 public class AccountSearchReadyReqServerTask extends AbstractServerTask
 		implements DBAutoCommitTaskIF<AccountSearchReadyReq, MessageResultRes> {
-	private Logger log = LoggerFactory.getLogger(AccountSearchProcessReqServerTask.class);
+	private Logger log = LoggerFactory.getLogger(AccountSearchReadyReqServerTask.class);
 
 
 	@Override

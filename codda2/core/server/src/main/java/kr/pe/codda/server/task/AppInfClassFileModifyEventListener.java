@@ -23,12 +23,12 @@ import java.io.File;
  * @author Won Jonghoon
  *
  */
-public interface ServerDynamicClassFileModifyEventListener {
+public interface AppInfClassFileModifyEventListener {
 	/**
 	 * 서버 동적 클래스 변경 이벤트를 전달한다
 	 * 
-	 * @param modifiedDynamicClassFile 수정된 동적 클래스 파일
+	 * @param appInfClassFile 수정된 동적 클래스 파일
 	 * @throws Exception 수정된 동적 클래스 파일에 대한 처리 과정중 에러 발생시 던지는 예외
 	 */
-	public void onServerDynamicClassFileModify(File modifiedDynamicClassFile) throws Exception;
+	public void onAppInfClassFileModify(File appInfClassFile) throws Exception;
 }

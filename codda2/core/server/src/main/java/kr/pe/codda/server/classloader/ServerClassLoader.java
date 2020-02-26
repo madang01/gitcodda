@@ -52,9 +52,10 @@ public class ServerClassLoader extends ClassLoader implements MessageEncoderMana
 	
 	private final static ClassLoader systemClassLoader = ClassLoader.getSystemClassLoader();
 	
+		
 	private final HashMap<String, MessageCodecIF> messageCodecHash = new  HashMap<String, MessageCodecIF>();
 	
-	private final HashMap<String, AbstractServerTask> severTaskHash = new  HashMap<String, AbstractServerTask>();
+	private final HashMap<String, AbstractServerTask> messageID2SeverTaskHash = new  HashMap<String, AbstractServerTask>();
 	
 	
 	/**
@@ -74,10 +75,7 @@ public class ServerClassLoader extends ClassLoader implements MessageEncoderMana
 		log.log(Level.INFO, "ServerClassLoader hashCode=[" + this.hashCode() + "] create");
 	}
 	
-	public void createServerTask(String messageID) {
-		
-	}
-
+	
 	
 	
 	/**
@@ -164,6 +162,7 @@ public class ServerClassLoader extends ClassLoader implements MessageEncoderMana
 			byte[] dynamicClassfileBytes = Files.readAllBytes(classFile.toPath());			
 
 			retClass = defineClass(classFullName, dynamicClassfileBytes, 0, dynamicClassfileBytes.length);
+			
 
 		} catch (IOException e) {
 			String errorMessage = new StringBuilder()
@@ -249,12 +248,12 @@ public class ServerClassLoader extends ClassLoader implements MessageEncoderMana
 		return url;
 	}*/
 	
-	public boolean isIncludedServerTask(String messageID) {
-		return severTaskHash.containsKey(messageID);
+	public boolean isCreatedServerTask(String messageID) {
+		return messageID2SeverTaskHash.containsKey(messageID);
 	}
 	
 	public AbstractServerTask getServerTask(String messageID) {
-		return severTaskHash.get(messageID);
+		return messageID2SeverTaskHash.get(messageID);
 	}
 
 	public AbstractServerTask createNewServerTask(String messageID) throws DynamicClassCallException {
@@ -309,7 +308,7 @@ public class ServerClassLoader extends ClassLoader implements MessageEncoderMana
 		
 		AbstractServerTask serverTask = (AbstractServerTask)serverTaskInstance;
 		
-		severTaskHash.put(messageID, serverTask);
+		messageID2SeverTaskHash.put(messageID, serverTask);
 		
 		return serverTask;
 	}

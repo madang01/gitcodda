@@ -153,7 +153,7 @@ public class DynamicClassWatcherTest {
 			fail("fail to create a file[" + tmp02FilePathString + "]");
 		}
 
-		class ServerDynamicClassFileModifyEventListenerMock implements ServerDynamicClassFileModifyEventListener {
+		class ServerDynamicClassFileModifyEventListenerMock implements AppInfClassFileModifyEventListener {
 			private final ArrayDeque<String> expectedFileNameQueue = new ArrayDeque<String>();
 
 			public ServerDynamicClassFileModifyEventListenerMock() {
@@ -165,7 +165,7 @@ public class DynamicClassWatcherTest {
 				expectedFileNameQueue.add(tmp02File.getAbsolutePath());
 			}
 
-			public void onServerDynamicClassFileModify(File ModifiedDynamicClassFile) {
+			public void onAppInfClassFileModify(File ModifiedDynamicClassFile) {
 				log.info("recevied file : " + ModifiedDynamicClassFile.getAbsolutePath());
 
 				assertEquals(expectedFileNameQueue.removeFirst(), ModifiedDynamicClassFile.getAbsolutePath());
@@ -219,9 +219,9 @@ public class DynamicClassWatcherTest {
 
 	@Test
 	public void test_와처등록후새로운디렉토리와그밑에신규파일추가_ok() {
-		class ServerDynamicClassFileModifyEventListenerMock implements ServerDynamicClassFileModifyEventListener {
+		class ServerDynamicClassFileModifyEventListenerMock implements AppInfClassFileModifyEventListener {
 
-			public void onServerDynamicClassFileModify(File ModifiedDynamicClassFile) {
+			public void onAppInfClassFileModify(File ModifiedDynamicClassFile) {
 				log.info("recevied file : " + ModifiedDynamicClassFile.getAbsolutePath());
 			}			
 		}

@@ -44,6 +44,7 @@ import java.nio.file.WatchService;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -69,19 +70,18 @@ public class DynamicClassWatcher extends Thread {
 	private boolean trace = false;
 
 	private final File dynamicClassDirectroy;
-	private final ServerDynamicClassFileModifyEventListener serverDynamicClassFileModifyEventListener;
+	private final AppInfClassFileModifyEventListener serverDynamicClassFileModifyEventListener;
 
-	
 	/**
 	 * 생성자
-	 * @param serverAPPINFClassPath 서버 동적 클래스 경로
-	 * @param recursive 하위 디렉토리 포함 여부
+	 * 
+	 * @param serverAPPINFClassPath                     서버 동적 클래스 경로
+	 * @param recursive                                 하위 디렉토리 포함 여부
 	 * @param serverDynamicClassFileModifyEventListener 서버 동적 클래스 수정 이벤트 수신자
 	 * @throws IOException 입출력 에러 발생시 던지는 예외
 	 */
 	public DynamicClassWatcher(File serverAPPINFClassPath, boolean recursive,
-			ServerDynamicClassFileModifyEventListener serverDynamicClassFileModifyEventListener)
-			throws IOException {
+			AppInfClassFileModifyEventListener serverDynamicClassFileModifyEventListener) throws IOException {
 		if (null == serverAPPINFClassPath) {
 			throw new IllegalArgumentException("the parameter serverAPPINFClassPath is null");
 		}
@@ -105,10 +105,11 @@ public class DynamicClassWatcher extends Thread {
 		Path dir = serverAPPINFClassPath.toPath();
 
 		if (recursive) {
-			// System.out.format("Scanning %s ...\n", dynamicClassDirectroy.getAbsolutePath());			
+			// System.out.format("Scanning %s ...\n",
+			// dynamicClassDirectroy.getAbsolutePath());
 			log.info("Scanning " + serverAPPINFClassPath.getAbsolutePath() + " ...");
 			registerAll(dir);
-			
+
 			// System.out.println("Done.");
 			log.info("Done.");
 		} else {
@@ -120,7 +121,7 @@ public class DynamicClassWatcher extends Thread {
 		this.dynamicClassDirectroy = serverAPPINFClassPath;
 		this.serverDynamicClassFileModifyEventListener = serverDynamicClassFileModifyEventListener;
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	static <T> WatchEvent<T> cast(WatchEvent<?> event) {
 		return (WatchEvent<T>) event;
@@ -136,20 +137,15 @@ public class DynamicClassWatcher extends Thread {
 			Path prev = keys.get(key);
 			if (prev == null) {
 				// System.out.format("register: %s\n", dir);
-				String infoMessage = new StringBuilder()
-						.append("register: ")
-						.append(dir).toString();
+				String infoMessage = new StringBuilder().append("register: ").append(dir).toString();
 				log.info(infoMessage);
 			} else {
 				if (!dir.equals(prev)) {
-					
+
 					// System.out.format("update: %s -> %s\n", prev, dir);
-					String infoMessage = new StringBuilder()
-							.append("update: ")
-							.append(prev)
-							.append(" -> ")
-							.append(dir).toString();
-					
+					String infoMessage = new StringBuilder().append("update: ").append(prev).append(" -> ").append(dir)
+							.toString();
+
 					log.info(infoMessage);
 				}
 			}
@@ -192,8 +188,6 @@ public class DynamicClassWatcher extends Thread {
 				log.severe("WatchKey not recognized!!");
 				continue;
 			}
-			
-			
 
 			for (WatchEvent<?> event : key.pollEvents()) {
 				WatchEvent.Kind kind = event.kind();
@@ -217,7 +211,7 @@ public class DynamicClassWatcher extends Thread {
 				// if directory is created, and watching recursively, then
 				// register it and its sub-directories
 				if (kind == java.nio.file.StandardWatchEventKinds.ENTRY_CREATE) {
-					
+
 					if (recursive) {
 						try {
 							if (Files.isDirectory(child, java.nio.file.LinkOption.NOFOLLOW_LINKS)) {
@@ -231,16 +225,19 @@ public class DynamicClassWatcher extends Thread {
 
 					File ModifiedDynamicClassFile = child.toFile();
 					if (ModifiedDynamicClassFile.isFile()) {
-						serverDynamicClassFileModifyEventListener
-								.onServerDynamicClassFileModify(ModifiedDynamicClassFile);
+						try {
+							serverDynamicClassFileModifyEventListener
+									.onAppInfClassFileModify(ModifiedDynamicClassFile);
+						} catch (Exception e) {
+							log.log(Level.WARNING, "fail to delevery to server dynmaic class file modifiey event", e);
+						}
 					}
 				}
 			}
-			
 
 			// reset key and remove from set if directory no longer accessible
 			boolean valid = key.reset();
-			if (! valid) {
+			if (!valid) {
 				keys.remove(key);
 
 				// all directories are inaccessible
@@ -248,7 +245,7 @@ public class DynamicClassWatcher extends Thread {
 					break;
 				}
 			}
-			
+
 			/**
 			 * <pre>
 			 * Prevent receiving two separate ENTRY_MODIFY events: file modified
@@ -260,7 +257,7 @@ public class DynamicClassWatcher extends Thread {
 			 * 출처 : https://stackoverflow.com/questions/16777869/java-7-watchservice-ignoring-multiple-occurrences-of-the-same-event
 			 * </pre>
 			 */
-			Thread.sleep( 1 );
+			Thread.sleep(1);
 		}
 	}
 
