@@ -77,6 +77,8 @@ public final class AnyProjectConnectionPool implements AnyProjectConnectionPoolI
 	private final long socketTimeout;
 	private final StreamCharsetFamily streamCharsetFamily;
 	private final int clientAsynOutputMessageQueueCapacity;
+	private final long aliveTimePerWrapBuffer;
+	private final long retryInterval;
 	private final int clientSyncMessageMailboxCountPerAsynShareConnection;
 
 	private boolean clientDataPacketBufferIsDirect;
@@ -104,9 +106,18 @@ public final class AnyProjectConnectionPool implements AnyProjectConnectionPoolI
 		socketTimeout = projectPartConfiguration.getClientSocketTimeout();
 		streamCharsetFamily = new StreamCharsetFamily(projectPartConfiguration.getCharset());
 		clientAsynOutputMessageQueueCapacity = projectPartConfiguration.getClientAsynOutputMessageQueueCapacity();
-		final int clientConnectionCount = projectPartConfiguration.getClientConnectionCount();
-		clientSyncMessageMailboxCountPerAsynShareConnection = projectPartConfiguration.getClientSyncMessageMailboxCountPerAsynShareConnection();
 		
+		/** 
+		/**
+		 * FIXME! 변수 aliveTimePerWrapBuffer(랩버퍼 1개당 생존 시간, 단위 : nanoseconds) 는 임시적으로 하드 코딩 하지만 환경설정 파일에서 값을 얻어오도록 수정해야함,
+		 * 100 MBytes bps => 초당 10 * 1024 * 1024 * 1024 bytes / seconds => 10 bytes / nanoseconds
+		 * WrapBufer 4KBytes = 4 * 1024
+		 * 디폴트 값은 400 nanoseconds 
+		 */
+		aliveTimePerWrapBuffer = 400L;
+		retryInterval = 400;
+		final int clientConnectionCount = projectPartConfiguration.getClientConnectionCount();
+		clientSyncMessageMailboxCountPerAsynShareConnection = projectPartConfiguration.getClientSyncMessageMailboxCountPerAsynShareConnection();		
 		
 		
 		// projectPartConfiguration.getClientConnectionMaxCount();		
@@ -202,6 +213,8 @@ public final class AnyProjectConnectionPool implements AnyProjectConnectionPoolI
 							streamCharsetFamily,
 							clientDataPacketBufferMaxCntPerMessage,
 							clientAsynOutputMessageQueueCapacity,
+							aliveTimePerWrapBuffer,
+							retryInterval,
 							clientConnectionCount,
 							messageProtocol, clientTaskManger, wrapBufferPool,					
 					connectionPoolSupporter, asynClientIOEventController);
@@ -295,7 +308,9 @@ public final class AnyProjectConnectionPool implements AnyProjectConnectionPoolI
 						streamCharsetFamily,
 						clientDataPacketBufferMaxCntPerMessage,
 						clientAsynOutputMessageQueueCapacity,
-						clientSyncMessageMailboxCountPerAsynShareConnection,						
+						clientSyncMessageMailboxCountPerAsynShareConnection,
+						aliveTimePerWrapBuffer,
+						retryInterval,
 				messageProtocol, wrapBufferPool, clientTaskManger, ayncThreadSafeSingleConnectedConnectionAdder, 
 				asynClientIOEventController);		
 		

@@ -103,7 +103,11 @@ public class StreamBuffer {
 	protected final ByteBuffer byteBufferArray[];
 	protected int lastBufferIndex = -1;
 
-	private final long startTime;
+	
+	/** 겍체 생성 시간, 단위 나노 */
+	private final long createdTime;
+	/** 객체 등록 시간, 단위 나노 */
+	private long expiredTime;
 
 	/**
 	 * 외부에서 랩 버퍼 배열을 공수하는 생성자
@@ -209,7 +213,7 @@ public class StreamBuffer {
 			}
 		}
 
-		startTime = System.nanoTime();
+		createdTime = System.nanoTime();
 	}
 
 	/**
@@ -250,7 +254,17 @@ public class StreamBuffer {
 		wrapBufferArray = new WrapBuffer[maxNumberOfWrapBuffer];
 		byteBufferArray = new ByteBuffer[maxNumberOfWrapBuffer];
 
-		startTime = System.nanoTime();
+		createdTime = System.nanoTime();
+	}
+	
+	public void setExpiredTimeBasedOnPosition(long aliveTimePerWrapBuffer) {
+		int bufferIndexOfStartPostion = (int) (position / dataPacketBufferSize);
+		
+		expiredTime = System.nanoTime() + (bufferIndexOfStartPostion+1) * aliveTimePerWrapBuffer;
+	}
+	
+	public long getExpiredTime() {
+		return expiredTime;
 	}
 
 	/**
@@ -2170,18 +2184,26 @@ public class StreamBuffer {
 	}
 
 	/**
-	 * 마지막 버퍼의 limit 속성 값을 {@link #limit} 속성 값에 맞추어 설정한다. WARNING! 빠른 처리를 위하여 에러 처리
-	 * 루틴 생략, 소켓을 통해 보낼 메시지 내용을 담고 있는 경우에 호출된다.
+	 * <pre>
+	 * 마지막 버퍼의 limit 속성 값을 이 스트림의 limit 속성 값에 맞추어 설정한다.
+	 * WARNING! 반듯이 소켓 쓰기 전에 이 메소드가 호출되어야 한다. limit 속성에 맞게 마지막 ByteBuffer 의 limit 이 설정되지 않으면 '마지막 ByteBuffer' 에서 원하는 만큼이 아닌 전체가 전송되게 되어 오류가 발생한다.   
+	 * 참고) 이 스트림에 쓰기 혹은 읽기가 없는 경우 자원 절약을 위해 버퍼를 할당하지 않는다. 하여 읽기 혹은 쓰기가 수행되기 전 즉 할당되지 않는 버퍼에 대한 limit 설정은 null 에러가 발생할 수 있어 이에 대한 방어 코드를 넣었다.
+	 * </pre> 
 	 */
 	public void setLastBufferLimitUsingLimit() {
 		long endPosition = limit - 1;
 		int bufferIndexOfEndPostion = (int) (endPosition / dataPacketBufferSize);
 		int bufferOffsetOfEndPostion = (int) (endPosition % dataPacketBufferSize);
 
+		ByteBuffer byteBuffer = byteBufferArray[bufferIndexOfEndPostion];
+		
 		/**
-		 * WARNING! 빠른 처리를 위하여 byteBufferArray[bufferIndexOfEndPostion] 이 null 일 경우 처리
-		 * 루틴 생략, 메시지
+		 * WARNING! null 방지용 방어 코드, 이 스트림에 쓰기 혹은 읽기가 없는 경우 자원 절약을 위해 버퍼를 할당하지 않는다. 하여 읽기 혹은 쓰기가 수행되기 전 즉 할당되지 않는 버퍼에 대한 limit 설정은 null 에러가 발생할 수 있어 이에 대한 방어 코드를 넣었다.
 		 */
+		if (null == byteBuffer) {
+			return;
+		}
+		
 		byteBufferArray[bufferIndexOfEndPostion].limit(bufferOffsetOfEndPostion + 1);
 	}
 
@@ -2189,7 +2211,7 @@ public class StreamBuffer {
 		long endTime = System.nanoTime();
 
 		String infoMessage = new StringBuilder().append(title).append(" 경과 시간[")
-				.append(TimeUnit.MICROSECONDS.convert((endTime - startTime), TimeUnit.NANOSECONDS))
+				.append(TimeUnit.MICROSECONDS.convert((endTime - createdTime), TimeUnit.NANOSECONDS))
 				.append("] microseconds").toString();
 
 		log.info(infoMessage);

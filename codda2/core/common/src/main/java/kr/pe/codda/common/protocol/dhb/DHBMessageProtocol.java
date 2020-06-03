@@ -238,20 +238,20 @@ public class DHBMessageProtocol implements MessageProtocolIF {
 	}
 
 	@Override
-	public void S2O(IncomingStream inputStreamResource, ReceivedMiddleObjectForwarderIF receivedMessageForwarder)
+	public void S2O(IncomingStream incomingStream, ReceivedMiddleObjectForwarderIF receivedMessageForwarder)
 			throws HeaderFormatException, NoMoreWrapBufferException, InterruptedException {
-		if (null == inputStreamResource) {
-			throw new IllegalArgumentException("the parameter inputStreamResource is null");
+		if (null == incomingStream) {
+			throw new IllegalArgumentException("the parameter incomingStream is null");
 		}
 
 		if (null == receivedMessageForwarder) {
 			throw new IllegalArgumentException("the parameter receivedMessageForwarder is null");
 		}
 
-		DHBMessageHeader messageHeader = (DHBMessageHeader) inputStreamResource.getUserDefObject();
+		DHBMessageHeader messageHeader = (DHBMessageHeader) incomingStream.getUserDefObject();
 
 		boolean isMoreMessage = false;
-		long numberOfSocketReadBytes = inputStreamResource.getPosition();
+		long numberOfSocketReadBytes = incomingStream.getPosition();
 		try {
 			do {
 				if (null == messageHeader && numberOfSocketReadBytes >= messageHeaderSize) {
@@ -259,23 +259,23 @@ public class DHBMessageProtocol implements MessageProtocolIF {
 					DHBMessageHeader dhbMessageHeader = new DHBMessageHeader();
 					byte[] actualHeaderBodyMD5Bytes = null;
 
-					long oldPosition = inputStreamResource.getPosition();
+					long oldPosition = incomingStream.getPosition();
 
 					/** 헤더 */
 					try {
 
 						/** 헤더 바디 MD5 체크섬 */
-						inputStreamResource.setPosition(0);
-						actualHeaderBodyMD5Bytes = inputStreamResource.getMD5WithoutChange(headerBodySize);
+						incomingStream.setPosition(0);
+						actualHeaderBodyMD5Bytes = incomingStream.getMD5WithoutChange(headerBodySize);
 
 						//inputStreamResource.setPosition(0);
 						/** 8 byte long 바디 크기 */
-						dhbMessageHeader.bodySize = inputStreamResource.getLong();
+						dhbMessageHeader.bodySize = incomingStream.getLong();
 						/** 128 bit 바디 MD5 체크섬 */
-						dhbMessageHeader.bodyMD5Bytes = inputStreamResource
+						dhbMessageHeader.bodyMD5Bytes = incomingStream
 								.getBytes(CommonStaticFinalVars.MD5_BYTESIZE);
 						/** 128 bit 헤더 바디 MD5 체크섬 */
-						dhbMessageHeader.headerBodyMD5Bytes = inputStreamResource
+						dhbMessageHeader.headerBodyMD5Bytes = incomingStream
 								.getBytes(CommonStaticFinalVars.MD5_BYTESIZE);
 					} catch (Exception e) {
 						String errorMessage = new StringBuilder("dhb header parsing error::").append(e.getMessage())
@@ -284,7 +284,7 @@ public class DHBMessageProtocol implements MessageProtocolIF {
 						throw new HeaderFormatException(errorMessage);
 					}
 					
-					inputStreamResource.setPosition(oldPosition);
+					incomingStream.setPosition(oldPosition);
 
 					/** 헤더바디 MD5 체크섬과 헤더의 헤더바디 MD5 체크섬 비교 */
 					boolean isValidHeaderBodyMD5 = java.util.Arrays.equals(dhbMessageHeader.headerBodyMD5Bytes,
@@ -318,7 +318,7 @@ public class DHBMessageProtocol implements MessageProtocolIF {
 						StreamBuffer messageInputStream = null;
 						
 						try {
-							messageInputStream = inputStreamResource.cutMessageInputStream(messageInputMessageSize);
+							messageInputStream = incomingStream.cutMessageInputStream(messageInputMessageSize);
 						} catch(Exception e) {
 							String errorMessage = new StringBuilder("fail to cut one message input stream from input socket stream, errmsg=")
 									.append(e.getMessage()).toString();
@@ -394,7 +394,7 @@ public class DHBMessageProtocol implements MessageProtocolIF {
 						}
 
 						messageHeader = null;
-						numberOfSocketReadBytes = inputStreamResource.getPosition();
+						numberOfSocketReadBytes = incomingStream.getPosition();
 						if (numberOfSocketReadBytes > messageHeaderSize) {
 							isMoreMessage = true;
 						} else {
@@ -404,7 +404,7 @@ public class DHBMessageProtocol implements MessageProtocolIF {
 				}
 			} while (isMoreMessage);
 		} finally {
-			inputStreamResource.setUserDefObject(messageHeader);
+			incomingStream.setUserDefObject(messageHeader);
 		}
 	}	
 

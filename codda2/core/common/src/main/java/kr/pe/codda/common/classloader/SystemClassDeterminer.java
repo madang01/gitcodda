@@ -31,34 +31,36 @@ public class SystemClassDeterminer implements SystemClassVerifierIF {
 
 	private HashSet<String> sytemClassFullNameSetHavingDynamicClassName = new HashSet<String>();
 	
+	
+	private final String[] systemMessageIDListHavingDTO = {"ExceptionDeliveryRes", "Empty"};
+	
+	private final String[] systemMessageIDListHavingTask = { "Empty" };
+	
+	
 	/**
 	 * 생성자
 	 */
-	public SystemClassDeterminer() {
-		
-		String[] messageIDListOfDTOHavingDynamicClassName = { "ExceptionDeliveryRes", "Empty" };
+	public SystemClassDeterminer() {	
 
-		for (String messageIDOfDTOHavingDynamicClassName : messageIDListOfDTOHavingDynamicClassName) {
+		for (String systemMessageIDHavingDTO : systemMessageIDListHavingDTO) {
 			sytemClassFullNameSetHavingDynamicClassName
-					.add(IOPartDynamicClassNameUtil.getMessageClassFullName(messageIDOfDTOHavingDynamicClassName));
+					.add(IOPartDynamicClassNameUtil.getMessageClassFullName(systemMessageIDHavingDTO));
 			sytemClassFullNameSetHavingDynamicClassName.add(
-					IOPartDynamicClassNameUtil.getClientMessageCodecClassFullName(messageIDOfDTOHavingDynamicClassName));
+					IOPartDynamicClassNameUtil.getClientMessageCodecClassFullName(systemMessageIDHavingDTO));
 			sytemClassFullNameSetHavingDynamicClassName
-					.add(IOPartDynamicClassNameUtil.getMessageDecoderClassFullName(messageIDOfDTOHavingDynamicClassName));
+					.add(IOPartDynamicClassNameUtil.getMessageDecoderClassFullName(systemMessageIDHavingDTO));
 			sytemClassFullNameSetHavingDynamicClassName
-					.add(IOPartDynamicClassNameUtil.getMessageEncoderClassFullName(messageIDOfDTOHavingDynamicClassName));
+					.add(IOPartDynamicClassNameUtil.getMessageEncoderClassFullName(systemMessageIDHavingDTO));
 			sytemClassFullNameSetHavingDynamicClassName.add(
-					IOPartDynamicClassNameUtil.getServerMessageCodecClassFullName(messageIDOfDTOHavingDynamicClassName));
-		}
+					IOPartDynamicClassNameUtil.getServerMessageCodecClassFullName(systemMessageIDHavingDTO));
+		}		
 
-		String[] messageIDListOfTaskHavingDynamicClassName = { "Empty" };
-
-		for (String messageIDOfTaskHavingDynamicClassName : messageIDListOfTaskHavingDynamicClassName) {
+		for (String systemMessageIDHavingTask : systemMessageIDListHavingTask) {
 			sytemClassFullNameSetHavingDynamicClassName
-					.add(IOPartDynamicClassNameUtil.getClientTaskClassFullName(messageIDOfTaskHavingDynamicClassName));
+					.add(IOPartDynamicClassNameUtil.getClientTaskClassFullName(systemMessageIDHavingTask));
 
 			sytemClassFullNameSetHavingDynamicClassName
-					.add(IOPartDynamicClassNameUtil.getServerTaskClassFullName(messageIDOfTaskHavingDynamicClassName));
+					.add(IOPartDynamicClassNameUtil.getServerTaskClassFullName(systemMessageIDHavingTask));
 		}
 	}
 
@@ -68,4 +70,5 @@ public class SystemClassDeterminer implements SystemClassVerifierIF {
 				sytemClassFullNameSetHavingDynamicClassName.contains(classFullName);		
 		return isSystemClassName;
 	}
+	
 }

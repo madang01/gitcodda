@@ -19,7 +19,6 @@ package kr.pe.codda.client.connection.asyn;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
-import java.net.SocketTimeoutException;
 import java.net.StandardSocketOptions;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
@@ -42,7 +41,10 @@ import kr.pe.codda.common.exception.DynamicClassCallException;
 import kr.pe.codda.common.exception.HeaderFormatException;
 import kr.pe.codda.common.exception.NoMoreWrapBufferException;
 import kr.pe.codda.common.exception.NotSupportedException;
+import kr.pe.codda.common.exception.OutgoingStreamTimeoutException;
+import kr.pe.codda.common.exception.RetryException;
 import kr.pe.codda.common.exception.ServerTaskException;
+import kr.pe.codda.common.exception.TimeoutDelayException;
 import kr.pe.codda.common.io.ClientOutgoingStreamIF;
 import kr.pe.codda.common.io.IncomingStream;
 import kr.pe.codda.common.io.StreamBuffer;
@@ -68,6 +70,9 @@ public class AsynThreadSafeSingleConnection
 	private final long socketTimeout;
 	private final int maxNumberOfWrapBufferPerMessage;
 	private final int clientAsynOutputMessageQueueCapacity;
+	private final long aliveTimePerWrapBuffer;
+	private final long retryIntervalMilliseconds;
+	private final int retryIntervalNanoSeconds;
 	private final StreamCharsetFamily streamCharsetFamily;	
 	private final WrapBufferPoolIF wrapBufferPool;
 	private final MessageProtocolIF messageProtocol;
@@ -92,11 +97,13 @@ public class AsynThreadSafeSingleConnection
 	 * @param projectName 프로젝트 이름
 	 * @param serverHost 서버 호스트 주소
 	 * @param serverPort 서버 포트 번호
-	 * @param socketTimeout 소켓 타임 아웃 시간
+	 * @param socketTimeout 소켓 타임 아웃 시간, 단위 : milliseconds
 	 * @param streamCharsetFamily 문자셋, 문자셋 디코더 그리고 문자셋 인코더 묶음
 	 * @param clientDataPacketBufferMaxCntPerMessage 메시지 1개당 랩 버퍼 최대 갯수
 	 * @param clientAsynOutputMessageQueueCapacity 출력 메시지 큐 크기
-	 * @param clientSyncMessageMailboxCountPerAsynShareConnection 소켓 공유할 메시지 박스 최대 갯수 
+	 * @param clientSyncMessageMailboxCountPerAsynShareConnection 소켓 공유할 메시지 박스 최대 갯수
+	 * @param aliveTimePerWrapBuffer 랩버퍼 1개당 생존 시간, 단위 : nanoseconds 
+	 * @param retryInterval 입력 메시지 스트림 큐에 입력 메시지 스트림을 다시 추가하는 간격, 단위 nanoseconds, 참고) '송신이 끝난 입력 메시지 스트림 큐'가 비어 있고 '송신중인 입력 메시지 스트림 큐'가 가득 찬 경우에 타임 아웃 시간안에 일정 시간 대기후 '입력 메시지 스트림'을 '송신중인 입력 메시지 스트림 큐' 에  다시 넣기를 시도한다.
 	 * @param messageProtocol 메시지 프로토콜
 	 * @param wrapBufferPool 랩 버퍼 폴
 	 * @param clientTaskManger 클라이언트 타스크 관리자
@@ -107,6 +114,8 @@ public class AsynThreadSafeSingleConnection
 	public AsynThreadSafeSingleConnection(String projectName, String serverHost, int serverPort, long socketTimeout,
 			StreamCharsetFamily streamCharsetFamily, int clientDataPacketBufferMaxCntPerMessage,
 			int clientAsynOutputMessageQueueCapacity, int clientSyncMessageMailboxCountPerAsynShareConnection,
+			long aliveTimePerWrapBuffer, 
+			long retryInterval,
 			MessageProtocolIF messageProtocol, WrapBufferPoolIF wrapBufferPool, ClientTaskMangerIF clientTaskManger,
 			AsynConnectedConnectionAdderIF asynConnectedConnectionAdder,
 			ClientIOEventControllerIF asynClientIOEventController) throws IOException {
@@ -116,6 +125,11 @@ public class AsynThreadSafeSingleConnection
 		this.socketTimeout = socketTimeout;		
 		this.maxNumberOfWrapBufferPerMessage = clientDataPacketBufferMaxCntPerMessage;
 		this.clientAsynOutputMessageQueueCapacity = clientAsynOutputMessageQueueCapacity;
+		this.aliveTimePerWrapBuffer = aliveTimePerWrapBuffer;
+		
+		retryIntervalMilliseconds = retryInterval / CommonStaticFinalVars.ONE_MILLISECONDS_EXPRESSED_IN_NANOSECONDS;
+		retryIntervalNanoSeconds = (int)(retryInterval % CommonStaticFinalVars.ONE_MILLISECONDS_EXPRESSED_IN_NANOSECONDS);
+		
 		this.streamCharsetFamily = streamCharsetFamily;
 		this.wrapBufferPool = wrapBufferPool;
 		
@@ -127,6 +141,8 @@ public class AsynThreadSafeSingleConnection
 		this.syncMessageMailboxQueue = new ArrayBlockingQueue<SyncMessageMailbox>(
 				clientSyncMessageMailboxCountPerAsynShareConnection);
 		this.syncMessageMailboxArray = new SyncMessageMailbox[clientSyncMessageMailboxCountPerAsynShareConnection + CommonStaticFinalVars.SYNC_MAILBOX_START_ID];
+		
+		
 		for (int i = CommonStaticFinalVars.SYNC_MAILBOX_START_ID; i < syncMessageMailboxArray.length; i++) {
 			SyncMessageMailbox syncMessageMailbox = new SyncMessageMailbox(this, i, socketTimeout, messageProtocol);
 			syncMessageMailboxArray[i] = syncMessageMailbox;
@@ -175,6 +191,10 @@ public class AsynThreadSafeSingleConnection
 	private void addInputMessage(MessageCodecMangerIF messageCodecManger, AbstractMessage inputMessage)
 			throws DynamicClassCallException, NoMoreWrapBufferException, BodyFormatException,
 			HeaderFormatException, IOException, InterruptedException {
+		
+		final long beginTime = System.nanoTime();
+		long newTimeout = socketTimeout * CommonStaticFinalVars.ONE_MILLISECONDS_EXPRESSED_IN_NANOSECONDS;
+		final long endTime = beginTime + newTimeout;
 
 		AbstractMessageEncoder messageEncoder = null;
 
@@ -194,6 +214,7 @@ public class AsynThreadSafeSingleConnection
 			messageProtocol.M2S(inputMessage, messageEncoder, inputMessageStreamBuffer);
 			
 			inputMessageStreamBuffer.flip();
+			inputMessageStreamBuffer.setLastBufferLimitUsingLimit();
 		} catch (NoMoreWrapBufferException e) {
 			inputMessageStreamBuffer.releaseAllWrapBuffers();
 			throw e;
@@ -212,21 +233,53 @@ public class AsynThreadSafeSingleConnection
 			System.exit(1);
 		}
 		
-		boolean isSuccess = outgoingStream.offer(inputMessageStreamBuffer, socketTimeout);
-		if (! isSuccess) {
-			String errorMessage = new StringBuilder()
-					.append("소켓 채널[")
-					.append(clientSC.hashCode())
-					.append("]에 지정한 시간[")
-					.append(socketTimeout)
-					.append(" ms] 안에 입력 메시지 내용[")
-					.append(inputMessage.toString())
-					.append("]이 담긴 스트림을 추가하는데 실패하였습니다").toString();
-			
-			inputMessageStreamBuffer.releaseAllWrapBuffers();
-			
-			throw new SocketTimeoutException(errorMessage);
-		}
+		
+		do {
+			try {
+				outgoingStream.add(inputMessageStreamBuffer, newTimeout);
+				
+				break;
+			} catch(RetryException e) {
+				newTimeout = endTime - System.nanoTime();
+				
+				if (newTimeout <= 0) {
+					String errorMessage = new StringBuilder()
+							.append("working outgoing stream queue of this socket[")
+							.append(clientSC.hashCode())
+							.append("] is full").toString();
+					
+					throw new OutgoingStreamTimeoutException(errorMessage);
+				}
+				
+				Thread.sleep(retryIntervalMilliseconds, retryIntervalNanoSeconds);
+				
+			} catch(TimeoutDelayException e) {
+				inputMessageStreamBuffer.releaseAllWrapBuffers();
+				
+				Thread.sleep(e.getWaitingTime());
+				
+				String errorMessage = new StringBuilder()
+						.append("throw OutgoingStreamTimeoutException after sleep while ")
+						.append(e.getWaitingTime())
+						.append(" milliseconds becase outgoing stream queue of this socket[")
+						.append(clientSC.hashCode())
+						.append("] is full").toString();
+				
+				throw new OutgoingStreamTimeoutException(errorMessage);
+			} catch(InterruptedException | OutgoingStreamTimeoutException e) {
+				inputMessageStreamBuffer.releaseAllWrapBuffers();
+				
+				throw e;
+			} catch(Exception e) {
+				log.log(Level.WARNING, "unknown error", e);
+				
+				inputMessageStreamBuffer.releaseAllWrapBuffers();
+				
+				throw e;
+			}
+		} while(true);		
+		
+		
 		// long endTime = System.nanoTime();
 		// log.info("addInputMessage elasped {} microseconds",TimeUnit.MICROSECONDS.convert((endTime - startTime), TimeUnit.NANOSECONDS));
 
@@ -324,7 +377,7 @@ public class AsynThreadSafeSingleConnection
 		asynConnectedConnectionAdder.addConnectedConnection(this);
 		
 		incomingStream = new IncomingStream(streamCharsetFamily, maxNumberOfWrapBufferPerMessage, wrapBufferPool);
-		outgoingStream = new ClientOutgoingStream(asynClientIOEventController, personalSelectionKey, clientAsynOutputMessageQueueCapacity);
+		outgoingStream = new ClientOutgoingStream(asynClientIOEventController, personalSelectionKey, clientAsynOutputMessageQueueCapacity, aliveTimePerWrapBuffer);
 	}
 
 	public void doSubtractOneFromNumberOfUnregisteredConnections() {
@@ -366,8 +419,7 @@ public class AsynThreadSafeSingleConnection
 				messageProtocol.closeReadableMiddleObject(mailboxID, mailID, messageID, readableMiddleObject);
 			}
 			
-		} else if (CommonStaticFinalVars.COUNT_ASYN_MAILBOX_ID == mailboxID) {
-			outgoingStream.decreaseOutputMessageCount();
+		} else if (CommonStaticFinalVars.COUNT_ASYN_MAILBOX_ID == mailboxID) {			
 			
 			try {
 				AbstractClientTask clientTask = clientTaskManger.getValidClientTask(messageID);

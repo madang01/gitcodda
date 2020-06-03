@@ -122,16 +122,17 @@ public class ToLetterCarrier {
 	
 		/*log.info("classLoader[{}], serverTask[{}], create new messageEncoder of messageIDToClient={}",
 				classLoaderOfSererTask.hashCode(), inputMessageID, messageIDToClient);*/
-		StreamBuffer outputMesssageStreamBuffer = messageProtocol.createNewMessageStreamBuffer();
+		StreamBuffer outputMessageStreamBuffer = messageProtocol.createNewMessageStreamBuffer();
 		
 		try {
-			messageProtocol.M2S(outputMessage, messageEncoder, outputMesssageStreamBuffer);
+			messageProtocol.M2S(outputMessage, messageEncoder, outputMessageStreamBuffer);
 			
-			outputMesssageStreamBuffer.flip();
+			outputMessageStreamBuffer.flip();
+			outputMessageStreamBuffer.setLastBufferLimitUsingLimit();
 			
-			toAcceptedConnection.addOutputMessage(outputMesssageStreamBuffer);
+			toAcceptedConnection.addOutputMessage(outputMessageStreamBuffer);
 		} catch (NoMoreWrapBufferException e) {
-			outputMesssageStreamBuffer.releaseAllWrapBuffers();
+			outputMessageStreamBuffer.releaseAllWrapBuffers();
 			
 			String errorMessage = new StringBuilder("fail to build a output message stream[")
 					.append(outputMessage.getMessageID())
@@ -145,7 +146,7 @@ public class ToLetterCarrier {
 			doAddOutputErrorMessage(toAcceptedConnection, errorType, errorReason, outputMessage, messageProtocol);
 			return;
 		} catch (BodyFormatException e) {
-			outputMesssageStreamBuffer.releaseAllWrapBuffers();
+			outputMessageStreamBuffer.releaseAllWrapBuffers();
 			
 			String errorMessage = new StringBuilder("fail to build a output message stream[")
 					.append(outputMessage.getMessageID())
@@ -159,7 +160,7 @@ public class ToLetterCarrier {
 			doAddOutputErrorMessage(toAcceptedConnection, errorType, errorReason, outputMessage, messageProtocol);
 			return;			
 		} catch (Exception | Error e) {
-			outputMesssageStreamBuffer.releaseAllWrapBuffers();
+			outputMessageStreamBuffer.releaseAllWrapBuffers();
 			
 			String errorMessage = new StringBuilder("unknown error::fail to build a output message stream[")
 					.append(outputMessage.getMessageID())
@@ -196,6 +197,7 @@ public class ToLetterCarrier {
 			messageProtocol.M2S(exceptionDeliveryRes, CommonStaticFinalVars.EXCEPTIONDELIVERY_ENCODER, outputMessageStreamBuffer);
 			
 			outputMessageStreamBuffer.flip();
+			outputMessageStreamBuffer.setLastBufferLimitUsingLimit();
 			
 			toAcceptedConnection.addOutputMessage(outputMessageStreamBuffer);
 		} catch (Exception e) {

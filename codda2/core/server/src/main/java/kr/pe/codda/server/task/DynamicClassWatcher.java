@@ -176,12 +176,8 @@ public class DynamicClassWatcher extends Thread {
 		for (;;) {
 
 			// wait for key to be signalled
-			WatchKey key;
-			try {
-				key = watcher.take();
-			} catch (InterruptedException x) {
-				return;
-			}
+			WatchKey key = watcher.take();
+			
 
 			Path dir = keys.get(key);
 			if (dir == null) {
@@ -268,9 +264,13 @@ public class DynamicClassWatcher extends Thread {
 
 			while (true) {
 				try {
+					log.info("the DynamicClassWatcher proecess (re)start");
+					
 					processEvents();
-				} catch (Exception e) {
-
+				} catch (InterruptedException e) {
+					throw e;
+				} catch (Exception e) {					
+					log.log(Level.SEVERE, "unknown error", e);
 				}
 
 				log.info("the DynamicClassWatcher proecess exist");
@@ -280,7 +280,7 @@ public class DynamicClassWatcher extends Thread {
 					log.info("sleep 5 second, check valid dynamic class directory if valid then retry watcher process");
 					Thread.sleep(1000 * 5);
 
-				} while (!dynamicClassDirectroy.exists());
+				} while (! dynamicClassDirectroy.exists());
 			}
 
 		} catch (InterruptedException e) {

@@ -55,6 +55,8 @@ public class AsynNoShareConnectionPool implements ConnectionPoolIF, AsynConnecte
 	private final StreamCharsetFamily streamCharsetFamily;
 	private final int maxNumberOfWrapBufferPerMessage;
 	private final int clientAsynOutputMessageQueueCapacity;
+	private final long aliveTimePerWrapBuffer;
+	private final long retryInterval;
 	private final int clientConnectionCount; 
 	
 	
@@ -77,10 +79,12 @@ public class AsynNoShareConnectionPool implements ConnectionPoolIF, AsynConnecte
 	 * @param projectName 프로젝트 이름
 	 * @param serverHost 서버 호스트 주소
 	 * @param serverPort 서버 포트 번호
-	 * @param socketTimeout  소켓 타임 아웃 시간
+	 * @param socketTimeout  소켓 타임 아웃 시간, 단위 : milliseconds
 	 * @param streamCharsetFamily 문자셋, 문자셋 디코더 그리고 문자셋 인코더 묶음
 	 * @param clientDataPacketBufferMaxCntPerMessage 메시지 1개당 랩 버퍼 최대 갯수
 	 * @param clientAsynOutputMessageQueueCapacity 출력 메시지 큐 크기
+	 * @param aliveTimePerWrapBuffer 랩버퍼 1개당 생존 시간, 단위 : nanoseconds
+	 * @param retryInterval 입력 메시지 스트림 큐에 입력 메시지 스트림을 다시 추가하는 간격, 단위 nanoseconds, 참고) '송신이 끝난 입력 메시지 스트림 큐'가 비어 있고 '송신중인 입력 메시지 스트림 큐'가 가득 찬 경우에 타임 아웃 시간안에 일정 시간 대기후 '입력 메시지 스트림'을 '송신중인 입력 메시지 스트림 큐' 에  다시 넣기를 시도한다.
 	 * @param clientConnectionCount 클라이언트 연결 갯수
 	 * @param messageProtocol 메시지 프로토콜
 	 * @param clientTaskManger 클라이언트 타스크 관리자
@@ -94,6 +98,8 @@ public class AsynNoShareConnectionPool implements ConnectionPoolIF, AsynConnecte
 			StreamCharsetFamily streamCharsetFamily,
 			int clientDataPacketBufferMaxCntPerMessage,
 			int clientAsynOutputMessageQueueCapacity,
+			long aliveTimePerWrapBuffer, 
+			long retryInterval,
 			int clientConnectionCount,
 			MessageProtocolIF messageProtocol, 
 			ClientTaskMangerIF clientTaskManger,
@@ -125,7 +131,9 @@ public class AsynNoShareConnectionPool implements ConnectionPoolIF, AsynConnecte
 		this.socketTimeout = socketTimeout;
 		this.streamCharsetFamily = streamCharsetFamily;
 		this.maxNumberOfWrapBufferPerMessage = clientDataPacketBufferMaxCntPerMessage;
-		this.clientAsynOutputMessageQueueCapacity = clientAsynOutputMessageQueueCapacity;		
+		this.clientAsynOutputMessageQueueCapacity = clientAsynOutputMessageQueueCapacity;
+		this.aliveTimePerWrapBuffer = aliveTimePerWrapBuffer;
+		this.retryInterval = retryInterval;
 		this.clientConnectionCount = clientConnectionCount;
 		
 		this.messageProtocol = messageProtocol;
@@ -332,6 +340,8 @@ public class AsynNoShareConnectionPool implements ConnectionPoolIF, AsynConnecte
 				streamCharsetFamily,				
 				maxNumberOfWrapBufferPerMessage,
 				clientAsynOutputMessageQueueCapacity,
+				aliveTimePerWrapBuffer, 
+				retryInterval, 
 				messageProtocol, wrapBufferPool, clientTaskManger, this, 
 				asynClientIOEventController);
 		return asynInterestedConnection;

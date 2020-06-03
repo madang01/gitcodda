@@ -254,8 +254,7 @@ public class AcceptedConnection implements ServerIOEventHandlerIF, ReceivedMiddl
 			throws InterruptedException {
 
 		// log.info("outputMessageQueue.size={}, inputMessageCount={}",
-		// outputMessageQueue.size(), inputMessageCount);
-		
+		// outputMessageQueue.size(), inputMessageCount);]
 		
 		boolean isSuccess = outgoingStream.offer(outputMessageStreamBuffer);
 		if (! isSuccess) {

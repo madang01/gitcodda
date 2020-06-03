@@ -21,40 +21,53 @@ import java.nio.channels.CancelledKeyException;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
 import java.util.ArrayDeque;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.ReentrantLock;
+import java.util.logging.Logger;
 
+import kr.pe.codda.common.etc.CommonStaticFinalVars;
 import kr.pe.codda.common.exception.NoMoreWrapBufferException;
+import kr.pe.codda.common.exception.OutgoingStreamTimeoutException;
+import kr.pe.codda.common.exception.RetryException;
+import kr.pe.codda.common.exception.TimeoutDelayException;
 import kr.pe.codda.common.io.ClientOutgoingStreamIF;
 import kr.pe.codda.common.io.StreamBuffer;
 
 /**
  * 클라이언트용 송신 스트림, 내부적으로는 스트립 버퍼 환영 큐(=ArrayDeque)로 관리한다.
+ * 
  * @author Won Jonghoon
  *
  */
 public class ClientOutgoingStream implements ClientOutgoingStreamIF {
-	private final Object monitor = new Object();
-	// private Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
+	protected Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
+
+	private final ReentrantLock lock = new ReentrantLock();
 
 	private final ClientIOEventControllerIF asynClientIOEventController;
 	private final SelectionKey ownerSelectionKey;
 	private final int streamBufferQueueCapacity;
 
-	private final ArrayDeque<StreamBuffer> streamBufferArrayDeque;
-	private transient int streamBufferCount = 0;
+	private final ArrayDeque<StreamBuffer> finishedStreamBufferArrayDeque;
+	private final ArrayDeque<StreamBuffer> workingStreamBufferArrayDeque;
+	private final long aliveTimePerWrapBuffer;
+
 	private transient StreamBuffer workingStreamBuffer = null;
 
 	/**
 	 * 생성자
-	 * @param asynClientIOEventController 비동기 클라이언트 입출력 이벤트 제어자
-	 * @param ownerSelectionKey 소유 세렉션 키
+	 * 
+	 * @param asynClientIOEventController     비동기 클라이언트 입출력 이벤트 제어자
+	 * @param ownerSelectionKey               소유 세렉션 키
 	 * @param outputStreamBufferQueueCapacity 메시지가 담기는 '스트림 버퍼'를 원소로 갖는 환영 큐 크기
+	 * @param aliveTimePerWrapBuffer          랩버퍼 1개당 생존 시간, 단위 : nanoseconds
 	 */
-	public ClientOutgoingStream(ClientIOEventControllerIF asynClientIOEventController, 
-			SelectionKey ownerSelectionKey, int outputStreamBufferQueueCapacity) {
+	public ClientOutgoingStream(ClientIOEventControllerIF asynClientIOEventController, SelectionKey ownerSelectionKey,
+			int outputStreamBufferQueueCapacity, long aliveTimePerWrapBuffer) {
 		if (null == asynClientIOEventController) {
 			throw new IllegalArgumentException("the parameter asynClientIOEventController is null");
 		}
-		
+
 		if (null == ownerSelectionKey) {
 			throw new IllegalArgumentException("the parameter ownerSelectionKey is null");
 		}
@@ -64,14 +77,22 @@ public class ClientOutgoingStream implements ClientOutgoingStreamIF {
 					"the parameter outputStreamBufferQueueCapacity is less than or equal to zero");
 		}
 
+		if (aliveTimePerWrapBuffer <= 0) {
+			throw new IllegalArgumentException("the parameter aliveTimePerWrapBuffer is less than or equal to zero");
+		}
+
 		this.asynClientIOEventController = asynClientIOEventController;
-		this.streamBufferQueueCapacity = outputStreamBufferQueueCapacity;
 		this.ownerSelectionKey = ownerSelectionKey;
-		streamBufferArrayDeque = new ArrayDeque<StreamBuffer>(outputStreamBufferQueueCapacity);
+		this.streamBufferQueueCapacity = outputStreamBufferQueueCapacity;
+		this.aliveTimePerWrapBuffer = aliveTimePerWrapBuffer;
+
+		workingStreamBufferArrayDeque = new ArrayDeque<StreamBuffer>(streamBufferQueueCapacity);
+		finishedStreamBufferArrayDeque = new ArrayDeque<StreamBuffer>(streamBufferQueueCapacity);
 	}
 
 	@Override
-	public boolean offer(StreamBuffer messageStreamBuffer, long timeout) throws InterruptedException {
+	public void add(StreamBuffer messageStreamBuffer, long timeout)
+			throws OutgoingStreamTimeoutException, RetryException, TimeoutDelayException, InterruptedException {
 		if (null == messageStreamBuffer) {
 			throw new IllegalArgumentException("the parameter messageStreamBuffer is null");
 		}
@@ -79,43 +100,69 @@ public class ClientOutgoingStream implements ClientOutgoingStreamIF {
 		// FIXME!
 		// log.info("call offer in client");
 
-		synchronized (monitor) {			
+		boolean isLocked = lock.tryLock(timeout, TimeUnit.MILLISECONDS);
+
+		if (!isLocked) {
+			throw new OutgoingStreamTimeoutException("fail to get this client outgoing stream's lock");
+		}
+
+		try {
+			long lockBeginTime = System.nanoTime();
+			long endTimeForTimeout = lockBeginTime + timeout * CommonStaticFinalVars.ONE_MILLISECONDS_EXPRESSED_IN_NANOSECONDS;
+
+			final int streamBufferCount = finishedStreamBufferArrayDeque.size() + workingStreamBufferArrayDeque.size();
+			
+			// FIXME!
+			// log.info("streamBufferCount="+streamBufferCount);
+
 			if (streamBufferCount == streamBufferQueueCapacity) {
 				// FIXME!
-				// log.info("최대 치 도달에 따른  기다림 시작");
+				// log.info("최대 치 도달에 따른 기다림 시작");
 
-				monitor.wait(timeout);
-
-				// FIXME!
-				// log.info("최대 치 도달에 따른  기다림 종료");
-
-				if (streamBufferCount == streamBufferQueueCapacity) {
-					return false;
+				if (finishedStreamBufferArrayDeque.isEmpty()) {
+					throw new RetryException();
 				}
+
+				StreamBuffer finishedStreamBuffer = finishedStreamBufferArrayDeque.peekFirst();
+				long expiredTime = finishedStreamBuffer.getExpiredTime();
+				
+				/*
+				// FIXME!
+				log.info("lockBeginTime="+lockBeginTime);
+				log.info("expiredTime="+expiredTime);
+				log.info("endTimeForTimeout="+endTimeForTimeout);
+				log.info("비교결과1="+ (lockBeginTime < expiredTime));
+				log.info("비교결과2="+ (endTimeForTimeout < expiredTime));
+				*/
+				
+
+				if (lockBeginTime < expiredTime) {
+
+					if (endTimeForTimeout < expiredTime) {
+						throw new TimeoutDelayException(timeout - (System.nanoTime() - lockBeginTime) / CommonStaticFinalVars.ONE_MILLISECONDS_EXPRESSED_IN_NANOSECONDS);
+					}
+					long waitingTime = (expiredTime - lockBeginTime);
+
+					long millis = waitingTime / CommonStaticFinalVars.ONE_MILLISECONDS_EXPRESSED_IN_NANOSECONDS;
+					int nanos = (int) (waitingTime % CommonStaticFinalVars.ONE_MILLISECONDS_EXPRESSED_IN_NANOSECONDS);
+
+					Thread.sleep(millis, nanos);
+
+				}
+
+				finishedStreamBufferArrayDeque.removeFirst();
+
 			}
 
-			messageStreamBuffer.setLastBufferLimitUsingLimit();
-			streamBufferCount++;
-			streamBufferArrayDeque.addLast(messageStreamBuffer);
+			workingStreamBufferArrayDeque.addLast(messageStreamBuffer);
 
 			if (null == workingStreamBuffer) {
 				workingStreamBuffer = messageStreamBuffer;
 			}
 
 			turnOnSocketWriteMode();
-			
-			return true;
-		}
-	}
-	
-	@Override
-	public void decreaseOutputMessageCount() {
-		synchronized (monitor) {
-			if (streamBufferCount > 0) {
-				streamBufferCount--;
-			}
-
-			monitor.notify();
+		} finally {
+			lock.unlock();
 		}
 	}
 
@@ -126,27 +173,40 @@ public class ClientOutgoingStream implements ClientOutgoingStreamIF {
 		}
 
 		int ret = workingStreamBuffer.write(writableSocketChannel);
-		
 
 		if (! workingStreamBuffer.hasRemaining()) {
 
-			synchronized (monitor) {
-				streamBufferArrayDeque.removeFirst().releaseAllWrapBuffers();
+			boolean isLocked = lock.tryLock();
 
-				if (0 == streamBufferCount) {
+			if (isLocked) {
+				try {
+
+					StreamBuffer finishedStreamBuffer = workingStreamBufferArrayDeque.removeFirst();
+					finishedStreamBuffer.releaseAllWrapBuffers();
+
+					finishedStreamBuffer.setExpiredTimeBasedOnPosition(aliveTimePerWrapBuffer);
+					finishedStreamBufferArrayDeque.add(finishedStreamBuffer);
+					
 					// FIXME!
-					// log.info("송신할 스트림 없음");
+					// log.info("작업중인 스트림을 종료된 스트림으로 이동");
 
-					workingStreamBuffer = null;
-					/** socket write event turn off */
-					ret = -1;
+					if (workingStreamBufferArrayDeque.isEmpty()) {
+						// FIXME!
+						// log.info("송신할 스트림 없음");
 
-					turnOffSocketWriteMode();
-				} else {
-					workingStreamBuffer = streamBufferArrayDeque.peekFirst();
+						workingStreamBuffer = null;
+						/** socket write event turn off */
+						ret = -1;
 
-					// FIXME!
-					// log.info("작업 버퍼의 내용 송신 완료로 인한 새 작업 버퍼로 교체");
+						turnOffSocketWriteMode();
+					} else {
+						workingStreamBuffer = workingStreamBufferArrayDeque.peekFirst();
+
+						// FIXME!
+						// log.info("작업 버퍼의 내용 송신 완료로 인한 새 작업 버퍼로 교체");
+					}
+				} finally {
+					lock.unlock();
 				}
 			}
 		}
@@ -154,21 +214,24 @@ public class ClientOutgoingStream implements ClientOutgoingStreamIF {
 		return ret;
 
 	}
-	
 
 	/**
 	 * SelectionKey.OP_WRITE 등록
-	 * @throws CancelledKeyException 멤버 변수 'ownerSelectionKey' 가 접속 종료등으로 등록 취소 되었을 경우 던지는 예외 
+	 * 
+	 * @throws CancelledKeyException 멤버 변수 'ownerSelectionKey' 가 접속 종료등으로 등록 취소 되었을
+	 *                               경우 던지는 예외
 	 */
 	private void turnOnSocketWriteMode() throws CancelledKeyException {
 		ownerSelectionKey.interestOps(ownerSelectionKey.interestOps() | SelectionKey.OP_WRITE);
-		
+
 		asynClientIOEventController.wakeup();
 	}
 
 	/**
 	 * SelectionKey.OP_WRITE 취소
-	 * @throws CancelledKeyException 멤버 변수 'ownerSelectionKey' 가 접속 종료등으로 등록 취소 되었을 경우 던지는 예외
+	 * 
+	 * @throws CancelledKeyException 멤버 변수 'ownerSelectionKey' 가 접속 종료등으로 등록 취소 되었을
+	 *                               경우 던지는 예외
 	 */
 	private void turnOffSocketWriteMode() throws CancelledKeyException {
 		ownerSelectionKey.interestOps(ownerSelectionKey.interestOps() & ~SelectionKey.OP_WRITE);
@@ -176,8 +239,8 @@ public class ClientOutgoingStream implements ClientOutgoingStreamIF {
 
 	@Override
 	public void close() {
-		while (!streamBufferArrayDeque.isEmpty()) {
-			streamBufferArrayDeque.removeFirst().releaseAllWrapBuffers();
+		while (!workingStreamBufferArrayDeque.isEmpty()) {
+			workingStreamBufferArrayDeque.removeFirst().releaseAllWrapBuffers();
 		}
 	}
 }

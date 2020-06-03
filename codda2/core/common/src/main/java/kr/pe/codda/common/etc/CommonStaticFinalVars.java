@@ -185,4 +185,6 @@ public abstract class CommonStaticFinalVars {
 	
 	// public static final String MYBATIS_CONFIG_XML_FILE_ROOT_TAG = "configuration";
 	
+	
+	public static final long ONE_MILLISECONDS_EXPRESSED_IN_NANOSECONDS = 1000000L; 
 }

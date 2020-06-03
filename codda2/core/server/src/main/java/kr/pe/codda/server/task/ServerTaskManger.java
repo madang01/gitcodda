@@ -33,6 +33,7 @@ import javassist.bytecode.ConstPool;
 import kr.pe.codda.common.classloader.IOPartDynamicClassNameUtil;
 import kr.pe.codda.common.etc.CommonStaticFinalVars;
 import kr.pe.codda.common.exception.DynamicClassCallException;
+import kr.pe.codda.impl.task.server.EmptyServerTask;
 import kr.pe.codda.server.classloader.ServerClassLoader;
 import kr.pe.codda.server.classloader.ServerClassLoaderFactory;
 
@@ -50,6 +51,7 @@ public class ServerTaskManger implements ServerTaskMangerIF, AppInfClassFileModi
 	private final ServerClassLoaderFactory serverClassLoaderFactory;
 
 	private transient ServerClassLoader currentServerClassLoader = null;
+	
 
 	private final ConcurrentHashMap<String, AbstractServerTask> messageID2ServerTaskHash = new ConcurrentHashMap<String, AbstractServerTask>();
 	private final ConcurrentHashMap<String, Set<String>> classFullName2MessageIDSetHash = new ConcurrentHashMap<String, Set<String>>();
@@ -63,14 +65,20 @@ public class ServerTaskManger implements ServerTaskMangerIF, AppInfClassFileModi
 		if (null == serverClassLoaderFactory) {
 			throw new IllegalArgumentException("the parameter serverClassLoaderFactory is null");
 		}
+		
 
 		this.serverClassLoaderFactory = serverClassLoaderFactory;
 
 		currentServerClassLoader = serverClassLoaderFactory.createServerClassLoader();
+		
+		/** 코다 시스템 내장되는 서버 비지니스 로직 */
+		messageID2ServerTaskHash.put("Empty", new EmptyServerTask());
+		
 	}
 
 	@Override
 	public AbstractServerTask getValidServerTask(String messageID) throws DynamicClassCallException {
+		
 
 		AbstractServerTask serverTask = messageID2ServerTaskHash.get(messageID);
 
@@ -277,7 +285,7 @@ public class ServerTaskManger implements ServerTaskMangerIF, AppInfClassFileModi
 	public Set<String> getDependentDynamicClassSet(String classFilePathString) throws DynamicClassCallException {
 		File classFile = new File(classFilePathString);
 
-		if (!classFile.exists()) {
+		if (! classFile.exists()) {
 			String errorMessage = new StringBuilder().append("the dynamic class file[").append(classFilePathString)
 					.append("] doesn't exist").toString();
 

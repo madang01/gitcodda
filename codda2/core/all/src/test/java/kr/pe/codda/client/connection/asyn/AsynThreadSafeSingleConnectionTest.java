@@ -21,8 +21,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
 import java.io.File;
-import java.net.SocketException;
-import java.net.SocketTimeoutException;
 import java.nio.ByteOrder;
 import java.nio.charset.Charset;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -46,6 +44,7 @@ import kr.pe.codda.common.buildsystem.pathsupporter.ServerBuildSytemPathSupporte
 import kr.pe.codda.common.config.subset.ProjectPartConfiguration;
 import kr.pe.codda.common.etc.CommonStaticFinalVars;
 import kr.pe.codda.common.exception.CoddaConfigurationException;
+import kr.pe.codda.common.exception.OutgoingStreamTimeoutException;
 import kr.pe.codda.common.message.AbstractMessage;
 import kr.pe.codda.common.type.ConnectionType;
 import kr.pe.codda.common.type.MessageProtocolType;
@@ -57,7 +56,7 @@ import kr.pe.codda.impl.message.Empty.Empty;
 import kr.pe.codda.server.AnyProjectServer;
 
 public class AsynThreadSafeSingleConnectionTest {
-private static Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
+	private static Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
 	
 	private static final String CODDA_TEMP_ROOT_PATH_STRING = "codda_asyn_threadsafe_conn_test";
 	private static final File CODDA_TEMP_ROOT_PASTH = new File(CODDA_TEMP_ROOT_PATH_STRING);
@@ -199,7 +198,7 @@ private static Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME
 		// int clientConnectionCount = 2;
 		int clientConnectionMaxCount = 4;
 		long clientConnectionPoolSupporterTimeInterval = 600000L;
-		int clientAsynPirvateMailboxCntPerPublicConnection = 10;
+		int clientSyncMessageMailboxCountPerAsynShareConnection = 10;
 		int clientAsynInputMessageQueueSize = 5;
 		int clientAsynOutputMessageQueueSize = 5;
 		long clientAsynSelectorWakeupInterval = 1L;			
@@ -229,7 +228,7 @@ private static Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME
 				clientConnectionCount,
 				clientConnectionMaxCount,
 				clientConnectionPoolSupporterTimeInterval,
-				clientAsynPirvateMailboxCntPerPublicConnection,
+				clientSyncMessageMailboxCountPerAsynShareConnection,
 				clientAsynInputMessageQueueSize,
 				clientAsynOutputMessageQueueSize,
 				clientAsynSelectorWakeupInterval,
@@ -337,7 +336,15 @@ private static Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME
 					long startTime = System.nanoTime();
 					
 					for (int i=0; i < retryCount; i++) {
-						AbstractMessage emptyRes =  connection.sendSyncInputMessage(ClientMessageCodecManger.getInstance(), emptyReq);				
+						
+						AbstractMessage emptyRes = null;
+						try {
+							emptyRes =  connection.sendSyncInputMessage(ClientMessageCodecManger.getInstance(), emptyReq);
+						} catch(OutgoingStreamTimeoutException e) {
+							log.warning(e.getMessage());
+							continue;
+						}
+										
 						if (!(emptyRes instanceof Empty)) {
 							fail("empty 메시지 수신 실패");
 						}
@@ -354,12 +361,7 @@ private static Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME
 							.append(TimeUnit.MICROSECONDS.convert((endTime - startTime), TimeUnit.NANOSECONDS) / retryCount)
 							.append("] microseconds").toString();
 					log.info(infoMessage);
-					
-					
-				} catch (SocketTimeoutException e) {
-					log.warning(e.getMessage());
-				} catch (SocketException e) {
-					log.warning(e.getMessage());
+				
 				} catch (Exception e) {
 					log.log(Level.WARNING, "error", e);
 

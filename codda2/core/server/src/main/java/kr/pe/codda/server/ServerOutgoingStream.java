@@ -79,8 +79,7 @@ public class ServerOutgoingStream implements ServerOutgoingStreamIF {
 
 			return false;
 		}
-
-		messageStreamBuffer.setLastBufferLimitUsingLimit();
+		
 		streamBufferCount++;
 		streamBufferArrayDeque.addLast(messageStreamBuffer);
 
