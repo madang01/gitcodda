@@ -76,7 +76,7 @@ public final class AnyProjectConnectionPool implements AnyProjectConnectionPoolI
 	private final int serverPort;
 	private final long socketTimeout;
 	private final StreamCharsetFamily streamCharsetFamily;
-	private final int clientAsynOutputMessageQueueCapacity;
+	private final int clientAsynInputMessageQueueCapacity;
 	private final long aliveTimePerWrapBuffer;
 	private final long retryInterval;
 	private final int clientSyncMessageMailboxCountPerAsynShareConnection;
@@ -105,7 +105,8 @@ public final class AnyProjectConnectionPool implements AnyProjectConnectionPoolI
 		final ByteOrder byteOrder = projectPartConfiguration.getByteOrder();
 		socketTimeout = projectPartConfiguration.getClientSocketTimeout();
 		streamCharsetFamily = new StreamCharsetFamily(projectPartConfiguration.getCharset());
-		clientAsynOutputMessageQueueCapacity = projectPartConfiguration.getClientAsynOutputMessageQueueCapacity();
+		clientAsynInputMessageQueueCapacity = projectPartConfiguration.getClientAsynInputMessageQueueCapacity();
+		// projectPartConfiguration.getClientAsynInputMessageQueueCapacity();
 		
 		/** 
 		/**
@@ -115,7 +116,7 @@ public final class AnyProjectConnectionPool implements AnyProjectConnectionPoolI
 		 * 디폴트 값은 400 nanoseconds 
 		 */
 		aliveTimePerWrapBuffer = 400L;
-		retryInterval = 400;
+		retryInterval = 400L;
 		final int clientConnectionCount = projectPartConfiguration.getClientConnectionCount();
 		clientSyncMessageMailboxCountPerAsynShareConnection = projectPartConfiguration.getClientSyncMessageMailboxCountPerAsynShareConnection();		
 		
@@ -212,7 +213,7 @@ public final class AnyProjectConnectionPool implements AnyProjectConnectionPoolI
 					new AsynNoShareConnectionPool(mainProjectName, serverHost, serverPort, socketTimeout,
 							streamCharsetFamily,
 							clientDataPacketBufferMaxCntPerMessage,
-							clientAsynOutputMessageQueueCapacity,
+							clientAsynInputMessageQueueCapacity,
 							aliveTimePerWrapBuffer,
 							retryInterval,
 							clientConnectionCount,
@@ -307,7 +308,7 @@ public final class AnyProjectConnectionPool implements AnyProjectConnectionPoolI
 						socketTimeout,
 						streamCharsetFamily,
 						clientDataPacketBufferMaxCntPerMessage,
-						clientAsynOutputMessageQueueCapacity,
+						clientAsynInputMessageQueueCapacity,
 						clientSyncMessageMailboxCountPerAsynShareConnection,
 						aliveTimePerWrapBuffer,
 						retryInterval,

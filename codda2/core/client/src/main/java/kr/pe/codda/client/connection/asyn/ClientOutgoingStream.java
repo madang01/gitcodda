@@ -46,7 +46,7 @@ public class ClientOutgoingStream implements ClientOutgoingStreamIF {
 
 	private final ClientIOEventControllerIF asynClientIOEventController;
 	private final SelectionKey ownerSelectionKey;
-	private final int streamBufferQueueCapacity;
+	private final int clientAsynInputMessageQueueCapacity;
 
 	private final ArrayDeque<StreamBuffer> finishedStreamBufferArrayDeque;
 	private final ArrayDeque<StreamBuffer> workingStreamBufferArrayDeque;
@@ -59,11 +59,11 @@ public class ClientOutgoingStream implements ClientOutgoingStreamIF {
 	 * 
 	 * @param asynClientIOEventController     비동기 클라이언트 입출력 이벤트 제어자
 	 * @param ownerSelectionKey               소유 세렉션 키
-	 * @param outputStreamBufferQueueCapacity 메시지가 담기는 '스트림 버퍼'를 원소로 갖는 환영 큐 크기
+	 * @param clientAsynInputMessageQueueCapacity 메시지가 담기는 '스트림 버퍼'를 원소로 갖는 환영 큐 크기
 	 * @param aliveTimePerWrapBuffer          랩버퍼 1개당 생존 시간, 단위 : nanoseconds
 	 */
 	public ClientOutgoingStream(ClientIOEventControllerIF asynClientIOEventController, SelectionKey ownerSelectionKey,
-			int outputStreamBufferQueueCapacity, long aliveTimePerWrapBuffer) {
+			int clientAsynInputMessageQueueCapacity, long aliveTimePerWrapBuffer) {
 		if (null == asynClientIOEventController) {
 			throw new IllegalArgumentException("the parameter asynClientIOEventController is null");
 		}
@@ -72,9 +72,9 @@ public class ClientOutgoingStream implements ClientOutgoingStreamIF {
 			throw new IllegalArgumentException("the parameter ownerSelectionKey is null");
 		}
 
-		if (outputStreamBufferQueueCapacity <= 0) {
+		if (clientAsynInputMessageQueueCapacity <= 0) {
 			throw new IllegalArgumentException(
-					"the parameter outputStreamBufferQueueCapacity is less than or equal to zero");
+					"the parameter outgoingStreamBufferQueueCapacity is less than or equal to zero");
 		}
 
 		if (aliveTimePerWrapBuffer <= 0) {
@@ -83,11 +83,11 @@ public class ClientOutgoingStream implements ClientOutgoingStreamIF {
 
 		this.asynClientIOEventController = asynClientIOEventController;
 		this.ownerSelectionKey = ownerSelectionKey;
-		this.streamBufferQueueCapacity = outputStreamBufferQueueCapacity;
+		this.clientAsynInputMessageQueueCapacity = clientAsynInputMessageQueueCapacity;
 		this.aliveTimePerWrapBuffer = aliveTimePerWrapBuffer;
 
-		workingStreamBufferArrayDeque = new ArrayDeque<StreamBuffer>(streamBufferQueueCapacity);
-		finishedStreamBufferArrayDeque = new ArrayDeque<StreamBuffer>(streamBufferQueueCapacity);
+		workingStreamBufferArrayDeque = new ArrayDeque<StreamBuffer>(clientAsynInputMessageQueueCapacity);
+		finishedStreamBufferArrayDeque = new ArrayDeque<StreamBuffer>(clientAsynInputMessageQueueCapacity);
 	}
 
 	@Override
@@ -108,14 +108,14 @@ public class ClientOutgoingStream implements ClientOutgoingStreamIF {
 
 		try {
 			long lockBeginTime = System.nanoTime();
-			long endTimeForTimeout = lockBeginTime + timeout * CommonStaticFinalVars.ONE_MILLISECONDS_EXPRESSED_IN_NANOSECONDS;
+			long endTimeForTimeout = lockBeginTime + TimeUnit.NANOSECONDS.convert(timeout, TimeUnit.MICROSECONDS);					
 
 			final int streamBufferCount = finishedStreamBufferArrayDeque.size() + workingStreamBufferArrayDeque.size();
 			
 			// FIXME!
 			// log.info("streamBufferCount="+streamBufferCount);
 
-			if (streamBufferCount == streamBufferQueueCapacity) {
+			if (streamBufferCount == clientAsynInputMessageQueueCapacity) {
 				// FIXME!
 				// log.info("최대 치 도달에 따른 기다림 시작");
 

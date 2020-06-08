@@ -32,6 +32,7 @@ package kr.pe.codda.server.task;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.ClosedWatchServiceException;
 import java.nio.file.FileSystems;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
@@ -177,7 +178,11 @@ public class DynamicClassWatcher extends Thread {
 
 			// wait for key to be signalled
 			WatchKey key = watcher.take();
-			
+
+			if (null == key) {
+				log.warning("watcher key is null");
+				break;
+			}
 
 			Path dir = keys.get(key);
 			if (dir == null) {
@@ -222,8 +227,7 @@ public class DynamicClassWatcher extends Thread {
 					File ModifiedDynamicClassFile = child.toFile();
 					if (ModifiedDynamicClassFile.isFile()) {
 						try {
-							serverDynamicClassFileModifyEventListener
-									.onAppInfClassFileModify(ModifiedDynamicClassFile);
+							serverDynamicClassFileModifyEventListener.onAppInfClassFileModify(ModifiedDynamicClassFile);
 						} catch (Exception e) {
 							log.log(Level.WARNING, "fail to delevery to server dynmaic class file modifiey event", e);
 						}
@@ -260,31 +264,32 @@ public class DynamicClassWatcher extends Thread {
 	@Override
 	public void run() {
 
-		try {
+		log.info("the DynamicClassWatcher proecess (re)start::" + dynamicClassDirectroy);
 
-			while (true) {
-				try {
-					log.info("the DynamicClassWatcher proecess (re)start");
-					
-					processEvents();
-				} catch (InterruptedException e) {
-					throw e;
-				} catch (Exception e) {					
-					log.log(Level.SEVERE, "unknown error", e);
-				}
-
-				log.info("the DynamicClassWatcher proecess exist");
-
-				do {
-
-					log.info("sleep 5 second, check valid dynamic class directory if valid then retry watcher process");
-					Thread.sleep(1000 * 5);
-
-				} while (! dynamicClassDirectroy.exists());
+		while (true) {
+			try {
+				processEvents();
+			} catch (InterruptedException e) {
+				log.info("loop exit becase interruptedException occured");
+				break;
+			} catch (ClosedWatchServiceException e) {
+				log.info("loop exit becase ClosedWatchServiceException occured");
+				break;
+			} catch (Exception e) {
+				log.log(Level.SEVERE, "loop exit becase unknown error occured", e);
+				break;
 			}
+		}
 
-		} catch (InterruptedException e) {
-			log.info("loop exit becase interruptedException occured");
+		log.info("the DynamicClassWatcher proecess exist::" + dynamicClassDirectroy);
+	}
+
+	public void close() {
+
+		try {
+			watcher.close();
+		} catch (Exception e) {
+			log.log(Level.SEVERE, "fail to close the DynamicClassWatcher proecess::"+dynamicClassDirectroy, e);
 		}
 	}
 }

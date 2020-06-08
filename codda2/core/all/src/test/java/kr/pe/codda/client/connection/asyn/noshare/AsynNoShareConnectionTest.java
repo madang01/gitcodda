@@ -203,7 +203,7 @@ public class AsynNoShareConnectionTest {
 		int serverDataPacketBufferPoolSize = 10000;
 		// int serverMaxClients = 10;
 		int serverInputMessageQueueSize = 5;
-		int serverOutputMessageQueueSize = 10;
+		int serverOutputMessageQueueSize = 1000;
 
 		projectPartConfigurationForTest.build(host, port, byteOrder, charset, messageIDFixedSize, messageProtocolType,
 				clientMonitorTimeInterval, clientDataPacketBufferIsDirect, clientDataPacketBufferMaxCntPerMessage,
@@ -611,7 +611,7 @@ public class AsynNoShareConnectionTest {
 		int port = 9093;
 		boolean clientDataPacketBufferIsDirect = true;
 		MessageProtocolType messageProtocolTypeForTest = MessageProtocolType.DHB;
-		int clientConnectionCount = 3;
+		int clientConnectionCount = 5;
 		int clientConnectionMaxCount = clientConnectionCount;
 		int serverMaxClients = clientConnectionCount;
 

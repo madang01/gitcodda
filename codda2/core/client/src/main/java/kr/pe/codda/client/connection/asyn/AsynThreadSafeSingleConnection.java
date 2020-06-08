@@ -69,7 +69,7 @@ public class AsynThreadSafeSingleConnection
 	private final int serverPort;
 	private final long socketTimeout;
 	private final int maxNumberOfWrapBufferPerMessage;
-	private final int clientAsynOutputMessageQueueCapacity;
+	private final int clientAsynInputMessageQueueCapacity;
 	private final long aliveTimePerWrapBuffer;
 	private final long retryIntervalMilliseconds;
 	private final int retryIntervalNanoSeconds;
@@ -100,7 +100,7 @@ public class AsynThreadSafeSingleConnection
 	 * @param socketTimeout 소켓 타임 아웃 시간, 단위 : milliseconds
 	 * @param streamCharsetFamily 문자셋, 문자셋 디코더 그리고 문자셋 인코더 묶음
 	 * @param clientDataPacketBufferMaxCntPerMessage 메시지 1개당 랩 버퍼 최대 갯수
-	 * @param clientAsynOutputMessageQueueCapacity 출력 메시지 큐 크기
+	 * @param clientAsynInputMessageQueueCapacity 입력 메시지 큐 크기
 	 * @param clientSyncMessageMailboxCountPerAsynShareConnection 소켓 공유할 메시지 박스 최대 갯수
 	 * @param aliveTimePerWrapBuffer 랩버퍼 1개당 생존 시간, 단위 : nanoseconds 
 	 * @param retryInterval 입력 메시지 스트림 큐에 입력 메시지 스트림을 다시 추가하는 간격, 단위 nanoseconds, 참고) '송신이 끝난 입력 메시지 스트림 큐'가 비어 있고 '송신중인 입력 메시지 스트림 큐'가 가득 찬 경우에 타임 아웃 시간안에 일정 시간 대기후 '입력 메시지 스트림'을 '송신중인 입력 메시지 스트림 큐' 에  다시 넣기를 시도한다.
@@ -113,7 +113,7 @@ public class AsynThreadSafeSingleConnection
 	 */
 	public AsynThreadSafeSingleConnection(String projectName, String serverHost, int serverPort, long socketTimeout,
 			StreamCharsetFamily streamCharsetFamily, int clientDataPacketBufferMaxCntPerMessage,
-			int clientAsynOutputMessageQueueCapacity, int clientSyncMessageMailboxCountPerAsynShareConnection,
+			int clientAsynInputMessageQueueCapacity, int clientSyncMessageMailboxCountPerAsynShareConnection,
 			long aliveTimePerWrapBuffer, 
 			long retryInterval,
 			MessageProtocolIF messageProtocol, WrapBufferPoolIF wrapBufferPool, ClientTaskMangerIF clientTaskManger,
@@ -124,7 +124,7 @@ public class AsynThreadSafeSingleConnection
 		this.serverPort = serverPort;
 		this.socketTimeout = socketTimeout;		
 		this.maxNumberOfWrapBufferPerMessage = clientDataPacketBufferMaxCntPerMessage;
-		this.clientAsynOutputMessageQueueCapacity = clientAsynOutputMessageQueueCapacity;
+		this.clientAsynInputMessageQueueCapacity = clientAsynInputMessageQueueCapacity;
 		this.aliveTimePerWrapBuffer = aliveTimePerWrapBuffer;
 		
 		retryIntervalMilliseconds = retryInterval / CommonStaticFinalVars.ONE_MILLISECONDS_EXPRESSED_IN_NANOSECONDS;
@@ -377,7 +377,7 @@ public class AsynThreadSafeSingleConnection
 		asynConnectedConnectionAdder.addConnectedConnection(this);
 		
 		incomingStream = new IncomingStream(streamCharsetFamily, maxNumberOfWrapBufferPerMessage, wrapBufferPool);
-		outgoingStream = new ClientOutgoingStream(asynClientIOEventController, personalSelectionKey, clientAsynOutputMessageQueueCapacity, aliveTimePerWrapBuffer);
+		outgoingStream = new ClientOutgoingStream(asynClientIOEventController, personalSelectionKey, clientAsynInputMessageQueueCapacity, aliveTimePerWrapBuffer);
 	}
 
 	public void doSubtractOneFromNumberOfUnregisteredConnections() {
