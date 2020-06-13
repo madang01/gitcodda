@@ -240,6 +240,8 @@ public class AsynThreadSafeSingleConnection
 				
 				break;
 			} catch(RetryException e) {
+				Thread.sleep(retryIntervalMilliseconds, retryIntervalNanoSeconds);
+				
 				newTimeout = endTime - System.nanoTime();
 				
 				if (newTimeout <= 0) {
@@ -249,10 +251,7 @@ public class AsynThreadSafeSingleConnection
 							.append("] is full").toString();
 					
 					throw new OutgoingStreamTimeoutException(errorMessage);
-				}
-				
-				Thread.sleep(retryIntervalMilliseconds, retryIntervalNanoSeconds);
-				
+				}				
 			} catch(TimeoutDelayException e) {
 				inputMessageStreamBuffer.releaseAllWrapBuffers();
 				

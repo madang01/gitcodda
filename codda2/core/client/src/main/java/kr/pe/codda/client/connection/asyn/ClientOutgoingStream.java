@@ -108,7 +108,7 @@ public class ClientOutgoingStream implements ClientOutgoingStreamIF {
 
 		try {
 			long lockBeginTime = System.nanoTime();
-			long endTimeForTimeout = lockBeginTime + TimeUnit.NANOSECONDS.convert(timeout, TimeUnit.MICROSECONDS);					
+			long endTimeForTimeout = lockBeginTime + TimeUnit.NANOSECONDS.convert(timeout, TimeUnit.MILLISECONDS);					
 
 			final int streamBufferCount = finishedStreamBufferArrayDeque.size() + workingStreamBufferArrayDeque.size();
 			

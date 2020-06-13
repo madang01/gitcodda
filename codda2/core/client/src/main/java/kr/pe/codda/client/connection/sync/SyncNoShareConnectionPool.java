@@ -48,8 +48,12 @@ public class SyncNoShareConnectionPool implements ConnectionPoolIF {
 	private final int serverPort;
 	private final long socketTimeout;
 	private final StreamCharsetFamily streamCharsetFamily;
-	private final int clientConnectionCount; 
 	private final int clientDataPacketBufferMaxCntPerMessage;
+	private final long millisecondsOfRetryIntervaTimeToGetConnection;
+	private final int nanosecondsOfRetryIntervaTimeToGetConnection;
+	private final int clientConnectionCount; 
+	
+	
 	
 	
 	private MessageProtocolIF messageProtocol = null; 
@@ -80,6 +84,7 @@ public class SyncNoShareConnectionPool implements ConnectionPoolIF {
 			long socketTimeout,
 			StreamCharsetFamily streamCharsetFamily,
 			int clientDataPacketBufferMaxCntPerMessage,
+			long retryIntervaTimeToGetConnection,
 			int clientConnectionCount,
 			MessageProtocolIF messageProtocol, 
 			WrapBufferPoolIF wrapBufferPool,
@@ -106,6 +111,8 @@ public class SyncNoShareConnectionPool implements ConnectionPoolIF {
 		this.socketTimeout = socketTimeout;
 		this.streamCharsetFamily = streamCharsetFamily;
 		this.clientDataPacketBufferMaxCntPerMessage = clientDataPacketBufferMaxCntPerMessage;
+		this.millisecondsOfRetryIntervaTimeToGetConnection = retryIntervaTimeToGetConnection / CommonStaticFinalVars.ONE_MILLISECONDS_EXPRESSED_IN_NANOSECONDS;;
+		this.nanosecondsOfRetryIntervaTimeToGetConnection = (int)(retryIntervaTimeToGetConnection % CommonStaticFinalVars.ONE_MILLISECONDS_EXPRESSED_IN_NANOSECONDS);
 		this.clientConnectionCount = clientConnectionCount;		
 		
 		this.messageProtocol = messageProtocol;

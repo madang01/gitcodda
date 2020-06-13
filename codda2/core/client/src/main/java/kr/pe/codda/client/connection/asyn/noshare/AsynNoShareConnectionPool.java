@@ -20,6 +20,7 @@ package kr.pe.codda.client.connection.asyn.noshare;
 import java.io.IOException;
 import java.util.ArrayDeque;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -36,6 +37,7 @@ import kr.pe.codda.common.etc.StreamCharsetFamily;
 import kr.pe.codda.common.exception.ConnectionPoolException;
 import kr.pe.codda.common.exception.ConnectionPoolTimeoutException;
 import kr.pe.codda.common.exception.NoMoreWrapBufferException;
+import kr.pe.codda.common.exception.RetryException;
 import kr.pe.codda.common.io.WrapBufferPoolIF;
 import kr.pe.codda.common.protocol.MessageProtocolIF;
 
@@ -46,7 +48,9 @@ import kr.pe.codda.common.protocol.MessageProtocolIF;
  */
 public class AsynNoShareConnectionPool implements ConnectionPoolIF, AsynConnectedConnectionAdderIF {
 	private Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
-	private final Object monitor = new Object();
+	//private final Object monitor = new Object();
+	
+	private final ReentrantLock lock = new ReentrantLock();
 
 	private final String projectName;
 	private final String serverHost;
@@ -56,7 +60,9 @@ public class AsynNoShareConnectionPool implements ConnectionPoolIF, AsynConnecte
 	private final int maxNumberOfWrapBufferPerMessage;
 	private final int clientAsynInputMessageQueueCapacity;
 	private final long aliveTimePerWrapBuffer;
-	private final long retryInterval;
+	private final long retryIntervaTimeToAddInputMessage;
+	private final long millisecondsOfRetryIntervaTimeToGetConnection;
+	private final int nanosecondsOfRetryIntervaTimeToGetConnection;
 	private final int clientConnectionCount; 
 	
 	
@@ -84,7 +90,7 @@ public class AsynNoShareConnectionPool implements ConnectionPoolIF, AsynConnecte
 	 * @param clientDataPacketBufferMaxCntPerMessage 메시지 1개당 랩 버퍼 최대 갯수
 	 * @param clientAsynInputMessageQueueCapacity 출력 메시지 큐 크기
 	 * @param aliveTimePerWrapBuffer 랩버퍼 1개당 생존 시간, 단위 : nanoseconds
-	 * @param retryInterval 입력 메시지 스트림 큐에 입력 메시지 스트림을 다시 추가하는 간격, 단위 nanoseconds, 참고) '송신이 끝난 입력 메시지 스트림 큐'가 비어 있고 '송신중인 입력 메시지 스트림 큐'가 가득 찬 경우에 타임 아웃 시간안에 일정 시간 대기후 '입력 메시지 스트림'을 '송신중인 입력 메시지 스트림 큐' 에  다시 넣기를 시도한다.
+	 * @param retryIntervaTimeToAddInputMessage 입력 메시지 스트림 큐에 입력 메시지 스트림을 다시 추가하는 간격, 단위 nanoseconds, 참고) '송신이 끝난 입력 메시지 스트림 큐'가 비어 있고 '송신중인 입력 메시지 스트림 큐'가 가득 찬 경우에 타임 아웃 시간안에 일정 시간 대기후 '입력 메시지 스트림'을 '송신중인 입력 메시지 스트림 큐' 에  다시 넣기를 시도한다.
 	 * @param clientConnectionCount 클라이언트 연결 갯수
 	 * @param messageProtocol 메시지 프로토콜
 	 * @param clientTaskManger 클라이언트 타스크 관리자
@@ -99,7 +105,8 @@ public class AsynNoShareConnectionPool implements ConnectionPoolIF, AsynConnecte
 			int clientDataPacketBufferMaxCntPerMessage,
 			int clientAsynInputMessageQueueCapacity,
 			long aliveTimePerWrapBuffer, 
-			long retryInterval,
+			long retryIntervaTimeToAddInputMessage,
+			long retryIntervaTimeToGetConnection,
 			int clientConnectionCount,
 			MessageProtocolIF messageProtocol, 
 			ClientTaskMangerIF clientTaskManger,
@@ -133,7 +140,10 @@ public class AsynNoShareConnectionPool implements ConnectionPoolIF, AsynConnecte
 		this.maxNumberOfWrapBufferPerMessage = clientDataPacketBufferMaxCntPerMessage;
 		this.clientAsynInputMessageQueueCapacity = clientAsynInputMessageQueueCapacity;
 		this.aliveTimePerWrapBuffer = aliveTimePerWrapBuffer;
-		this.retryInterval = retryInterval;
+		this.retryIntervaTimeToAddInputMessage = retryIntervaTimeToAddInputMessage;
+		this.millisecondsOfRetryIntervaTimeToGetConnection = retryIntervaTimeToGetConnection / CommonStaticFinalVars.ONE_MILLISECONDS_EXPRESSED_IN_NANOSECONDS;;
+		this.nanosecondsOfRetryIntervaTimeToGetConnection = (int)(retryIntervaTimeToGetConnection % CommonStaticFinalVars.ONE_MILLISECONDS_EXPRESSED_IN_NANOSECONDS);
+		
 		this.clientConnectionCount = clientConnectionCount;
 		
 		this.messageProtocol = messageProtocol;
@@ -150,74 +160,91 @@ public class AsynNoShareConnectionPool implements ConnectionPoolIF, AsynConnecte
 
 	@Override
 	public ConnectionIF getConnection() throws InterruptedException, ConnectionPoolTimeoutException, ConnectionPoolException {
+		
+		long lockBeginTime = System.nanoTime();		
+		long newTimeout = TimeUnit.NANOSECONDS.convert(socketTimeout, TimeUnit.MILLISECONDS);
+		long endTimeForTimeout = lockBeginTime + newTimeout;
+		
 		AsynNoShareConnection asynNoShareConnection = null;
-		boolean loop = false;
+		while (true) {
+			
+			try {
+				asynNoShareConnection = doGetConnection(endTimeForTimeout, newTimeout);
+				break;
+			} catch(RetryException e) {
+				Thread.sleep(millisecondsOfRetryIntervaTimeToGetConnection, nanosecondsOfRetryIntervaTimeToGetConnection);
+				
+				
+				newTimeout = endTimeForTimeout - System.nanoTime();
+				
+				if (newTimeout <= 0) {
+					throw new ConnectionPoolTimeoutException("2.asynchronized no-share connection pool timeout");
+				}
+			}
+		}
+		
+		
+		return asynNoShareConnection;
+		
+	}
+	
+	public AsynNoShareConnection doGetConnection(long endTimeForTimeout, long newTimeout) throws InterruptedException, RetryException, ConnectionPoolTimeoutException {
+		AsynNoShareConnection asynNoShareConnection = null;
+		
+		boolean isLocked = lock.tryLock(newTimeout, TimeUnit.NANOSECONDS);
 
-		long currentSocketTimeOut = socketTimeout;
-		long startTime = System.nanoTime();
-
-		synchronized (monitor) {
-			do {				
-				if (0 == numberOfConnection) {
-					connectionPoolSupporter.notice("no more connection");
-					throw new ConnectionPoolException("check server is alive or something is bad");
+		if (!isLocked) {
+			throw new ConnectionPoolTimeoutException("fail to get a asyn noshare connection pool lock");
+		}
+		
+		try {
+			
+			while (true) {				
+				asynNoShareConnection = connectionQueue.removeFirst();
+				
+				if (null == asynNoShareConnection) {
+					throw new RetryException();
 				}
 				
-				if (connectionQueue.isEmpty()) {					
-					monitor.wait(currentSocketTimeOut);					
-					
-					if (connectionQueue.isEmpty()) {						
-						throw new ConnectionPoolTimeoutException("1.asynchronized no-share connection pool timeout");
-					}
-				}
-				
-				asynNoShareConnection = connectionQueue.pollFirst();				
 				
 				if (asynNoShareConnection.isConnected()) {
 					asynNoShareConnection.queueOut();
-					loop = false;
-				} else {
-					loop = true;
-					
-					/**
-					 * <pre>
-					 * 폴에서 꺼낸 연결이 닫힌 경우 폐기한다. 단  이러한 작업은 큐에 넣어진 상태에서 이루어 져야 한다.
-					 * 왜냐하면 연결은 참조 포인트가 없어 gc 될때 큐에 넣어진 상태가 아니면 로그를 남기는데
-					 * 사용자 한테 넘기기전 폐기이므로 gc 될때 로그를 남기지 말아야 하기때문이다.  
-					 * </pre>   
-					 */
-					String reasonForLoss = new StringBuilder("폴에서 꺼낸 연결[")							
-							.append(asynNoShareConnection.hashCode()).append("]이 닫혀있어 폐기").toString();
+					break;
+				}				
+				
+				/**
+				 * <pre>
+				 * 폴에서 꺼낸 연결이 닫힌 경우 폐기한다. 단  이러한 작업은 큐에 넣어진 상태에서 이루어 져야 한다.
+				 * 왜냐하면 연결은 참조 포인트가 없어 gc 될때 큐에 넣어진 상태가 아니면 로그를 남기는데
+				 * 사용자 한테 넘기기전 폐기이므로 gc 될때 로그를 남기지 말아야 하기때문이다.  
+				 * </pre>   
+				 */
+				String reasonForLoss = new StringBuilder("폴에서 꺼낸 연결[")							
+						.append(asynNoShareConnection.hashCode()).append("]이 닫혀있어 폐기").toString();
 
-					numberOfConnection--;
-					
-					String warnMessage = new StringBuilder()
-							.append(reasonForLoss)
-							.append(", numberOfConnection=")
-							.append(numberOfConnection).toString();
-					
+				numberOfConnection--;
+				
+				String warnMessage = new StringBuilder()
+						.append(reasonForLoss)
+						.append(", numberOfConnection=")
+						.append(numberOfConnection).toString();
+				
 
-					log.warning(warnMessage);
+				log.warning(warnMessage);
 
-					connectionPoolSupporter.notice(reasonForLoss);
-					
-					long elapsedTime = TimeUnit.MICROSECONDS.convert((System.nanoTime() - startTime), TimeUnit.NANOSECONDS);
-					
-					currentSocketTimeOut -= elapsedTime;
-					
-					if (currentSocketTimeOut <= 0) {
-						throw new ConnectionPoolTimeoutException("2.asynchronized no-share connection pool timeout");
-					}
+				connectionPoolSupporter.notice(reasonForLoss);
+				
+				newTimeout = endTimeForTimeout - System.nanoTime();
+				
+				if (newTimeout <= 0) {
+					throw new ConnectionPoolTimeoutException("1.asynchronized no-share connection pool timeout");
 				}
-
-			} while (loop);
+			}
+			
+		} finally {
+			lock.unlock();
 		}
 		
-		/*long endTime = System.nanoTime();
-		log.info("getConnection::elasped {} microseconds, connectionQueue.size={}",
-				TimeUnit.MICROSECONDS.convert((endTime - startTime), TimeUnit.NANOSECONDS),
-				connectionQueue.size());*/
-
 		return asynNoShareConnection;
 	}
 
@@ -237,8 +264,8 @@ public class AsynNoShareConnectionPool implements ConnectionPoolIF, AsynConnecte
 
 		AsynNoShareConnection asynNoShareConnection = (AsynNoShareConnection) conn;
 	
-		synchronized (monitor) {
-			
+		lock.lock();
+		try {
 			/**
 			 * 연속 2회 큐 입력 방지
 			 */
@@ -284,7 +311,8 @@ public class AsynNoShareConnectionPool implements ConnectionPoolIF, AsynConnecte
 
 			connectionQueue.addLast(asynNoShareConnection);
 			
-			monitor.notify();
+		} finally {
+			lock.unlock();
 		}
 		
 	}
@@ -298,7 +326,8 @@ public class AsynNoShareConnectionPool implements ConnectionPoolIF, AsynConnecte
 				numberOfConnection,
 				clientConnectionCount);*/
 		
-		synchronized (monitor) {				
+		lock.lock();
+		try {			
 			while (numberOfUnregisteredConnections
 					< (clientConnectionCount - numberOfConnection)) {				
 				
@@ -306,6 +335,8 @@ public class AsynNoShareConnectionPool implements ConnectionPoolIF, AsynConnecte
 				numberOfUnregisteredConnections++;
 				asynClientIOEventController.addUnregisteredAsynConnection(unregisteredAsynConnection);
 			}
+		} finally {
+			lock.unlock();
 		}
 		
 		asynClientIOEventController.wakeup();
@@ -313,8 +344,11 @@ public class AsynNoShareConnectionPool implements ConnectionPoolIF, AsynConnecte
 	
 	@Override
 	public void subtractOneFromNumberOfUnregisteredConnections(AsynConnectionIF unregisteredAsynConnection) {
-		synchronized (monitor) {
+		lock.lock();
+		try {
 			numberOfUnregisteredConnections--;
+		} finally {
+			lock.unlock();
 		}
 		
 		String infoMessage = new StringBuilder()
@@ -341,7 +375,7 @@ public class AsynNoShareConnectionPool implements ConnectionPoolIF, AsynConnecte
 				maxNumberOfWrapBufferPerMessage,
 				clientAsynInputMessageQueueCapacity,
 				aliveTimePerWrapBuffer, 
-				retryInterval, 
+				retryIntervaTimeToAddInputMessage, 
 				messageProtocol, wrapBufferPool, clientTaskManger, this, 
 				asynClientIOEventController);
 		return asynInterestedConnection;
@@ -365,11 +399,13 @@ public class AsynNoShareConnectionPool implements ConnectionPoolIF, AsynConnecte
 		
 		// long startTime = System.nanoTime();
 
-		synchronized (monitor) {
+		lock.lock();
+		try {
 			connectionQueue.addLast((AsynNoShareConnection)connectedAsynConnection);
 			numberOfConnection++;
 			numberOfUnregisteredConnections--;
-			monitor.notify();
+		} finally {
+			lock.unlock();
 		}
 		
 		/*long endTime = System.nanoTime();

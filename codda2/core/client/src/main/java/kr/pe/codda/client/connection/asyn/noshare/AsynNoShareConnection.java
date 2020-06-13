@@ -76,8 +76,8 @@ public class AsynNoShareConnection implements AsynConnectionIF, ClientIOEventHan
 	private final int maxNumberOfWrapBufferPerMessage;
 	private final int clientAsynInputMessageQueueCapacity;
 	private final long aliveTimePerWrapBuffer;
-	private final long retryIntervalMilliseconds;
-	private final int retryIntervalNanoSeconds;
+	private final long millisecondsOfRetryIntervaTimeToAddInputMessage;
+	private final int nanosecondsOfRetryIntervaTimeToAddInputMessage;
 	private final StreamCharsetFamily streamCharsetFamily;	
 	private final WrapBufferPoolIF wrapBufferPool;
  
@@ -106,7 +106,7 @@ public class AsynNoShareConnection implements AsynConnectionIF, ClientIOEventHan
 	 * @param clientDataPacketBufferMaxCntPerMessage 메시지 1개당 랩 버퍼 최대 갯수
 	 * @param clientAsynInputMessageQueueCapacity 서버로 보내는 스트림 큐 큐 크기
 	 * @param aliveTimePerWrapBuffer 랩버퍼 1개당 생존 시간, 단위 : nanoseconds
-	 * @param retryInterval 입력 메시지 스트림 큐에 입력 메시지 스트림을 다시 추가하는 간격, 단위 nanoseconds, 참고) '송신이 끝난 입력 메시지 스트림 큐'가 비어 있고 '송신중인 입력 메시지 스트림 큐'가 가득 찬 경우에 타임 아웃 시간안에 일정 시간 대기후 '입력 메시지 스트림'을 '송신중인 입력 메시지 스트림 큐' 에  다시 넣기를 시도한다.
+	 * @param retryIntervaTimeToAddInputMessage 입력 메시지 스트림 큐에 입력 메시지 스트림을 다시 추가하는 간격, 단위 nanoseconds, 참고) '송신이 끝난 입력 메시지 스트림 큐'가 비어 있고 '송신중인 입력 메시지 스트림 큐'가 가득 찬 경우에 타임 아웃 시간안에 일정 시간 대기후 '입력 메시지 스트림'을 '송신중인 입력 메시지 스트림 큐' 에  다시 넣기를 시도한다.
 	 * @param messageProtocol 메시지 프로토콜
 	 * @param wrapBufferPool 랩 버퍼 폴
 	 * @param clientTaskManger 클라이언트 타스크 관리자
@@ -119,7 +119,7 @@ public class AsynNoShareConnection implements AsynConnectionIF, ClientIOEventHan
 			int clientDataPacketBufferMaxCntPerMessage,
 			int clientAsynInputMessageQueueCapacity,
 			long aliveTimePerWrapBuffer, 
-			long retryInterval,
+			long retryIntervaTimeToAddInputMessage,
 			MessageProtocolIF messageProtocol,
 			WrapBufferPoolIF wrapBufferPool, ClientTaskMangerIF clientTaskManger,
 			AsynConnectedConnectionAdderIF asynConnectedConnectionAdder,
@@ -133,8 +133,8 @@ public class AsynNoShareConnection implements AsynConnectionIF, ClientIOEventHan
 		this.clientAsynInputMessageQueueCapacity = clientAsynInputMessageQueueCapacity;
 		this.aliveTimePerWrapBuffer = aliveTimePerWrapBuffer;
 		
-		retryIntervalMilliseconds = retryInterval / CommonStaticFinalVars.ONE_MILLISECONDS_EXPRESSED_IN_NANOSECONDS;
-		retryIntervalNanoSeconds = (int)(retryInterval % CommonStaticFinalVars.ONE_MILLISECONDS_EXPRESSED_IN_NANOSECONDS);
+		millisecondsOfRetryIntervaTimeToAddInputMessage = retryIntervaTimeToAddInputMessage / CommonStaticFinalVars.ONE_MILLISECONDS_EXPRESSED_IN_NANOSECONDS;
+		nanosecondsOfRetryIntervaTimeToAddInputMessage = (int)(retryIntervaTimeToAddInputMessage % CommonStaticFinalVars.ONE_MILLISECONDS_EXPRESSED_IN_NANOSECONDS);
 		
 		this.streamCharsetFamily = streamCharsetFamily;
 		this.wrapBufferPool = wrapBufferPool;
@@ -256,6 +256,8 @@ public class AsynNoShareConnection implements AsynConnectionIF, ClientIOEventHan
 				break;
 			} catch(RetryException e) { 
 				
+				Thread.sleep(millisecondsOfRetryIntervaTimeToAddInputMessage, nanosecondsOfRetryIntervaTimeToAddInputMessage);
+				
 				newTimeout = endTime - System.nanoTime();
 				
 				if (newTimeout <= 0) {
@@ -265,9 +267,7 @@ public class AsynNoShareConnection implements AsynConnectionIF, ClientIOEventHan
 							.append("] is full").toString();
 					
 					throw new OutgoingStreamTimeoutException(errorMessage);
-				}
-				
-				Thread.sleep(retryIntervalMilliseconds, retryIntervalNanoSeconds);
+				}			
 				
 			} catch(TimeoutDelayException e) {
 				inputMessageStreamBuffer.releaseAllWrapBuffers();

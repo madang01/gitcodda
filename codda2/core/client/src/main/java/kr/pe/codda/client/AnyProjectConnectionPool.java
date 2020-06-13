@@ -78,7 +78,8 @@ public final class AnyProjectConnectionPool implements AnyProjectConnectionPoolI
 	private final StreamCharsetFamily streamCharsetFamily;
 	private final int clientAsynInputMessageQueueCapacity;
 	private final long aliveTimePerWrapBuffer;
-	private final long retryInterval;
+	private final long retryIntervaTimeToAddInputMessage;
+	private final long retryIntervaTimeToGetConnection;
 	private final int clientSyncMessageMailboxCountPerAsynShareConnection;
 
 	private boolean clientDataPacketBufferIsDirect;
@@ -108,7 +109,7 @@ public final class AnyProjectConnectionPool implements AnyProjectConnectionPoolI
 		clientAsynInputMessageQueueCapacity = projectPartConfiguration.getClientAsynInputMessageQueueCapacity();
 		// projectPartConfiguration.getClientAsynInputMessageQueueCapacity();
 		
-		/** 
+		
 		/**
 		 * FIXME! 변수 aliveTimePerWrapBuffer(랩버퍼 1개당 생존 시간, 단위 : nanoseconds) 는 임시적으로 하드 코딩 하지만 환경설정 파일에서 값을 얻어오도록 수정해야함,
 		 * 100 MBytes bps => 초당 10 * 1024 * 1024 * 1024 bytes / seconds => 10 bytes / nanoseconds
@@ -116,7 +117,8 @@ public final class AnyProjectConnectionPool implements AnyProjectConnectionPoolI
 		 * 디폴트 값은 400 nanoseconds 
 		 */
 		aliveTimePerWrapBuffer = 400L;
-		retryInterval = 400L;
+		retryIntervaTimeToAddInputMessage = 400L;
+		retryIntervaTimeToGetConnection = 5000L;
 		final int clientConnectionCount = projectPartConfiguration.getClientConnectionCount();
 		clientSyncMessageMailboxCountPerAsynShareConnection = projectPartConfiguration.getClientSyncMessageMailboxCountPerAsynShareConnection();		
 		
@@ -215,7 +217,8 @@ public final class AnyProjectConnectionPool implements AnyProjectConnectionPoolI
 							clientDataPacketBufferMaxCntPerMessage,
 							clientAsynInputMessageQueueCapacity,
 							aliveTimePerWrapBuffer,
-							retryInterval,
+							retryIntervaTimeToAddInputMessage,
+							retryIntervaTimeToGetConnection,
 							clientConnectionCount,
 							messageProtocol, clientTaskManger, wrapBufferPool,					
 					connectionPoolSupporter, asynClientIOEventController);
@@ -227,7 +230,7 @@ public final class AnyProjectConnectionPool implements AnyProjectConnectionPoolI
 			asynClientIOEventController.start();
 			
 			try {
-				Thread.sleep(1000);
+				Thread.sleep(5000);
 			} catch (InterruptedException e) {
 			}			
 		} 
@@ -311,7 +314,7 @@ public final class AnyProjectConnectionPool implements AnyProjectConnectionPoolI
 						clientAsynInputMessageQueueCapacity,
 						clientSyncMessageMailboxCountPerAsynShareConnection,
 						aliveTimePerWrapBuffer,
-						retryInterval,
+						retryIntervaTimeToAddInputMessage,
 				messageProtocol, wrapBufferPool, clientTaskManger, ayncThreadSafeSingleConnectedConnectionAdder, 
 				asynClientIOEventController);		
 		
