@@ -26,7 +26,7 @@ import kr.pe.codda.common.config.AbstractMinMaxConverter;
 import kr.pe.codda.common.config.AbstractNativeValueConverter;
 import kr.pe.codda.common.config.AbstractSetTypeNativeValueConverter;
 import kr.pe.codda.common.etc.CommonStaticFinalVars;
-import kr.pe.codda.common.exception.CoddaConfigurationException;
+import kr.pe.codda.common.exception.PartConfigurationException;
 
 /**
  * 항목 식별자  환경 설정 정보 클래스
@@ -74,7 +74,7 @@ public class ItemIDInfo<T> {
 	 *            문자열인 환경 설정 파일의 값을 언어 종속적 값으로 바꾸어 주는 변환기
 	 * @throws IllegalArgumentException
 	 *             잘못된 파라미터 입력시 던지는 예외
-	 * @throws CoddaConfigurationException
+	 * @throws PartConfigurationException
 	 *             디폴트 값 검사 수행시 디폴트 값이 잘못된 경우 던지는 예외
 	 */
 	public ItemIDInfo(ConfigurationPart configPart,
@@ -82,7 +82,7 @@ public class ItemIDInfo<T> {
 			String description, String defaultValue,
 			boolean isDefaultValueCheck,
 			AbstractNativeValueConverter<T> nativeValueConverter)
-			throws IllegalArgumentException, CoddaConfigurationException {
+			throws IllegalArgumentException, PartConfigurationException {
 		if (null == configPart) {
 			String errorMessage = "the parameter configPart is null";
 			throw new IllegalArgumentException(errorMessage);

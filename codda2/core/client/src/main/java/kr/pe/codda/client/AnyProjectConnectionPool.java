@@ -45,7 +45,7 @@ import kr.pe.codda.common.config.subset.ProjectPartConfiguration;
 import kr.pe.codda.common.etc.CommonStaticFinalVars;
 import kr.pe.codda.common.etc.StreamCharsetFamily;
 import kr.pe.codda.common.exception.BodyFormatException;
-import kr.pe.codda.common.exception.CoddaConfigurationException;
+import kr.pe.codda.common.exception.PartConfigurationException;
 import kr.pe.codda.common.exception.ConnectionPoolException;
 import kr.pe.codda.common.exception.DynamicClassCallException;
 import kr.pe.codda.common.exception.NoMoreWrapBufferException;
@@ -178,6 +178,7 @@ public final class AnyProjectConnectionPool implements AnyProjectConnectionPoolI
 			connectionPool = new SyncNoShareConnectionPool(serverHost, serverPort, socketTimeout,
 					streamCharsetFamily, 
 					clientDataPacketBufferMaxCntPerMessage,
+					retryIntervaTimeToGetConnection,
 					clientConnectionCount,
 					messageProtocol, wrapBufferPool,
 					connectionPoolSupporter);
@@ -201,7 +202,7 @@ public final class AnyProjectConnectionPool implements AnyProjectConnectionPoolI
 				ClientClassLoaderFactory clientClassLoaderFactory = null;
 				try {
 					clientClassLoaderFactory = new ClientClassLoaderFactory(clientClassloaderClassPathString, clientClassloaderReousrcesPathString);
-				} catch (CoddaConfigurationException e) {
+				} catch (PartConfigurationException e) {
 					log.severe("fail to create a instance of ClientClassLoaderFactory class, errmsg=" + e.getMessage());
 					System.exit(1);
 				}

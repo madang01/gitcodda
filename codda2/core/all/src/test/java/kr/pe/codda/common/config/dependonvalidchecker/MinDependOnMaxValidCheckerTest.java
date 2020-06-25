@@ -40,7 +40,7 @@ import kr.pe.codda.common.config.nativevalueconverter.GeneralConverterReturningC
 import kr.pe.codda.common.config.nativevalueconverter.GeneralConverterReturningIntegerBetweenMinAndMax;
 import kr.pe.codda.common.config.nativevalueconverter.GeneralConverterReturningLongBetweenMinAndMax;
 import kr.pe.codda.common.etc.CommonStaticFinalVars;
-import kr.pe.codda.common.exception.CoddaConfigurationException;
+import kr.pe.codda.common.exception.PartConfigurationException;
 import kr.pe.codda.common.util.JDKLoggerCustomFormatter;
 
 public class MinDependOnMaxValidCheckerTest {
@@ -103,7 +103,7 @@ public class MinDependOnMaxValidCheckerTest {
 		} catch (IllegalArgumentException e) {
 			e.printStackTrace();
 			fail(e.getMessage());
-		} catch (CoddaConfigurationException e) {
+		} catch (PartConfigurationException e) {
 			e.printStackTrace();
 			fail(e.getMessage());
 		}
@@ -114,7 +114,7 @@ public class MinDependOnMaxValidCheckerTest {
 					Long.class);
 		} catch (IllegalArgumentException e) {
 			fail(e.getMessage());
-		} catch (CoddaConfigurationException e) {
+		} catch (PartConfigurationException e) {
 			fail(e.getMessage());
 		}
 	}

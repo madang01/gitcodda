@@ -34,9 +34,8 @@ public interface ConnectionPoolIF {
 	 * @return 폴에 있는 연결
 	 * @throws InterruptedException 인터럽트 발생시 던지는 예외
 	 * @throws ConnectionPoolTimeoutException 연결 폴 타임 아웃 발생시 던지는 예외
-	 * @throws ConnectionPoolException 연결 폴 처리중 에러 발생시 던지는 예외
 	 */
-	public ConnectionIF getConnection() throws InterruptedException, ConnectionPoolTimeoutException, ConnectionPoolException;
+	public ConnectionIF getConnection() throws InterruptedException, ConnectionPoolTimeoutException;
 	
 	/**
 	 * 폴에 연결 반환

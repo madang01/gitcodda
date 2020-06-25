@@ -33,7 +33,7 @@ public class SetTypeConverterReturningInteger extends AbstractSetTypeNativeValue
 	 * 
 	 * @throws IllegalArgumentException 허용을 원하는 정수값 가변 변수 값을 지정 안했을 경우 혹은 허용을 원하는 정수값 가변 변수에 정수가 아닌 값이 포함된 경우 던지는 예외
 	 */
-	public SetTypeConverterReturningInteger(String ... allowedIntegerValueSet) throws IllegalArgumentException {
+	public SetTypeConverterReturningInteger(String... allowedIntegerValueSet) throws IllegalArgumentException {
 		super(Integer.class);
 		
 		if (allowedIntegerValueSet.length == 0) {

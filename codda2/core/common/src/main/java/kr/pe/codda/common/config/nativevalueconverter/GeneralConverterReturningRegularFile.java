@@ -25,13 +25,13 @@ public class GeneralConverterReturningRegularFile extends
 		AbstractNativeValueConverter<File> {
 
 	private boolean isWritePermissionChecking;
-
-
-	public GeneralConverterReturningRegularFile(
-			boolean isWritePermissionChecking) {
+	
+	public GeneralConverterReturningRegularFile(boolean isWritePermissionChecking) {
 		super(File.class);
+		
 		this.isWritePermissionChecking = isWritePermissionChecking;
 	}
+	
 
 	@Override
 	public File valueOf(String itemValue) throws IllegalArgumentException {
@@ -69,6 +69,7 @@ public class GeneralConverterReturningRegularFile extends
 			throw new IllegalArgumentException(errorMessage);
 		}
 
+		
 		if (isWritePermissionChecking && !returnValue.canWrite()) {
 			String errorMessage = new StringBuilder(
 					"the file(=the parameter itemValue[")
@@ -76,7 +77,7 @@ public class GeneralConverterReturningRegularFile extends
 					.toString();
 			throw new IllegalArgumentException(errorMessage);
 		}
-
+		
 		return returnValue;
 	}
 }

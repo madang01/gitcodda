@@ -19,6 +19,8 @@ package kr.pe.codda.client.connection.sync;
 
 import java.io.IOException;
 import java.util.ArrayDeque;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -30,6 +32,7 @@ import kr.pe.codda.common.etc.StreamCharsetFamily;
 import kr.pe.codda.common.exception.ConnectionPoolException;
 import kr.pe.codda.common.exception.ConnectionPoolTimeoutException;
 import kr.pe.codda.common.exception.NoMoreWrapBufferException;
+import kr.pe.codda.common.exception.RetryException;
 import kr.pe.codda.common.io.WrapBufferPoolIF;
 import kr.pe.codda.common.protocol.MessageProtocolIF;
 
@@ -41,7 +44,8 @@ import kr.pe.codda.common.protocol.MessageProtocolIF;
 public class SyncNoShareConnectionPool implements ConnectionPoolIF {
 	private Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
 	
-	private final Object monitor = new Object();
+	// private final Object monitor = new Object();
+	private final ReentrantLock lock = new ReentrantLock();
 	
 	//private ProjectPartConfiguration projectPartConfiguration = null;	
 	private final String serverHost;
@@ -166,67 +170,94 @@ public class SyncNoShareConnectionPool implements ConnectionPoolIF {
 	}
 
 	@Override
-	public ConnectionIF getConnection() throws InterruptedException, ConnectionPoolTimeoutException, ConnectionPoolException {
-		SyncNoShareConnection syncNoShareConnection = null;
-		boolean loop = false;
+	public ConnectionIF getConnection() throws InterruptedException, ConnectionPoolTimeoutException {
+		long lockBeginTime = System.nanoTime();		
+		long newTimeout = TimeUnit.NANOSECONDS.convert(socketTimeout, TimeUnit.MILLISECONDS);
+		long endTimeForTimeout = lockBeginTime + newTimeout;
 		
-		long currentSocketTimeOut = socketTimeout;
-		long startTime = System.currentTimeMillis();
+		SyncNoShareConnection syncNoShareConnection = null;
+		
+		while (true) {
+			
+			try {
+				syncNoShareConnection = doGetConnection(endTimeForTimeout, newTimeout);
+				break;
+			} catch(RetryException e) {
+				Thread.sleep(millisecondsOfRetryIntervaTimeToGetConnection, nanosecondsOfRetryIntervaTimeToGetConnection);
+				
+				
+				newTimeout = endTimeForTimeout - System.nanoTime();
+				
+				if (newTimeout <= 0) {
+					throw new ConnectionPoolTimeoutException("2.asynchronized no-share connection pool timeout");
+				}
+			}
+		}
+		
+		
+		return syncNoShareConnection;
+		
+	}
+	
+	public SyncNoShareConnection doGetConnection(long endTimeForTimeout, long newTimeout) throws InterruptedException, RetryException, ConnectionPoolTimeoutException {
+		
+			
+		boolean isLocked = lock.tryLock(newTimeout, TimeUnit.NANOSECONDS);
 
-		synchronized (monitor) {
-			do {
-				if (0 == numberOfConnection) {
-					connectionPoolSupporter.notice("no more connection");
-					throw new ConnectionPoolException("check server is alive or something is bad");
+		if (!isLocked) {
+			throw new ConnectionPoolTimeoutException("fail to get a sync noshare connection pool lock");
+		}
+		
+		SyncNoShareConnection syncNoShareConnection = null;
+		
+		try {
+			
+			while (true) {				
+				syncNoShareConnection = connectionQueue.removeFirst();
+				
+				if (null == syncNoShareConnection) {
+					throw new RetryException();
 				}
 				
-				if (connectionQueue.isEmpty()) {					
-					monitor.wait(currentSocketTimeOut);					
-					
-					if (connectionQueue.isEmpty()) {						
-						throw new ConnectionPoolTimeoutException("1.synchronized no-share connection pool timeout");
-					}
-				}	
 				
-				syncNoShareConnection = connectionQueue.pollFirst();				
-
 				if (syncNoShareConnection.isConnected()) {
 					syncNoShareConnection.queueOut();
-					loop = false;
-				} else {
-					loop = true;					
+					break;
+				}				
+				
+				/**
+				 * <pre>
+				 * 폴에서 꺼낸 연결이 닫힌 경우 폐기한다. 단  이러한 작업은 큐에 넣어진 상태에서 이루어 져야 한다.
+				 * 왜냐하면 연결은 참조 포인트가 없어 gc 될때 큐에 넣어진 상태가 아니면 로그를 남기는데
+				 * 사용자 한테 넘기기전 폐기이므로 gc 될때 로그를 남기지 말아야 하기때문이다.  
+				 * </pre>   
+				 */
+				String reasonForLoss = new StringBuilder("폴에서 꺼낸 연결[")							
+						.append(syncNoShareConnection.hashCode()).append("]이 닫혀있어 폐기").toString();
 
-					/**
-					 * <pre>
-					 * 폴에서 꺼낸 연결이 닫힌 경우 폐기한다. 단  이러한 작업은 큐에 넣어진 상태에서 이루어 져야 한다.
-					 * 왜냐하면 연결은 참조 포인트가 없어 gc 될때 큐에 넣어진 상태가 아니면 로그를 남기는데
-					 * 사용자 한테 넘기기전 폐기이므로 gc 될때 로그를 남기지 말아야 하기때문이다.  
-					 * </pre>   
-					 */
-					String reasonForLoss = new StringBuilder("폴에서 꺼낸 연결[")							
-							.append(syncNoShareConnection.hashCode()).append("]이 닫혀있어 폐기").toString();
+				numberOfConnection--;
+				
+				String warnMessage = new StringBuilder()
+						.append(reasonForLoss)
+						.append(", numberOfConnection=")
+						.append(numberOfConnection).toString();
+				
 
-					numberOfConnection--;
-					
-					String warnMessage = new StringBuilder()
-							.append(reasonForLoss)
-							.append(", numberOfConnection=")
-							.append(numberOfConnection).toString();
-					
+				log.warning(warnMessage);
 
-					log.warning(warnMessage);
-
-					connectionPoolSupporter.notice(reasonForLoss);
-					
-					currentSocketTimeOut -= (System.currentTimeMillis() - startTime);
-					if (currentSocketTimeOut <= 0) {
-						throw new ConnectionPoolTimeoutException("2.synchronized no-share connection pool timeout");
-					}
+				connectionPoolSupporter.notice(reasonForLoss);
+				
+				newTimeout = endTimeForTimeout - System.nanoTime();
+				
+				if (newTimeout <= 0) {
+					throw new ConnectionPoolTimeoutException("1.asynchronized no-share connection pool timeout");
 				}
-
-			} while (loop);
+			}
+			
+		} finally {
+			lock.unlock();
 		}
-
+		
 		return syncNoShareConnection;
 	}
 
@@ -246,7 +277,8 @@ public class SyncNoShareConnectionPool implements ConnectionPoolIF {
 
 		SyncNoShareConnection syncNoShareConnection = (SyncNoShareConnection) conn;
 
-		synchronized (monitor) {
+		lock.lock();
+		try {
 			/**
 			 * 연속 2회 큐 입력 방지
 			 */
@@ -292,7 +324,8 @@ public class SyncNoShareConnectionPool implements ConnectionPoolIF {
 			}
 
 			connectionQueue.addLast(syncNoShareConnection);
-			monitor.notify();
+		} finally {
+			lock.unlock();
 		}
 		
 	}
@@ -311,7 +344,8 @@ public class SyncNoShareConnectionPool implements ConnectionPoolIF {
 
 	@Override
 	public void fillAllConnection() throws NoMoreWrapBufferException, IOException, InterruptedException {
-		synchronized (monitor) {
+		lock.lock();
+		try {
 			while (numberOfConnection  < clientConnectionCount) {
 				
 				SyncNoShareConnection syncNoShareConnection = new SyncNoShareConnection(serverHost,
@@ -333,7 +367,8 @@ public class SyncNoShareConnectionPool implements ConnectionPoolIF {
 				connectionQueue.addLast(syncNoShareConnection);
 				numberOfConnection++;
 			}
+		} finally {
+			lock.unlock();
 		}
-		
 	}
 }

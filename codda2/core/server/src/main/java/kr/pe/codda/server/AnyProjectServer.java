@@ -24,7 +24,7 @@ import java.util.logging.Logger;
 import kr.pe.codda.common.config.subset.ProjectPartConfiguration;
 import kr.pe.codda.common.etc.CommonStaticFinalVars;
 import kr.pe.codda.common.etc.StreamCharsetFamily;
-import kr.pe.codda.common.exception.CoddaConfigurationException;
+import kr.pe.codda.common.exception.PartConfigurationException;
 import kr.pe.codda.common.exception.NoMoreWrapBufferException;
 import kr.pe.codda.common.io.WrapBufferPool;
 import kr.pe.codda.common.io.WrapBufferPoolIF;
@@ -69,11 +69,11 @@ public class AnyProjectServer {
 	 * @param projectResourcesPathString 서버 클래스로더의 리소스 경로 문자열
 	 * @param projectPartConfiguration 프로젝트 설정
 	 * @throws NoMoreWrapBufferException 랩 버퍼 폴에 랩 버퍼가 없을 경우 던지는 예외
-	 * @throws CoddaConfigurationException 설정 관련 작업중 에러 발생시 던지는 예외
+	 * @throws PartConfigurationException 설정 관련 작업중 에러 발생시 던지는 예외
 	 */
 	public AnyProjectServer(String serverAPPINFClassPathString,
 			String projectResourcesPathString, ProjectPartConfiguration projectPartConfiguration)
-			throws NoMoreWrapBufferException, CoddaConfigurationException {
+			throws NoMoreWrapBufferException, PartConfigurationException {
 		
 		this.mainProjectName = projectPartConfiguration.getProjectName();
 		

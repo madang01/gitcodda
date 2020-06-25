@@ -25,8 +25,17 @@ package kr.pe.codda.common.exception;
  *
  */
 @SuppressWarnings("serial")
-public class CoddaConfigurationException extends Exception {
-	public CoddaConfigurationException(String errorMessage) {
+public class PartConfigurationException extends Exception {
+	private final String itemKey;
+	
+	
+	public PartConfigurationException(String itemKey, String errorMessage) {
 		super(errorMessage);
+		
+		this.itemKey = itemKey;
+	}
+	
+	public String getItemKey() {
+		return itemKey;
 	}
 }

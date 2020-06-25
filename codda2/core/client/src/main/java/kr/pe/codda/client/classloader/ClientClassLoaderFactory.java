@@ -22,7 +22,7 @@ import java.io.File;
 import kr.pe.codda.common.classloader.ClientClassLoader;
 import kr.pe.codda.common.classloader.SystemClassDeterminer;
 import kr.pe.codda.common.classloader.SystemClassVerifierIF;
-import kr.pe.codda.common.exception.CoddaConfigurationException;
+import kr.pe.codda.common.exception.PartConfigurationException;
 
 /**
  * 클라이언트 클래스 로더 팩토리
@@ -38,10 +38,10 @@ public class ClientClassLoaderFactory {
 	 * 생성자
 	 * @param clientClassloaderClassPathString 클래스 로더의 동적 클래스가 있는 경로
 	 * @param clientClassloaderReousrcesPathString 클래스 로더의 리소스 경로
-	 * @throws CoddaConfigurationException 설정 관련 처리중 에러 발생시 던지는 예외
+	 * @throws PartConfigurationException 설정 관련 처리중 에러 발생시 던지는 예외
 	 */
 	public ClientClassLoaderFactory(String clientClassloaderClassPathString,
-			String clientClassloaderReousrcesPathString) throws CoddaConfigurationException {
+			String clientClassloaderReousrcesPathString) throws PartConfigurationException {
 		if (null == clientClassloaderClassPathString) {
 			throw new IllegalArgumentException("the parameter clientClassloaderClassPathString is null");
 		}
@@ -53,7 +53,7 @@ public class ClientClassLoaderFactory {
 					.append("the client APP-INF class path[")
 					.append(clientClassloaderClassPathString)
 					.append("] doesn't exist").toString();
-		 	throw new CoddaConfigurationException(errorMessage);
+		 	throw new PartConfigurationException(errorMessage);
 		}
 		
 		if (!clientAPPINFClassPath.isDirectory()) {
@@ -61,7 +61,7 @@ public class ClientClassLoaderFactory {
 					.append("the client APP-INF class path[")
 					.append(clientClassloaderClassPathString)
 					.append("] isn't a directory").toString();
-		 	throw new CoddaConfigurationException(errorMessage);
+		 	throw new PartConfigurationException(errorMessage);
 		}
 		
 		if (null == clientClassloaderReousrcesPathString) {
@@ -75,7 +75,7 @@ public class ClientClassLoaderFactory {
 					.append("the project resources path[")
 					.append(clientClassloaderReousrcesPathString)
 					.append("] doesn't exist").toString();
-		 	throw new CoddaConfigurationException(errorMessage);
+		 	throw new PartConfigurationException(errorMessage);
 		}
 		
 		if (! projectResourcesPath.isDirectory()) {
@@ -83,7 +83,7 @@ public class ClientClassLoaderFactory {
 					.append("the project resources path[")
 					.append(clientClassloaderReousrcesPathString)
 					.append("] isn't a directory").toString();
-		 	throw new CoddaConfigurationException(errorMessage);
+		 	throw new PartConfigurationException(errorMessage);
 		}
 		
 		this.clientClassloaderClassPathString = clientClassloaderClassPathString;

@@ -28,7 +28,7 @@ import kr.pe.codda.common.config.CoddaConfigurationManager;
 import kr.pe.codda.common.config.subset.SubProjectPartConfigurationManager;
 import kr.pe.codda.common.config.subset.ProjectPartConfiguration;
 import kr.pe.codda.common.etc.CommonStaticFinalVars;
-import kr.pe.codda.common.exception.CoddaConfigurationException;
+import kr.pe.codda.common.exception.PartConfigurationException;
 import kr.pe.codda.common.exception.NoMoreWrapBufferException;
 
 
@@ -89,7 +89,7 @@ public final class MainServerManager {
 				mainProjectServer = new AnyProjectServer(serverAPPINFClassPathString, projectResourcesPathString, mainProjectPartConfiguration);
 			} catch (NoMoreWrapBufferException e) {
 				log.log(Level.WARNING, "NoMoreDataPacketBufferException", e);
-			} catch (CoddaConfigurationException e) {
+			} catch (PartConfigurationException e) {
 				log.log(Level.WARNING, "CoddaConfigurationException", e);
 			}
 			
@@ -103,7 +103,7 @@ public final class MainServerManager {
 					subProjectServerHash.put(subProjectName, subProjectServer);
 				} catch (NoMoreWrapBufferException e) {
 					log.log(Level.WARNING, "NoMoreDataPacketBufferException", e);
-				} catch (CoddaConfigurationException e) {
+				} catch (PartConfigurationException e) {
 					log.log(Level.WARNING, "CoddaConfigurationException", e);
 				}
 				

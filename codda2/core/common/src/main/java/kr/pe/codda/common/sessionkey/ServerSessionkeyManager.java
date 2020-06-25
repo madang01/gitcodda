@@ -26,7 +26,7 @@ import kr.pe.codda.common.config.CoddaConfiguration;
 import kr.pe.codda.common.config.CoddaConfigurationManager;
 import kr.pe.codda.common.config.subset.CommonPartConfiguration;
 import kr.pe.codda.common.etc.CommonStaticFinalVars;
-import kr.pe.codda.common.exception.CoddaConfigurationException;
+import kr.pe.codda.common.exception.PartConfigurationException;
 import kr.pe.codda.common.exception.SymmetricException;
 import kr.pe.codda.common.type.SessionKey;
 
@@ -76,7 +76,7 @@ public final class ServerSessionkeyManager {
 				try {
 					rsaPrivateKeyFile = commonPart.getRSAPrivatekeyFileOfSessionKey();
 					rsaPublicKeyFile = commonPart.getRSAPublickeyFileOfSessionKey();
-				} catch (CoddaConfigurationException e) {
+				} catch (PartConfigurationException e) {
 					Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
 
 					log.log(Level.WARNING, e.getMessage(), e);

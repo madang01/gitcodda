@@ -24,7 +24,7 @@ import java.util.logging.Logger;
 
 import kr.pe.codda.common.buildsystem.pathsupporter.ProjectBuildSytemPathSupporter;
 import kr.pe.codda.common.etc.CommonStaticFinalVars;
-import kr.pe.codda.common.exception.CoddaConfigurationException;
+import kr.pe.codda.common.exception.PartConfigurationException;
 import kr.pe.codda.common.util.CommonStaticUtil;
 
 /**
@@ -176,7 +176,7 @@ public final class CoddaConfigurationManager {
 					.append(configFilePathString).append("]").toString();
 			log.log(Level.SEVERE, errorMessage, e);
 			System.exit(1);
-		} catch (CoddaConfigurationException e) {
+		} catch (PartConfigurationException e) {
 			String errorMessage = new StringBuilder("the configuration file[")
 					.append(configFilePathString).append("] has bad format").toString();
 			log.log(Level.SEVERE, errorMessage, e);

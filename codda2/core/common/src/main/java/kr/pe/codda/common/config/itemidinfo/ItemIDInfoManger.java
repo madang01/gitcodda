@@ -54,7 +54,7 @@ import kr.pe.codda.common.config.nativevalueconverter.SetTypeConverterReturningI
 import kr.pe.codda.common.config.nativevalueconverter.SetTypeConverterReturningMessageProtocolType;
 import kr.pe.codda.common.config.nativevalueconverter.SetTypeConverterReturningString;
 import kr.pe.codda.common.etc.CommonStaticFinalVars;
-import kr.pe.codda.common.exception.CoddaConfigurationException;
+import kr.pe.codda.common.exception.PartConfigurationException;
 import kr.pe.codda.common.type.ConnectionType;
 import kr.pe.codda.common.type.MessageProtocolType;
 import kr.pe.codda.common.type.SessionKey;
@@ -619,7 +619,7 @@ public class ItemIDInfoManger {
 	}
 
 	@SuppressWarnings("unchecked")
-	private void addDependencyValidation() throws IllegalArgumentException, CoddaConfigurationException {
+	private void addDependencyValidation() throws IllegalArgumentException, PartConfigurationException {
 
 		{
 			String dependentTargetItemID = ItemIDDefiner.ProjectPartItemIDDefiner.CLIENT_CONNECTION_MAX_COUNT_ITEMID;
@@ -628,7 +628,7 @@ public class ItemIDInfoManger {
 				String errorMessage = new StringBuilder("dependentTargetItemID[").append(dependentTargetItemID)
 						.append("]'s itemIDConfigInfo not ready").toString();
 				// log.error(errorMessage);
-				throw new CoddaConfigurationException(errorMessage);
+				throw new PartConfigurationException(errorMessage);
 			}
 
 			String dependentSourceItemID = ItemIDDefiner.ProjectPartItemIDDefiner.CLIENT_CONNECTION_COUNT_ITEMID;
@@ -637,7 +637,7 @@ public class ItemIDInfoManger {
 				String errorMessage = new StringBuilder("dependentSourceItemID[").append(dependentSourceItemID)
 						.append("]'s itemIDConfigInfo not ready").toString();
 				// log.error(errorMessage);
-				throw new CoddaConfigurationException(errorMessage);
+				throw new PartConfigurationException(errorMessage);
 			}
 
 			dependencyValidationHash.put(dependentSourceItemID,
@@ -662,7 +662,7 @@ public class ItemIDInfoManger {
 						.append(disabledTargetItemID)
 						.append("] identifier information, the RSA Public Key File item depends on RSA Keypair Source item[")
 						.append(dependentItemID).append("]").toString();
-				throw new CoddaConfigurationException(errorMessage);
+				throw new PartConfigurationException(errorMessage);
 			}
 
 			ItemIDInfo<?> dependentItemIDInfo = getItemIDInfo(dependentItemID);
@@ -671,7 +671,7 @@ public class ItemIDInfoManger {
 						.append("] identifier information, the RSA Public Key File item[").append(disabledTargetItemID)
 						.append("] depends on RSA Keypair Source item").toString();
 				// log.error(errorMessage);
-				throw new CoddaConfigurationException(errorMessage);
+				throw new PartConfigurationException(errorMessage);
 			}
 
 			diabledItemCheckerHash.put(disabledTargetItemID, new RSAKeyFileDisabledItemChecker(disbaledTargetItemIDInfo,
@@ -688,7 +688,7 @@ public class ItemIDInfoManger {
 						.append(dependentSourceItemID)
 						.append("] identifier information, the RSA Public Key File item depends on RSA Keypair Source item[")
 						.append(dependentTargetItemID).append("]").toString();
-				throw new CoddaConfigurationException(errorMessage);
+				throw new PartConfigurationException(errorMessage);
 			}
 
 			ItemIDInfo<?> dependentItemIDInfo = getItemIDInfo(dependentTargetItemID);
@@ -697,7 +697,7 @@ public class ItemIDInfoManger {
 						.append("] identifier information, the RSA Public Key File item[").append(dependentSourceItemID)
 						.append("] depends on RSA Keypair Source item").toString();
 				// log.error(errorMessage);
-				throw new CoddaConfigurationException(errorMessage);
+				throw new PartConfigurationException(errorMessage);
 			}
 
 			diabledItemCheckerHash.put(dependentSourceItemID, new RSAKeyFileDisabledItemChecker(disbaledTargetItemIDInfo,
@@ -845,10 +845,10 @@ public class ItemIDInfoManger {
 	 * @return 항목 키에 대응하는 항목 정보, 만약 없다면 null 을 반환한다. 단 키가 {@link CommonStaticFinalVars#DBCP_NAME_LIST_KEY_STRING} 혹은 
 	 * {@link CommonStaticFinalVars#SUBPROJECT_NAME_LIST_KEY_STRING} 인 경우 null 을 반환한다 그리고 항목 키값이  '.value' 로 끝나지 않는 경우에도 역시 null 을 반환한다.
 	 * @throws IllegalArgumentException 파라미터 값이 잘못 되어있는 경우 던지는 예외
-	 * @throws CoddaConfigurationException 항목 키 값이 잘못된 경우 혹은 설정 정보와 다르게 값을 설정할 경우 던지는 예외
+	 * @throws PartConfigurationException 항목 키 값이 잘못된 경우 혹은 설정 정보와 다르게 값을 설정할 경우 던지는 예외
 	 */
 	public ItemIDInfo<?> getItemIDInfoFromKey(String itemKey, Set<String> dbcpNameSet, Set<String> subProjectNameSet)
-			throws IllegalArgumentException, CoddaConfigurationException {
+			throws IllegalArgumentException, PartConfigurationException {
 		if (null == itemKey) {
 			String errorMessage = "the parameter itemKey is null";
 			throw new IllegalArgumentException(errorMessage);
@@ -919,17 +919,17 @@ public class ItemIDInfoManger {
 	 * @param itemKey 항목 키
 	 * @param itemIDInfo 항목 정보
 	 * @param wantedConfigurationPart 기대하는 항목의 설정 파일내 파트
-	 * @throws CoddaConfigurationException 항목의 설정 파일내 파트가 기대한 파트와 다를 경우 던지는 예외  
+	 * @throws PartConfigurationException 항목의 설정 파일내 파트가 기대한 파트와 다를 경우 던지는 예외  
 	 */
 	private void throwExceptionIfInvalidConfigurationPart(String itemKey, ItemIDInfo<?> itemIDInfo,
-			ItemIDInfo.ConfigurationPart wantedConfigurationPart) throws CoddaConfigurationException {
+			ItemIDInfo.ConfigurationPart wantedConfigurationPart) throws PartConfigurationException {
 		ItemIDInfo.ConfigurationPart configPartOfItemID = itemIDInfo.getConfigurationPart();
 		if (!configPartOfItemID.equals(wantedConfigurationPart)) {
 			String errorMessage = new StringBuilder("the configuration part[").append(configPartOfItemID.toString())
 					.append("] of the var itemIDInfo getting from the parameter itemKey[").append(itemKey)
 					.append("] is not same to the wanted configuration part[")
 					.append(wantedConfigurationPart.toString()).append("]").toString();
-			throw new CoddaConfigurationException(errorMessage);
+			throw new PartConfigurationException(errorMessage);
 		}
 	}
 
@@ -937,21 +937,21 @@ public class ItemIDInfoManger {
 	 * @param itemKey 항목 키
 	 * @param itemKeyStringTokenizer 항목 키를 '.' 자로 구별자로 한 토큰 분리자
 	 * @return 항목 키에 대응하는 항목 식별자
-	 * @throws CoddaConfigurationException 항목 키 값이 공통 파트의 것이 아닌 경우 던지는 예외
+	 * @throws PartConfigurationException 항목 키 값이 공통 파트의 것이 아닌 경우 던지는 예외
 	 */
-	private String getItemIDOfCommonPart(String itemKey, StringTokenizer itemKeyStringTokenizer) throws CoddaConfigurationException {
+	private String getItemIDOfCommonPart(String itemKey, StringTokenizer itemKeyStringTokenizer) throws PartConfigurationException {
 		String itemID;
 		if (! itemKeyStringTokenizer.hasMoreTokens()) {
 			String errorMessage = new StringBuilder("second token does not exist in the parameter itemKey[")
 					.append(itemKey).append("]").toString();
-			throw new CoddaConfigurationException(errorMessage);
+			throw new PartConfigurationException(errorMessage);
 		}
 
 		String secondToken = itemKeyStringTokenizer.nextToken();
 		if (secondToken.equals("")) {
 			String errorMessage = new StringBuilder("second token is a empty string in the parameter itemKey[")
 					.append(itemKey).append("]").toString();
-			throw new CoddaConfigurationException(errorMessage);
+			throw new PartConfigurationException(errorMessage);
 		}
 
 		itemID = itemKey;
@@ -962,15 +962,15 @@ public class ItemIDInfoManger {
 	 * @param itemKey 항목 키, 단순하게 로그 남기기 용도로 사용된다.
 	 * @param itemID 항목 식별자, 참고 : 항목 키에서 추출된다.
 	 * @return 항목 식별자에 대응하는 항목 정보
-	 * @throws CoddaConfigurationException  항목 키에 대응하는 항목 식별자에 대한  항목 정보가 없을 경우 던지는 예외
+	 * @throws PartConfigurationException  항목 키에 대응하는 항목 식별자에 대한  항목 정보가 없을 경우 던지는 예외
 	 */
-	private ItemIDInfo<?> getItemID(String itemKey, String itemID) throws CoddaConfigurationException {
+	private ItemIDInfo<?> getItemID(String itemKey, String itemID) throws PartConfigurationException {
 		ItemIDInfo<?> itemIDInfo;
 		itemIDInfo = itemIDInfoHash.get(itemID);
 		if (null == itemIDInfo) {
 			String errorMessage = new StringBuilder("the parameter itemKey[").append(itemKey)
 					.append("]'s itemID is not registed, check it").toString();
-			throw new CoddaConfigurationException(errorMessage);
+			throw new PartConfigurationException(errorMessage);
 		}
 		return itemIDInfo;
 	}
@@ -981,15 +981,15 @@ public class ItemIDInfoManger {
 	 * @param itemKeyStringTokenizer 항목 키를 '.' 자로 구별자로 한 토큰 분리자
 	 * @param firstToken 항목 키를 '.' 자로 구별자로 한 첫번째 토큰
 	 * @return 항목 키에 대응하는 항목 식별자
-	 * @throws CoddaConfigurationException 항목 키 값이 dbcp 파트의 것이 아닌 경우 던지는 예외
+	 * @throws PartConfigurationException 항목 키 값이 dbcp 파트의 것이 아닌 경우 던지는 예외
 	 */
 	private String getItemIDOfDBCPPart(String itemKey, Set<String> dbcpNameSet, StringTokenizer itemKeyStringTokenizer,
-			String firstToken) throws CoddaConfigurationException {
+			String firstToken) throws PartConfigurationException {
 		String itemID;
 		if (! itemKeyStringTokenizer.hasMoreTokens()) {
 			String errorMessage = new StringBuilder("second token does not exist in the parameter itemKey[")
 					.append(itemKey).append("]").toString();
-			throw new CoddaConfigurationException(errorMessage);
+			throw new PartConfigurationException(errorMessage);
 		}
 
 		String dbcpName = itemKeyStringTokenizer.nextToken();
@@ -999,21 +999,21 @@ public class ItemIDInfoManger {
 				String errorMessage = new StringBuilder("the item key[").append(itemKey)
 						.append("] has a wrong dbcp name not existing in the parameter dbcpNameList[")
 						.append(dbcpNameSet.toString()).append("]").toString();
-				throw new CoddaConfigurationException(errorMessage);
+				throw new PartConfigurationException(errorMessage);
 			}
 		}
 
 		if (! itemKeyStringTokenizer.hasMoreTokens()) {
 			String errorMessage = new StringBuilder("third token does not exist in the parameter itemKey[")
 					.append(itemKey).append("]").toString();
-			throw new CoddaConfigurationException(errorMessage);
+			throw new PartConfigurationException(errorMessage);
 		}
 
 		String thirdToken = itemKeyStringTokenizer.nextToken();
 		if (thirdToken.equals("")) {
 			String errorMessage = new StringBuilder("third token is a empty string in the parameter itemKey[")
 					.append(itemKey).append("]").toString();
-			throw new CoddaConfigurationException(errorMessage);
+			throw new PartConfigurationException(errorMessage);
 		}
 
 		String prefixOfItemID = firstToken + "." + dbcpName + ".";
@@ -1027,21 +1027,21 @@ public class ItemIDInfoManger {
 	 * @param itemKeyStringTokenizer 항목 키를 '.' 자로 구별자로 한 토큰 분리자
 	 * @param firstToken 항목 키를 '.' 자로 구별자로 한 첫번째 토큰
 	 * @return 항목 키에 대응하는 항목 식별자
-	 * @throws CoddaConfigurationException 항목 키 값이 서브 프로젝트 파트의 것이 아닌 경우 던지는 예외
+	 * @throws PartConfigurationException 항목 키 값이 서브 프로젝트 파트의 것이 아닌 경우 던지는 예외
 	 */
 	private String getItemIDOfSubProjectPart(String itemKey, Set<String> subProjectNameSet,
-			StringTokenizer itemKeyStringTokenizer, String firstToken) throws CoddaConfigurationException {
+			StringTokenizer itemKeyStringTokenizer, String firstToken) throws PartConfigurationException {
 		String itemID;
 		if (!itemKeyStringTokenizer.hasMoreTokens()) {
 			String errorMessage = new StringBuilder("second token does not exist in the parameter itemKey[")
 					.append(itemKey).append("]").toString();
-			throw new CoddaConfigurationException(errorMessage);
+			throw new PartConfigurationException(errorMessage);
 		}
 
 		String projectName = itemKeyStringTokenizer.nextToken();
 		if (projectName.equals("")) {
 			String errorMessage = "project name is an empty string at the project part";
-			throw new CoddaConfigurationException(errorMessage);
+			throw new PartConfigurationException(errorMessage);
 		}
 
 		if (null != subProjectNameSet) {
@@ -1049,21 +1049,21 @@ public class ItemIDInfoManger {
 				String errorMessage = new StringBuilder("the item key[").append(itemKey)
 						.append("] has a wrong project name not existing in the parameter projectNameList[")
 						.append(subProjectNameSet.toString()).append("]").toString();
-				throw new CoddaConfigurationException(errorMessage);
+				throw new PartConfigurationException(errorMessage);
 			}
 		}
 
 		if (!itemKeyStringTokenizer.hasMoreTokens()) {
 			String errorMessage = new StringBuilder("third token does not exist in the parameter itemKey[")
 					.append(itemKey).append("]").toString();
-			throw new CoddaConfigurationException(errorMessage);
+			throw new PartConfigurationException(errorMessage);
 		}
 
 		String subPartName = itemKeyStringTokenizer.nextToken();
 		if (subPartName.equals("")) {
 			String errorMessage = new StringBuilder("subPartName is a empty string in the parameter itemKey[")
 					.append(itemKey).append("]").toString();
-			throw new CoddaConfigurationException(errorMessage);
+			throw new PartConfigurationException(errorMessage);
 		}
 
 		if (!subPartName.equals("common") && !subPartName.equals("client") && !subPartName.equals("server")) {
@@ -1071,20 +1071,20 @@ public class ItemIDInfoManger {
 					.append("] of the parameter itemKey[").append(itemKey)
 					.append("]'s itemID is bad, it must have one element of set {'common', 'client', 'server'}")
 					.toString();
-			throw new CoddaConfigurationException(errorMessage);
+			throw new PartConfigurationException(errorMessage);
 		}
 
 		if (!itemKeyStringTokenizer.hasMoreTokens()) {
 			String errorMessage = new StringBuilder("fourth token does not exist in the parameter itemKey[")
 					.append(itemKey).append("]").toString();
-			throw new CoddaConfigurationException(errorMessage);
+			throw new PartConfigurationException(errorMessage);
 		}
 
 		String fourthToken = itemKeyStringTokenizer.nextToken();
 		if (fourthToken.equals("")) {
 			String errorMessage = new StringBuilder("fourth Token is a empty string in the parameter itemKey[")
 					.append(itemKey).append("]").toString();
-			throw new CoddaConfigurationException(errorMessage);
+			throw new PartConfigurationException(errorMessage);
 		}
 
 		String prefixOfItemID = firstToken + "." + projectName + ".";
@@ -1097,22 +1097,22 @@ public class ItemIDInfoManger {
 	 * @param itemKeyStringTokenizer 항목 키를 '.' 자로 구별자로 한 토큰 분리자
 	 * @param firstToken 항목 키를 '.' 자로 구별자로 한 첫번째 토큰
 	 * @return 항목 키에 대응하는 항목 식별자
-	 * @throws CoddaConfigurationException 항목 키 값이 메인 프로젝트 파트의 것이 아닌 경우 던지는 예외
+	 * @throws PartConfigurationException 항목 키 값이 메인 프로젝트 파트의 것이 아닌 경우 던지는 예외
 	 */
 	private String getItemIDOfMainProjectPart(String itemKey, StringTokenizer itemKeyStringTokenizer,
-			String firstToken) throws CoddaConfigurationException {
+			String firstToken) throws PartConfigurationException {
 		String itemID;
 		if (!itemKeyStringTokenizer.hasMoreTokens()) {
 			String errorMessage = new StringBuilder("second token does not exist in the parameter itemKey[")
 					.append(itemKey).append("]").toString();
-			throw new CoddaConfigurationException(errorMessage);
+			throw new PartConfigurationException(errorMessage);
 		}
 
 		String subPartName = itemKeyStringTokenizer.nextToken();
 		if (subPartName.equals("")) {
 			String errorMessage = new StringBuilder("subPartName is a empty string in the parameter itemKey[")
 					.append(itemKey).append("]").toString();
-			throw new CoddaConfigurationException(errorMessage);
+			throw new PartConfigurationException(errorMessage);
 		}
 
 		if (!subPartName.equals("common") && !subPartName.equals("client") && !subPartName.equals("server")) {
@@ -1120,20 +1120,20 @@ public class ItemIDInfoManger {
 					.append("] of the parameter itemKey[").append(itemKey)
 					.append("]'s itemID is bad, it must have one element of set {'common', 'client', 'server'}")
 					.toString();
-			throw new CoddaConfigurationException(errorMessage);
+			throw new PartConfigurationException(errorMessage);
 		}
 
 		if (!itemKeyStringTokenizer.hasMoreTokens()) {
 			String errorMessage = new StringBuilder("third token does not exist in the parameter itemKey[")
 					.append(itemKey).append("]").toString();
-			throw new CoddaConfigurationException(errorMessage);
+			throw new PartConfigurationException(errorMessage);
 		}
 
 		String thirdToken = itemKeyStringTokenizer.nextToken();
 		if (thirdToken.equals("")) {
 			String errorMessage = new StringBuilder("third Token is a empty string in the parameter itemKey[")
 					.append(itemKey).append("]").toString();
-			throw new CoddaConfigurationException(errorMessage);
+			throw new PartConfigurationException(errorMessage);
 		}
 
 		String prefixOfItemID = firstToken + ".";
@@ -1146,10 +1146,10 @@ public class ItemIDInfoManger {
 	 * @param sourceProperties 설정 파일의 내용을 갖고 있는 프로퍼티
 	 * @return 자바 내부의 값으로 변환된 지정한 프로퍼티에서 항목 키에 해당하는 값  
 	 * @throws IllegalArgumentException 파라미터 값이 잘못되었을 경우 던지는 예외
-	 * @throws CoddaConfigurationException 항목 키 값이 의존성등에 유효하지 않았을때 던지는 예외 
+	 * @throws PartConfigurationException 항목 키 값이 의존성등에 유효하지 않았을때 던지는 예외 
 	 */
 	public Object getNativeValueAfterValidChecker(String itemKey, Properties sourceProperties)
-			throws IllegalArgumentException, CoddaConfigurationException {
+			throws IllegalArgumentException, PartConfigurationException {
 		if (null == itemKey) {
 			throw new IllegalArgumentException("the parameter itemKey is null");
 		}
@@ -1174,7 +1174,7 @@ public class ItemIDInfoManger {
 
 			log.log(Level.WARNING, errorMessage);
 
-			throw new CoddaConfigurationException(errorMessage);
+			throw new PartConfigurationException(errorMessage);
 		}
 
 		String itemID = itemIDInfo.getItemID();
@@ -1195,7 +1195,7 @@ public class ItemIDInfoManger {
 
 					// log.warn(errorMessage);
 
-					throw new CoddaConfigurationException(errorMessage);
+					throw new PartConfigurationException(errorMessage);
 				}
 			} catch (IllegalArgumentException e) {
 				String errorMessage = new StringBuilder("the parameter itemValueKey[").append(itemKey)
@@ -1203,7 +1203,7 @@ public class ItemIDInfoManger {
 				/** 다른 예외로 변환 되므로 이력 남긴다. */
 				log.log(Level.WARNING, errorMessage, e);
 
-				throw new CoddaConfigurationException(errorMessage);
+				throw new PartConfigurationException(errorMessage);
 			}
 		}
 
@@ -1218,7 +1218,7 @@ public class ItemIDInfoManger {
 			/** 다른 예외로 변환 되므로 이력 남긴다. */
 			log.log(Level.WARNING, errorMessage, e);
 
-			throw new CoddaConfigurationException(
+			throw new PartConfigurationException(
 					new StringBuilder(errorMessage).append(", errormessage=").append(e.getMessage()).toString());
 		}
 

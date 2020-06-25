@@ -43,7 +43,7 @@ import kr.pe.codda.common.buildsystem.pathsupporter.ProjectBuildSytemPathSupport
 import kr.pe.codda.common.buildsystem.pathsupporter.ServerBuildSytemPathSupporter;
 import kr.pe.codda.common.config.subset.ProjectPartConfiguration;
 import kr.pe.codda.common.etc.CommonStaticFinalVars;
-import kr.pe.codda.common.exception.CoddaConfigurationException;
+import kr.pe.codda.common.exception.PartConfigurationException;
 import kr.pe.codda.common.exception.OutgoingStreamTimeoutException;
 import kr.pe.codda.common.message.AbstractMessage;
 import kr.pe.codda.common.type.ConnectionType;
@@ -176,7 +176,7 @@ public class AsynThreadSafeSingleConnectionTest {
 			MessageProtocolType messageProtocolType,
 			boolean clientDataPacketBufferIsDirect,
 			ConnectionType connectionType)
-			throws CoddaConfigurationException {		
+			throws PartConfigurationException {		
 		 
 		
 		ProjectPartConfiguration projectPartConfigurationForTest = new ProjectPartConfiguration(ProjectType.MAIN,

@@ -39,7 +39,7 @@ import kr.pe.codda.common.config.subset.CommonPartConfiguration;
 import kr.pe.codda.common.config.subset.DBCPParConfiguration;
 import kr.pe.codda.common.config.subset.ProjectPartConfiguration;
 import kr.pe.codda.common.etc.CommonStaticFinalVars;
-import kr.pe.codda.common.exception.CoddaConfigurationException;
+import kr.pe.codda.common.exception.PartConfigurationException;
 import kr.pe.codda.common.type.ProjectType;
 import kr.pe.codda.common.util.CommonStaticUtil;
 import kr.pe.codda.common.util.SequencedProperties;
@@ -71,12 +71,12 @@ public class CoddaConfiguration {
 	 * @param installedPathString 설치 경로
 	 * @param mainProjectName 메인 프로젝트 이름
 	 * @throws IllegalArgumentException 파라미터 값이 잘못되엇을 경우 던지는 예외
-	 * @throws CoddaConfigurationException 설정 파일 내용이 잘못되었을 경우 던지는 예외
+	 * @throws PartConfigurationException 설정 파일 내용이 잘못되었을 경우 던지는 예외
 	 * @throws FileNotFoundException 설정 파일이 없는 경우 던지는 예외
 	 * @throws IOException 설정 파일 적재할때 에러 발생시 던지는 예외
 	 */
 	public CoddaConfiguration(String installedPathString, String mainProjectName)
-			throws IllegalArgumentException, CoddaConfigurationException, FileNotFoundException, IOException {
+			throws IllegalArgumentException, PartConfigurationException, FileNotFoundException, IOException {
 		if (null == installedPathString) {
 			throw new IllegalArgumentException("the parameter installedPathString is null");
 		}
@@ -141,10 +141,10 @@ public class CoddaConfiguration {
 	 * 지정한 프로퍼티 내용을 검증하여 해당 내용을 각 파트 설정으로 옮김.
 	 * 
 	 * @param configSequencedProperties 설정 파일 내용이 담긴 프로퍼티
-	 * @throws CoddaConfigurationException 설정 파일 내용이 담긴 프로퍼티가 잘못되어 있다면 던지는 예외
+	 * @throws PartConfigurationException 설정 파일 내용이 담긴 프로퍼티가 잘못되어 있다면 던지는 예외
 	 */
 	public void convertConfigSequencedPropertiesToAllPartItemsWithValidation(
-			SequencedProperties configSequencedProperties) throws CoddaConfigurationException {
+			SequencedProperties configSequencedProperties) throws PartConfigurationException {
 		List<String> subProjectNameList = new ArrayList<>();
 		Set<String> subProjectNameSet = new HashSet<>();
 		{
@@ -155,7 +155,7 @@ public class CoddaConfiguration {
 						.append(CommonStaticFinalVars.SUBPROJECT_NAME_LIST_KEY_STRING)
 						.append(") was not found in the conifg file[").append(configFilePathString)
 						.append("]").toString();
-				throw new CoddaConfigurationException(errorMessage);
+				throw new PartConfigurationException(errorMessage);
 			}
 
 			itemValue = itemValue.trim();
@@ -169,7 +169,7 @@ public class CoddaConfiguration {
 						String errorMessage = new StringBuilder("sub project name[").append(subProjectName)
 								.append("] over at the project name list of the conifg file[")
 								.append(configFilePathString).append("]").toString();
-						throw new CoddaConfigurationException(errorMessage);
+						throw new PartConfigurationException(errorMessage);
 					}
 
 					subProjectNameList.add(subProjectName);
@@ -188,7 +188,7 @@ public class CoddaConfiguration {
 						.append(CommonStaticFinalVars.DBCP_NAME_LIST_KEY_STRING)
 						.append(") was not found in the conifg file[").append(configFilePathString)
 						.append("]").toString();
-				throw new CoddaConfigurationException(errorMessage);
+				throw new PartConfigurationException(errorMessage);
 			}
 
 			itemValue = itemValue.trim();
@@ -203,7 +203,7 @@ public class CoddaConfiguration {
 						String errorMessage = new StringBuilder("dbcp name[").append(dbcpName)
 								.append("] over at the dbcp name list of the conifg file[")
 								.append(configFilePathString).append("]").toString();
-						throw new CoddaConfigurationException(errorMessage);
+						throw new PartConfigurationException(errorMessage);
 					}
 
 					dbcpNameList.add(dbcpName);
@@ -237,7 +237,7 @@ public class CoddaConfiguration {
 				String errorMessage = new StringBuilder("error message=[").append(e.getMessage())
 						.append("], the conifg file[").append(configFilePathString).append("]")
 						.toString();
-				throw new CoddaConfigurationException(errorMessage);
+				throw new PartConfigurationException(errorMessage);
 			}
 		}
 
@@ -254,7 +254,7 @@ public class CoddaConfiguration {
 					String errorMessage = new StringBuilder("the item key[").append(itemKey)
 							.append("] was not found in the conifg file[").append(configFilePathString)
 							.append("]").toString();
-					throw new CoddaConfigurationException(errorMessage);
+					throw new PartConfigurationException(errorMessage);
 				}
 
 				boolean isInactive = itemIDInfoManger.isDisabled(itemID, prefixOfItemID,
@@ -265,12 +265,12 @@ public class CoddaConfiguration {
 
 					try {
 						dbcpPartItems.mapping(itemKey, nativeValue);
-					} catch (IllegalArgumentException | ClassCastException | CoddaConfigurationException e) {
+					} catch (IllegalArgumentException | ClassCastException | PartConfigurationException e) {
 						String errorMessage = new StringBuilder("fail to map item key[").append(itemKey)
 								.append("]'s value[").append(itemValue)
 								.append("] to the dbcp part value object's variable in the conifg file[")
 								.append(configFilePathString).append("]").toString();
-						throw new CoddaConfigurationException(errorMessage);
+						throw new PartConfigurationException(errorMessage);
 					}
 				} else {
 					String errorMessage = new StringBuilder()
@@ -294,7 +294,7 @@ public class CoddaConfiguration {
 				String errorMessage = new StringBuilder("the item key[").append(itemKey)
 						.append("] was not found in the conifg file[").append(configFilePathString)
 						.append("]").toString();
-				throw new CoddaConfigurationException(errorMessage);
+				throw new PartConfigurationException(errorMessage);
 			}
 
 			boolean isInactive = itemIDInfoManger.isDisabled(itemID, "", configSequencedProperties);
@@ -304,12 +304,12 @@ public class CoddaConfiguration {
 
 				try {
 					commonPartConfiguration.mapping(itemKey, nativeValue);
-				} catch (IllegalArgumentException | ClassCastException | CoddaConfigurationException e) {
+				} catch (IllegalArgumentException | ClassCastException | PartConfigurationException e) {
 					String errorMessage = new StringBuilder("fail to map item key[").append(itemKey)
 							.append("]'s value[").append(itemValue)
 							.append("] to the common part value object's variable in the conifg file[")
 							.append(configFilePathString).append("]").toString();
-					throw new CoddaConfigurationException(errorMessage);
+					throw new PartConfigurationException(errorMessage);
 				}
 			} else {
 				String errorMessage = new StringBuilder()
@@ -333,7 +333,7 @@ public class CoddaConfiguration {
 				String errorMessage = new StringBuilder("the item key[").append(itemKey)
 						.append("] was not found in the conifg file[").append(configFilePathString)
 						.append("]").toString();
-				throw new CoddaConfigurationException(errorMessage);
+				throw new PartConfigurationException(errorMessage);
 			}
 
 			boolean isInactive = itemIDInfoManger.isDisabled(itemID, "mainproject.",
@@ -344,14 +344,14 @@ public class CoddaConfiguration {
 
 				try {
 					mainProjectPartConfiguration.mapping(itemKey, nativeValue);
-				} catch (IllegalArgumentException | ClassCastException | CoddaConfigurationException e) {
+				} catch (IllegalArgumentException | ClassCastException | PartConfigurationException e) {
 					String errorMessage = new StringBuilder("fail to map item key[").append(itemKey)
 							.append("]'s value[").append(itemValue)
 							.append("] to the project part value object's variable in the conifg file[")
 							.append(configFilePathString).append("]").toString();
 					log.log(Level.INFO, errorMessage, e);
 					
-					throw new CoddaConfigurationException(errorMessage);
+					throw new PartConfigurationException(errorMessage);
 				}
 			} else {
 				String errorMessage = new StringBuilder()
@@ -376,7 +376,7 @@ public class CoddaConfiguration {
 					String errorMessage = new StringBuilder("the item key[").append(itemKey)
 							.append("] was not found in the conifg file[").append(configFilePathString)
 							.append("]").toString();
-					throw new CoddaConfigurationException(errorMessage);
+					throw new PartConfigurationException(errorMessage);
 				}
 
 				boolean isInactive = itemIDInfoManger.isDisabled(itemID, prefixOfItemID,
@@ -387,12 +387,12 @@ public class CoddaConfiguration {
 
 					try {
 						subProjectPartItems.mapping(itemKey, nativeValue);
-					} catch (IllegalArgumentException | ClassCastException | CoddaConfigurationException e) {
+					} catch (IllegalArgumentException | ClassCastException | PartConfigurationException e) {
 						String errorMessage = new StringBuilder("fail to map item key[").append(itemKey)
 								.append("]'s value[").append(itemValue)
 								.append("] to the project part value object's variable in the conifg file[")
 								.append(configFilePathString).append("]").toString();
-						throw new CoddaConfigurationException(errorMessage);
+						throw new PartConfigurationException(errorMessage);
 					}
 				} else {
 					String errorMessage = new StringBuilder()
@@ -462,9 +462,9 @@ public class CoddaConfiguration {
 	/**
 	 * 수정한 내용을 설정 파일에 덮어 쓴다.
 	 * @throws IOException 입출력 에러 발생시 던지는 예외
-	 * @throws CoddaConfigurationException 설정 파일 내용이 담긴 시퀀스 프로퍼티가 잘못되었다면 던지는 예외
+	 * @throws PartConfigurationException 설정 파일 내용이 담긴 시퀀스 프로퍼티가 잘못되었다면 던지는 예외
 	 */
-	public void applyModifiedConfigSequencedProperties() throws IOException, CoddaConfigurationException {
+	public void applyModifiedConfigSequencedProperties() throws IOException, PartConfigurationException {
 		initAllPartItems(mainProjectName);
 		convertConfigSequencedPropertiesToAllPartItemsWithValidation(configSequencedProperties);
 		overwriteFile();
@@ -476,10 +476,10 @@ public class CoddaConfiguration {
 	 * @param installedPathString 설치 경로
 	 * @param mainProjectName 메인 프로젝트 이름
 	 * @throws IOException 입출력 에러 발생시 던지는 예외
-	 * @throws CoddaConfigurationException 설정 파일 내용이 담긴 시퀀스 프로퍼티가 잘못되었다면 던지는 예외
+	 * @throws PartConfigurationException 설정 파일 내용이 담긴 시퀀스 프로퍼티가 잘못되었다면 던지는 예외
 	 */
 	public static void applyInstalledPath(String installedPathString, String mainProjectName)
-			throws IOException, CoddaConfigurationException {
+			throws IOException, PartConfigurationException {
 		String configFilePathString = ProjectBuildSytemPathSupporter
 				.getProejctConfigFilePathString(installedPathString, mainProjectName);
 
@@ -589,10 +589,10 @@ public class CoddaConfiguration {
 	 * @param configFilePathString 설정 파일 경로 문자열
 	 * @param configSequencedProperties 설정 파일이 담긴 시퀀스 프로퍼터 
 	 * @return 파라미터 '설정 파일이 담긴 시퀀스 프로퍼터' 에서 dbcp 이름 목록 값에서 추출한 dbcp 이름 목록
-	 * @throws CoddaConfigurationException 설정 파일 내용이 담긴 시퀀스 프로퍼티에 dbcp 이름 목록이 존재하지 않거나 중복된 dbcp 이름을 가졌다면 던지는 예외
+	 * @throws PartConfigurationException 설정 파일 내용이 담긴 시퀀스 프로퍼티에 dbcp 이름 목록이 존재하지 않거나 중복된 dbcp 이름을 가졌다면 던지는 예외
 	 */
 	private static List<String> buildDBCPNameList(String configFilePathString,
-			SequencedProperties configSequencedProperties) throws CoddaConfigurationException {
+			SequencedProperties configSequencedProperties) throws PartConfigurationException {
 		List<String> dbcpNameList = new ArrayList<>();
 		Set<String> dbcpNameSet = new HashSet<>();
 		{
@@ -603,7 +603,7 @@ public class CoddaConfiguration {
 						.append(CommonStaticFinalVars.DBCP_NAME_LIST_KEY_STRING)
 						.append(") was not found in the conifg file[").append(configFilePathString)
 						.append("]").toString();
-				throw new CoddaConfigurationException(errorMessage);
+				throw new PartConfigurationException(errorMessage);
 			}
 
 			itemValue = itemValue.trim();
@@ -618,7 +618,7 @@ public class CoddaConfiguration {
 						String errorMessage = new StringBuilder("dbcp name[").append(dbcpName)
 								.append("] over at the dbcp name list of the conifg file[")
 								.append(configFilePathString).append("]").toString();
-						throw new CoddaConfigurationException(errorMessage);
+						throw new PartConfigurationException(errorMessage);
 					}
 
 					dbcpNameList.add(dbcpName);
@@ -633,10 +633,10 @@ public class CoddaConfiguration {
 	 * @param configFilePathString 설정 파일 경로 문자열
 	 * @param configSequencedProperties 설정 파일 내용이 담긴 시퀀스 프로퍼티
 	 * @return 파라미터 '설정 파일이 담긴 시퀀스 프로퍼터' 에서 서브 프록젝트 이름 목록 값에서 추출한 서브 프로젝트 이름 목록이 존재하지 않거나 중복된 서브 프로젝트 이름을 가졌다면 던지는 예외
-	 * @throws CoddaConfigurationException
+	 * @throws PartConfigurationException
 	 */
 	private static List<String> buildSubProjectNameList(String configFilePathString,
-			SequencedProperties configSequencedProperties) throws CoddaConfigurationException {
+			SequencedProperties configSequencedProperties) throws PartConfigurationException {
 		List<String> subProjectNameList = new ArrayList<>();
 		Set<String> subProjectNameSet = new HashSet<>();
 		{
@@ -647,7 +647,7 @@ public class CoddaConfiguration {
 						.append(CommonStaticFinalVars.SUBPROJECT_NAME_LIST_KEY_STRING)
 						.append(") was not found in the conifg file[").append(configFilePathString)
 						.append("]").toString();
-				throw new CoddaConfigurationException(errorMessage);
+				throw new PartConfigurationException(errorMessage);
 			}
 
 			itemValue = itemValue.trim();
@@ -661,7 +661,7 @@ public class CoddaConfiguration {
 						String errorMessage = new StringBuilder("sub project name[").append(subProjectName)
 								.append("] over at the project name list of the conifg file[")
 								.append(configFilePathString).append("]").toString();
-						throw new CoddaConfigurationException(errorMessage);
+						throw new PartConfigurationException(errorMessage);
 					}
 
 					subProjectNameList.add(subProjectName);

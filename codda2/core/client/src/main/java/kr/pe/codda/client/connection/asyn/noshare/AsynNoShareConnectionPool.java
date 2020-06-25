@@ -159,7 +159,7 @@ public class AsynNoShareConnectionPool implements ConnectionPoolIF, AsynConnecte
 
 
 	@Override
-	public ConnectionIF getConnection() throws InterruptedException, ConnectionPoolTimeoutException, ConnectionPoolException {
+	public ConnectionIF getConnection() throws InterruptedException, ConnectionPoolTimeoutException {
 		
 		long lockBeginTime = System.nanoTime();		
 		long newTimeout = TimeUnit.NANOSECONDS.convert(socketTimeout, TimeUnit.MILLISECONDS);
@@ -189,13 +189,13 @@ public class AsynNoShareConnectionPool implements ConnectionPoolIF, AsynConnecte
 	}
 	
 	public AsynNoShareConnection doGetConnection(long endTimeForTimeout, long newTimeout) throws InterruptedException, RetryException, ConnectionPoolTimeoutException {
-		AsynNoShareConnection asynNoShareConnection = null;
-		
 		boolean isLocked = lock.tryLock(newTimeout, TimeUnit.NANOSECONDS);
 
 		if (!isLocked) {
 			throw new ConnectionPoolTimeoutException("fail to get a asyn noshare connection pool lock");
 		}
+		
+		AsynNoShareConnection asynNoShareConnection = null;
 		
 		try {
 			

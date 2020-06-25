@@ -43,7 +43,7 @@ import kr.pe.codda.common.buildsystem.pathsupporter.ProjectBuildSytemPathSupport
 import kr.pe.codda.common.buildsystem.pathsupporter.ServerBuildSytemPathSupporter;
 import kr.pe.codda.common.config.subset.ProjectPartConfiguration;
 import kr.pe.codda.common.etc.CommonStaticFinalVars;
-import kr.pe.codda.common.exception.CoddaConfigurationException;
+import kr.pe.codda.common.exception.PartConfigurationException;
 import kr.pe.codda.common.exception.ConnectionPoolTimeoutException;
 import kr.pe.codda.common.message.AbstractMessage;
 import kr.pe.codda.common.type.ConnectionType;
@@ -170,7 +170,7 @@ public class AsynNoShareConnectionTest {
 	private ProjectPartConfiguration buildMainProjectPartConfiguration(String projectName, String host, int port,
 			int clientConnectionCount, int clientConnectionMaxCount, MessageProtocolType messageProtocolType,
 			boolean clientDataPacketBufferIsDirect, ConnectionType connectionType, int serverMaxClients)
-			throws CoddaConfigurationException {
+			throws PartConfigurationException {
 
 		ProjectPartConfiguration projectPartConfigurationForTest = new ProjectPartConfiguration(ProjectType.MAIN,
 				projectName);

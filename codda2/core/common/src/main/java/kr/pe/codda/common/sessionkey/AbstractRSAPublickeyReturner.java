@@ -26,7 +26,7 @@ import kr.pe.codda.common.config.CoddaConfiguration;
 import kr.pe.codda.common.config.CoddaConfigurationManager;
 import kr.pe.codda.common.config.subset.CommonPartConfiguration;
 import kr.pe.codda.common.etc.CommonStaticFinalVars;
-import kr.pe.codda.common.exception.CoddaConfigurationException;
+import kr.pe.codda.common.exception.PartConfigurationException;
 import kr.pe.codda.common.exception.SymmetricException;
 import kr.pe.codda.common.type.SessionKey;
 import kr.pe.codda.common.util.CommonStaticUtil;
@@ -118,7 +118,7 @@ public abstract class AbstractRSAPublickeyReturner {
 			
 			publicKeyBytes = CommonStaticUtil.readFileToByteArray(rsaPublickeyFile, 10*1024*1024);
 
-		} catch (CoddaConfigurationException e) {
+		} catch (PartConfigurationException e) {
 			String errorMessage = new StringBuilder()
 					.append("fail to get RSA public key file from configuration, errmsg=")
 					.append(e.getMessage()).toString();			

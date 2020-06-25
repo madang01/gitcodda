@@ -23,7 +23,7 @@ import kr.pe.codda.common.config.AbstractDependencyValidator;
 import kr.pe.codda.common.config.AbstractMinMaxConverter;
 import kr.pe.codda.common.config.AbstractNativeValueConverter;
 import kr.pe.codda.common.config.itemidinfo.ItemIDInfo;
-import kr.pe.codda.common.exception.CoddaConfigurationException;
+import kr.pe.codda.common.exception.PartConfigurationException;
 
 /**
  * 최소 최대 의존성 검사기
@@ -44,13 +44,13 @@ public class MinAndMaxDependencyValidator<T extends Number> extends
 	 * @param dependentTargetItemInfo 의존 대상 항목 정보
 	 * @param genericTypeClass 제너릭 타입 클래스
 	 * @throws IllegalArgumentException 파라미터 값이 잘못된 경우 던지는 예외
-	 * @throws CoddaConfigurationException 항목의 값 변환기가 {@link AbstractMinMaxConverter} 가 아니면 던지는 예외
+	 * @throws PartConfigurationException 항목의 값 변환기가 {@link AbstractMinMaxConverter} 가 아니면 던지는 예외
 	 */
 	@SuppressWarnings("unchecked")
 	public MinAndMaxDependencyValidator(ItemIDInfo<T> dependentSourceItemInfo,
 			ItemIDInfo<T> dependentTargetItemInfo, 
 			Class<T> genericTypeClass)
-			throws IllegalArgumentException, CoddaConfigurationException {
+			throws IllegalArgumentException, PartConfigurationException {
 		super(dependentSourceItemInfo, dependentTargetItemInfo);
 		
 		// Comparator<T> minMaxComparator, 
@@ -149,7 +149,7 @@ public class MinAndMaxDependencyValidator<T extends Number> extends
 			
 			//log.error(errorMessage);
 			//System.exit(1);
-			throw new CoddaConfigurationException(errorMessage);
+			throw new PartConfigurationException(errorMessage);
 		}
 
 		try {
@@ -164,7 +164,7 @@ public class MinAndMaxDependencyValidator<T extends Number> extends
 			.append("] to GeneralConverterReturningGenericBetweenMinAndMax<T>")
 					.append(", errormessage=").append(e.getMessage())
 					.toString();
-			throw new CoddaConfigurationException(errorMessage);
+			throw new PartConfigurationException(errorMessage);
 		}
 		
 		minMaxComparator = maxConverter.getTypeComparator();

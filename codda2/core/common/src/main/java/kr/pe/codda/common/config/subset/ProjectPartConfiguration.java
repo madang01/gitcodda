@@ -21,7 +21,7 @@ import java.nio.ByteOrder;
 import java.nio.charset.Charset;
 
 import kr.pe.codda.common.config.itemidinfo.ItemIDDefiner;
-import kr.pe.codda.common.exception.CoddaConfigurationException;
+import kr.pe.codda.common.exception.PartConfigurationException;
 import kr.pe.codda.common.type.ConnectionType;
 import kr.pe.codda.common.type.MessageProtocolType;
 import kr.pe.codda.common.type.ProjectType;
@@ -264,7 +264,7 @@ public class ProjectPartConfiguration {
 	}
 
 	public void mapping(String itemKey, Object nativeValue) 
-			throws IllegalArgumentException, CoddaConfigurationException {
+			throws IllegalArgumentException, PartConfigurationException {
 		if (null == itemKey) {
 			throw new IllegalArgumentException("the parameter itemKey is null");
 		}
@@ -294,7 +294,7 @@ public class ProjectPartConfiguration {
 				.append(itemID).append("] is differnet from the mapped variable's type[")
 				.append(String.class.getName())
 				.append("]").toString();
-				throw new CoddaConfigurationException(errorMessage);
+				throw new PartConfigurationException(errorMessage);
 			}
 			
 			this.serverHost = (String) nativeValue;
@@ -306,7 +306,7 @@ public class ProjectPartConfiguration {
 				.append(itemID).append("] is differnet from the mapped variable's type[")
 				.append(Integer.class.getName())
 				.append("]").toString();
-				throw new CoddaConfigurationException(errorMessage);
+				throw new PartConfigurationException(errorMessage);
 			}
 			this.serverPort = (Integer) nativeValue;
 		} else if (itemID.equals(ItemIDDefiner.ProjectPartItemIDDefiner.COMMON_BYTEORDER_ITEMID)) {
@@ -317,7 +317,7 @@ public class ProjectPartConfiguration {
 				.append(itemID).append("] is differnet from the mapped variable's type[")
 				.append(ByteOrder.class.getName())
 				.append("]").toString();
-				throw new CoddaConfigurationException(errorMessage);
+				throw new PartConfigurationException(errorMessage);
 			}
 			
 			this.byteOrder = (ByteOrder)nativeValue;			
@@ -329,7 +329,7 @@ public class ProjectPartConfiguration {
 				.append(itemID).append("] is differnet from the mapped variable's type[")
 				.append(Charset.class.getName())
 				.append("]").toString();
-				throw new CoddaConfigurationException(errorMessage);
+				throw new PartConfigurationException(errorMessage);
 			}
 			
 			this.charset = (Charset)nativeValue;				
@@ -341,7 +341,7 @@ public class ProjectPartConfiguration {
 				.append(itemID).append("] is differnet from the mapped variable's type[")
 				.append(MessageProtocolType.class.getName())
 				.append("]").toString();
-				throw new CoddaConfigurationException(errorMessage);
+				throw new PartConfigurationException(errorMessage);
 			}
 			
 			this.messageProtocolType = (MessageProtocolType)nativeValue;			
@@ -353,7 +353,7 @@ public class ProjectPartConfiguration {
 				.append(itemID).append("] is differnet from the mapped variable's type[")
 				.append(Long.class.getName())
 				.append("]").toString();
-				throw new CoddaConfigurationException(errorMessage);
+				throw new PartConfigurationException(errorMessage);
 			}
 			
 			this.clientMonitorTimeInterval = (Long)nativeValue;			
@@ -365,7 +365,7 @@ public class ProjectPartConfiguration {
 				.append(itemID).append("] is differnet from the mapped variable's type[")
 				.append(Integer.class.getName())
 				.append("]").toString();
-				throw new CoddaConfigurationException(errorMessage);
+				throw new PartConfigurationException(errorMessage);
 			}
 			
 			this.clientDataPacketBufferIsDirect = (Boolean)nativeValue;
@@ -377,7 +377,7 @@ public class ProjectPartConfiguration {
 				.append(itemID).append("] is differnet from the mapped variable's type[")
 				.append(Integer.class.getName())
 				.append("]").toString();
-				throw new CoddaConfigurationException(errorMessage);
+				throw new PartConfigurationException(errorMessage);
 			}
 			
 			this.clientDataPacketBufferMaxCntPerMessage = (Integer)nativeValue;			
@@ -389,7 +389,7 @@ public class ProjectPartConfiguration {
 				.append(itemID).append("] is differnet from the mapped variable's type[")
 				.append(Integer.class.getName())
 				.append("]").toString();
-				throw new CoddaConfigurationException(errorMessage);
+				throw new PartConfigurationException(errorMessage);
 			}
 			
 			this.clientDataPacketBufferSize = (Integer)nativeValue;	
@@ -401,7 +401,7 @@ public class ProjectPartConfiguration {
 				.append(itemID).append("] is differnet from the mapped variable's type[")
 				.append(Integer.class.getName())
 				.append("]").toString();
-				throw new CoddaConfigurationException(errorMessage);
+				throw new PartConfigurationException(errorMessage);
 			}
 			
 			this.clientDataPacketBufferPoolSize = (Integer) nativeValue;
@@ -413,7 +413,7 @@ public class ProjectPartConfiguration {
 				.append(itemID).append("] is differnet from the mapped variable's type[")
 				.append(Long.class.getName())
 				.append("]").toString();
-				throw new CoddaConfigurationException(errorMessage);
+				throw new PartConfigurationException(errorMessage);
 			}
 			
 			this.clientSocketTimeout = (Long) nativeValue;
@@ -425,7 +425,7 @@ public class ProjectPartConfiguration {
 				.append(itemID).append("] is differnet from the mapped variable's type[")
 				.append(ConnectionType.class.getName())
 				.append("]").toString();
-				throw new CoddaConfigurationException(errorMessage);
+				throw new PartConfigurationException(errorMessage);
 			}
 			
 			this.connectionType = (ConnectionType) nativeValue;
@@ -438,7 +438,7 @@ public class ProjectPartConfiguration {
 				.append(itemID).append("] is differnet from the mapped variable's type[")
 				.append(Integer.class.getName())
 				.append("]").toString();
-				throw new CoddaConfigurationException(errorMessage);
+				throw new PartConfigurationException(errorMessage);
 			}
 			
 			this.clientConnectionCount = (Integer) nativeValue;		
@@ -450,7 +450,7 @@ public class ProjectPartConfiguration {
 				.append(itemID).append("] is differnet from the mapped variable's type[")
 				.append(Integer.class.getName())
 				.append("]").toString();
-				throw new CoddaConfigurationException(errorMessage);
+				throw new PartConfigurationException(errorMessage);
 			}
 			
 			this.clientConnectionMaxCount = (Integer) nativeValue;		
@@ -463,7 +463,7 @@ public class ProjectPartConfiguration {
 				.append(itemID).append("] is differnet from the mapped variable's type[")
 				.append(Integer.class.getName())
 				.append("]").toString();
-				throw new CoddaConfigurationException(errorMessage);
+				throw new PartConfigurationException(errorMessage);
 			}
 			
 			this.clientConnectionPoolSupporterTimeInterval = (Long) nativeValue;
@@ -475,7 +475,7 @@ public class ProjectPartConfiguration {
 				.append(itemID).append("] is differnet from the mapped variable's type[")
 				.append(Integer.class.getName())
 				.append("]").toString();
-				throw new CoddaConfigurationException(errorMessage);
+				throw new PartConfigurationException(errorMessage);
 			}
 			
 			this.clientSyncMessageMailboxCountPerAsynShareConnection = (Integer) nativeValue;
@@ -487,7 +487,7 @@ public class ProjectPartConfiguration {
 				.append(itemID).append("] is differnet from the mapped variable's type[")
 				.append(Integer.class.getName())
 				.append("]").toString();
-				throw new CoddaConfigurationException(errorMessage);
+				throw new PartConfigurationException(errorMessage);
 			}
 			
 			this.clientAsynInputMessageQueueCapacity = (Integer) nativeValue;		
@@ -499,7 +499,7 @@ public class ProjectPartConfiguration {
 				.append(itemID).append("] is differnet from the mapped variable's type[")
 				.append(Integer.class.getName())
 				.append("]").toString();
-				throw new CoddaConfigurationException(errorMessage);
+				throw new PartConfigurationException(errorMessage);
 			}
 			
 			this.clientAsynOutputMessageQueueCapacity = (Integer) nativeValue;
@@ -511,7 +511,7 @@ public class ProjectPartConfiguration {
 				.append(itemID).append("] is differnet from the mapped variable's type[")
 				.append(Long.class.getName())
 				.append("]").toString();
-				throw new CoddaConfigurationException(errorMessage);
+				throw new PartConfigurationException(errorMessage);
 			}
 			
 			this.clientSelectorWakeupInterval = (Long) nativeValue;
@@ -523,7 +523,7 @@ public class ProjectPartConfiguration {
 				.append(itemID).append("] is differnet from the mapped variable's type[")
 				.append(Integer.class.getName())
 				.append("]").toString();
-				throw new CoddaConfigurationException(errorMessage);
+				throw new PartConfigurationException(errorMessage);
 			}
 			
 			this.clientAsynExecutorPoolSize = (Integer) nativeValue;
@@ -535,7 +535,7 @@ public class ProjectPartConfiguration {
 				.append(itemID).append("] is differnet from the mapped variable's type[")
 				.append(Long.class.getName())
 				.append("]").toString();
-				throw new CoddaConfigurationException(errorMessage);
+				throw new PartConfigurationException(errorMessage);
 			}
 			
 			this.serverMonitorTimeInterval = (Long) nativeValue;
@@ -547,7 +547,7 @@ public class ProjectPartConfiguration {
 				.append(itemID).append("] is differnet from the mapped variable's type[")
 				.append(Integer.class.getName())
 				.append("]").toString();
-				throw new CoddaConfigurationException(errorMessage);
+				throw new PartConfigurationException(errorMessage);
 			}
 			
 			this.serverDataPacketBufferIsDirect = (Boolean)nativeValue;		
@@ -559,7 +559,7 @@ public class ProjectPartConfiguration {
 				.append(itemID).append("] is differnet from the mapped variable's type[")
 				.append(Integer.class.getName())
 				.append("]").toString();
-				throw new CoddaConfigurationException(errorMessage);
+				throw new PartConfigurationException(errorMessage);
 			}
 			
 			this.serverDataPacketBufferMaxCntPerMessage = (Integer)nativeValue;			
@@ -571,7 +571,7 @@ public class ProjectPartConfiguration {
 				.append(itemID).append("] is differnet from the mapped variable's type[")
 				.append(Integer.class.getName())
 				.append("]").toString();
-				throw new CoddaConfigurationException(errorMessage);
+				throw new PartConfigurationException(errorMessage);
 			}
 			
 			this.serverDataPacketBufferSize = (Integer)nativeValue;	
@@ -583,7 +583,7 @@ public class ProjectPartConfiguration {
 				.append(itemID).append("] is differnet from the mapped variable's type[")
 				.append(Integer.class.getName())
 				.append("]").toString();
-				throw new CoddaConfigurationException(errorMessage);
+				throw new PartConfigurationException(errorMessage);
 			}
 			
 			this.serverDataPacketBufferPoolSize = (Integer) nativeValue;
@@ -596,7 +596,7 @@ public class ProjectPartConfiguration {
 				.append(itemID).append("] is differnet from the mapped variable's type[")
 				.append(Integer.class.getName())
 				.append("]").toString();
-				throw new CoddaConfigurationException(errorMessage);
+				throw new PartConfigurationException(errorMessage);
 			}
 			
 			this.serverMaxClients = (Integer) nativeValue;		
@@ -608,7 +608,7 @@ public class ProjectPartConfiguration {
 				.append(itemID).append("] is differnet from the mapped variable's type[")
 				.append(Integer.class.getName())
 				.append("]").toString();
-				throw new CoddaConfigurationException(errorMessage);
+				throw new PartConfigurationException(errorMessage);
 			}
 			
 			this.serverInputMessageQueueCapacity = (Integer) nativeValue;
@@ -620,7 +620,7 @@ public class ProjectPartConfiguration {
 				.append(itemID).append("] is differnet from the mapped variable's type[")
 				.append(Integer.class.getName())
 				.append("]").toString();
-				throw new CoddaConfigurationException(errorMessage);
+				throw new PartConfigurationException(errorMessage);
 			}
 			
 			this.serverOutputMessageQueueCapacity = (Integer) nativeValue;		
@@ -628,7 +628,7 @@ public class ProjectPartConfiguration {
 			String errorMessage = new StringBuilder("unknown porject's part item id(=the parameter itemIDInfo[")
 			.append(itemID)
 			.append("]), check it").toString();
-			throw new CoddaConfigurationException(errorMessage);
+			throw new PartConfigurationException(errorMessage);
 		}		
 	}	
 	
@@ -660,7 +660,7 @@ public class ProjectPartConfiguration {
 			int serverDataPacketBufferPoolSize,
 			int serverMaxClients,
 			int serverInputMessageQueueSize,
-			int serverOutputMessageQueueSize) throws IllegalArgumentException, CoddaConfigurationException {
+			int serverOutputMessageQueueSize) throws IllegalArgumentException, PartConfigurationException {
 		
 		mapping(new StringBuilder(prefexOfItemID)
 				.append(ItemIDDefiner.ProjectPartItemIDDefiner.COMMON_HOST_ITEMID).toString(), host);
