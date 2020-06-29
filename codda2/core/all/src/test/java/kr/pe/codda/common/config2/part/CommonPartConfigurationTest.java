@@ -443,4 +443,110 @@ public class CommonPartConfigurationTest {
 		
 		log.info(sourceSequencedProperties.toString());
 	}
+	
+	@Test
+	public void testToValueForSymmetricKeyAlgorithmOfSessionKey() {		
+		SequencedProperties sourceSequencedProperties = new SequencedProperties();
+		
+		CommonPartConfiguration actualCommonPartConfiguration = new CommonPartConfiguration();
+		actualCommonPartConfiguration.setSymmetricKeyAlgorithmOfSessionKey("DES");
+		
+		actualCommonPartConfiguration.toPropertiesForSymmetricKeyAlgorithmOfSessionKey(sourceSequencedProperties);
+		
+		
+		CommonPartConfiguration expectedCommonPartConfiguration = new CommonPartConfiguration();
+		
+		try {
+			expectedCommonPartConfiguration.toValueForSymmetricKeyAlgorithmOfSessionKey(sourceSequencedProperties);
+		} catch (Exception e) {
+			log.log(Level.WARNING, "fail to call 'toValue'", e);
+			
+			fail("fail to call 'toValue'");
+		}
+		
+		assertEquals(expectedCommonPartConfiguration.getSymmetricKeyAlgorithmOfSessionKey(), actualCommonPartConfiguration.getSymmetricKeyAlgorithmOfSessionKey());
+	}
+	
+	@Test
+	public void testToPropertiesForSymmetricKeyAlgorithmOfSessionKey() {	
+		SequencedProperties sourceSequencedProperties = new SequencedProperties();
+		
+		CommonPartConfiguration actualCommonPartConfiguration = new CommonPartConfiguration();
+		actualCommonPartConfiguration.setSymmetricKeyAlgorithmOfSessionKey("DES");
+		
+		actualCommonPartConfiguration.toPropertiesForSymmetricKeyAlgorithmOfSessionKey(sourceSequencedProperties);
+		
+		log.info(sourceSequencedProperties.toString());
+	}
+	
+	@Test
+	public void testToValueForSymmetricKeySizeOfSessionKey() {		
+		SequencedProperties sourceSequencedProperties = new SequencedProperties();
+		
+		CommonPartConfiguration actualCommonPartConfiguration = new CommonPartConfiguration();
+		actualCommonPartConfiguration.setSymmetricKeySizeOfSessionKey(24);
+		
+		actualCommonPartConfiguration.toPropertiesForSymmetricKeySizeOfSessionKey(sourceSequencedProperties);
+		
+		
+		CommonPartConfiguration expectedCommonPartConfiguration = new CommonPartConfiguration();
+		
+		try {
+			expectedCommonPartConfiguration.toValueForSymmetricKeySizeOfSessionKey(sourceSequencedProperties);
+		} catch (Exception e) {
+			log.log(Level.WARNING, "fail to call 'toValue'", e);
+			
+			fail("fail to call 'toValue'");
+		}
+		
+		assertEquals(expectedCommonPartConfiguration.getSymmetricKeySizeOfSessionKey(), actualCommonPartConfiguration.getSymmetricKeySizeOfSessionKey());
+	}
+	
+	@Test
+	public void testToPropertiesForSymmetricKeySizeOfSessionKey() {	
+		SequencedProperties sourceSequencedProperties = new SequencedProperties();
+		
+		CommonPartConfiguration actualCommonPartConfiguration = new CommonPartConfiguration();
+		actualCommonPartConfiguration.setSymmetricKeySizeOfSessionKey(24);
+		
+		actualCommonPartConfiguration.toPropertiesForSymmetricKeySizeOfSessionKey(sourceSequencedProperties);
+		
+		log.info(sourceSequencedProperties.toString());
+	}
+	
+	
+	@Test
+	public void testToValueForSymmetricIVSizeOfSessionKey() {		
+		SequencedProperties sourceSequencedProperties = new SequencedProperties();
+		
+		CommonPartConfiguration actualCommonPartConfiguration = new CommonPartConfiguration();
+		actualCommonPartConfiguration.setSymmetricIVSizeOfSessionKey(24);
+		
+		actualCommonPartConfiguration.toPropertiesForSymmetricIVSizeOfSessionKey(sourceSequencedProperties);
+		
+		
+		CommonPartConfiguration expectedCommonPartConfiguration = new CommonPartConfiguration();
+		
+		try {
+			expectedCommonPartConfiguration.toValueForSymmetricIVSizeOfSessionKey(sourceSequencedProperties);
+		} catch (Exception e) {
+			log.log(Level.WARNING, "fail to call 'toValue'", e);
+			
+			fail("fail to call 'toValue'");
+		}
+		
+		assertEquals(expectedCommonPartConfiguration.getSymmetricIVSizeOfSessionKey(), actualCommonPartConfiguration.getSymmetricIVSizeOfSessionKey());
+	}
+	
+	@Test
+	public void testToPropertiesForSymmetricIVSizeOfSessionKey() {	
+		SequencedProperties sourceSequencedProperties = new SequencedProperties();
+		
+		CommonPartConfiguration actualCommonPartConfiguration = new CommonPartConfiguration();
+		actualCommonPartConfiguration.setSymmetricIVSizeOfSessionKey(24);
+		
+		actualCommonPartConfiguration.toPropertiesForSymmetricIVSizeOfSessionKey(sourceSequencedProperties);
+		
+		log.info(sourceSequencedProperties.toString());
+	}
 }

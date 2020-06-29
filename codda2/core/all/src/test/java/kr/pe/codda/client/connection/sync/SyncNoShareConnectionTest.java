@@ -42,7 +42,7 @@ import kr.pe.codda.common.config.subset.ProjectPartConfiguration;
 import kr.pe.codda.common.etc.CommonStaticFinalVars;
 import kr.pe.codda.common.exception.PartConfigurationException;
 import kr.pe.codda.common.message.AbstractMessage;
-import kr.pe.codda.common.type.ConnectionType;
+import kr.pe.codda.common.type.ClientConnectionType;
 import kr.pe.codda.common.type.MessageProtocolType;
 import kr.pe.codda.common.type.ProjectType;
 import kr.pe.codda.common.util.CommonStaticUtil;
@@ -164,7 +164,7 @@ public class SyncNoShareConnectionTest {
 
 	private ProjectPartConfiguration buildMainProjectPartConfiguration(String projectName, String host, int port,
 			int clientConnectionCount, MessageProtocolType messageProtocolType, boolean clientDataPacketBufferIsDirect,
-			ConnectionType connectionType) throws PartConfigurationException {
+			ClientConnectionType connectionType) throws PartConfigurationException {
 
 		ProjectPartConfiguration projectPartConfigurationForTest = new ProjectPartConfiguration(ProjectType.MAIN,
 				projectName);
@@ -229,7 +229,7 @@ public class SyncNoShareConnectionTest {
 		try {
 			projectPartConfigurationForTest = buildMainProjectPartConfiguration(testProjectName, host, port,
 					clientConnectionCount, messageProtocolTypeForTest, clientDataPacketBufferIsDirect,
-					ConnectionType.SYNC);
+					ClientConnectionType.SYNC);
 
 		} catch (Exception e) {
 			log.log(Level.WARNING, "error", e);

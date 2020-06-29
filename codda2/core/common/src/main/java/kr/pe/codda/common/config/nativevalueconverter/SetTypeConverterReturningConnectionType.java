@@ -18,27 +18,27 @@
 package kr.pe.codda.common.config.nativevalueconverter;
 
 import kr.pe.codda.common.config.AbstractSetTypeNativeValueConverter;
-import kr.pe.codda.common.type.ConnectionType;
+import kr.pe.codda.common.type.ClientConnectionType;
 
 /**
- * 열거형 {@link ConnectionType} 의 원소들로 이루어진 집합을 갖는 ConnectionType 타입 값 변환기
+ * 열거형 {@link ClientConnectionType} 의 원소들로 이루어진 집합을 갖는 ConnectionType 타입 값 변환기
  * 
  * @author "Won Jonghoon"
  * 
  */
 public class SetTypeConverterReturningConnectionType extends
-		AbstractSetTypeNativeValueConverter<ConnectionType> {
+		AbstractSetTypeNativeValueConverter<ClientConnectionType> {
 
 	/**
 	 * 생성자
 	 */
 	public SetTypeConverterReturningConnectionType() {
-		super(ConnectionType.class);
+		super(ClientConnectionType.class);
 	}
 
 	@Override
 	protected void initItemValueSet() {
-		ConnectionType[] nativeValues = ConnectionType.values();
+		ClientConnectionType[] nativeValues = ClientConnectionType.values();
 		for (int i = 0; i < nativeValues.length; i++) {
 			itemValueSet.add(nativeValues[i].toString());
 		}
@@ -50,7 +50,7 @@ public class SetTypeConverterReturningConnectionType extends
 	}
 
 	@Override
-	public ConnectionType valueOf(String itemValue)
+	public ClientConnectionType valueOf(String itemValue)
 			throws IllegalArgumentException {
 		if (null == itemValue) {
 			String errorMessage = "the parameter itemValue is null";
@@ -62,9 +62,9 @@ public class SetTypeConverterReturningConnectionType extends
 			throw new IllegalArgumentException(errorMessage);
 		}
 
-		ConnectionType returnValue = null;
+		ClientConnectionType returnValue = null;
 		try {
-			returnValue = ConnectionType.valueOf(itemValue);
+			returnValue = ClientConnectionType.valueOf(itemValue);
 		} catch (IllegalArgumentException e) {
 			String errorMessage = new StringBuilder("the parameter itemValue[")
 					.append(itemValue).append("] is not an element of ")

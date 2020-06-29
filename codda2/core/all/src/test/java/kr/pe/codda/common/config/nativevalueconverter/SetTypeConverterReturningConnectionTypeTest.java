@@ -32,7 +32,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import kr.pe.codda.common.etc.CommonStaticFinalVars;
-import kr.pe.codda.common.type.ConnectionType;
+import kr.pe.codda.common.type.ClientConnectionType;
 import kr.pe.codda.common.util.JDKLoggerCustomFormatter;
 
 public class SetTypeConverterReturningConnectionTypeTest {
@@ -40,7 +40,7 @@ public class SetTypeConverterReturningConnectionTypeTest {
 	private Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
 	
 	private SetTypeConverterReturningConnectionType nativeValueConverter = null;
-	private ConnectionType returnedValue = null;
+	private ClientConnectionType returnedValue = null;
 	
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
@@ -78,9 +78,9 @@ public class SetTypeConverterReturningConnectionTypeTest {
 	
 	@Test
 	public void testValueOf_OK() {
-		ConnectionType expectedValue = null;
+		ClientConnectionType expectedValue = null;
 		
-		ConnectionType[] conectionTypes = ConnectionType.values();
+		ClientConnectionType[] conectionTypes = ClientConnectionType.values();
 		for (int i=0; i < conectionTypes.length; i++) {
 			expectedValue = conectionTypes[i];
 			try {

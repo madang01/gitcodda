@@ -46,7 +46,7 @@ import kr.pe.codda.common.etc.CommonStaticFinalVars;
 import kr.pe.codda.common.exception.PartConfigurationException;
 import kr.pe.codda.common.exception.OutgoingStreamTimeoutException;
 import kr.pe.codda.common.message.AbstractMessage;
-import kr.pe.codda.common.type.ConnectionType;
+import kr.pe.codda.common.type.ClientConnectionType;
 import kr.pe.codda.common.type.MessageProtocolType;
 import kr.pe.codda.common.type.ProjectType;
 import kr.pe.codda.common.util.CommonStaticUtil;
@@ -175,7 +175,7 @@ public class AsynThreadSafeSingleConnectionTest {
 			int clientConnectionCount,
 			MessageProtocolType messageProtocolType,
 			boolean clientDataPacketBufferIsDirect,
-			ConnectionType connectionType)
+			ClientConnectionType connectionType)
 			throws PartConfigurationException {		
 		 
 		
@@ -268,7 +268,7 @@ public class AsynThreadSafeSingleConnectionTest {
 					numberOfConnection,
 					messageProtocolTypeForTest,
 					clientDataPacketBufferIsDirect,
-					ConnectionType.ASYN);
+					ClientConnectionType.ASYN);
 
 		} catch (Exception e) {
 			log.log(Level.WARNING, "error", e);

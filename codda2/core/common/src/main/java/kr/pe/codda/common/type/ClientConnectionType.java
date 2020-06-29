@@ -21,6 +21,6 @@ package kr.pe.codda.common.type;
  * @author Won Jonghoon
  *
  */
-public enum ConnectionType {
+public enum ClientConnectionType {
 	ASYN, SYNC;
 }

@@ -55,7 +55,7 @@ import kr.pe.codda.common.config.nativevalueconverter.SetTypeConverterReturningM
 import kr.pe.codda.common.config.nativevalueconverter.SetTypeConverterReturningString;
 import kr.pe.codda.common.etc.CommonStaticFinalVars;
 import kr.pe.codda.common.exception.PartConfigurationException;
-import kr.pe.codda.common.type.ConnectionType;
+import kr.pe.codda.common.type.ClientConnectionType;
 import kr.pe.codda.common.type.MessageProtocolType;
 import kr.pe.codda.common.type.SessionKey;
 import kr.pe.codda.common.util.SequencedProperties;
@@ -391,7 +391,7 @@ public class ItemIDInfoManger {
 
 		itemID = ItemIDDefiner.ProjectPartItemIDDefiner.CLIENT_CONNECTION_TYPE_ITEMID;
 		isDefaultValueCheck = true;
-		itemIDInfo = new ItemIDInfo<ConnectionType>(ItemIDInfo.ConfigurationPart.PROJECT,
+		itemIDInfo = new ItemIDInfo<ClientConnectionType>(ItemIDInfo.ConfigurationPart.PROJECT,
 				ItemIDInfo.ViewType.SINGLE_SET, itemID, "소캣 랩퍼 클래스인 연결 종류, ASYN:비동기, SYNC:동기", "ASYN",
 				isDefaultValueCheck, new SetTypeConverterReturningConnectionType());
 		addProjectPartItemIDInfo(itemIDInfo);

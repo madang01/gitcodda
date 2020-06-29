@@ -58,7 +58,7 @@ import kr.pe.codda.common.protocol.MessageProtocolIF;
 import kr.pe.codda.common.protocol.dhb.DHBMessageProtocol;
 import kr.pe.codda.common.protocol.thb.THBMessageProtocol;
 import kr.pe.codda.common.type.ClassloaderType;
-import kr.pe.codda.common.type.ConnectionType;
+import kr.pe.codda.common.type.ClientConnectionType;
 import kr.pe.codda.common.type.MessageProtocolType;
 
 /**
@@ -86,7 +86,7 @@ public final class AnyProjectConnectionPool implements AnyProjectConnectionPoolI
 	private int clientDataPacketBufferMaxCntPerMessage;
 	private int clientDataPacketBufferSize;
 	private int clientDataPacketBufferPoolSize;
-	private ConnectionType connectionType = null;	
+	private ClientConnectionType connectionType = null;	
 	private long clientConnectionPoolSupporterTimeInterval;
 	
 	private ConnectionPoolIF connectionPool = null;	
@@ -174,7 +174,7 @@ public final class AnyProjectConnectionPool implements AnyProjectConnectionPoolI
 		
 		connectionPoolSupporter = new ConnectionPoolSupporter(clientConnectionPoolSupporterTimeInterval);
 		
-		if (connectionType.equals(ConnectionType.SYNC)) {
+		if (connectionType.equals(ClientConnectionType.SYNC)) {
 			connectionPool = new SyncNoShareConnectionPool(serverHost, serverPort, socketTimeout,
 					streamCharsetFamily, 
 					clientDataPacketBufferMaxCntPerMessage,
@@ -299,7 +299,7 @@ public final class AnyProjectConnectionPool implements AnyProjectConnectionPoolI
 
 	@Override
 	public ConnectionIF createAsynThreadSafeSingleConnection(String serverHost, int serverPort) throws InterruptedException, IOException, NoMoreWrapBufferException, NotSupportedException {
-		if (connectionType.equals(ConnectionType.SYNC)) {
+		if (connectionType.equals(ClientConnectionType.SYNC)) {
 			throw new NotSupportedException("the connection type is sync, it must be asyn, check the connection type in configuration");
 		}
 		

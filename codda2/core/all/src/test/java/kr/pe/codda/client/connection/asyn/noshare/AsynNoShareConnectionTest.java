@@ -46,7 +46,7 @@ import kr.pe.codda.common.etc.CommonStaticFinalVars;
 import kr.pe.codda.common.exception.PartConfigurationException;
 import kr.pe.codda.common.exception.ConnectionPoolTimeoutException;
 import kr.pe.codda.common.message.AbstractMessage;
-import kr.pe.codda.common.type.ConnectionType;
+import kr.pe.codda.common.type.ClientConnectionType;
 import kr.pe.codda.common.type.MessageProtocolType;
 import kr.pe.codda.common.type.ProjectType;
 import kr.pe.codda.common.util.CommonStaticUtil;
@@ -169,7 +169,7 @@ public class AsynNoShareConnectionTest {
 
 	private ProjectPartConfiguration buildMainProjectPartConfiguration(String projectName, String host, int port,
 			int clientConnectionCount, int clientConnectionMaxCount, MessageProtocolType messageProtocolType,
-			boolean clientDataPacketBufferIsDirect, ConnectionType connectionType, int serverMaxClients)
+			boolean clientDataPacketBufferIsDirect, ClientConnectionType connectionType, int serverMaxClients)
 			throws PartConfigurationException {
 
 		ProjectPartConfiguration projectPartConfigurationForTest = new ProjectPartConfiguration(ProjectType.MAIN,
@@ -235,7 +235,7 @@ public class AsynNoShareConnectionTest {
 		try {
 			projectPartConfigurationForTest = buildMainProjectPartConfiguration(testProjectName, host, port,
 					clientConnectionCount, clientConnectionMaxCount, messageProtocolTypeForTest,
-					clientDataPacketBufferIsDirect, ConnectionType.ASYN, serverMaxClients);
+					clientDataPacketBufferIsDirect, ClientConnectionType.ASYN, serverMaxClients);
 
 		} catch (Exception e) {
 			log.log(Level.WARNING, "error", e);
@@ -399,7 +399,7 @@ public class AsynNoShareConnectionTest {
 		try {
 			projectPartConfigurationForTest = buildMainProjectPartConfiguration(testProjectName, host, port,
 					clientConnectionCount, clientConnectionMaxCount, messageProtocolTypeForTest,
-					clientDataPacketBufferIsDirect, ConnectionType.ASYN, serverMaxClients);
+					clientDataPacketBufferIsDirect, ClientConnectionType.ASYN, serverMaxClients);
 
 		} catch (Exception e) {
 			log.log(Level.WARNING, "error", e);
@@ -474,7 +474,7 @@ public class AsynNoShareConnectionTest {
 		try {
 			projectPartConfigurationForTest = buildMainProjectPartConfiguration(testProjectName, host, port,
 					clientConnectionCount, clientConnectionMaxCount, messageProtocolTypeForTest,
-					clientDataPacketBufferIsDirect, ConnectionType.ASYN, serverMaxClients);
+					clientDataPacketBufferIsDirect, ClientConnectionType.ASYN, serverMaxClients);
 
 		} catch (Exception e) {
 			log.log(Level.WARNING, "error", e);
@@ -625,7 +625,7 @@ public class AsynNoShareConnectionTest {
 		try {
 			projectPartConfigurationForTest = buildMainProjectPartConfiguration(testProjectName, host, port,
 					clientConnectionCount, clientConnectionMaxCount, messageProtocolTypeForTest,
-					clientDataPacketBufferIsDirect, ConnectionType.ASYN, serverMaxClients);
+					clientDataPacketBufferIsDirect, ClientConnectionType.ASYN, serverMaxClients);
 
 		} catch (Exception e) {
 			log.log(Level.WARNING, "error", e);

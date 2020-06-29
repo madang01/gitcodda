@@ -22,6 +22,7 @@ import java.util.logging.Logger;
 import kr.pe.codda.common.config.nativevalueconverter.GeneralConverterReturningRegularFile;
 import kr.pe.codda.common.config2.ConfigurationIF;
 import kr.pe.codda.common.exception.PartConfigurationException;
+import kr.pe.codda.common.type.GUIItemType;
 import kr.pe.codda.common.util.SequencedProperties;
 
 /**
@@ -55,6 +56,11 @@ public class DBCPParConfiguration implements ConfigurationIF {
 		}
 		
 		toValueForDBCPConfigFile(sourceSequencedProperties);
+	}
+	
+	@Override
+	public void checkForDependencies(SequencedProperties sourceSequencedProperties) throws IllegalArgumentException, PartConfigurationException {
+		/** nothing */
 	}
 	
 	public void toValueForDBCPConfigFile(SequencedProperties sourceSequencedProperties) throws PartConfigurationException {
@@ -111,6 +117,14 @@ public class DBCPParConfiguration implements ConfigurationIF {
 		String itemKey = new StringBuilder().append(prefexOfItemID).append(itemIDOfDBCPConfigFile).append(".value").toString();
 		String itemValue = dbcpConfigFile.getAbsolutePath();		
 		targetSequencedProperties.put(itemKey, itemValue);
+		
+		String guiItemTypeKey = new StringBuilder().append(prefexOfItemID).append(itemIDOfDBCPConfigFile).append(".gui_item_type").toString();
+		String guiItemTypeValue = GUIItemType.FILE.name().toLowerCase();
+		targetSequencedProperties.put(guiItemTypeKey, guiItemTypeValue);		
+		
+		String guiProjectHomeBaseRelativePathKey = new StringBuilder().append(prefexOfItemID).append(itemIDOfDBCPConfigFile).append(".file").toString();
+		String guiProjectHomeBaseRelativePathValue = "resources/dbcp/dbcp."+dbcpName+".properties";
+		targetSequencedProperties.put(guiProjectHomeBaseRelativePathKey, guiProjectHomeBaseRelativePathValue);
 	}
 	
 	public String getDBCPName() {

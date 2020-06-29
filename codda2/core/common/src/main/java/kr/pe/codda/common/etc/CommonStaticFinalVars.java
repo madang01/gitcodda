@@ -144,9 +144,9 @@ public abstract class CommonStaticFinalVars {
 	/*********** Build System start **********/
 	/** configuration start */
 	/** DBCP 목록 키 */
-	public static final String DBCP_NAME_LIST_KEY_STRING = "dbcp.name_list.value";
+	// public static final String DBCP_NAME_LIST_KEY_STRING = "dbcp.name_list.value";
 	/** 서브 프로젝트 목록 키 */
-	public static final String SUBPROJECT_NAME_LIST_KEY_STRING = "subproject.name_list.value";	
+	// public static final String SUBPROJECT_NAME_LIST_KEY_STRING = "subproject.name_list.value";	
 	public static final String LOGBACK_LOG_FILE_NAME = "logback.xml";
 	public static final String CONFIG_FILE_NAME = "codda.properties";
 	/** configuration end */

@@ -22,7 +22,7 @@ import java.nio.charset.Charset;
 
 import kr.pe.codda.common.config.itemidinfo.ItemIDDefiner;
 import kr.pe.codda.common.exception.PartConfigurationException;
-import kr.pe.codda.common.type.ConnectionType;
+import kr.pe.codda.common.type.ClientConnectionType;
 import kr.pe.codda.common.type.MessageProtocolType;
 import kr.pe.codda.common.type.ProjectType;
 
@@ -60,7 +60,7 @@ public class ProjectPartConfiguration {
 	
 	/***** 연결 클래스 관련 환경 변수 시작 *****/
 	/** 연결 종류 */
-	private ConnectionType connectionType = null;
+	private ClientConnectionType connectionType = null;
 	/** 소켓 타임 아웃 시간 */
 	private Long clientSocketTimeout = null;
 	
@@ -154,7 +154,7 @@ public class ProjectPartConfiguration {
 		return messageProtocolType;
 	}
 
-	public ConnectionType getConnectionType() {
+	public ClientConnectionType getConnectionType() {
 		return connectionType;
 	}
 
@@ -418,17 +418,17 @@ public class ProjectPartConfiguration {
 			
 			this.clientSocketTimeout = (Long) nativeValue;
 		} else if (itemID.equals(ItemIDDefiner.ProjectPartItemIDDefiner.CLIENT_CONNECTION_TYPE_ITEMID)) {
-			if (!(nativeValue instanceof ConnectionType)) {
+			if (!(nativeValue instanceof ClientConnectionType)) {
 				String errorMessage = new StringBuilder("the generic type[")
 				.append(nativeValue.getClass().getName())
 				.append("] of the parameter itemIDInfo[")
 				.append(itemID).append("] is differnet from the mapped variable's type[")
-				.append(ConnectionType.class.getName())
+				.append(ClientConnectionType.class.getName())
 				.append("]").toString();
 				throw new PartConfigurationException(errorMessage);
 			}
 			
-			this.connectionType = (ConnectionType) nativeValue;
+			this.connectionType = (ClientConnectionType) nativeValue;
 		
 		} else if (itemID.equals(ItemIDDefiner.ProjectPartItemIDDefiner.CLIENT_CONNECTION_COUNT_ITEMID)) {
 			if (!(nativeValue instanceof Integer)) {
@@ -643,7 +643,7 @@ public class ProjectPartConfiguration {
 			int clientDataPacketBufferMaxCntPerMessage,
 			int clientDataPacketBufferSize,
 			int clientDataPacketBufferPoolSize,
-			ConnectionType connectionType,
+			ClientConnectionType connectionType,
 			long clientSocketTimeout,			
 			int clientConnectionCount,
 			int clientConnectionMaxCount,
