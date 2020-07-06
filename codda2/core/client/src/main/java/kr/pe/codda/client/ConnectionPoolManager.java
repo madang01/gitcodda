@@ -23,8 +23,9 @@ import java.util.logging.Logger;
 
 import kr.pe.codda.common.config.CoddaConfiguration;
 import kr.pe.codda.common.config.CoddaConfigurationManager;
-import kr.pe.codda.common.config.subset.ProjectPartConfiguration;
-import kr.pe.codda.common.config.subset.SubProjectPartConfigurationManager;
+import kr.pe.codda.common.config.DefaultConfiguration;
+import kr.pe.codda.common.config.part.MainProjectPartConfiguration;
+import kr.pe.codda.common.config.part.SubProjectPartConfiguration;
 import kr.pe.codda.common.etc.CommonStaticFinalVars;
 import kr.pe.codda.common.exception.NoMoreWrapBufferException;
 
@@ -39,12 +40,12 @@ public final class ConnectionPoolManager {
 
 	/** 모니터 객체 */
 	// private final Object monitor = new Object();
-	private List<String> subProjectNamelist = null;
+	private List<String> subProjectNameList = null;
 	private HashMap<String, AnyProjectConnectionPoolIF> subProjectConnectionPoolHash = new HashMap<String, AnyProjectConnectionPoolIF>();
 
 	private AnyProjectConnectionPoolIF mainProjectConnectionPool = null;
 
-	private String mainProjectName = null;
+	private final String mainProjectName;
 
 	private AnyProjectConnectionPoolMonitor anyProjectConnectionPoolMonitor = null;
 
@@ -70,15 +71,15 @@ public final class ConnectionPoolManager {
 	private ConnectionPoolManager() {
 		CoddaConfiguration runningProjectConfiguration = CoddaConfigurationManager.getInstance()
 				.getRunningProjectConfiguration();
-		ProjectPartConfiguration mainProjectPartConfiguration = runningProjectConfiguration
-				.getMainProjectPartConfiguration();
-		SubProjectPartConfigurationManager allSubProjectPart = runningProjectConfiguration
-				.getSubProjectPartConfigurationManager();
-
-		mainProjectName = mainProjectPartConfiguration.getProjectName();
+		
+		mainProjectName = runningProjectConfiguration.getMainProjectName();
+		
+		
+		DefaultConfiguration defaultConfiguration = runningProjectConfiguration.getDefaultConfiguration();
+		MainProjectPartConfiguration mainProjectPartConfiguration = defaultConfiguration.getMainProjectPartConfiguration();		
 
 		try {
-			mainProjectConnectionPool = new AnyProjectConnectionPool(mainProjectPartConfiguration);
+			mainProjectConnectionPool = new AnyProjectConnectionPool(mainProjectName, mainProjectPartConfiguration);
 		} catch (Exception e) {
 			String errorMessage = new StringBuilder("fail to initialize a main project connection pool[")
 					.append(mainProjectName).append("]").toString();
@@ -87,13 +88,14 @@ public final class ConnectionPoolManager {
 		}
 		
 
-		subProjectNamelist = allSubProjectPart.getSubProjectNamelist();
+		subProjectNameList = defaultConfiguration.getSubProjectNameList();
 
-		for (String subProjectName : subProjectNamelist) {
+		for (String subProjectName : subProjectNameList) {
 			AnyProjectConnectionPool subClientProject = null;
 			try {
-				subClientProject = new AnyProjectConnectionPool(
-						allSubProjectPart.getSubProjectPartConfiguration(subProjectName));
+				SubProjectPartConfiguration subProjectPartConfiguration = defaultConfiguration.getSubProjectPartConfiguration(subProjectName);
+				
+				subClientProject = new AnyProjectConnectionPool(subProjectName, subProjectPartConfiguration);
 				subProjectConnectionPoolHash.put(subProjectName, subClientProject);
 			} catch (Exception e) {
 				String errorMessage = new StringBuilder("fail to initialize a sub project connection pool[")
@@ -127,30 +129,6 @@ public final class ConnectionPoolManager {
 		return subProjectConnectionPool;
 	}
 
-	/**
-	 * @return 메인 프로젝트 연결 폴
-	 * @throws IllegalStateException 메인 프로젝트가 없을 경우 만드는 과정에서 에러 발생시 던지는 예외
-	 */
-	public AnyProjectConnectionPoolIF getMainProjectConnectionPool() throws IllegalStateException {
-		if (null == mainProjectConnectionPool) {
-			try {
-				CoddaConfiguration runningProjectConfiguration = CoddaConfigurationManager.getInstance()
-						.getRunningProjectConfiguration();
-				ProjectPartConfiguration mainProjectPart = runningProjectConfiguration
-						.getMainProjectPartConfiguration();
-				mainProjectConnectionPool = new AnyProjectConnectionPool(mainProjectPart);
-			} catch (Exception e) {
-				String errorMessage = new StringBuilder("fail to initialize a main project connection pool[")
-						.append(mainProjectName).append("]").toString();
-				log.log(Level.WARNING, errorMessage, e);
-
-				throw new IllegalStateException(errorMessage);
-			}
-
-		}
-
-		return mainProjectConnectionPool;
-	}
 
 	/**
 	 * 프롲게트 연결 폴 모니터 쓰레드
@@ -195,7 +173,7 @@ public final class ConnectionPoolManager {
 		pollStateStringBuilder.append(CommonStaticFinalVars.NEWLINE);
 		pollStateStringBuilder.append(mainProjectConnectionPool.getPoolState());
 
-		for (String subProjectName : subProjectNamelist) {
+		for (String subProjectName : subProjectNameList) {
 			AnyProjectConnectionPoolIF subProjectConnectionPool = subProjectConnectionPoolHash.get(subProjectName);
 
 			pollStateStringBuilder.append(CommonStaticFinalVars.NEWLINE);

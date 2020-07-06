@@ -43,11 +43,10 @@ public class SyncOutputMessageReceiver implements ReceivedMiddleObjectForwarderI
 	private int mailboxID;
 	private int mailID;
 	private String messageID;
-	private Object readableMiddleObject;
+	private Object readableMiddleObject = null;
 	
 	private MessageProtocolIF messageProtocol = null;
 	private MessageCodecMangerIF messageCodecManger = null;
-	private AbstractMessage receivedMessage = null;
 	private boolean isError = false;
 	private String errorMessage = null;
 
@@ -58,8 +57,8 @@ public class SyncOutputMessageReceiver implements ReceivedMiddleObjectForwarderI
 	@Override
 	public void putReceivedMiddleObject(int mailboxID, int mailID, String messageID, Object readableMiddleObject)
 			throws InterruptedException {
-		if (null != receivedMessage) {
-			/** discard message */
+		if (null != this.readableMiddleObject) {
+			/** discard non-first message */
 			isError = true;
 			
 			try {
@@ -87,8 +86,8 @@ public class SyncOutputMessageReceiver implements ReceivedMiddleObjectForwarderI
 			return;
 		}
 		
-		if ((CommonStaticFinalVars.COUNT_ASYN_MAILBOX_ID == mailboxID) || (CommonStaticFinalVars.NOCOUNT_ASYN_MAILBOX_ID == mailboxID)) {
-			/** discard message */
+		if ((CommonStaticFinalVars.ASYN_MAILBOX_ID == mailboxID)) {
+			/** discard asynchronous message */
 			isError = true;
 			
 			try {
@@ -130,7 +129,7 @@ public class SyncOutputMessageReceiver implements ReceivedMiddleObjectForwarderI
 	 */
 	public void ready(MessageCodecMangerIF messageCodecManger) {
 		this.messageCodecManger = messageCodecManger;
-		receivedMessage = null;
+		readableMiddleObject = null;
 		isError = false;
 	}
 
@@ -144,7 +143,7 @@ public class SyncOutputMessageReceiver implements ReceivedMiddleObjectForwarderI
 	 */
 	public AbstractMessage getReceiveMessage() throws DynamicClassCallException, NoMoreWrapBufferException, ServerTaskException, BodyFormatException, IOException {
 		
-		receivedMessage = ClientMessageUtility.buildOutputMessage("recevied", messageCodecManger, messageProtocol, mailboxID,
+		AbstractMessage receivedMessage = ClientMessageUtility.buildOutputMessage("recevied", messageCodecManger, messageProtocol, mailboxID,
 				mailID, messageID, readableMiddleObject);
 		
 		return receivedMessage;
@@ -154,7 +153,7 @@ public class SyncOutputMessageReceiver implements ReceivedMiddleObjectForwarderI
 	 * @return 출력 메시지 수신 여부
 	 */
 	public boolean isReceivedMessage() {
-		return (null != receivedMessage);
+		return (null != readableMiddleObject);
 	}
 
 	/**

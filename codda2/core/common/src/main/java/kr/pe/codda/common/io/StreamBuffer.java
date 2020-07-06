@@ -2164,7 +2164,7 @@ public class StreamBuffer {
 			workingByteBuffer.limit(bufferOffsetOfStartPostion + (int) remaining());
 
 			n = writableSocketChannel.write(workingByteBuffer);
-
+			
 			/** 버퍼에 대한 소켓 읽기 작업 완료 후 버퍼 위치 속성 초기화 */
 			workingByteBuffer.position(0);
 			workingByteBuffer.limit(oldLimit);
@@ -2173,12 +2173,16 @@ public class StreamBuffer {
 		} else {
 
 			n = writableSocketChannel.write(workingByteBuffer);
+			
 
 			/** 버퍼에 대한 소켓 읽기 작업 완료 후 버퍼 위치 속성 초기화 */
 			workingByteBuffer.position(0);
 
 			position += n;
 		}
+		
+		// FIXME!
+		// log.info("n="+n);
 
 		return n;
 	}

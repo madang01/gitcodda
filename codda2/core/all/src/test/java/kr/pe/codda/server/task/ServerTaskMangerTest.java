@@ -33,7 +33,6 @@ import org.junit.Test;
 import kr.pe.codda.common.buildsystem.pathsupporter.ProjectBuildSytemPathSupporter;
 import kr.pe.codda.common.buildsystem.pathsupporter.ServerBuildSytemPathSupporter;
 import kr.pe.codda.common.etc.CommonStaticFinalVars;
-import kr.pe.codda.common.exception.PartConfigurationException;
 import kr.pe.codda.common.exception.DynamicClassCallException;
 import kr.pe.codda.server.classloader.ServerClassLoaderFactory;
 
@@ -100,7 +99,7 @@ public class ServerTaskMangerTest {
 		
 		try {
 			serverClassLoaderFactory = new ServerClassLoaderFactory(serverAPPINFClassPathString, projectResourcesPathString);
-		} catch (PartConfigurationException e) {
+		} catch (IllegalArgumentException e) {
 			fail("fail to create a instance of ServerClassLoaderFactory");
 		}
 		
@@ -121,7 +120,7 @@ public class ServerTaskMangerTest {
 		
 		try {
 			serverClassLoaderFactory = new ServerClassLoaderFactory(serverAPPINFClassPathString, projectResourcesPathString);
-		} catch (PartConfigurationException e) {
+		} catch (IllegalArgumentException e) {
 			fail("fail to create a instance of ServerClassLoaderFactory");
 		}
 		
@@ -146,7 +145,7 @@ public class ServerTaskMangerTest {
 		
 		try {
 			serverClassLoaderFactory = new ServerClassLoaderFactory(serverAPPINFClassPathString, projectResourcesPathString);
-		} catch (PartConfigurationException e) {
+		} catch (IllegalArgumentException e) {
 			fail("fail to create a instance of ServerClassLoaderFactory");
 		}
 		
@@ -184,7 +183,7 @@ public class ServerTaskMangerTest {
 		
 		try {
 			serverClassLoaderFactory = new ServerClassLoaderFactory(serverAPPINFClassPathString, projectResourcesPathString);
-		} catch (PartConfigurationException e) {
+		} catch (IllegalArgumentException e) {
 			fail("fail to create a instance of ServerClassLoaderFactory");
 		}
 		
@@ -221,7 +220,7 @@ public class ServerTaskMangerTest {
 		
 		try {
 			serverClassLoaderFactory = new ServerClassLoaderFactory(serverAPPINFClassPathString, projectResourcesPathString);
-		} catch (PartConfigurationException e) {
+		} catch (IllegalArgumentException e) {
 			fail("fail to create a instance of ServerClassLoaderFactory");
 		}
 		
@@ -257,7 +256,7 @@ public class ServerTaskMangerTest {
 		
 		try {
 			serverClassLoaderFactory = new ServerClassLoaderFactory(serverAPPINFClassPathString, projectResourcesPathString);
-		} catch (PartConfigurationException e) {
+		} catch (IllegalArgumentException e) {
 			fail("fail to create a instance of ServerClassLoaderFactory");
 		}
 		
@@ -300,7 +299,7 @@ public class ServerTaskMangerTest {
 		
 		try {
 			serverClassLoaderFactory = new ServerClassLoaderFactory(serverAPPINFClassPathString, projectResourcesPathString);
-		} catch (PartConfigurationException e) {
+		} catch (IllegalArgumentException e) {
 			fail("fail to create a instance of ServerClassLoaderFactory");
 		}
 		

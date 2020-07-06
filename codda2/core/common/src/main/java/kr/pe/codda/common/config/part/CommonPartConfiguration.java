@@ -13,19 +13,19 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-package kr.pe.codda.common.config2.part;
+package kr.pe.codda.common.config.part;
 
 import java.io.File;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import kr.pe.codda.common.config.PartConfigurationIF;
 import kr.pe.codda.common.config.nativevalueconverter.GeneralConverterReturningNoTrimString;
 import kr.pe.codda.common.config.nativevalueconverter.GeneralConverterReturningRegularFile;
 import kr.pe.codda.common.config.nativevalueconverter.SetTypeConverterOfSessionKeyRSAKeypairSource;
 import kr.pe.codda.common.config.nativevalueconverter.SetTypeConverterReturningBoolean;
 import kr.pe.codda.common.config.nativevalueconverter.SetTypeConverterReturningInteger;
 import kr.pe.codda.common.config.nativevalueconverter.SetTypeConverterReturningString;
-import kr.pe.codda.common.config2.ConfigurationIF;
 import kr.pe.codda.common.exception.PartConfigurationException;
 import kr.pe.codda.common.type.GUIItemType;
 import kr.pe.codda.common.type.SessionKey;
@@ -35,7 +35,7 @@ import kr.pe.codda.common.util.SequencedProperties;
  * @author Won Jonghoon
  *
  */
-public class CommonPartConfiguration implements ConfigurationIF {
+public class CommonPartConfiguration implements PartConfigurationIF {
 
 	private final Logger log = Logger.getLogger(CommonPartConfiguration.class.getName());
 
@@ -52,13 +52,13 @@ public class CommonPartConfiguration implements ConfigurationIF {
 	private String jdfErrorMessagePage = null;
 
 	public static final String itemIDForJDFServletTrace = "jdf.servlet_trace";
-	private Boolean jdfServletTrace = false;
+	private Boolean jdfServletTrace = null;
 	
 	/*******************************************************************************************************/
 	
 	
 	public static final String itemIDForRSAKeypairSourceOfSessionKey = "sessionkey.rsa.keypair_source";
-	private SessionKey.RSAKeypairSourceType rsaKeypairSourceOfSessionKey = SessionKey.RSAKeypairSourceType.SERVER;	
+	private SessionKey.RSAKeypairSourceType rsaKeypairSourceOfSessionKey = null;	
 	
 	public static final String itemIDForRSAPublickeyFileOfSessionKey = "sessionkey.rsa.publickey.file";
 	private File rsaPublickeyFileOfSessionKey = null;
@@ -89,37 +89,37 @@ public class CommonPartConfiguration implements ConfigurationIF {
 	
 
 	@Override
-	public void toValue(SequencedProperties sourceSequencedProperties)
+	public void fromProperties(SequencedProperties sourceSequencedProperties)
 			throws IllegalArgumentException, PartConfigurationException {
 		if (null == sourceSequencedProperties) {
 			throw new IllegalArgumentException("the parameter sourceSequencedProperties is null");
 		}
 
 		/** JDF start */
-		toValueForJDFMemberLoginPage(sourceSequencedProperties);
-		toValueForJDFAdminLoginPage(sourceSequencedProperties);
-		toValueForJDFSessionKeyRedirectPage(sourceSequencedProperties);
-		toValueForJDFErrorMessagePage(sourceSequencedProperties);
-		toValueForJDFServletTrace(sourceSequencedProperties);
+		fromPropertiesForJDFMemberLoginPage(sourceSequencedProperties);
+		fromPropertiesForJDFAdminLoginPage(sourceSequencedProperties);
+		fromPropertiesForJDFSessionKeyRedirectPage(sourceSequencedProperties);
+		fromPropertiesForJDFErrorMessagePage(sourceSequencedProperties);
+		fromPropertiesForJDFServletTrace(sourceSequencedProperties);
 		/** JDF end */
 		
 		
 		/** session key start */
-		toValueForRSAKeypairSourceOfSessionKey(sourceSequencedProperties);		
+		fromPropertiesForRSAKeypairSourceOfSessionKey(sourceSequencedProperties);		
 		if (SessionKey.RSAKeypairSourceType.FILE.equals(rsaKeypairSourceOfSessionKey)) {
-			toValueForRSAPublickeyFileOfSessionKey(sourceSequencedProperties);
-			toValueForRSAPrivatekeyFileOfSessionKey(sourceSequencedProperties);
+			fromPropertiesForRSAPublickeyFileOfSessionKey(sourceSequencedProperties);
+			fromPropertiesForRSAPrivatekeyFileOfSessionKey(sourceSequencedProperties);
 		}
-		toValueForRSAKeySizeOfSessionKey(sourceSequencedProperties);
-		toValueForSymmetricKeyAlgorithmOfSessionKey(sourceSequencedProperties);
-		toValueForSymmetricKeySizeOfSessionKey(sourceSequencedProperties);
+		fromPropertiesForRSAKeySizeOfSessionKey(sourceSequencedProperties);
+		fromPropertiesForSymmetricKeyAlgorithmOfSessionKey(sourceSequencedProperties);
+		fromPropertiesForSymmetricKeySizeOfSessionKey(sourceSequencedProperties);
 		/** session key end */
 		
 		// FIXME!
 	}
 
 	@Override
-	public void checkForDependencies(SequencedProperties sourceSequencedProperties) throws IllegalArgumentException, PartConfigurationException {
+	public void checkForDependencies() throws PartConfigurationException {
 		/** nothing */
 	}
 	
@@ -143,7 +143,7 @@ public class CommonPartConfiguration implements ConfigurationIF {
 		toPropertiesForSymmetricKeySizeOfSessionKey(targetSequencedProperties);
 	}
 
-	public void toValueForJDFMemberLoginPage(SequencedProperties sourceSequencedProperties)
+	public void fromPropertiesForJDFMemberLoginPage(SequencedProperties sourceSequencedProperties)
 			throws PartConfigurationException {
 		String itemKey = new StringBuilder().append(itemIDForJDFMemberLoginPage).append(".value").toString();
 
@@ -180,15 +180,11 @@ public class CommonPartConfiguration implements ConfigurationIF {
 		targetSequencedProperties.put(itemDescKey, itemDescValue);		
 		
 		String itemKey = new StringBuilder().append(itemIDForJDFMemberLoginPage).append(".value").toString();
-		String itemValue = (null == jdfMemberLoginPage) ? "" : jdfMemberLoginPage;
+		String itemValue = (null == jdfMemberLoginPage) ? "/sitemenu/member/MemberLoginInput.jsp" : jdfMemberLoginPage;
 		targetSequencedProperties.put(itemKey, itemValue);
-		
-		String guiItemTypeKey = new StringBuilder().append(itemIDForJDFMemberLoginPage).append(".gui_item_type").toString();
-		String guiItemTypeValue = GUIItemType.DATA.name().toLowerCase();
-		targetSequencedProperties.put(guiItemTypeKey, guiItemTypeValue);
 	}
 
-	public void toValueForJDFAdminLoginPage(SequencedProperties sourceSequencedProperties)
+	public void fromPropertiesForJDFAdminLoginPage(SequencedProperties sourceSequencedProperties)
 			throws PartConfigurationException {
 		String itemKey = new StringBuilder().append(itemIDForJDFAdminLoginPage).append(".value").toString();
 
@@ -223,15 +219,11 @@ public class CommonPartConfiguration implements ConfigurationIF {
 		targetSequencedProperties.put(itemDescKey, itemDescValue);
 		
 		String itemKey = new StringBuilder().append(itemIDForJDFAdminLoginPage).append(".value").toString();
-		String itemValue = (null == jdfAdminLoginPage) ? "" : jdfAdminLoginPage;
+		String itemValue = (null == jdfAdminLoginPage) ? "/sitemenu/member/AdminLoginInput.jsp" : jdfAdminLoginPage;
 		targetSequencedProperties.put(itemKey, itemValue);
-		
-		String guiItemTypeKey = new StringBuilder().append(itemIDForJDFAdminLoginPage).append(".gui_item_type").toString();
-		String guiItemTypeValue = GUIItemType.DATA.name().toLowerCase();
-		targetSequencedProperties.put(guiItemTypeKey, guiItemTypeValue);
 	}
 	
-	public void toValueForJDFSessionKeyRedirectPage(SequencedProperties sourceSequencedProperties)
+	public void fromPropertiesForJDFSessionKeyRedirectPage(SequencedProperties sourceSequencedProperties)
 			throws PartConfigurationException {
 		String itemKey = new StringBuilder().append(itemIDForJDFSessionKeyRedirectPage).append(".value").toString();
 
@@ -267,15 +259,11 @@ public class CommonPartConfiguration implements ConfigurationIF {
 		targetSequencedProperties.put(itemDescKey, itemDescValue);
 		
 		String itemKey = new StringBuilder().append(itemIDForJDFSessionKeyRedirectPage).append(".value").toString();
-		String itemValue = (null == jdfSessionKeyRedirectPage) ? "" : jdfSessionKeyRedirectPage;
+		String itemValue = (null == jdfSessionKeyRedirectPage) ? "/sessionKeyRedirect.jsp" : jdfSessionKeyRedirectPage;
 		targetSequencedProperties.put(itemKey, itemValue);
-		
-		String guiItemTypeKey = new StringBuilder().append(itemIDForJDFSessionKeyRedirectPage).append(".gui_item_type").toString();
-		String guiItemTypeValue = GUIItemType.DATA.name().toLowerCase();
-		targetSequencedProperties.put(guiItemTypeKey, guiItemTypeValue);
 	}
 	
-	public void toValueForJDFErrorMessagePage(SequencedProperties sourceSequencedProperties)
+	public void fromPropertiesForJDFErrorMessagePage(SequencedProperties sourceSequencedProperties)
 			throws PartConfigurationException {
 		String itemKey = new StringBuilder().append(itemIDForJDFErrorMessagePage).append(".value").toString();
 
@@ -310,16 +298,11 @@ public class CommonPartConfiguration implements ConfigurationIF {
 		targetSequencedProperties.put(itemDescKey, itemDescValue);
 		
 		String itemKey = new StringBuilder().append(itemIDForJDFErrorMessagePage).append(".value").toString();
-		String itemValue = (null == jdfErrorMessagePage) ? "" : jdfErrorMessagePage;
-		targetSequencedProperties.put(itemKey, itemValue);	
-		
-		
-		String guiItemTypeKey = new StringBuilder().append(itemIDForJDFErrorMessagePage).append(".gui_item_type").toString();
-		String guiItemTypeValue = GUIItemType.DATA.name().toLowerCase();
-		targetSequencedProperties.put(guiItemTypeKey, guiItemTypeValue);
+		String itemValue = (null == jdfErrorMessagePage) ? "/errorMessagePage.jsp" : jdfErrorMessagePage;
+		targetSequencedProperties.put(itemKey, itemValue);
 	}
 	
-	public void toValueForJDFServletTrace(SequencedProperties sourceSequencedProperties)
+	public void fromPropertiesForJDFServletTrace(SequencedProperties sourceSequencedProperties)
 			throws PartConfigurationException {
 		String itemKey = new StringBuilder().append(itemIDForJDFServletTrace).append(".value").toString();
 
@@ -354,16 +337,11 @@ public class CommonPartConfiguration implements ConfigurationIF {
 		targetSequencedProperties.put(itemDescKey, itemDescValue);
 		
 		String itemKey = new StringBuilder().append(itemIDForJDFServletTrace).append(".value").toString();
-		String itemValue = jdfServletTrace.toString();
-		targetSequencedProperties.put(itemKey, itemValue);		
-		
-		
-		String guiItemTypeKey = new StringBuilder().append(itemIDForJDFServletTrace).append(".gui_item_type").toString();
-		String guiItemTypeValue = GUIItemType.DATA.name().toLowerCase();
-		targetSequencedProperties.put(guiItemTypeKey, guiItemTypeValue);
+		String itemValue = (null == jdfServletTrace) ? Boolean.FALSE.toString() : jdfServletTrace.toString();
+		targetSequencedProperties.put(itemKey, itemValue);
 	}
 	
-	public void toValueForRSAKeypairSourceOfSessionKey(SequencedProperties sourceSequencedProperties)
+	public void fromPropertiesForRSAKeypairSourceOfSessionKey(SequencedProperties sourceSequencedProperties)
 			throws PartConfigurationException {
 		String itemKey = new StringBuilder().append(itemIDForRSAKeypairSourceOfSessionKey).append(".value").toString();
 
@@ -401,15 +379,11 @@ public class CommonPartConfiguration implements ConfigurationIF {
 		targetSequencedProperties.put(itemDescKey, itemDescValue);
 
 		String itemKey = new StringBuilder().append(itemIDForRSAKeypairSourceOfSessionKey).append(".value").toString();
-		String itemValue = rsaKeypairSourceOfSessionKey.toString();
+		String itemValue = (null == rsaKeypairSourceOfSessionKey) ? SessionKey.RSAKeypairSourceType.SERVER.toString() : rsaKeypairSourceOfSessionKey.toString();
 		targetSequencedProperties.put(itemKey, itemValue);
-		
-		String guiItemTypeKey = new StringBuilder().append(itemIDForRSAKeypairSourceOfSessionKey).append(".gui_item_type").toString();
-		String guiItemTypeValue = GUIItemType.DATA.name().toLowerCase();
-		targetSequencedProperties.put(guiItemTypeKey, guiItemTypeValue);
 	}
 	
-	public void toValueForRSAPublickeyFileOfSessionKey(SequencedProperties sourceSequencedProperties)
+	public void fromPropertiesForRSAPublickeyFileOfSessionKey(SequencedProperties sourceSequencedProperties)
 			throws PartConfigurationException {
 		
 		
@@ -457,7 +431,8 @@ public class CommonPartConfiguration implements ConfigurationIF {
 		String itemDescValue = "세션키에 사용되는 RSA 공개키 파일, '세션키에 사용되는 공개키 키쌍 생성 방법'이 FILE 인 경우에 유효하다";
 		targetSequencedProperties.put(itemDescKey, itemDescValue);
 		
-		String itemKey = new StringBuilder().append(itemIDForRSAPublickeyFileOfSessionKey).append(".value").toString();		
+		String itemKey = new StringBuilder().append(itemIDForRSAPublickeyFileOfSessionKey).append(".value").toString();
+				
 		String itemValue = (null == rsaPublickeyFileOfSessionKey) ? "" : rsaPublickeyFileOfSessionKey.getAbsolutePath();
 		targetSequencedProperties.put(itemKey, itemValue);
 		
@@ -472,7 +447,7 @@ public class CommonPartConfiguration implements ConfigurationIF {
 		targetSequencedProperties.put(guiProjectHomeBaseRelativePathKey, guiProjectHomeBaseRelativePathValue);
 	}
 	
-	public void toValueForRSAPrivatekeyFileOfSessionKey(SequencedProperties sourceSequencedProperties)
+	public void fromPropertiesForRSAPrivatekeyFileOfSessionKey(SequencedProperties sourceSequencedProperties)
 			throws PartConfigurationException {
 		String itemKey = new StringBuilder().append(itemIDForRSAPrivatekeyFileOfSessionKey).append(".value").toString();
 		String itemValue = sourceSequencedProperties.getProperty(itemKey);
@@ -519,7 +494,7 @@ public class CommonPartConfiguration implements ConfigurationIF {
 	}
 	
 	
-	public void toValueForRSAKeySizeOfSessionKey(SequencedProperties sourceSequencedProperties)
+	public void fromPropertiesForRSAKeySizeOfSessionKey(SequencedProperties sourceSequencedProperties)
 			throws PartConfigurationException {
 		String itemKey = new StringBuilder().append(itemIDForRSAKeySizeOfSessionKey).append(".value").toString();
 
@@ -558,13 +533,9 @@ public class CommonPartConfiguration implements ConfigurationIF {
 		String itemKey = new StringBuilder().append(itemIDForRSAKeySizeOfSessionKey).append(".value").toString();
 		String itemValue = (null == rsaKeySizeOfSessionKey) ? "1024" : String.valueOf(rsaKeySizeOfSessionKey);
 		targetSequencedProperties.put(itemKey, itemValue);
-		
-		String guiItemTypeKey = new StringBuilder().append(itemIDForRSAKeySizeOfSessionKey).append(".gui_item_type").toString();
-		String guiItemTypeValue = GUIItemType.DATA.name().toLowerCase();
-		targetSequencedProperties.put(guiItemTypeKey, guiItemTypeValue);
 	}
 	
-	public void toValueForSymmetricKeyAlgorithmOfSessionKey(SequencedProperties sourceSequencedProperties)
+	public void fromPropertiesForSymmetricKeyAlgorithmOfSessionKey(SequencedProperties sourceSequencedProperties)
 			throws PartConfigurationException {
 		String itemKey = new StringBuilder().append(itemIDForSymmetricKeyAlgorithmOfSessionKey).append(".value").toString();
 
@@ -601,14 +572,10 @@ public class CommonPartConfiguration implements ConfigurationIF {
 		String itemKey = new StringBuilder().append(itemIDForSymmetricKeyAlgorithmOfSessionKey).append(".value").toString();
 		String itemValue = (null == symmetricKeyAlgorithmOfSessionKey) ? "AES" : symmetricKeyAlgorithmOfSessionKey;
 		targetSequencedProperties.put(itemKey, itemValue);
-		
-		String guiItemTypeKey = new StringBuilder().append(itemIDForSymmetricKeyAlgorithmOfSessionKey).append(".gui_item_type").toString();
-		String guiItemTypeValue = GUIItemType.DATA.name().toLowerCase();
-		targetSequencedProperties.put(guiItemTypeKey, guiItemTypeValue);
 	}
 	
 	
-	public void toValueForSymmetricKeySizeOfSessionKey(SequencedProperties sourceSequencedProperties)
+	public void fromPropertiesForSymmetricKeySizeOfSessionKey(SequencedProperties sourceSequencedProperties)
 			throws PartConfigurationException {
 		String itemKey = new StringBuilder().append(itemIDForSymmetricKeySizeOfSessionKey).append(".value").toString();
 
@@ -646,13 +613,9 @@ public class CommonPartConfiguration implements ConfigurationIF {
 		String itemKey = new StringBuilder().append(itemIDForSymmetricKeySizeOfSessionKey).append(".value").toString();
 		String itemValue = (null == symmetricKeySizeOfSessionKey) ? "16" : String.valueOf(symmetricKeySizeOfSessionKey);
 		targetSequencedProperties.put(itemKey, itemValue);
-		
-		String guiItemTypeKey = new StringBuilder().append(itemIDForSymmetricKeySizeOfSessionKey).append(".gui_item_type").toString();
-		String guiItemTypeValue = GUIItemType.DATA.name().toLowerCase();
-		targetSequencedProperties.put(guiItemTypeKey, guiItemTypeValue);
 	}
 	
-	public void toValueForSymmetricIVSizeOfSessionKey(SequencedProperties sourceSequencedProperties)
+	public void fromPropertiesForSymmetricIVSizeOfSessionKey(SequencedProperties sourceSequencedProperties)
 			throws PartConfigurationException {
 		String itemKey = new StringBuilder().append(itemIDForSymmetricIVSizeOfSessionKey).append(".value").toString();
 
@@ -689,134 +652,82 @@ public class CommonPartConfiguration implements ConfigurationIF {
 		String itemKey = new StringBuilder().append(itemIDForSymmetricIVSizeOfSessionKey).append(".value").toString();
 		String itemValue = (null == symmetricIVSizeOfSessionKey) ? "16" : String.valueOf(symmetricIVSizeOfSessionKey);
 		targetSequencedProperties.put(itemKey, itemValue);
-		
-		String guiItemTypeKey = new StringBuilder().append(itemIDForSymmetricIVSizeOfSessionKey).append(".gui_item_type").toString();
-		String guiItemTypeValue = GUIItemType.DATA.name().toLowerCase();
-		targetSequencedProperties.put(guiItemTypeKey, guiItemTypeValue);
 	}
 	
 	// FIXME!
 	
-	public String getJdfMemberLoginPage() {
+	public String getJDFMemberLoginPage() {
 		return jdfMemberLoginPage;
 	}
 
-	public void setJdfMemberLoginPage(String jdfMemberLoginPage) {
-		if (null == jdfMemberLoginPage) {
-			String errorMessage = "the parameter jdfMemberLoginPage is null";
-			throw new IllegalArgumentException(errorMessage);
-		}
+	public void setJDFMemberLoginPage(String jdfMemberLoginPage) {
 		
 		this.jdfMemberLoginPage = jdfMemberLoginPage;
 	}
 
-	public String getJdfAdminLoginPage() {
+	public String getJDFAdminLoginPage() {
 		return jdfAdminLoginPage;
 	}
 
-	public void setJdfAdminLoginPage(String jdfAdminLoginPage) {
-		if (null == jdfAdminLoginPage) {
-			String errorMessage = "the parameter jdfAdminLoginPage is null";
-			throw new IllegalArgumentException(errorMessage);
-		}
-		
-		
+	public void setJDFAdminLoginPage(String jdfAdminLoginPage) {		
 		this.jdfAdminLoginPage = jdfAdminLoginPage;
 	}
 
-	public String getJdfSessionKeyRedirectPage() {
+	public String getJDFSessionKeyRedirectPage() {
 		return jdfSessionKeyRedirectPage;
 	}
 
-	public void setJdfSessionKeyRedirectPage(String jdfSessionKeyRedirectPage) {
-		if (null == jdfSessionKeyRedirectPage) {
-			String errorMessage = "the parameter jdfSessionKeyRedirectPage is null";
-			throw new IllegalArgumentException(errorMessage);
-		}
-		
+	public void setJDFSessionKeyRedirectPage(String jdfSessionKeyRedirectPage) {		
 		
 		this.jdfSessionKeyRedirectPage = jdfSessionKeyRedirectPage;
 	}
 
-	public String getJdfErrorMessagePage() {
+	public String getJDFErrorMessagePage() {
 		return jdfErrorMessagePage;
 	}
 
-	public void setJdfErrorMessagePage(String jdfErrorMessagePage) {
-		if (null == jdfErrorMessagePage) {
-			String errorMessage = "the parameter jdfErrorMessagePage is null";
-			throw new IllegalArgumentException(errorMessage);
-		}
-		
+	public void setJDFErrorMessagePage(String jdfErrorMessagePage) {
 		
 		this.jdfErrorMessagePage = jdfErrorMessagePage;
 	}
 
-	public Boolean getJdfServletTrace() {
+	public Boolean getJDFServletTrace() {
 		return jdfServletTrace;
 	}
 
-	public void setJdfServletTrace(Boolean jdfServletTrace) {
-		if (null == jdfServletTrace) {
-			String errorMessage = "the parameter jdfServletTrace is null";
-			throw new IllegalArgumentException(errorMessage);
-		}
-		
-		
+	public void setJDFServletTrace(Boolean jdfServletTrace) {
 		this.jdfServletTrace = jdfServletTrace;
 	}
 
-	public SessionKey.RSAKeypairSourceType getRsaKeypairSourceOfSessionKey() {
+	public SessionKey.RSAKeypairSourceType getRSAKeypairSourceOfSessionKey() {
 		return rsaKeypairSourceOfSessionKey;
 	}
 
-	public void setRsaKeypairSourceOfSessionKey(SessionKey.RSAKeypairSourceType rsaKeypairSourceOfSessionKey) {
-		if (null == rsaKeypairSourceOfSessionKey) {
-			String errorMessage = "the parameter rsaKeypairSourceOfSessionKey is null";
-			throw new IllegalArgumentException(errorMessage);
-		}
-		
+	public void setRSAKeypairSourceOfSessionKey(SessionKey.RSAKeypairSourceType rsaKeypairSourceOfSessionKey) {
 		this.rsaKeypairSourceOfSessionKey = rsaKeypairSourceOfSessionKey;
 	}
 
-	public File getRsaPublickeyFileOfSessionKey() {
+	public File getRSAPublickeyFileOfSessionKey() {
 		return rsaPublickeyFileOfSessionKey;
 	}
 
-	public void setRsaPublickeyFileOfSessionKey(File rsaPublickeyFileOfSessionKey) {
-		if (null == rsaPublickeyFileOfSessionKey) {
-			String errorMessage = "the parameter rsaPublickeyFileOfSessionKey is null";
-			throw new IllegalArgumentException(errorMessage);
-		}
-		
-		
+	public void setRSAPublickeyFileOfSessionKey(File rsaPublickeyFileOfSessionKey) {		
 		this.rsaPublickeyFileOfSessionKey = rsaPublickeyFileOfSessionKey;
 	}
 
-	public File getRsaPrivatekeyFileOfSessionKey() {
+	public File getRSAPrivatekeyFileOfSessionKey() {
 		return rsaPrivatekeyFileOfSessionKey;
 	}
 
-	public void setRsaPrivatekeyFileOfSessionKey(File rsaPrivatekeyFileOfSessionKey) {
-		if (null == rsaPrivatekeyFileOfSessionKey) {
-			String errorMessage = "the parameter rsaPrivatekeyFileOfSessionKey is null";
-			throw new IllegalArgumentException(errorMessage);
-		}		
-		
+	public void setRSAPrivatekeyFileOfSessionKey(File rsaPrivatekeyFileOfSessionKey) {
 		this.rsaPrivatekeyFileOfSessionKey = rsaPrivatekeyFileOfSessionKey;
 	}
 
-	public Integer getRsaKeySizeOfSessionKey() {
+	public Integer getRSAKeySizeOfSessionKey() {
 		return rsaKeySizeOfSessionKey;
 	}
 
-	public void setRsaKeySizeOfSessionKey(Integer rsaKeySizeOfSessionKey) {
-		if (null == rsaKeySizeOfSessionKey) {
-			String errorMessage = "the parameter rsaKeySizeOfSessionKey is null";
-			throw new IllegalArgumentException(errorMessage);
-		}
-		
-		
+	public void setRSAKeySizeOfSessionKey(Integer rsaKeySizeOfSessionKey) {
 		this.rsaKeySizeOfSessionKey = rsaKeySizeOfSessionKey;
 	}
 
@@ -824,12 +735,7 @@ public class CommonPartConfiguration implements ConfigurationIF {
 		return symmetricKeyAlgorithmOfSessionKey;
 	}
 
-	public void setSymmetricKeyAlgorithmOfSessionKey(String symmetricKeyAlgorithmOfSessionKey) {
-		if (null == symmetricKeyAlgorithmOfSessionKey) {
-			String errorMessage = "the parameter symmetricKeyAlgorithmOfSessionKey is null";
-			throw new IllegalArgumentException(errorMessage);
-		}		
-		
+	public void setSymmetricKeyAlgorithmOfSessionKey(String symmetricKeyAlgorithmOfSessionKey) {		
 		this.symmetricKeyAlgorithmOfSessionKey = symmetricKeyAlgorithmOfSessionKey;
 	}
 
@@ -838,12 +744,6 @@ public class CommonPartConfiguration implements ConfigurationIF {
 	}
 
 	public void setSymmetricKeySizeOfSessionKey(Integer symmetricKeySizeOfSessionKey) {
-		if (null == symmetricKeySizeOfSessionKey) {
-			String errorMessage = "the parameter symmetricKeySizeOfSessionKey is null";
-			throw new IllegalArgumentException(errorMessage);
-		}
-		
-		
 		this.symmetricKeySizeOfSessionKey = symmetricKeySizeOfSessionKey;
 	}
 
@@ -851,12 +751,7 @@ public class CommonPartConfiguration implements ConfigurationIF {
 		return symmetricIVSizeOfSessionKey;
 	}
 
-	public void setSymmetricIVSizeOfSessionKey(Integer symmetricIVSizeOfSessionKey) {
-		if (null == symmetricIVSizeOfSessionKey) {
-			String errorMessage = "the parameter symmetricIVSizeOfSessionKey is null";
-			throw new IllegalArgumentException(errorMessage);
-		}		
-		
+	public void setSymmetricIVSizeOfSessionKey(Integer symmetricIVSizeOfSessionKey) {		
 		this.symmetricIVSizeOfSessionKey = symmetricIVSizeOfSessionKey;
 	}
 }

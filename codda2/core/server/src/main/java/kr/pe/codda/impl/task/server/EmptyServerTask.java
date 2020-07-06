@@ -66,8 +66,9 @@ public class EmptyServerTask extends AbstractServerTask implements MessageEncode
 	public void doTask(String projectName, LoginManagerIF personalLoginManager, ToLetterCarrier toLetterCarrier,
 			AbstractMessage inputMessage) throws Exception {
 		
+		// Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
 		// FIXME!
-		// log.info("call EmptyServerTask");
+		// log.info("call EmptyServerTask::"+inputMessage.getMailboxID());
 		
 		toLetterCarrier.addBypassOutputMessage(inputMessage);
 	}

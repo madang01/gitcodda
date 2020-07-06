@@ -21,11 +21,11 @@ import java.nio.ByteOrder;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import kr.pe.codda.common.config.subset.ProjectPartConfiguration;
+import kr.pe.codda.common.config.part.AbstractProjectPartConfiguration;
 import kr.pe.codda.common.etc.CommonStaticFinalVars;
 import kr.pe.codda.common.etc.StreamCharsetFamily;
-import kr.pe.codda.common.exception.PartConfigurationException;
 import kr.pe.codda.common.exception.NoMoreWrapBufferException;
+import kr.pe.codda.common.exception.PartConfigurationException;
 import kr.pe.codda.common.io.WrapBufferPool;
 import kr.pe.codda.common.io.WrapBufferPoolIF;
 import kr.pe.codda.common.protocol.MessageProtocolIF;
@@ -47,7 +47,7 @@ public class AnyProjectServer {
 	
 	// private final String serverAPPINFClassPathString;
 	// private final String projectResourcesPathString;
-	private final String mainProjectName;
+	// private final String projectName;
 	// private final StreamCharsetFamily streamCharsetFamily;
 	// private final int serverInputMessageQueueCapacity;
 	// private final int serverOutputMessageQueueCapacity;
@@ -59,9 +59,10 @@ public class AnyProjectServer {
 	// private final int serverDataPacketBufferPoolSize;	
 	
 	
-	private WrapBufferPoolIF wrapBufferPool = null;	
-	private ServerTaskManger serverTaskManager = null;	
-	private ServerIOEventController serverIOEventController = null;
+	private final WrapBufferPoolIF wrapBufferPool;	
+	private final ServerTaskManger serverTaskManager;	
+	private final ServerIOEventController serverIOEventController;
+	private DynamicClassWatcher dynamicClassWatcher = null;
 	
 	/**
 	 * 생성자
@@ -71,26 +72,26 @@ public class AnyProjectServer {
 	 * @throws NoMoreWrapBufferException 랩 버퍼 폴에 랩 버퍼가 없을 경우 던지는 예외
 	 * @throws PartConfigurationException 설정 관련 작업중 에러 발생시 던지는 예외
 	 */
-	public AnyProjectServer(String serverAPPINFClassPathString,
-			String projectResourcesPathString, ProjectPartConfiguration projectPartConfiguration)
+	public AnyProjectServer(String projectName, String serverAPPINFClassPathString,
+			String projectResourcesPathString, AbstractProjectPartConfiguration projectPartConfiguration)
 			throws NoMoreWrapBufferException, PartConfigurationException {
 		
-		this.mainProjectName = projectPartConfiguration.getProjectName();
+		// this.projectName = projectName;
 		
 		
 		final String serverHost = projectPartConfiguration.getServerHost();
 		final int serverPort = projectPartConfiguration.getServerPort();
 		final int serverMaxClient = projectPartConfiguration.getServerMaxClients();
-		final long socketTimeout = projectPartConfiguration.getClientSocketTimeout();
+		final long connectionTimeout = projectPartConfiguration.getClientConnectionTimeout();
 		final StreamCharsetFamily streamCharsetFamily = new StreamCharsetFamily(projectPartConfiguration.getCharset());
 		final ByteOrder projectByteOrder = projectPartConfiguration.getByteOrder();
 		// final int serverInputMessageQueueCapacity = projectPartConfiguration.getServerInputMessageQueueCapacity();
 		final int serverOutputMessageQueueCapacity = projectPartConfiguration.getServerOutputMessageQueueCapacity();
 		final MessageProtocolType messageProtocolType = projectPartConfiguration.getMessageProtocolType();
-		final boolean serverDataPacketBufferIsDirect = projectPartConfiguration.getServerDataPacketBufferIsDirect();		
-		final int serverDataPacketBufferMaxCntPerMessage = projectPartConfiguration.getServerDataPacketBufferMaxCntPerMessage();
-		final int serverDataPacketBufferSize = projectPartConfiguration.getServerDataPacketBufferSize();
-		final int serverDataPacketBufferPoolSize = projectPartConfiguration.getServerDataPacketBufferPoolSize();
+		final boolean serverDataPacketBufferIsDirect = projectPartConfiguration.getWhetherServerWrapBufferIsDirect();		
+		final int serverDataPacketBufferMaxCntPerMessage = projectPartConfiguration.getServerWrapBufferMaxCntPerMessage();
+		final int serverDataPacketBufferSize = projectPartConfiguration.getServerWrapBufferSize();
+		final int serverDataPacketBufferPoolSize = projectPartConfiguration.getServerWrapBufferPoolSize();
 		
 		
 		this.wrapBufferPool = new WrapBufferPool(serverDataPacketBufferIsDirect, 
@@ -124,7 +125,7 @@ public class AnyProjectServer {
 			}
 			default: {
 				String errorMessage = new StringBuilder().append("지원하지 않은 프로젝트[")
-						.append(mainProjectName)
+						.append(projectName)
 						.append("]의 메시지 프로토콜[")
 						.append(messageProtocolType.toString())
 						.append("] 입니다").toString();
@@ -142,7 +143,7 @@ public class AnyProjectServer {
 		
 		try {
 			File serverAPPINFClassPath = new File(serverAPPINFClassPathString);
-			DynamicClassWatcher dynamicClassWatcher = new DynamicClassWatcher(serverAPPINFClassPath, true, serverTaskManager);
+			dynamicClassWatcher = new DynamicClassWatcher(serverAPPINFClassPath, true, serverTaskManager);
 			
 			dynamicClassWatcher.start();
 		} catch (Exception e) {
@@ -151,10 +152,10 @@ public class AnyProjectServer {
 			System.exit(1);
 		}
 		
-		serverIOEventController = new ServerIOEventController(mainProjectName,
+		serverIOEventController = new ServerIOEventController(projectName,
 				serverHost, serverPort,
 				serverMaxClient,
-				socketTimeout,
+				connectionTimeout,
 				streamCharsetFamily,
 				serverDataPacketBufferMaxCntPerMessage,
 				serverOutputMessageQueueCapacity,
@@ -175,6 +176,7 @@ public class AnyProjectServer {
 	 */
 	synchronized public void stopServer() {
 		// serverProjectMonitor.interrupt();
+		dynamicClassWatcher.close();
 
 		if (! serverIOEventController.isInterrupted()) {
 			serverIOEventController.interrupt();

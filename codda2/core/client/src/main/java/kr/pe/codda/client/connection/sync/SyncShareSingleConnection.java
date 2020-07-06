@@ -23,6 +23,7 @@ import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketAddress;
+import java.net.SocketTimeoutException;
 import java.net.StandardSocketOptions;
 import java.nio.channels.SocketChannel;
 import java.util.Arrays;
@@ -44,6 +45,7 @@ import kr.pe.codda.common.io.WrapBufferPoolIF;
 import kr.pe.codda.common.message.AbstractMessage;
 import kr.pe.codda.common.message.codec.AbstractMessageEncoder;
 import kr.pe.codda.common.protocol.MessageProtocolIF;
+import kr.pe.codda.common.util.HexUtil;
 
 /**
  * 쓰레드 세이프 한 동기 단일 연결, 폴에 소속되지 않고 개별적 요청시 생성된다. 
@@ -51,7 +53,7 @@ import kr.pe.codda.common.protocol.MessageProtocolIF;
  * @author Won Jonghoon
  *
  */
-public final class SyncThreadSafeSingleConnection implements SyncConnectionIF {
+public final class SyncShareSingleConnection implements SyncConnectionIF {
 	private Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
 	
 	private final Object monitor = new Object();
@@ -61,14 +63,10 @@ public final class SyncThreadSafeSingleConnection implements SyncConnectionIF {
 	private final int clientDataPacketBufferSize;
 
 	private final SocketChannel clientSC;
-	private final Socket clientSocket;	
-	// private final int clientDataPacketBufferMaxCntPerMessage;
-	// private final StreamCharsetFamily streamCharsetFamily;	
-	// private final WrapBufferPoolIF wrapBufferPool;
+	private final Socket clientSocket;
 	private final StreamBuffer inputMessageStreamBuffer;
 	private final InputStream clientInputStream;
 	private final OutputStream clientOutputStream;
-	//private final int mailboxID = CommonStaticFinalVars.SYNC_MAILBOX_START_ID;
 	private transient int mailID = Integer.MIN_VALUE;
 	private transient java.util.Date finalReadTime = new java.util.Date();	
 	private final IncomingStream incomingStream;
@@ -89,7 +87,7 @@ public final class SyncThreadSafeSingleConnection implements SyncConnectionIF {
 	 * @param wrapBufferPool 랩 버퍼 폴
 	 * @throws IOException 입출력 에러 발생시 던지는 예외
 	 */
-	public SyncThreadSafeSingleConnection(String serverHost, int serverPort, long socketTimeout, 
+	public SyncShareSingleConnection(String serverHost, int serverPort, long socketTimeout, 
 			StreamCharsetFamily streamCharsetFamily,
 			int clientDataPacketBufferMaxCntPerMessage,
 			int clientDataPacketBufferSize,
@@ -99,14 +97,6 @@ public final class SyncThreadSafeSingleConnection implements SyncConnectionIF {
 		
 		this.messageProtocol = messageProtocol;
 		this.clientDataPacketBufferSize = clientDataPacketBufferSize;
-		// this.clientDataPacketBufferMaxCntPerMessage = clientDataPacketBufferMaxCntPerMessage;
-		// this.streamCharsetFamily = streamCharsetFamily;
-		// this.wrapBufferPool = wrapBufferPool;
-		
-		inputMessageStreamBuffer = messageProtocol.createNewMessageStreamBuffer();
-		socketBuffer = new byte[clientDataPacketBufferSize];
-		incomingStream = new IncomingStream(streamCharsetFamily, clientDataPacketBufferMaxCntPerMessage, wrapBufferPool);
-		syncOutputMessageReceiver = new SyncOutputMessageReceiver(messageProtocol);
 
 		clientSC = SocketChannel.open();
 		clientSC.configureBlocking(true);
@@ -143,7 +133,12 @@ public final class SyncThreadSafeSingleConnection implements SyncConnectionIF {
 			log.log(Level.WARNING, errorMessage, e);
 
 			throw new IOException();
-		}
+		}		
+		
+		inputMessageStreamBuffer = messageProtocol.createNewMessageStreamBuffer();
+		socketBuffer = new byte[clientDataPacketBufferSize];
+		incomingStream = new IncomingStream(streamCharsetFamily, clientDataPacketBufferMaxCntPerMessage, wrapBufferPool);
+		syncOutputMessageReceiver = new SyncOutputMessageReceiver(messageProtocol);
 	}
 
 
@@ -211,7 +206,7 @@ public final class SyncThreadSafeSingleConnection implements SyncConnectionIF {
 			BodyFormatException, ServerTaskException {
 
 		final AbstractMessage outputMessage;
-		final AbstractMessageEncoder messageEncoder;
+		
 		
 		synchronized (monitor) {
 			inputMessageStreamBuffer.clear();
@@ -227,6 +222,7 @@ public final class SyncThreadSafeSingleConnection implements SyncConnectionIF {
 			inputMessage.setMailboxID(CommonStaticFinalVars.SYNC_MAILBOX_START_ID);
 			inputMessage.setMailID(mailID);
 
+			final AbstractMessageEncoder messageEncoder;
 			try {
 				messageEncoder = messageCodecManger.getMessageEncoder(inputMessage.getMessageID());
 			} catch (DynamicClassCallException e) {
@@ -254,13 +250,22 @@ public final class SyncThreadSafeSingleConnection implements SyncConnectionIF {
 			}
 			
 			inputMessageStreamBuffer.flip();
+			
+			// FIXME!
+			// log.info("input message remaining="+inputMessageStreamBuffer.remaining());
+			
 
 			while ( inputMessageStreamBuffer.hasRemaining()) {
 				int length = (int)Math.min(clientDataPacketBufferSize, inputMessageStreamBuffer.remaining());
 				
 				inputMessageStreamBuffer.getBytes(socketBuffer, 0, length);
+				
+				// FIXME!
+				// log.info("hex::"+HexUtil.getHexStringFromByteArray(socketBuffer, 0, length));
+				
+				
 				try {
-					clientOutputStream.write(socketBuffer, 0, length);
+					clientOutputStream.write(socketBuffer, 0, length);				
 				} catch (IOException e) {
 					String errorMessage = new StringBuilder().append("the io error occurred while writing a input message[")
 							.append(inputMessage.toString())
@@ -279,6 +284,9 @@ public final class SyncThreadSafeSingleConnection implements SyncConnectionIF {
 					close();
 					throw new IOException(errorMessage);
 				}
+				
+				// FIXME!
+				// log.info("write done, len="+length);
 			}
 			
 			inputMessageStreamBuffer.releaseAllWrapBuffers();
@@ -286,6 +294,10 @@ public final class SyncThreadSafeSingleConnection implements SyncConnectionIF {
 			try {
 				do {
 					int numberOfReadBytes = clientInputStream.read(socketBuffer);
+					
+					// FIXME!
+					// log.info("numberOfReadBytes="+numberOfReadBytes);
+					
 					
 					if (numberOfReadBytes > 0) {
 						incomingStream.putBytes(socketBuffer, 0, numberOfReadBytes);
@@ -313,11 +325,20 @@ public final class SyncThreadSafeSingleConnection implements SyncConnectionIF {
 				close();
 
 				throw new NoMoreWrapBufferException(errorMessage);
+			} catch (SocketTimeoutException e) {
+				String errorMessage = new StringBuilder().append("the socket timeout occurred while reading the socket[")						
+						.append(clientSC.hashCode()).append("]").toString();
+				log.log(Level.WARNING, errorMessage);
+				
+				close();
+				throw e;
 			} catch (IOException e) {
 				String errorMessage = new StringBuilder().append("the io error occurred while reading the socket[")
-						.append(clientSC.hashCode()).append("], errmsg=").append(e.getMessage()).toString();			
+						.append(clientSC.hashCode()).append("], errmsg=").append(e.getMessage()).toString();
+				log.log(Level.WARNING, errorMessage, e);
+				
 				close();
-				throw new IOException(errorMessage);
+				throw e;
 			} catch (Exception e) {
 				String errorMessage = new StringBuilder().append("the unknown error occurred while reading the socket[")
 						.append(clientSC.hashCode()).append("], errmsg=").append(e.getMessage()).toString();

@@ -292,7 +292,8 @@ public class THBMessageProtocol implements MessageProtocolIF {
 							throw new HeaderFormatException(errorMessage);
 						}
 						
-						if (CommonStaticFinalVars.NOCOUNT_ASYN_MAILBOX_ID == mailboxID) {
+						/*
+						if (CommonStaticFinalVars.ASYN_MAILBOX_ID == mailboxID) {
 							String errorMessage = new StringBuilder()
 									.append("the recevied message[messageID=")
 									.append(messageID)
@@ -302,7 +303,8 @@ public class THBMessageProtocol implements MessageProtocolIF {
 									.append(mailID)
 									.append("]'s mailbox id is bad, any client message can't have a server asyn mailbox id").toString();
 							throw new HeaderFormatException(errorMessage);
-						}						
+						}
+						*/						
 						
 						try {
 							receivedMessageForwarder.putReceivedMiddleObject(mailboxID, mailID, messageID, messageInputStream);

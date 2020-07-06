@@ -60,7 +60,7 @@ import kr.pe.codda.common.protocol.ReceivedMiddleObjectForwarderIF;
  * @author Won Jonghoon
  *
  */
-public class AsynThreadSafeSingleConnection
+public class AsynShareSingleConnection
 		implements AsynConnectionIF, ClientIOEventHandlerIF, ReceivedMiddleObjectForwarderIF {
 	private Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
 
@@ -71,8 +71,8 @@ public class AsynThreadSafeSingleConnection
 	private final int maxNumberOfWrapBufferPerMessage;
 	private final int clientAsynInputMessageQueueCapacity;
 	private final long aliveTimePerWrapBuffer;
-	private final long retryIntervalMilliseconds;
-	private final int retryIntervalNanoSeconds;
+	private final long millisecondsOfRetryIntervalTimeToAddInputMessage;
+	private final int nanoSecondsOfRetryIntervalTimeToAddInputMessage;
 	private final StreamCharsetFamily streamCharsetFamily;	
 	private final WrapBufferPoolIF wrapBufferPool;
 	private final MessageProtocolIF messageProtocol;
@@ -90,7 +90,7 @@ public class AsynThreadSafeSingleConnection
 	// private ArrayDeque<ArrayDeque<WrapBuffer>> inputMessageQueue = new
 	// ArrayDeque<ArrayDeque<WrapBuffer>>();
 	private IncomingStream incomingStream = null;
-	private ClientOutgoingStreamIF outgoingStream = null;
+	private transient ClientOutgoingStreamIF outgoingStream = null;
 
 	/**
 	 * 생성자
@@ -103,7 +103,7 @@ public class AsynThreadSafeSingleConnection
 	 * @param clientAsynInputMessageQueueCapacity 입력 메시지 큐 크기
 	 * @param clientSyncMessageMailboxCountPerAsynShareConnection 소켓 공유할 메시지 박스 최대 갯수
 	 * @param aliveTimePerWrapBuffer 랩버퍼 1개당 생존 시간, 단위 : nanoseconds 
-	 * @param retryInterval 입력 메시지 스트림 큐에 입력 메시지 스트림을 다시 추가하는 간격, 단위 nanoseconds, 참고) '송신이 끝난 입력 메시지 스트림 큐'가 비어 있고 '송신중인 입력 메시지 스트림 큐'가 가득 찬 경우에 타임 아웃 시간안에 일정 시간 대기후 '입력 메시지 스트림'을 '송신중인 입력 메시지 스트림 큐' 에  다시 넣기를 시도한다.
+	 * @param retryIntervaTimeToAddInputMessage 입력 메시지 스트림 큐에 입력 메시지 스트림을 다시 추가하는 간격, 단위 nanoseconds, 참고) '송신이 끝난 입력 메시지 스트림 큐'가 비어 있고 '송신중인 입력 메시지 스트림 큐'가 가득 찬 경우에 타임 아웃 시간안에 일정 시간 대기후 '입력 메시지 스트림'을 '송신중인 입력 메시지 스트림 큐' 에  다시 넣기를 시도한다.
 	 * @param messageProtocol 메시지 프로토콜
 	 * @param wrapBufferPool 랩 버퍼 폴
 	 * @param clientTaskManger 클라이언트 타스크 관리자
@@ -111,11 +111,11 @@ public class AsynThreadSafeSingleConnection
 	 * @param asynClientIOEventController 비동기 클라이언트 입출력 이벤트 제어자
 	 * @throws IOException 입출력 에러 발생시 던지는 예외
 	 */
-	public AsynThreadSafeSingleConnection(String projectName, String serverHost, int serverPort, long socketTimeout,
+	public AsynShareSingleConnection(String projectName, String serverHost, int serverPort, long socketTimeout,
 			StreamCharsetFamily streamCharsetFamily, int clientDataPacketBufferMaxCntPerMessage,
 			int clientAsynInputMessageQueueCapacity, int clientSyncMessageMailboxCountPerAsynShareConnection,
 			long aliveTimePerWrapBuffer, 
-			long retryInterval,
+			long retryIntervaTimeToAddInputMessage,
 			MessageProtocolIF messageProtocol, WrapBufferPoolIF wrapBufferPool, ClientTaskMangerIF clientTaskManger,
 			AsynConnectedConnectionAdderIF asynConnectedConnectionAdder,
 			ClientIOEventControllerIF asynClientIOEventController) throws IOException {
@@ -127,8 +127,8 @@ public class AsynThreadSafeSingleConnection
 		this.clientAsynInputMessageQueueCapacity = clientAsynInputMessageQueueCapacity;
 		this.aliveTimePerWrapBuffer = aliveTimePerWrapBuffer;
 		
-		retryIntervalMilliseconds = retryInterval / CommonStaticFinalVars.ONE_MILLISECONDS_EXPRESSED_IN_NANOSECONDS;
-		retryIntervalNanoSeconds = (int)(retryInterval % CommonStaticFinalVars.ONE_MILLISECONDS_EXPRESSED_IN_NANOSECONDS);
+		millisecondsOfRetryIntervalTimeToAddInputMessage = retryIntervaTimeToAddInputMessage / CommonStaticFinalVars.ONE_MILLISECONDS_EXPRESSED_IN_NANOSECONDS;
+		nanoSecondsOfRetryIntervalTimeToAddInputMessage = (int)(retryIntervaTimeToAddInputMessage % CommonStaticFinalVars.ONE_MILLISECONDS_EXPRESSED_IN_NANOSECONDS);
 		
 		this.streamCharsetFamily = streamCharsetFamily;
 		this.wrapBufferPool = wrapBufferPool;
@@ -235,12 +235,31 @@ public class AsynThreadSafeSingleConnection
 		
 		
 		do {
+			/*
+			if (null == outgoingStream) {
+				Thread.sleep(millisecondsOfRetryIntervalTimeToAddInputMessage, nanoSecondsOfRetryIntervalTimeToAddInputMessage);	
+				
+				newTimeout = endTime - System.nanoTime();
+				
+				if (newTimeout <= 0) {
+					String errorMessage = new StringBuilder()
+							.append("working outgoing stream queue of this socket[")
+							.append(clientSC.hashCode())
+							.append("] is full").toString();
+					
+					throw new OutgoingStreamTimeoutException(errorMessage);
+				}	
+				
+				continue;
+			}			
+			*/
+			
 			try {
 				outgoingStream.add(inputMessageStreamBuffer, newTimeout);
 				
 				break;
 			} catch(RetryException e) {
-				Thread.sleep(retryIntervalMilliseconds, retryIntervalNanoSeconds);
+				Thread.sleep(millisecondsOfRetryIntervalTimeToAddInputMessage, nanoSecondsOfRetryIntervalTimeToAddInputMessage);
 				
 				newTimeout = endTime - System.nanoTime();
 				
@@ -373,10 +392,9 @@ public class AsynThreadSafeSingleConnection
 
 	public void doFinishConnect(SelectionKey selectedKey) {
 		personalSelectionKey = selectedKey;
-		asynConnectedConnectionAdder.addConnectedConnection(this);
-		
 		incomingStream = new IncomingStream(streamCharsetFamily, maxNumberOfWrapBufferPerMessage, wrapBufferPool);
 		outgoingStream = new ClientOutgoingStream(asynClientIOEventController, personalSelectionKey, clientAsynInputMessageQueueCapacity, aliveTimePerWrapBuffer);
+		asynConnectedConnectionAdder.addConnectedConnection(this);
 	}
 
 	public void doSubtractOneFromNumberOfUnregisteredConnections() {
@@ -403,7 +421,7 @@ public class AsynThreadSafeSingleConnection
 			throws InterruptedException {
 		
 		
-		if (CommonStaticFinalVars.NOCOUNT_ASYN_MAILBOX_ID == mailboxID) {
+		if (CommonStaticFinalVars.ASYN_MAILBOX_ID == mailboxID) {
 			try {
 				AbstractClientTask clientTask = clientTaskManger.getValidClientTask(messageID);
 				clientTask.execute(hashCode(), projectName, this, mailboxID, mailID, messageID, readableMiddleObject,
@@ -416,23 +434,8 @@ public class AsynThreadSafeSingleConnection
 			} finally {
 				// readableMiddleObjectWrapper.closeReadableMiddleObject();
 				messageProtocol.closeReadableMiddleObject(mailboxID, mailID, messageID, readableMiddleObject);
-			}
-			
-		} else if (CommonStaticFinalVars.COUNT_ASYN_MAILBOX_ID == mailboxID) {			
-			
-			try {
-				AbstractClientTask clientTask = clientTaskManger.getValidClientTask(messageID);
-				clientTask.execute(hashCode(), projectName, this, mailboxID, mailID, messageID, readableMiddleObject,
-						messageProtocol);
-			} catch (InterruptedException e) {
-				throw e;
-			} catch (Exception | Error e) {
-				log.log(Level.WARNING, "unknwon error::fail to execute a output message client task", e);
-				return;
-			} finally {
-				// readableMiddleObjectWrapper.closeReadableMiddleObject();
-				messageProtocol.closeReadableMiddleObject(mailboxID, mailID, messageID, readableMiddleObject);
-			}
+			}			
+		
 		} else {
 			if (mailboxID < CommonStaticFinalVars.SYNC_MAILBOX_START_ID || mailboxID >= syncMessageMailboxArray.length) {
 				String errorMessage = new StringBuilder("The synchronous output message[").append("mailboxID=")

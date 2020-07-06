@@ -24,9 +24,8 @@ import java.util.logging.Logger;
 
 import kr.pe.codda.common.config.CoddaConfiguration;
 import kr.pe.codda.common.config.CoddaConfigurationManager;
-import kr.pe.codda.common.config.subset.CommonPartConfiguration;
+import kr.pe.codda.common.config.part.CommonPartConfiguration;
 import kr.pe.codda.common.etc.CommonStaticFinalVars;
-import kr.pe.codda.common.exception.PartConfigurationException;
 import kr.pe.codda.common.exception.SymmetricException;
 import kr.pe.codda.common.type.SessionKey;
 import kr.pe.codda.common.util.CommonStaticUtil;
@@ -46,10 +45,10 @@ public abstract class AbstractRSAPublickeyReturner {
 		byte[] publicKeyBytes = null;
 		CoddaConfiguration runningProjectConfiguration = CoddaConfigurationManager.getInstance()
 				.getRunningProjectConfiguration();
-		CommonPartConfiguration commonPart = runningProjectConfiguration.getCommonPartConfiguration();
+		CommonPartConfiguration commonPart = runningProjectConfiguration.getDefaultConfiguration().getCommonPartConfiguration();
 
 		SessionKey.RSAKeypairSourceType rsaKeyPairSoureOfSessionkey = commonPart
-				.getRsaKeypairSourceOfSessionKey();
+				.getRSAKeypairSourceOfSessionKey();
 		
 		if (rsaKeyPairSoureOfSessionkey.equals(SessionKey.RSAKeypairSourceType.SERVER)) {
 			publicKeyBytes = getPublickeyBytesFromMainProjectServer();
@@ -109,22 +108,15 @@ public abstract class AbstractRSAPublickeyReturner {
 
 		CoddaConfiguration runningProjectConfiguration = CoddaConfigurationManager.getInstance()
 				.getRunningProjectConfiguration();
-		CommonPartConfiguration commonPart = runningProjectConfiguration.getCommonPartConfiguration();
+		CommonPartConfiguration commonPart = runningProjectConfiguration.getDefaultConfiguration().getCommonPartConfiguration();
 
 		File rsaPublickeyFile = null;
 	
 		try {
+			
 			rsaPublickeyFile = commonPart.getRSAPublickeyFileOfSessionKey();
 			
-			publicKeyBytes = CommonStaticUtil.readFileToByteArray(rsaPublickeyFile, 10*1024*1024);
-
-		} catch (PartConfigurationException e) {
-			String errorMessage = new StringBuilder()
-					.append("fail to get RSA public key file from configuration, errmsg=")
-					.append(e.getMessage()).toString();			
-			Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
-			log.log(Level.WARNING, errorMessage, e);
-			throw new SymmetricException(errorMessage);
+			publicKeyBytes = CommonStaticUtil.readFileToByteArray(rsaPublickeyFile, 10*1024*1024);	
 		} catch (IOException e) {
 			String errorMessage = new StringBuilder()
 					.append("fail to read RSA public key file[")

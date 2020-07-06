@@ -183,8 +183,7 @@ public class ClientIOEventController extends Thread implements
 					}
 					
 					try {
-						if (selectedKey.isReadable()) {
-							
+						if (selectedKey.isReadable()) {							
 							interestedAsynConnection.onRead(selectedKey);
 						}
 

@@ -20,7 +20,6 @@ import java.io.File;
 
 import kr.pe.codda.common.classloader.SystemClassDeterminer;
 import kr.pe.codda.common.classloader.SystemClassVerifierIF;
-import kr.pe.codda.common.exception.PartConfigurationException;
 
 /**
  * 서버 클래스 로더 팩토리
@@ -44,10 +43,10 @@ public class ServerClassLoaderFactory {
 	 * 생성자
 	 * @param serverAPPINFClassPathString 서버 클래스의 동적 클래스 경로 문자열
 	 * @param projectResourcesPathString 서버 클래스의 리소스 경로 문자열
-	 * @throws PartConfigurationException 설정 관련 에러 발생시 던지는 예외
+	 * @throws IllegalArgumentException 설정 관련 에러 발생시 던지는 예외
 	 */
 	public ServerClassLoaderFactory(String serverAPPINFClassPathString,
-			String projectResourcesPathString) throws PartConfigurationException {
+			String projectResourcesPathString) throws IllegalArgumentException {
 		if (null == serverAPPINFClassPathString) {
 			throw new IllegalArgumentException("the parameter serverAPPINFClassPathString is null");
 		}
@@ -59,7 +58,7 @@ public class ServerClassLoaderFactory {
 					.append("the path whose path is the parameter serverAPPINFClassPathString[")
 					.append(serverAPPINFClassPathString)
 					.append("] do not exist").toString();
-		 	throw new PartConfigurationException(errorMessage);
+		 	throw new IllegalArgumentException(errorMessage);
 		}
 		
 		if (! serverAPPINFClassPath.isDirectory()) {
@@ -67,7 +66,7 @@ public class ServerClassLoaderFactory {
 					.append("the path whose path is the parameter serverAPPINFClassPathString[")
 					.append(serverAPPINFClassPathString)
 					.append("] isn't a directory").toString();
-		 	throw new PartConfigurationException(errorMessage);
+		 	throw new IllegalArgumentException(errorMessage);
 		}
 		
 		if (null == projectResourcesPathString) {
@@ -81,7 +80,7 @@ public class ServerClassLoaderFactory {
 					.append("the path whose path is the parameter projectResourcesPathString[")
 					.append(projectResourcesPathString)
 					.append("] doesn't exist").toString();
-		 	throw new PartConfigurationException(errorMessage);
+		 	throw new IllegalArgumentException(errorMessage);
 		}
 		
 		if (! projectResourcesPath.isDirectory()) {
@@ -89,7 +88,7 @@ public class ServerClassLoaderFactory {
 					.append("the path whose path is the parameter projectResourcesPathString[")
 					.append(projectResourcesPathString)
 					.append("] isn't a directory").toString();
-		 	throw new PartConfigurationException(errorMessage);
+		 	throw new IllegalArgumentException(errorMessage);
 		}
 		
 		this.serverAPPINFClassPathString = serverAPPINFClassPathString;

@@ -34,8 +34,8 @@ import org.apache.commons.dbcp2.BasicDataSourceFactory;
 
 import kr.pe.codda.common.config.CoddaConfiguration;
 import kr.pe.codda.common.config.CoddaConfigurationManager;
-import kr.pe.codda.common.config.subset.DBCPPartConfigurationManager;
-import kr.pe.codda.common.config.subset.DBCPParConfiguration;
+import kr.pe.codda.common.config.DefaultConfiguration;
+import kr.pe.codda.common.config.part.DBCPParConfiguration;
 import kr.pe.codda.common.etc.CommonStaticFinalVars;
 import kr.pe.codda.common.exception.DBCPDataSourceNotFoundException;
 
@@ -72,18 +72,20 @@ public final class DBCPManager {
 	private DBCPManager() {
 		CoddaConfiguration runningProjectConfiguration = CoddaConfigurationManager.getInstance()
 				.getRunningProjectConfiguration();
+		
+		DefaultConfiguration defaultConfiguration = runningProjectConfiguration.getDefaultConfiguration();
 
-		DBCPPartConfigurationManager allDBCPPart = runningProjectConfiguration.getDBCPPartConfigurationManager();
+		
 
-		dbcpNameList = allDBCPPart.getDBCPNameList();
+		dbcpNameList = defaultConfiguration.getDBCPNameList();
 
 		for (String dbcpName : dbcpNameList) {
-			DBCPParConfiguration dbcpPart = allDBCPPart.getDBCPPartConfiguration(dbcpName);
-			if (null == dbcpPart) {
+			DBCPParConfiguration dbcpParConfiguration = defaultConfiguration.getDBCPParConfiguration(dbcpName);
+			if (null == dbcpParConfiguration) {
 				log.log(Level.WARNING, "the dbcp name[" + dbcpName + "] is bad, check dbcp part of config file");
 				continue;
 			}
-			File dbcpConfigFile = dbcpPart.getDBCPConfigFile();
+			File dbcpConfigFile = dbcpParConfiguration.getDBCPConfigFile();
 
 			Properties dbcpConfigurationProperties = new Properties();
 			FileInputStream fis = null;

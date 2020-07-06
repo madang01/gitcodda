@@ -13,14 +13,14 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-package kr.pe.codda.common.config2.part;
+package kr.pe.codda.common.config.part;
 
 import java.io.File;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import kr.pe.codda.common.config.PartConfigurationIF;
 import kr.pe.codda.common.config.nativevalueconverter.GeneralConverterReturningRegularFile;
-import kr.pe.codda.common.config2.ConfigurationIF;
 import kr.pe.codda.common.exception.PartConfigurationException;
 import kr.pe.codda.common.type.GUIItemType;
 import kr.pe.codda.common.util.SequencedProperties;
@@ -29,7 +29,7 @@ import kr.pe.codda.common.util.SequencedProperties;
  * @author Won Jonghoon
  *
  */
-public class DBCPParConfiguration implements ConfigurationIF {	
+public class DBCPParConfiguration implements PartConfigurationIF {	
 	private Logger log = Logger.getLogger(DBCPParConfiguration.class.getName());
 	
 	
@@ -42,6 +42,10 @@ public class DBCPParConfiguration implements ConfigurationIF {
 	
 	
 	public DBCPParConfiguration(String dbcpName) {
+		if (null == dbcpName) {
+			throw new IllegalArgumentException("the parameter dbcpName is null");
+		}
+		
 		
 		this.dbcpName = dbcpName;
 		
@@ -50,20 +54,20 @@ public class DBCPParConfiguration implements ConfigurationIF {
 	}	
 	
 	@Override
-	public void toValue(SequencedProperties sourceSequencedProperties) throws IllegalArgumentException, PartConfigurationException {
+	public void fromProperties(SequencedProperties sourceSequencedProperties) throws IllegalArgumentException, PartConfigurationException {
 		if (null == sourceSequencedProperties) {
 			throw new IllegalArgumentException("the parameter sourceSequencedProperties is null");
 		}
 		
-		toValueForDBCPConfigFile(sourceSequencedProperties);
+		fromPropertiesForDBCPConfigFile(sourceSequencedProperties);
 	}
 	
 	@Override
-	public void checkForDependencies(SequencedProperties sourceSequencedProperties) throws IllegalArgumentException, PartConfigurationException {
+	public void checkForDependencies() throws PartConfigurationException {
 		/** nothing */
 	}
 	
-	public void toValueForDBCPConfigFile(SequencedProperties sourceSequencedProperties) throws PartConfigurationException {
+	public void fromPropertiesForDBCPConfigFile(SequencedProperties sourceSequencedProperties) throws PartConfigurationException {
 		String itemKey = new StringBuilder()
 				.append(prefexOfItemID)
 				.append(itemIDOfDBCPConfigFile)
@@ -115,7 +119,7 @@ public class DBCPParConfiguration implements ConfigurationIF {
 		targetSequencedProperties.put(itemDescKey, itemDescValue);
 		
 		String itemKey = new StringBuilder().append(prefexOfItemID).append(itemIDOfDBCPConfigFile).append(".value").toString();
-		String itemValue = dbcpConfigFile.getAbsolutePath();		
+		String itemValue = (null == dbcpConfigFile) ? "" : dbcpConfigFile.getAbsolutePath();		
 		targetSequencedProperties.put(itemKey, itemValue);
 		
 		String guiItemTypeKey = new StringBuilder().append(prefexOfItemID).append(itemIDOfDBCPConfigFile).append(".gui_item_type").toString();
@@ -135,11 +139,7 @@ public class DBCPParConfiguration implements ConfigurationIF {
 		return dbcpConfigFile;
 	}
 	
-	public void setDBCPConfigFile(File dbcpConfigFile) {
-		if (null == dbcpConfigFile) {
-			throw new IllegalArgumentException("the parameter dbcpConfigFile is null");
-		}
-		
+	public void setDBCPConfigFile(File dbcpConfigFile) {		
 		this.dbcpConfigFile = dbcpConfigFile;
 	}
 	

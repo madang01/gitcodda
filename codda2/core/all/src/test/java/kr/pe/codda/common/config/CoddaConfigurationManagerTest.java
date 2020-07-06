@@ -43,7 +43,7 @@ public class CoddaConfigurationManagerTest {
 				.getRunningProjectConfiguration();
 		DBCPPartConfigurationManager allDBCPPart = runningProjectConfiguration.getDBCPPartConfigurationManager();
 		CommonPartConfiguration commonPart = runningProjectConfiguration.getCommonPartConfiguration();
-		ProjectPartConfiguration mainProjectPart = runningProjectConfiguration.getMainProjectPartConfiguration();
+		AbstractProjectPartConfiguration mainProjectPart = runningProjectConfiguration.getMainProjectPartConfiguration();
 		SubProjectPartConfigurationManager allSubProjectPart = runningProjectConfiguration.getSubProjectPartConfigurationManager();
 		
 		
@@ -91,7 +91,7 @@ public class CoddaConfigurationManagerTest {
 		
 		List<String> subProjectNameList = allSubProjectPart.getSubProjectNamelist();
 		for (String subProjectName : subProjectNameList) {
-			ProjectPartConfiguration projectPart = allSubProjectPart.getSubProjectPartConfiguration(subProjectName);
+			AbstractProjectPartConfiguration projectPart = allSubProjectPart.getSubProjectPartConfiguration(subProjectName);
 			
 			if (null == projectPart) {
 				String infoMessage = new StringBuilder()

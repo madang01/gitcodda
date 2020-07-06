@@ -25,11 +25,12 @@ import kr.pe.codda.common.buildsystem.pathsupporter.ProjectBuildSytemPathSupport
 import kr.pe.codda.common.buildsystem.pathsupporter.ServerBuildSytemPathSupporter;
 import kr.pe.codda.common.config.CoddaConfiguration;
 import kr.pe.codda.common.config.CoddaConfigurationManager;
-import kr.pe.codda.common.config.subset.SubProjectPartConfigurationManager;
-import kr.pe.codda.common.config.subset.ProjectPartConfiguration;
+import kr.pe.codda.common.config.DefaultConfiguration;
+import kr.pe.codda.common.config.part.AbstractProjectPartConfiguration;
+import kr.pe.codda.common.config.part.SubProjectPartConfiguration;
 import kr.pe.codda.common.etc.CommonStaticFinalVars;
-import kr.pe.codda.common.exception.PartConfigurationException;
 import kr.pe.codda.common.exception.NoMoreWrapBufferException;
+import kr.pe.codda.common.exception.PartConfigurationException;
 
 
 
@@ -74,11 +75,15 @@ public final class MainServerManager {
 			CoddaConfiguration runningProjectConfiguration = 
 					CoddaConfigurationManager.getInstance()
 					.getRunningProjectConfiguration();
-			ProjectPartConfiguration mainProjectPartConfiguration = runningProjectConfiguration.getMainProjectPartConfiguration();
-			SubProjectPartConfigurationManager allSubProjectPartConfiguration = runningProjectConfiguration.getSubProjectPartConfigurationManager();
+			
+			
 			
 			installedPathString = runningProjectConfiguration.getInstalledPathString();
-			mainProjectName = mainProjectPartConfiguration.getProjectName();
+			mainProjectName = runningProjectConfiguration.getMainProjectName();
+			
+			
+			DefaultConfiguration defaultConfiguration = runningProjectConfiguration.getDefaultConfiguration();
+			AbstractProjectPartConfiguration mainProjectPartConfiguration = defaultConfiguration.getMainProjectPartConfiguration();
 			
 			String serverAPPINFClassPathString = ServerBuildSytemPathSupporter
 					.getServerAPPINFClassPathString(installedPathString, 
@@ -86,19 +91,22 @@ public final class MainServerManager {
 			String projectResourcesPathString = ProjectBuildSytemPathSupporter.getProjectResourcesDirectoryPathString(installedPathString, mainProjectName);
 			
 			try {
-				mainProjectServer = new AnyProjectServer(serverAPPINFClassPathString, projectResourcesPathString, mainProjectPartConfiguration);
+				mainProjectServer = new AnyProjectServer(mainProjectName, serverAPPINFClassPathString, projectResourcesPathString, mainProjectPartConfiguration);
 			} catch (NoMoreWrapBufferException e) {
 				log.log(Level.WARNING, "NoMoreDataPacketBufferException", e);
 			} catch (PartConfigurationException e) {
 				log.log(Level.WARNING, "CoddaConfigurationException", e);
 			}
 			
-			subProjectNamelist = allSubProjectPartConfiguration.getSubProjectNamelist();
+			subProjectNamelist = defaultConfiguration.getSubProjectNameList();
 					
 			for (String subProjectName : subProjectNamelist) {
 				AnyProjectServer subProjectServer = null;
 				try {
-					subProjectServer = new AnyProjectServer(serverAPPINFClassPathString, projectResourcesPathString, allSubProjectPartConfiguration.getSubProjectPartConfiguration(subProjectName));
+					
+					SubProjectPartConfiguration subProjectPartConfiguration = defaultConfiguration.getSubProjectPartConfiguration(subProjectName);
+					
+					subProjectServer = new AnyProjectServer(subProjectPartConfiguration.getSubProjectName(), serverAPPINFClassPathString, projectResourcesPathString, subProjectPartConfiguration);
 					
 					subProjectServerHash.put(subProjectName, subProjectServer);
 				} catch (NoMoreWrapBufferException e) {

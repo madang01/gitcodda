@@ -22,6 +22,7 @@ import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketAddress;
+import java.net.SocketTimeoutException;
 import java.net.StandardSocketOptions;
 import java.nio.channels.SocketChannel;
 import java.util.Arrays;
@@ -102,23 +103,9 @@ public final class SyncNoShareConnection implements SyncConnectionIF {
 			MessageProtocolIF messageProtocol,
 			WrapBufferPoolIF wrapBufferPool)
 			throws IOException {
-		// this.serverHost = serverHost;
-		// this.serverPort = serverPort;
-		// this.socketTimeout = socketTimeout;
-		// this.streamCharsetFamily = streamCharsetFamily;
-		// this.clientDataPacketBufferSize = clientDataPacketBufferSize;
 		this.messageProtocol = messageProtocol;
-		
-		// this.clientDataPacketBufferMaxCntPerMessage = clientDataPacketBufferMaxCntPerMessage;
-		// this.streamCharsetFamily = streamCharsetFamily;
-		// this.wrapBufferPool = wrapBufferPool;
 
-		clientDataPacketBufferSize = wrapBufferPool.getDataPacketBufferSize();
-		inputMessageStreamBuffer = messageProtocol.createNewMessageStreamBuffer();
-		socketBuffer = new byte[clientDataPacketBufferSize];		
-		syncOutputMessageReceiver = new SyncOutputMessageReceiver(messageProtocol);
 		
-		incomingStream = new IncomingStream(streamCharsetFamily, clientDataPacketBufferMaxCntPerMessage, wrapBufferPool);
 
 		// openSocketChannel();
 		clientSC = SocketChannel.open();
@@ -157,6 +144,13 @@ public final class SyncNoShareConnection implements SyncConnectionIF {
 
 			throw new IOException();
 		}
+		
+		clientDataPacketBufferSize = wrapBufferPool.getDataPacketBufferSize();
+		inputMessageStreamBuffer = messageProtocol.createNewMessageStreamBuffer();
+		socketBuffer = new byte[clientDataPacketBufferSize];		
+		syncOutputMessageReceiver = new SyncOutputMessageReceiver(messageProtocol);
+		
+		incomingStream = new IncomingStream(streamCharsetFamily, clientDataPacketBufferMaxCntPerMessage, wrapBufferPool);
 	}
 
 
@@ -270,6 +264,12 @@ public final class SyncNoShareConnection implements SyncConnectionIF {
 			close();
 
 			throw new NoMoreWrapBufferException(errorMessage);
+		} catch (SocketTimeoutException e) {
+			String errorMessage = new StringBuilder().append("the socket timeout occurred while reading the socket[")						
+					.append(clientSC.hashCode()).append("]").toString();
+			log.log(Level.WARNING, errorMessage);
+			close();
+			throw e;
 		} catch (IOException e) {
 			String errorMessage = new StringBuilder().append("the io error occurred while reading the socket[")
 					.append(clientSC.hashCode()).append("], errmsg=").append(e.getMessage()).toString();			

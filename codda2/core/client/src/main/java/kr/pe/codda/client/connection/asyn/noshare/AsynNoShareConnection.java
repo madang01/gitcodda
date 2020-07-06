@@ -379,10 +379,9 @@ public class AsynNoShareConnection implements AsynConnectionIF, ClientIOEventHan
 
 	public void doFinishConnect(SelectionKey selectedKey) {
 		personalSelectionKey = selectedKey;
-		asynConnectedConnectionAdder.addConnectedConnection(this);
-		
 		incomingStream = new IncomingStream(streamCharsetFamily, maxNumberOfWrapBufferPerMessage, wrapBufferPool);
 		outgoingStream = new ClientOutgoingStream(asynClientIOEventController, personalSelectionKey, clientAsynInputMessageQueueCapacity, aliveTimePerWrapBuffer);
+		asynConnectedConnectionAdder.addConnectedConnection(this);
 	}
 
 	public void doSubtractOneFromNumberOfUnregisteredConnections() {
@@ -425,7 +424,7 @@ public class AsynNoShareConnection implements AsynConnectionIF, ClientIOEventHan
 	public void putReceivedMiddleObject(int mailboxID, int mailID, String messageID, Object readableMiddleObject)
 			throws InterruptedException {
 
-		if (CommonStaticFinalVars.NOCOUNT_ASYN_MAILBOX_ID == mailboxID) {
+		if (CommonStaticFinalVars.ASYN_MAILBOX_ID == mailboxID) {
 			try {
 				AbstractClientTask clientTask = clientTaskManger.getValidClientTask(messageID);
 				clientTask.execute(hashCode(), projectName, this, mailboxID, mailID, messageID, readableMiddleObject,
@@ -437,24 +436,8 @@ public class AsynNoShareConnection implements AsynConnectionIF, ClientIOEventHan
 				return;
 			} finally {
 				messageProtocol.closeReadableMiddleObject(mailboxID, mailID, messageID, readableMiddleObject);
-			}
-		} else if (CommonStaticFinalVars.COUNT_ASYN_MAILBOX_ID == mailboxID) {
-			// outgoingStream.decreaseOutputMessageCount();
-			
-			try {
-				AbstractClientTask clientTask = clientTaskManger.getValidClientTask(messageID);
-				clientTask.execute(hashCode(), projectName, this, mailboxID, mailID, messageID, readableMiddleObject,
-						messageProtocol);
-			} catch (InterruptedException e) {
-				throw e;
-			} catch (Exception | Error e) {
-				log.log(Level.WARNING, "unknwon error::fail to execute a output message client task", e);
-				return;
-			} finally {
-				messageProtocol.closeReadableMiddleObject(mailboxID, mailID, messageID, readableMiddleObject);
-			}
+			}		
 		} else {
-			// outgoingStream.decreaseOutputMessageCount();
 			syncMessageMailbox.putSyncOutputMessage(mailboxID, mailID, messageID, readableMiddleObject);
 		}
 	}

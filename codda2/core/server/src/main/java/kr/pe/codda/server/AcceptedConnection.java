@@ -253,10 +253,14 @@ public class AcceptedConnection implements ServerIOEventHandlerIF, ReceivedMiddl
 	public void addOutputMessage(StreamBuffer outputMessageStreamBuffer)
 			throws InterruptedException {
 
-		// log.info("outputMessageQueue.size={}, inputMessageCount={}",
-		// outputMessageQueue.size(), inputMessageCount);]
+		// FIXME!
+		// log.info("outputMessageStreamBuffer.remaining=" + outputMessageStreamBuffer.remaining());		
+		
 		
 		boolean isSuccess = outgoingStream.offer(outputMessageStreamBuffer);
+		
+		// log.info("isSuccess=" + isSuccess);
+		
 		if (! isSuccess) {
 			String errorMessage = new StringBuilder()
 					.append("소켓 채널[")

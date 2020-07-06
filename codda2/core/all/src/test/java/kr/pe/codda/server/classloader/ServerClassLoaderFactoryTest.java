@@ -30,7 +30,6 @@ import org.junit.Test;
 import kr.pe.codda.common.buildsystem.pathsupporter.ProjectBuildSytemPathSupporter;
 import kr.pe.codda.common.buildsystem.pathsupporter.ServerBuildSytemPathSupporter;
 import kr.pe.codda.common.etc.CommonStaticFinalVars;
-import kr.pe.codda.common.exception.PartConfigurationException;
 
 /**
  * @author Won Jonghoon
@@ -94,7 +93,7 @@ public class ServerClassLoaderFactoryTest {
 		
 		try {
 			serverClassLoaderFactory = new ServerClassLoaderFactory(serverAPPINFClassPathString, projectResourcesPathString);
-		} catch (PartConfigurationException e) {
+		} catch (Exception e) {
 			fail("fail to create a instance of ServerClassLoaderFactory");
 		}
 		

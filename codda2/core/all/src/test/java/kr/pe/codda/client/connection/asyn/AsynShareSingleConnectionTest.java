@@ -41,21 +41,22 @@ import kr.pe.codda.client.AnyProjectConnectionPoolIF;
 import kr.pe.codda.client.ConnectionIF;
 import kr.pe.codda.common.buildsystem.pathsupporter.ProjectBuildSytemPathSupporter;
 import kr.pe.codda.common.buildsystem.pathsupporter.ServerBuildSytemPathSupporter;
-import kr.pe.codda.common.config.subset.ProjectPartConfiguration;
+import kr.pe.codda.common.config.part.AbstractProjectPartConfiguration;
+import kr.pe.codda.common.config.part.MainProjectPartConfiguration;
 import kr.pe.codda.common.etc.CommonStaticFinalVars;
-import kr.pe.codda.common.exception.PartConfigurationException;
 import kr.pe.codda.common.exception.OutgoingStreamTimeoutException;
+import kr.pe.codda.common.exception.PartConfigurationException;
 import kr.pe.codda.common.message.AbstractMessage;
 import kr.pe.codda.common.type.ClientConnectionType;
 import kr.pe.codda.common.type.MessageProtocolType;
-import kr.pe.codda.common.type.ProjectType;
 import kr.pe.codda.common.util.CommonStaticUtil;
 import kr.pe.codda.common.util.JDKLoggerCustomFormatter;
+import kr.pe.codda.common.util.SequencedProperties;
 import kr.pe.codda.impl.classloader.ClientMessageCodecManger;
 import kr.pe.codda.impl.message.Empty.Empty;
 import kr.pe.codda.server.AnyProjectServer;
 
-public class AsynThreadSafeSingleConnectionTest {
+public class AsynShareSingleConnectionTest {
 	private static Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
 	
 	private static final String CODDA_TEMP_ROOT_PATH_STRING = "codda_asyn_threadsafe_conn_test";
@@ -170,77 +171,67 @@ public class AsynThreadSafeSingleConnectionTest {
 	public void tearDown() throws Exception {
 	}
 
-	private ProjectPartConfiguration buildMainProjectPartConfiguration(String projectName,
-			String host, int port,
-			int clientConnectionCount,
-			MessageProtocolType messageProtocolType,
-			boolean clientDataPacketBufferIsDirect,
-			ClientConnectionType connectionType)
-			throws PartConfigurationException {		
+	private AbstractProjectPartConfiguration buildMainProjectPartConfiguration(String projectName, String serverHost, int serverPort,
+			int clientConnectionCount, int clientConnectionMaxCount, MessageProtocolType messageProtocolType,
+			boolean whetherClientWrapBufferIsDirect, ClientConnectionType clientConnectionType, int serverMaxClients) throws PartConfigurationException {
 		 
 		
-		ProjectPartConfiguration projectPartConfigurationForTest = new ProjectPartConfiguration(ProjectType.MAIN,
-				projectName);
+		AbstractProjectPartConfiguration projectPartConfigurationForTest = new MainProjectPartConfiguration();
 		
-		//String host="localhost";
-		//int port=9090;
+		SequencedProperties sequencedPropertiesHavingDefault = new SequencedProperties();
+		projectPartConfigurationForTest.toProperties(sequencedPropertiesHavingDefault);
+		projectPartConfigurationForTest.fromProperties(sequencedPropertiesHavingDefault);
+		
+		
+		projectPartConfigurationForTest.setServerHost(serverHost);
+		projectPartConfigurationForTest.setServerPort(serverPort);
+		projectPartConfigurationForTest.setClientConnectionCount(clientConnectionCount);
+		projectPartConfigurationForTest.setClientConnectionMaxCount(clientConnectionMaxCount);
+		projectPartConfigurationForTest.setMessageProtocolType(messageProtocolType);
+		projectPartConfigurationForTest.setWhetherClientWrapBufferIsDirect(whetherClientWrapBufferIsDirect);
+		projectPartConfigurationForTest.setClientConnectionType(clientConnectionType);		
+		projectPartConfigurationForTest.setServerMaxClients(serverMaxClients);		
+		
+		
 		ByteOrder byteOrder = ByteOrder.BIG_ENDIAN;
-		Charset charset = CommonStaticFinalVars.SOURCE_FILE_CHARSET;		
-		int messageIDFixedSize=20;
-		//MessageProtocolType messageProtocolType = MessageProtocolType.DHB;					
-		long clientMonitorTimeInterval = 60*1000*5L;
-		// boolean clientDataPacketBufferIsDirect=true;
-		int clientDataPacketBufferMaxCntPerMessage=50;
-		int clientDataPacketBufferSize=2048;
-		int clientDataPacketBufferPoolSize=1000;
-		//ConnectionType connectionType = ConnectionType.ASYN_PRIVATE;
-		long clientSocketTimeout = 5000L;			
-		// int clientConnectionCount = 2;
-		int clientConnectionMaxCount = 4;
-		long clientConnectionPoolSupporterTimeInterval = 600000L;
-		int clientSyncMessageMailboxCountPerAsynShareConnection = 10;
-		int clientAsynInputMessageQueueSize = 5;
-		int clientAsynOutputMessageQueueSize = 5;
-		long clientAsynSelectorWakeupInterval = 1L;			
-		int clientAsynExecutorPoolSize =2;
-		long serverMonitorTimeInterval = 5000L;
-		boolean serverDataPacketBufferIsDirect=true;
-		int serverDataPacketBufferMaxCntPerMessage=50;
-		int serverDataPacketBufferSize=2048;
-		int serverDataPacketBufferPoolSize=1000;
-		int serverMaxClients = 10;		
-		int serverInputMessageQueueSize = 5;
-		int serverOutputMessageQueueSize = 5;
+		Charset charset = CommonStaticFinalVars.SOURCE_FILE_CHARSET;
+		long clientMonitorTimeInterval = 60 * 1000 * 5L;
+		int clientWrapBufferMaxCntPerMessage = 50;
+		int clientWrapBufferSize = 2048;
+		int clientWrapBufferPoolSize = 10000;
+		long clientConnectionTimeout = 5000L;
 		
-		projectPartConfigurationForTest.build(host, 
-				port,
-				byteOrder,
-				charset,				
-				messageIDFixedSize,
-				messageProtocolType,		
-				clientMonitorTimeInterval,
-				clientDataPacketBufferIsDirect,
-				clientDataPacketBufferMaxCntPerMessage,
-				clientDataPacketBufferSize,
-				clientDataPacketBufferPoolSize,
-				connectionType,
-				clientSocketTimeout,			
-				clientConnectionCount,
-				clientConnectionMaxCount,
-				clientConnectionPoolSupporterTimeInterval,
-				clientSyncMessageMailboxCountPerAsynShareConnection,
-				clientAsynInputMessageQueueSize,
-				clientAsynOutputMessageQueueSize,
-				clientAsynSelectorWakeupInterval,
-				clientAsynExecutorPoolSize,
-				serverMonitorTimeInterval,
-				serverDataPacketBufferIsDirect,
-				serverDataPacketBufferMaxCntPerMessage,
-				serverDataPacketBufferSize,
-				serverDataPacketBufferPoolSize,
-				serverMaxClients,
-				serverInputMessageQueueSize,
-				serverOutputMessageQueueSize);
+		int clientMailboxCountPerAsynShareConnection = 2;
+		int clientAsynInputMessageQueueCapacity = 5;
+		int clientAsynOutputMessageQueueCapacity = 5;
+		
+		boolean whetherServerWrapBufferIsDirect = true;
+		int serverWrapBufferMaxCntPerMessage = 80;
+		int serverWrapBufferSize = clientWrapBufferSize;
+		int serverWrapBufferPoolSize = 10000;
+		int serverInputMessageQueueCapacity = 5;
+		int serverOutputMessageQueueCapacity = 1000;
+		
+		
+		projectPartConfigurationForTest.setByteOrder(byteOrder);
+		projectPartConfigurationForTest.setCharset(charset);		
+		projectPartConfigurationForTest.setClientMonitorTimeInterval(clientMonitorTimeInterval);
+		projectPartConfigurationForTest.setClientWrapBufferMaxCntPerMessage(clientWrapBufferMaxCntPerMessage);
+		projectPartConfigurationForTest.setClientWrapBufferSize(clientWrapBufferSize);
+		projectPartConfigurationForTest.setClientWrapBufferPoolSize(clientWrapBufferPoolSize);
+		projectPartConfigurationForTest.setClientConnectionTimeout(clientConnectionTimeout);		
+		
+		// projectPartConfigurationForTest.setClientConnectionPoolSupporterTimeInterval(clientConnectionPoolSupporterTimeInterval);
+		projectPartConfigurationForTest.setClientMailboxCountPerAsynShareConnection(clientMailboxCountPerAsynShareConnection);
+		projectPartConfigurationForTest.setClientAsynInputMessageQueueCapacity(clientAsynInputMessageQueueCapacity);
+		projectPartConfigurationForTest.setClientAsynOutputMessageQueueCapacity(clientAsynOutputMessageQueueCapacity);
+		projectPartConfigurationForTest.setWhetherServerWrapBufferIsDirect(whetherServerWrapBufferIsDirect);
+		projectPartConfigurationForTest.setServerWrapBufferMaxCntPerMessage(serverWrapBufferMaxCntPerMessage);
+		projectPartConfigurationForTest.setServerWrapBufferSize(serverWrapBufferSize);
+		projectPartConfigurationForTest.setServerWrapBufferPoolSize(serverWrapBufferPoolSize);
+		projectPartConfigurationForTest.setServerInputMessageQueueCapacity(serverInputMessageQueueCapacity);
+		projectPartConfigurationForTest.setServerOutputMessageQueueCapacity(serverOutputMessageQueueCapacity);
+		
 
 		return projectPartConfigurationForTest;
 	}	
@@ -248,14 +239,18 @@ public class AsynThreadSafeSingleConnectionTest {
 	@Test
 	public void testSendSyncInputMessage_threadSafeOK() {
 		String testProjectName = "sample_test";
-		ProjectPartConfiguration projectPartConfigurationForTest = null;
+		AbstractProjectPartConfiguration projectPartConfigurationForTest = null;
 		MessageProtocolType messageProtocolTypeForTest = MessageProtocolType.DHB;
-		boolean clientDataPacketBufferIsDirect = false;
+		boolean whetherClientWrapBufferIsDirect = false;
 		String serverHost = null;
 		int serverPort;
+		int clientConnectionCount = 0;
+		int clientConnectionMaxCount = 5;
+		int serverMaxClients = 1000;
+		
 		int numberOfThread = 5;
-		int numberOfConnection = 0;
 		int retryCount = 10000;
+		
 		ArrayBlockingQueue<String> noticeBlockingQueue = new ArrayBlockingQueue<String>(numberOfThread); 
 		
 		// host = "172.30.1.16";
@@ -265,10 +260,11 @@ public class AsynThreadSafeSingleConnectionTest {
 		try {
 			projectPartConfigurationForTest = buildMainProjectPartConfiguration(testProjectName,
 					serverHost,  serverPort,
-					numberOfConnection,
+					clientConnectionCount,
+					clientConnectionMaxCount,
 					messageProtocolTypeForTest,
-					clientDataPacketBufferIsDirect,
-					ClientConnectionType.ASYN);
+					whetherClientWrapBufferIsDirect,
+					ClientConnectionType.ASYN, serverMaxClients);
 
 		} catch (Exception e) {
 			log.log(Level.WARNING, "error", e);
@@ -289,7 +285,7 @@ public class AsynThreadSafeSingleConnectionTest {
 							mainProjectName);
 			String projectResourcesPathString = ProjectBuildSytemPathSupporter.getProjectResourcesDirectoryPathString(installedPath.getAbsolutePath(), mainProjectName);
 			
-			anyProjectServerForTest = new AnyProjectServer(serverAPPINFClassPathString,
+			anyProjectServerForTest = new AnyProjectServer(testProjectName, serverAPPINFClassPathString,
 					projectResourcesPathString,
 					projectPartConfigurationForTest);
 			anyProjectServerForTest.startServer();
@@ -301,7 +297,7 @@ public class AsynThreadSafeSingleConnectionTest {
 		AnyProjectConnectionPoolIF  anyProjectConnectionPool  = null;
 		
 		try {
-			anyProjectConnectionPool = new AnyProjectConnectionPool(projectPartConfigurationForTest);
+			anyProjectConnectionPool = new AnyProjectConnectionPool(testProjectName, projectPartConfigurationForTest);
 		} catch (Exception e) {
 			log.log(Level.WARNING, "fail to create a asyn no-share connection pool", e);
 			fail("fail to create a asyn no-share connection pool");
@@ -309,7 +305,7 @@ public class AsynThreadSafeSingleConnectionTest {
 		
 		ConnectionIF connection = null;
 		try {
-			connection = anyProjectConnectionPool.createAsynThreadSafeSingleConnection(serverHost, serverPort);
+			connection = anyProjectConnectionPool.createAsynShareSingleConnection(serverHost, serverPort);
 		} catch (Exception e) {
 			log.log(Level.WARNING, "fail to create a asyn thread safe connection", e);
 			fail("fail to create a asyn thread safe connection");
@@ -399,6 +395,8 @@ public class AsynThreadSafeSingleConnectionTest {
 		}
 		
 		connection.close();
+		
+		anyProjectServerForTest.stopServer();
 	}
 
 }

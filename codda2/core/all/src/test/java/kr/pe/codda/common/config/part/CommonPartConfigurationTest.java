@@ -13,7 +13,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-package kr.pe.codda.common.config2.part;
+package kr.pe.codda.common.config.part;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
@@ -31,6 +31,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import kr.pe.codda.common.config.part.CommonPartConfiguration;
 import kr.pe.codda.common.etc.CommonStaticFinalVars;
 import kr.pe.codda.common.type.SessionKey;
 import kr.pe.codda.common.util.JDKLoggerCustomFormatter;
@@ -92,15 +93,15 @@ public class CommonPartConfigurationTest {
 		// SequencedProperties sourceSequencedProperties = new SequencedProperties();
 		
 		CommonPartConfiguration actualCommonPartConfiguration = new CommonPartConfiguration();
-		// commonPartConfiguration.setJdfAdminLoginPage("/sitemenu/member/AdminLoginInput.jsp");
-		actualCommonPartConfiguration.setJdfMemberLoginPage("/sitemenu/member/MemberLoginInput.jsp");
+		// commonPartConfiguration.setJDFAdminLoginPage("/sitemenu/member/AdminLoginInput.jsp");
+		actualCommonPartConfiguration.setJDFMemberLoginPage("/sitemenu/member/MemberLoginInput.jsp");
 		
 		actualCommonPartConfiguration.toPropertiesForJDFMemberLoginPage(sourceSequencedProperties);
 		
 		CommonPartConfiguration expectedCommonPartConfiguration = new CommonPartConfiguration();
 		
 		try {
-			expectedCommonPartConfiguration.toValueForJDFMemberLoginPage(sourceSequencedProperties);
+			expectedCommonPartConfiguration.fromPropertiesForJDFMemberLoginPage(sourceSequencedProperties);
 		} catch (Exception e) {
 			log.log(Level.WARNING, "fail to call 'toValue'", e);
 			
@@ -108,7 +109,7 @@ public class CommonPartConfigurationTest {
 		}	
 		
 		
-		assertEquals(expectedCommonPartConfiguration.getJdfMemberLoginPage(), actualCommonPartConfiguration.getJdfMemberLoginPage());
+		assertEquals(expectedCommonPartConfiguration.getJDFMemberLoginPage(), actualCommonPartConfiguration.getJDFMemberLoginPage());
 	}
 
 	
@@ -118,8 +119,8 @@ public class CommonPartConfigurationTest {
 		// SequencedProperties sourceSequencedProperties = new SequencedProperties();
 		
 		CommonPartConfiguration actualCommonPartConfiguration = new CommonPartConfiguration();
-		// commonPartConfiguration.setJdfAdminLoginPage("/sitemenu/member/AdminLoginInput.jsp");
-		actualCommonPartConfiguration.setJdfMemberLoginPage("/sitemenu/member/MemberLoginInput.jsp");
+		// commonPartConfiguration.setJDFAdminLoginPage("/sitemenu/member/AdminLoginInput.jsp");
+		actualCommonPartConfiguration.setJDFMemberLoginPage("/sitemenu/member/MemberLoginInput.jsp");
 		
 		actualCommonPartConfiguration.toPropertiesForJDFMemberLoginPage(sourceSequencedProperties);
 		
@@ -132,14 +133,14 @@ public class CommonPartConfigurationTest {
 		SequencedProperties sourceSequencedProperties = new SequencedProperties();
 		
 		CommonPartConfiguration actualCommonPartConfiguration = new CommonPartConfiguration();
-		actualCommonPartConfiguration.setJdfAdminLoginPage("/sitemenu/member/AdminLoginInput.jsp");
+		actualCommonPartConfiguration.setJDFAdminLoginPage("/sitemenu/member/AdminLoginInput.jsp");
 		
 		actualCommonPartConfiguration.toPropertiesForJDFAdminLoginPage(sourceSequencedProperties);
 		
 		CommonPartConfiguration expectedCommonPartConfiguration = new CommonPartConfiguration();
 		
 		try {
-			expectedCommonPartConfiguration.toValueForJDFAdminLoginPage(sourceSequencedProperties);
+			expectedCommonPartConfiguration.fromPropertiesForJDFAdminLoginPage(sourceSequencedProperties);
 		} catch (Exception e) {
 			log.log(Level.WARNING, "fail to call 'toValue'", e);
 			
@@ -147,7 +148,7 @@ public class CommonPartConfigurationTest {
 		}	
 		
 		
-		assertEquals(expectedCommonPartConfiguration.getJdfAdminLoginPage(), actualCommonPartConfiguration.getJdfAdminLoginPage());
+		assertEquals(expectedCommonPartConfiguration.getJDFAdminLoginPage(), actualCommonPartConfiguration.getJDFAdminLoginPage());
 	}
 	
 	
@@ -156,7 +157,7 @@ public class CommonPartConfigurationTest {
 		SequencedProperties sourceSequencedProperties = new SequencedProperties();
 		
 		CommonPartConfiguration actualCommonPartConfiguration = new CommonPartConfiguration();
-		actualCommonPartConfiguration.setJdfAdminLoginPage("/sitemenu/member/AdminLoginInput.jsp");
+		actualCommonPartConfiguration.setJDFAdminLoginPage("/sitemenu/member/AdminLoginInput.jsp");
 		
 		actualCommonPartConfiguration.toPropertiesForJDFAdminLoginPage(sourceSequencedProperties);
 		
@@ -168,14 +169,14 @@ public class CommonPartConfigurationTest {
 		SequencedProperties sourceSequencedProperties = new SequencedProperties();
 		
 		CommonPartConfiguration actualCommonPartConfiguration = new CommonPartConfiguration();
-		actualCommonPartConfiguration.setJdfSessionKeyRedirectPage("/sessionKeyRedirect.jsp");
+		actualCommonPartConfiguration.setJDFSessionKeyRedirectPage("/sessionKeyRedirect.jsp");
 		
 		actualCommonPartConfiguration.toPropertiesForJDFSessionKeyRedirectPage(sourceSequencedProperties);
 		
 		CommonPartConfiguration expectedCommonPartConfiguration = new CommonPartConfiguration();
 		
 		try {
-			expectedCommonPartConfiguration.toValueForJDFSessionKeyRedirectPage(sourceSequencedProperties);
+			expectedCommonPartConfiguration.fromPropertiesForJDFSessionKeyRedirectPage(sourceSequencedProperties);
 		} catch (Exception e) {
 			log.log(Level.WARNING, "fail to call 'toValue'", e);
 			
@@ -183,7 +184,7 @@ public class CommonPartConfigurationTest {
 		}	
 		
 		
-		assertEquals(expectedCommonPartConfiguration.getJdfSessionKeyRedirectPage(), actualCommonPartConfiguration.getJdfSessionKeyRedirectPage());
+		assertEquals(expectedCommonPartConfiguration.getJDFSessionKeyRedirectPage(), actualCommonPartConfiguration.getJDFSessionKeyRedirectPage());
 	}
 	
 	@Test
@@ -191,7 +192,7 @@ public class CommonPartConfigurationTest {
 		SequencedProperties sourceSequencedProperties = new SequencedProperties();
 		
 		CommonPartConfiguration actualCommonPartConfiguration = new CommonPartConfiguration();
-		actualCommonPartConfiguration.setJdfSessionKeyRedirectPage("/sessionKeyRedirect.jsp");
+		actualCommonPartConfiguration.setJDFSessionKeyRedirectPage("/sessionKeyRedirect.jsp");
 		
 		actualCommonPartConfiguration.toPropertiesForJDFSessionKeyRedirectPage(sourceSequencedProperties);
 		
@@ -204,14 +205,14 @@ public class CommonPartConfigurationTest {
 		SequencedProperties sourceSequencedProperties = new SequencedProperties();
 		
 		CommonPartConfiguration actualCommonPartConfiguration = new CommonPartConfiguration();
-		actualCommonPartConfiguration.setJdfErrorMessagePage("/errorMessagePage.jsp");
+		actualCommonPartConfiguration.setJDFErrorMessagePage("/errorMessagePage.jsp");
 		
 		actualCommonPartConfiguration.toPropertiesForJDFErrorMessagePage(sourceSequencedProperties);
 		
 		CommonPartConfiguration expectedCommonPartConfiguration = new CommonPartConfiguration();
 		
 		try {
-			expectedCommonPartConfiguration.toValueForJDFErrorMessagePage(sourceSequencedProperties);
+			expectedCommonPartConfiguration.fromPropertiesForJDFErrorMessagePage(sourceSequencedProperties);
 		} catch (Exception e) {
 			log.log(Level.WARNING, "fail to call 'toValue'", e);
 			
@@ -219,7 +220,7 @@ public class CommonPartConfigurationTest {
 		}	
 		
 		
-		assertEquals(expectedCommonPartConfiguration.getJdfErrorMessagePage(), actualCommonPartConfiguration.getJdfErrorMessagePage());
+		assertEquals(expectedCommonPartConfiguration.getJDFErrorMessagePage(), actualCommonPartConfiguration.getJDFErrorMessagePage());
 	}
 	
 	@Test
@@ -227,7 +228,7 @@ public class CommonPartConfigurationTest {
 		SequencedProperties sourceSequencedProperties = new SequencedProperties();
 		
 		CommonPartConfiguration actualCommonPartConfiguration = new CommonPartConfiguration();
-		actualCommonPartConfiguration.setJdfErrorMessagePage("/errorMessagePage.jsp");
+		actualCommonPartConfiguration.setJDFErrorMessagePage("/errorMessagePage.jsp");
 		
 		actualCommonPartConfiguration.toPropertiesForJDFErrorMessagePage(sourceSequencedProperties);
 		
@@ -239,14 +240,14 @@ public class CommonPartConfigurationTest {
 		SequencedProperties sourceSequencedProperties = new SequencedProperties();
 		
 		CommonPartConfiguration actualCommonPartConfiguration = new CommonPartConfiguration();
-		actualCommonPartConfiguration.setJdfServletTrace(true);
+		actualCommonPartConfiguration.setJDFServletTrace(true);
 		
 		actualCommonPartConfiguration.toPropertiesForJDFServletTrace(sourceSequencedProperties);
 		
 		CommonPartConfiguration expectedCommonPartConfiguration = new CommonPartConfiguration();
 		
 		try {
-			expectedCommonPartConfiguration.toValueForJDFServletTrace(sourceSequencedProperties);
+			expectedCommonPartConfiguration.fromPropertiesForJDFServletTrace(sourceSequencedProperties);
 		} catch (Exception e) {
 			log.log(Level.WARNING, "fail to call 'toValue'", e);
 			
@@ -254,7 +255,7 @@ public class CommonPartConfigurationTest {
 		}	
 		
 		
-		assertEquals(expectedCommonPartConfiguration.getJdfServletTrace(), actualCommonPartConfiguration.getJdfServletTrace());
+		assertEquals(expectedCommonPartConfiguration.getJDFServletTrace(), actualCommonPartConfiguration.getJDFServletTrace());
 	}
 	
 	
@@ -263,7 +264,7 @@ public class CommonPartConfigurationTest {
 		SequencedProperties sourceSequencedProperties = new SequencedProperties();
 		
 		CommonPartConfiguration actualCommonPartConfiguration = new CommonPartConfiguration();
-		actualCommonPartConfiguration.setJdfServletTrace(true);
+		actualCommonPartConfiguration.setJDFServletTrace(true);
 		
 		actualCommonPartConfiguration.toPropertiesForJDFServletTrace(sourceSequencedProperties);
 		
@@ -276,14 +277,14 @@ public class CommonPartConfigurationTest {
 		SequencedProperties sourceSequencedProperties = new SequencedProperties();
 		
 		CommonPartConfiguration actualCommonPartConfiguration = new CommonPartConfiguration();
-		actualCommonPartConfiguration.setRsaKeypairSourceOfSessionKey(SessionKey.RSAKeypairSourceType.FILE);
+		actualCommonPartConfiguration.setRSAKeypairSourceOfSessionKey(SessionKey.RSAKeypairSourceType.FILE);
 		
 		actualCommonPartConfiguration.toPropertiesForRSAKeypairSourceOfSessionKey(sourceSequencedProperties);
 		
 		CommonPartConfiguration expectedCommonPartConfiguration = new CommonPartConfiguration();
 		
 		try {
-			expectedCommonPartConfiguration.toValueForRSAKeypairSourceOfSessionKey(sourceSequencedProperties);
+			expectedCommonPartConfiguration.fromPropertiesForRSAKeypairSourceOfSessionKey(sourceSequencedProperties);
 		} catch (Exception e) {
 			log.log(Level.WARNING, "fail to call 'toValue'", e);
 			
@@ -291,7 +292,7 @@ public class CommonPartConfigurationTest {
 		}	
 		
 		
-		assertEquals(expectedCommonPartConfiguration.getRsaKeypairSourceOfSessionKey(), actualCommonPartConfiguration.getRsaKeypairSourceOfSessionKey());
+		assertEquals(expectedCommonPartConfiguration.getRSAKeypairSourceOfSessionKey(), actualCommonPartConfiguration.getRSAKeypairSourceOfSessionKey());
 	}
 	
 	@Test
@@ -299,7 +300,7 @@ public class CommonPartConfigurationTest {
 		SequencedProperties sourceSequencedProperties = new SequencedProperties();
 		
 		CommonPartConfiguration actualCommonPartConfiguration = new CommonPartConfiguration();
-		actualCommonPartConfiguration.setRsaKeypairSourceOfSessionKey(SessionKey.RSAKeypairSourceType.SERVER);
+		actualCommonPartConfiguration.setRSAKeypairSourceOfSessionKey(SessionKey.RSAKeypairSourceType.SERVER);
 		
 		actualCommonPartConfiguration.toPropertiesForRSAKeypairSourceOfSessionKey(sourceSequencedProperties);
 		
@@ -319,21 +320,21 @@ public class CommonPartConfigurationTest {
 		SequencedProperties sourceSequencedProperties = new SequencedProperties();
 		
 		CommonPartConfiguration actualCommonPartConfiguration = new CommonPartConfiguration();
-		actualCommonPartConfiguration.setRsaPublickeyFileOfSessionKey(tempFile.getAbsoluteFile());
+		actualCommonPartConfiguration.setRSAPublickeyFileOfSessionKey(tempFile.getAbsoluteFile());
 		
 		actualCommonPartConfiguration.toPropertiesForRSAPublickeyFileOfSessionKey(sourceSequencedProperties);
 		
 		CommonPartConfiguration expectedCommonPartConfiguration = new CommonPartConfiguration();
 		
 		try {
-			expectedCommonPartConfiguration.toValueForRSAPublickeyFileOfSessionKey(sourceSequencedProperties);
+			expectedCommonPartConfiguration.fromPropertiesForRSAPublickeyFileOfSessionKey(sourceSequencedProperties);
 		} catch (Exception e) {
 			log.log(Level.WARNING, "fail to call 'toValue'", e);
 			
 			fail("fail to call 'toValue'");
 		}
 		
-		assertEquals(expectedCommonPartConfiguration.getRsaPublickeyFileOfSessionKey(), actualCommonPartConfiguration.getRsaPublickeyFileOfSessionKey());
+		assertEquals(expectedCommonPartConfiguration.getRSAPublickeyFileOfSessionKey(), actualCommonPartConfiguration.getRSAPublickeyFileOfSessionKey());
 	}
 	
 	@Test
@@ -351,7 +352,7 @@ public class CommonPartConfigurationTest {
 		SequencedProperties sourceSequencedProperties = new SequencedProperties();
 		
 		CommonPartConfiguration actualCommonPartConfiguration = new CommonPartConfiguration();
-		actualCommonPartConfiguration.setRsaPublickeyFileOfSessionKey(tempFile);
+		actualCommonPartConfiguration.setRSAPublickeyFileOfSessionKey(tempFile);
 		
 		actualCommonPartConfiguration.toPropertiesForRSAPublickeyFileOfSessionKey(sourceSequencedProperties);
 		
@@ -371,21 +372,21 @@ public class CommonPartConfigurationTest {
 		SequencedProperties sourceSequencedProperties = new SequencedProperties();
 		
 		CommonPartConfiguration actualCommonPartConfiguration = new CommonPartConfiguration();
-		actualCommonPartConfiguration.setRsaPrivatekeyFileOfSessionKey(tempFile.getAbsoluteFile());
+		actualCommonPartConfiguration.setRSAPrivatekeyFileOfSessionKey(tempFile.getAbsoluteFile());
 		
 		actualCommonPartConfiguration.toPropertiesForRSAPrivatekeyFileOfSessionKey(sourceSequencedProperties);
 		
 		CommonPartConfiguration expectedCommonPartConfiguration = new CommonPartConfiguration();
 		
 		try {
-			expectedCommonPartConfiguration.toValueForRSAPrivatekeyFileOfSessionKey(sourceSequencedProperties);
+			expectedCommonPartConfiguration.fromPropertiesForRSAPrivatekeyFileOfSessionKey(sourceSequencedProperties);
 		} catch (Exception e) {
 			log.log(Level.WARNING, "fail to call 'toValue'", e);
 			
 			fail("fail to call 'toValue'");
 		}
 		
-		assertEquals(expectedCommonPartConfiguration.getRsaPrivatekeyFileOfSessionKey(), actualCommonPartConfiguration.getRsaPrivatekeyFileOfSessionKey());
+		assertEquals(expectedCommonPartConfiguration.getRSAPrivatekeyFileOfSessionKey(), actualCommonPartConfiguration.getRSAPrivatekeyFileOfSessionKey());
 	}
 	
 	@Test
@@ -402,7 +403,7 @@ public class CommonPartConfigurationTest {
 		SequencedProperties sourceSequencedProperties = new SequencedProperties();
 		
 		CommonPartConfiguration actualCommonPartConfiguration = new CommonPartConfiguration();
-		actualCommonPartConfiguration.setRsaPrivatekeyFileOfSessionKey(tempFile);
+		actualCommonPartConfiguration.setRSAPrivatekeyFileOfSessionKey(tempFile);
 		
 		actualCommonPartConfiguration.toPropertiesForRSAPrivatekeyFileOfSessionKey(sourceSequencedProperties);
 		
@@ -415,21 +416,21 @@ public class CommonPartConfigurationTest {
 		SequencedProperties sourceSequencedProperties = new SequencedProperties();
 		
 		CommonPartConfiguration actualCommonPartConfiguration = new CommonPartConfiguration();
-		actualCommonPartConfiguration.setRsaKeySizeOfSessionKey(2048);
+		actualCommonPartConfiguration.setRSAKeySizeOfSessionKey(2048);
 		
 		actualCommonPartConfiguration.toPropertiesForRSAKeySizeOfSessionKey(sourceSequencedProperties);
 		
 		CommonPartConfiguration expectedCommonPartConfiguration = new CommonPartConfiguration();
 		
 		try {
-			expectedCommonPartConfiguration.toValueForRSAKeySizeOfSessionKey(sourceSequencedProperties);
+			expectedCommonPartConfiguration.fromPropertiesForRSAKeySizeOfSessionKey(sourceSequencedProperties);
 		} catch (Exception e) {
 			log.log(Level.WARNING, "fail to call 'toValue'", e);
 			
 			fail("fail to call 'toValue'");
 		}
 		
-		assertEquals(expectedCommonPartConfiguration.getRsaKeySizeOfSessionKey(), actualCommonPartConfiguration.getRsaKeySizeOfSessionKey());
+		assertEquals(expectedCommonPartConfiguration.getRSAKeySizeOfSessionKey(), actualCommonPartConfiguration.getRSAKeySizeOfSessionKey());
 	}
 	
 	@Test
@@ -437,7 +438,7 @@ public class CommonPartConfigurationTest {
 		SequencedProperties sourceSequencedProperties = new SequencedProperties();
 		
 		CommonPartConfiguration actualCommonPartConfiguration = new CommonPartConfiguration();
-		actualCommonPartConfiguration.setRsaKeySizeOfSessionKey(2048);
+		actualCommonPartConfiguration.setRSAKeySizeOfSessionKey(2048);
 		
 		actualCommonPartConfiguration.toPropertiesForRSAKeySizeOfSessionKey(sourceSequencedProperties);
 		
@@ -457,7 +458,7 @@ public class CommonPartConfigurationTest {
 		CommonPartConfiguration expectedCommonPartConfiguration = new CommonPartConfiguration();
 		
 		try {
-			expectedCommonPartConfiguration.toValueForSymmetricKeyAlgorithmOfSessionKey(sourceSequencedProperties);
+			expectedCommonPartConfiguration.fromPropertiesForSymmetricKeyAlgorithmOfSessionKey(sourceSequencedProperties);
 		} catch (Exception e) {
 			log.log(Level.WARNING, "fail to call 'toValue'", e);
 			
@@ -492,7 +493,7 @@ public class CommonPartConfigurationTest {
 		CommonPartConfiguration expectedCommonPartConfiguration = new CommonPartConfiguration();
 		
 		try {
-			expectedCommonPartConfiguration.toValueForSymmetricKeySizeOfSessionKey(sourceSequencedProperties);
+			expectedCommonPartConfiguration.fromPropertiesForSymmetricKeySizeOfSessionKey(sourceSequencedProperties);
 		} catch (Exception e) {
 			log.log(Level.WARNING, "fail to call 'toValue'", e);
 			
@@ -528,7 +529,7 @@ public class CommonPartConfigurationTest {
 		CommonPartConfiguration expectedCommonPartConfiguration = new CommonPartConfiguration();
 		
 		try {
-			expectedCommonPartConfiguration.toValueForSymmetricIVSizeOfSessionKey(sourceSequencedProperties);
+			expectedCommonPartConfiguration.fromPropertiesForSymmetricIVSizeOfSessionKey(sourceSequencedProperties);
 		} catch (Exception e) {
 			log.log(Level.WARNING, "fail to call 'toValue'", e);
 			

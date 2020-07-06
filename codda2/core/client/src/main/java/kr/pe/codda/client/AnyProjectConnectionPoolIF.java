@@ -81,7 +81,7 @@ public interface AnyProjectConnectionPoolIF {
 	 * @throws NoMoreWrapBufferException 랩버퍼 폴에 랩버퍼 요구하였는데 없는 경우 던지는 예외
 	 * @throws NotSupportedException 연결 종류가 동기일 경우 던지는 예외, 동기 연결은 이 메소드를 지원하지 않는다.
 	 */
-	public ConnectionIF createAsynThreadSafeSingleConnection(String serverHost, int serverPort)
+	public ConnectionIF createAsynShareSingleConnection(String serverHost, int serverPort)
 			throws InterruptedException, IOException, NoMoreWrapBufferException, NotSupportedException;
 	
 	/**
@@ -92,7 +92,7 @@ public interface AnyProjectConnectionPoolIF {
 	 * @throws IOException 입출력 에러 발생시 던지는 예외
 	 * @throws NoMoreWrapBufferException 랩버퍼 폴에 랩버퍼 요구하였는데 없는 경우 던지는 예외
 	 */
-	public ConnectionIF createSyncThreadSafeSingleConnection(String serverHost, int serverPort)
+	public ConnectionIF createSyncShareSingleConnection(String serverHost, int serverPort)
 			throws InterruptedException, IOException, NoMoreWrapBufferException;
 	
 	

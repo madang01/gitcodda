@@ -117,9 +117,8 @@ public abstract class CommonStaticFinalVars {
 	public static final String LF_CHAR = "\n";
 	public static final String CR_CHAR = "\r";
 	
-	public static final int NOCOUNT_ASYN_MAILBOX_ID = 0;
-	public static final int COUNT_ASYN_MAILBOX_ID = 1;
-	public static final int SYNC_MAILBOX_START_ID = 2;
+	public static final int ASYN_MAILBOX_ID = 0;
+	public static final int SYNC_MAILBOX_START_ID = 1;
 	
 	
 	public static final String PRIVATE_KEY_FILE_NAME = "codda.privatekey";

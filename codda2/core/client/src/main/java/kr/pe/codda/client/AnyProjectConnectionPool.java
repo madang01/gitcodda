@@ -30,22 +30,21 @@ import kr.pe.codda.client.classloader.ClientTaskMangerIF;
 import kr.pe.codda.client.classloader.ClientTaskMangerUsingSystemClassLoader;
 import kr.pe.codda.client.connection.ConnectionPoolIF;
 import kr.pe.codda.client.connection.ConnectionPoolSupporter;
-import kr.pe.codda.client.connection.asyn.AsynThreadSafeSingleConnection;
-import kr.pe.codda.client.connection.asyn.AyncThreadSafeSingleConnectedConnectionAdder;
+import kr.pe.codda.client.connection.asyn.AsynShareSingleConnection;
+import kr.pe.codda.client.connection.asyn.AyncConnectedShareSingleConnectionAdder;
 import kr.pe.codda.client.connection.asyn.ClientIOEventController;
 import kr.pe.codda.client.connection.asyn.noshare.AsynNoShareConnectionPool;
 import kr.pe.codda.client.connection.sync.SyncNoShareConnectionPool;
-import kr.pe.codda.client.connection.sync.SyncThreadSafeSingleConnection;
+import kr.pe.codda.client.connection.sync.SyncShareSingleConnection;
 import kr.pe.codda.common.buildsystem.pathsupporter.ProjectBuildSytemPathSupporter;
 import kr.pe.codda.common.buildsystem.pathsupporter.WebRootBuildSystemPathSupporter;
 import kr.pe.codda.common.classloader.MessageCodecMangerIF;
 import kr.pe.codda.common.config.CoddaConfiguration;
 import kr.pe.codda.common.config.CoddaConfigurationManager;
-import kr.pe.codda.common.config.subset.ProjectPartConfiguration;
+import kr.pe.codda.common.config.part.AbstractProjectPartConfiguration;
 import kr.pe.codda.common.etc.CommonStaticFinalVars;
 import kr.pe.codda.common.etc.StreamCharsetFamily;
 import kr.pe.codda.common.exception.BodyFormatException;
-import kr.pe.codda.common.exception.PartConfigurationException;
 import kr.pe.codda.common.exception.ConnectionPoolException;
 import kr.pe.codda.common.exception.DynamicClassCallException;
 import kr.pe.codda.common.exception.NoMoreWrapBufferException;
@@ -71,22 +70,22 @@ public final class AnyProjectConnectionPool implements AnyProjectConnectionPoolI
 	
 	// private ProjectPartConfiguration projectPartConfiguration = null;
 	
-	private final String mainProjectName;
+	private final String projectName;
 	private final String serverHost;
 	private final int serverPort;
-	private final long socketTimeout;
+	private final long connectionTimeout;
 	private final StreamCharsetFamily streamCharsetFamily;
 	private final int clientAsynInputMessageQueueCapacity;
-	private final long aliveTimePerWrapBuffer;
-	private final long retryIntervaTimeToAddInputMessage;
-	private final long retryIntervaTimeToGetConnection;
-	private final int clientSyncMessageMailboxCountPerAsynShareConnection;
+	private final long clientAsynAliveTimePerWrapBuffer;
+	private final long clientAsynRetryIntervaTimeToAddInputMessage;
+	private final long clientRetryIntervaTimeToGetConnection;
+	private final int clientMailboxCountPerAsynShareConnection;
 
-	private boolean clientDataPacketBufferIsDirect;
-	private int clientDataPacketBufferMaxCntPerMessage;
-	private int clientDataPacketBufferSize;
-	private int clientDataPacketBufferPoolSize;
-	private ClientConnectionType connectionType = null;	
+	private boolean whetherClientWrapBufferIsDirect;
+	private int clientWrapBufferMaxCntPerMessage;
+	private int clientWrapBufferSize;
+	private int clientWrapBufferPoolSize;
+	private ClientConnectionType clientConnectionType = null;	
 	private long clientConnectionPoolSupporterTimeInterval;
 	
 	private ConnectionPoolIF connectionPool = null;	
@@ -97,16 +96,17 @@ public final class AnyProjectConnectionPool implements AnyProjectConnectionPoolI
 	private ClientIOEventController asynClientIOEventController = null;
 	
 
-	public AnyProjectConnectionPool(ProjectPartConfiguration projectPartConfiguration) throws NoMoreWrapBufferException, IOException, ConnectionPoolException, InterruptedException {
+	public AnyProjectConnectionPool(String projectName, AbstractProjectPartConfiguration projectPartConfiguration) throws NoMoreWrapBufferException, IOException, ConnectionPoolException, InterruptedException {
 		// this.projectPartConfiguration = projectPartConfiguration;
 		
-		mainProjectName = projectPartConfiguration.getProjectName();
+		this.projectName = projectName;
 		serverHost = projectPartConfiguration.getServerHost();
 		serverPort = projectPartConfiguration.getServerPort();
 		final ByteOrder byteOrder = projectPartConfiguration.getByteOrder();
-		socketTimeout = projectPartConfiguration.getClientSocketTimeout();
+		connectionTimeout = projectPartConfiguration.getClientConnectionTimeout();
 		streamCharsetFamily = new StreamCharsetFamily(projectPartConfiguration.getCharset());
 		clientAsynInputMessageQueueCapacity = projectPartConfiguration.getClientAsynInputMessageQueueCapacity();
+		clientRetryIntervaTimeToGetConnection = projectPartConfiguration.getClientRetryIntervaTimeToGetConnection();
 		// projectPartConfiguration.getClientAsynInputMessageQueueCapacity();
 		
 		
@@ -116,35 +116,35 @@ public final class AnyProjectConnectionPool implements AnyProjectConnectionPoolI
 		 * WrapBufer 4KBytes = 4 * 1024
 		 * 디폴트 값은 400 nanoseconds 
 		 */
-		aliveTimePerWrapBuffer = 400L;
-		retryIntervaTimeToAddInputMessage = 400L;
-		retryIntervaTimeToGetConnection = 5000L;
+		clientAsynAliveTimePerWrapBuffer = projectPartConfiguration.getClientAsynAliveTimePerWrapBuffer();
+		clientAsynRetryIntervaTimeToAddInputMessage = projectPartConfiguration.getClientAsynRetryIntervaTimeToAddInputMessage();
+		
 		final int clientConnectionCount = projectPartConfiguration.getClientConnectionCount();
-		clientSyncMessageMailboxCountPerAsynShareConnection = projectPartConfiguration.getClientSyncMessageMailboxCountPerAsynShareConnection();		
+		clientMailboxCountPerAsynShareConnection = projectPartConfiguration.getClientMailboxCountPerAsynShareConnection();		
 		
 		
 		// projectPartConfiguration.getClientConnectionMaxCount();		
 		
 		final MessageProtocolType messageProtocolType = projectPartConfiguration.getMessageProtocolType();
-		clientDataPacketBufferIsDirect = projectPartConfiguration.getClientDataPacketBufferIsDirect();
-		clientDataPacketBufferMaxCntPerMessage = projectPartConfiguration.getClientDataPacketBufferMaxCntPerMessage();
-		clientDataPacketBufferSize = projectPartConfiguration.getClientDataPacketBufferSize();
-		clientDataPacketBufferPoolSize = projectPartConfiguration.getClientDataPacketBufferPoolSize();		
-		connectionType = projectPartConfiguration.getConnectionType();
+		whetherClientWrapBufferIsDirect = projectPartConfiguration.getWhetherClientWrapBufferIsDirect();
+		clientWrapBufferMaxCntPerMessage = projectPartConfiguration.getClientWrapBufferMaxCntPerMessage();
+		clientWrapBufferSize = projectPartConfiguration.getClientWrapBufferSize();
+		clientWrapBufferPoolSize = projectPartConfiguration.getClientWrapBufferPoolSize();		
+		clientConnectionType = projectPartConfiguration.getClientConnectionType();
 		clientConnectionPoolSupporterTimeInterval = projectPartConfiguration.getClientConnectionPoolSupporterTimeInterval();
 		
 		// private final int clientSyncMessageMailboxCountPerAsynShareConnection
 		
 		
 		
-		wrapBufferPool = new WrapBufferPool(clientDataPacketBufferIsDirect, byteOrder,
-				clientDataPacketBufferSize,
-				clientDataPacketBufferPoolSize);
+		wrapBufferPool = new WrapBufferPool(whetherClientWrapBufferIsDirect, byteOrder,
+				clientWrapBufferSize,
+				clientWrapBufferPoolSize);
 		
 
 		switch (messageProtocolType) {
 			case DHB: {
-				messageProtocol = new DHBMessageProtocol(clientDataPacketBufferMaxCntPerMessage,
+				messageProtocol = new DHBMessageProtocol(clientWrapBufferMaxCntPerMessage,
 						streamCharsetFamily, wrapBufferPool);
 	
 				break;
@@ -156,13 +156,13 @@ public final class AnyProjectConnectionPool implements AnyProjectConnectionPoolI
 			 * charsetDecoderOfProject, wrapBufferPool); break; }
 			 */
 			case THB: {
-				messageProtocol = new THBMessageProtocol(clientDataPacketBufferMaxCntPerMessage,
+				messageProtocol = new THBMessageProtocol(clientWrapBufferMaxCntPerMessage,
 						streamCharsetFamily, wrapBufferPool);
 				break;
 			}
 			default: {
 				String errorMessage = new StringBuilder().append("지원하지 않은 프로젝트[")
-						.append(mainProjectName)
+						.append(projectName)
 						.append("]의 메시지 프로토콜[")
 						.append(messageProtocolType.toString())
 						.append("] 입니다").toString();
@@ -174,11 +174,11 @@ public final class AnyProjectConnectionPool implements AnyProjectConnectionPoolI
 		
 		connectionPoolSupporter = new ConnectionPoolSupporter(clientConnectionPoolSupporterTimeInterval);
 		
-		if (connectionType.equals(ClientConnectionType.SYNC)) {
-			connectionPool = new SyncNoShareConnectionPool(serverHost, serverPort, socketTimeout,
+		if (clientConnectionType.equals(ClientConnectionType.SYNC)) {
+			connectionPool = new SyncNoShareConnectionPool(serverHost, serverPort, connectionTimeout,
 					streamCharsetFamily, 
-					clientDataPacketBufferMaxCntPerMessage,
-					retryIntervaTimeToGetConnection,
+					clientWrapBufferMaxCntPerMessage,
+					clientRetryIntervaTimeToGetConnection,
 					clientConnectionCount,
 					messageProtocol, wrapBufferPool,
 					connectionPoolSupporter);
@@ -194,15 +194,15 @@ public final class AnyProjectConnectionPool implements AnyProjectConnectionPoolI
 				String installedPathString = runningProjectConfiguration.getInstalledPathString();
 				
 				String clientClassloaderClassPathString = new StringBuilder()
-						.append(WebRootBuildSystemPathSupporter.getUserWebINFPathString(installedPathString, mainProjectName))
+						.append(WebRootBuildSystemPathSupporter.getUserWebINFPathString(installedPathString, projectName))
 						.append(File.separator)
 						.append("classes")
 						.toString();
-				String clientClassloaderReousrcesPathString = ProjectBuildSytemPathSupporter.getProjectResourcesDirectoryPathString(installedPathString, mainProjectName); 
+				String clientClassloaderReousrcesPathString = ProjectBuildSytemPathSupporter.getProjectResourcesDirectoryPathString(installedPathString, projectName); 
 				ClientClassLoaderFactory clientClassLoaderFactory = null;
 				try {
 					clientClassLoaderFactory = new ClientClassLoaderFactory(clientClassloaderClassPathString, clientClassloaderReousrcesPathString);
-				} catch (PartConfigurationException e) {
+				} catch (Exception e) {
 					log.severe("fail to create a instance of ClientClassLoaderFactory class, errmsg=" + e.getMessage());
 					System.exit(1);
 				}
@@ -213,13 +213,13 @@ public final class AnyProjectConnectionPool implements AnyProjectConnectionPoolI
 					projectPartConfiguration.getClientSelectorWakeupInterval());
 			
 			ConnectionPoolIF asynConnectionPool = 
-					new AsynNoShareConnectionPool(mainProjectName, serverHost, serverPort, socketTimeout,
+					new AsynNoShareConnectionPool(projectName, serverHost, serverPort, connectionTimeout,
 							streamCharsetFamily,
-							clientDataPacketBufferMaxCntPerMessage,
+							clientWrapBufferMaxCntPerMessage,
 							clientAsynInputMessageQueueCapacity,
-							aliveTimePerWrapBuffer,
-							retryIntervaTimeToAddInputMessage,
-							retryIntervaTimeToGetConnection,
+							clientAsynAliveTimePerWrapBuffer,
+							clientAsynRetryIntervaTimeToAddInputMessage,
+							clientRetryIntervaTimeToGetConnection,
 							clientConnectionCount,
 							messageProtocol, clientTaskManger, wrapBufferPool,					
 					connectionPoolSupporter, asynClientIOEventController);
@@ -298,41 +298,41 @@ public final class AnyProjectConnectionPool implements AnyProjectConnectionPoolI
 	}
 
 	@Override
-	public ConnectionIF createAsynThreadSafeSingleConnection(String serverHost, int serverPort) throws InterruptedException, IOException, NoMoreWrapBufferException, NotSupportedException {
-		if (connectionType.equals(ClientConnectionType.SYNC)) {
+	public ConnectionIF createAsynShareSingleConnection(String serverHost, int serverPort) throws InterruptedException, IOException, NoMoreWrapBufferException, NotSupportedException {
+		if (clientConnectionType.equals(ClientConnectionType.SYNC)) {
 			throw new NotSupportedException("the connection type is sync, it must be asyn, check the connection type in configuration");
 		}
 		
 		ConnectionIF connectedConnection = null;
 		
-		AyncThreadSafeSingleConnectedConnectionAdder ayncThreadSafeSingleConnectedConnectionAdder = new AyncThreadSafeSingleConnectedConnectionAdder();
-		AsynThreadSafeSingleConnection unregisteredAsynThreadSafeSingleConnection = 
-				new AsynThreadSafeSingleConnection(mainProjectName, serverHost,
+		AyncConnectedShareSingleConnectionAdder syncConnectedShareSingleConnectionAdder = new AyncConnectedShareSingleConnectionAdder();
+		AsynShareSingleConnection unregisteredAsynShareSingleConnection = 
+				new AsynShareSingleConnection(projectName, serverHost,
 						serverPort,
-						socketTimeout,
+						connectionTimeout,
 						streamCharsetFamily,
-						clientDataPacketBufferMaxCntPerMessage,
+						clientWrapBufferMaxCntPerMessage,
 						clientAsynInputMessageQueueCapacity,
-						clientSyncMessageMailboxCountPerAsynShareConnection,
-						aliveTimePerWrapBuffer,
-						retryIntervaTimeToAddInputMessage,
-				messageProtocol, wrapBufferPool, clientTaskManger, ayncThreadSafeSingleConnectedConnectionAdder, 
+						clientMailboxCountPerAsynShareConnection,
+						clientAsynAliveTimePerWrapBuffer,
+						clientAsynRetryIntervaTimeToAddInputMessage,
+				messageProtocol, wrapBufferPool, clientTaskManger, syncConnectedShareSingleConnectionAdder, 
 				asynClientIOEventController);		
 		
-		asynClientIOEventController.addUnregisteredAsynConnection(unregisteredAsynThreadSafeSingleConnection);
+		asynClientIOEventController.addUnregisteredAsynConnection(unregisteredAsynShareSingleConnection);
 		asynClientIOEventController.wakeup();
 				
 		try {
-			connectedConnection = ayncThreadSafeSingleConnectedConnectionAdder.poll(socketTimeout);
+			connectedConnection = syncConnectedShareSingleConnectionAdder.poll(connectionTimeout);
 		} catch(SocketTimeoutException e) {
 			String warnMessage = new StringBuilder().append("this connection[")
-					.append(unregisteredAsynThreadSafeSingleConnection.hashCode())
+					.append(unregisteredAsynShareSingleConnection.hashCode())
 					.append("] timeout occurred").toString();
 			
 			log.warning(warnMessage);
 			
 			/** WARNING! don't delete this code, this code is the code that closes the socket to cancel the connection registered in the selector */
-			unregisteredAsynThreadSafeSingleConnection.close();
+			unregisteredAsynShareSingleConnection.close();
 				
 			
 			throw e;
@@ -342,15 +342,15 @@ public final class AnyProjectConnectionPool implements AnyProjectConnectionPoolI
 	}
 	
 	@Override
-	public ConnectionIF createSyncThreadSafeSingleConnection(String serverHost, int serverPort) throws InterruptedException, IOException, NoMoreWrapBufferException {
+	public ConnectionIF createSyncShareSingleConnection(String serverHost, int serverPort) throws InterruptedException, IOException, NoMoreWrapBufferException {
 		ConnectionIF connectedConnection = null;
 		
-		connectedConnection = new SyncThreadSafeSingleConnection(serverHost,
+		connectedConnection = new SyncShareSingleConnection(serverHost,
 				serverPort,
-				socketTimeout,
+				connectionTimeout,
 				streamCharsetFamily,
-				clientDataPacketBufferMaxCntPerMessage,
-				clientDataPacketBufferSize,
+				clientWrapBufferMaxCntPerMessage,
+				clientWrapBufferSize,
 				messageProtocol, wrapBufferPool);
 		
 		return connectedConnection;

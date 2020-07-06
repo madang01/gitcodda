@@ -13,13 +13,14 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-package kr.pe.codda.common.config2.part;
+package kr.pe.codda.common.config.part;
 
 import java.nio.ByteOrder;
 import java.nio.charset.Charset;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import kr.pe.codda.common.config.PartConfigurationIF;
 import kr.pe.codda.common.config.nativevalueconverter.GeneralConverterReturningCharset;
 import kr.pe.codda.common.config.nativevalueconverter.GeneralConverterReturningIntegerBetweenMinAndMax;
 import kr.pe.codda.common.config.nativevalueconverter.GeneralConverterReturningLongBetweenMinAndMax;
@@ -28,25 +29,18 @@ import kr.pe.codda.common.config.nativevalueconverter.SetTypeConverterReturningB
 import kr.pe.codda.common.config.nativevalueconverter.SetTypeConverterReturningByteOrder;
 import kr.pe.codda.common.config.nativevalueconverter.SetTypeConverterReturningConnectionType;
 import kr.pe.codda.common.config.nativevalueconverter.SetTypeConverterReturningMessageProtocolType;
-import kr.pe.codda.common.config2.ConfigurationIF;
 import kr.pe.codda.common.exception.PartConfigurationException;
 import kr.pe.codda.common.type.ClientConnectionType;
-import kr.pe.codda.common.type.GUIItemType;
 import kr.pe.codda.common.type.MessageProtocolType;
-import kr.pe.codda.common.type.ProjectType;
 import kr.pe.codda.common.util.SequencedProperties;
 
 /**
  * @author Won Jonghoon
  *
  */
-public class ProjectPartConfiguration implements ConfigurationIF {
-	private final Logger log = Logger.getLogger(ProjectPartConfiguration.class.getName());
+public abstract class AbstractProjectPartConfiguration implements PartConfigurationIF {
+	protected final Logger log = Logger.getLogger(AbstractProjectPartConfiguration.class.getName());
 	
-	
-	private final ProjectType projectType;
-	private final String subProjectName;
-	private final String prefexOfItemID;
 	
 	/************* common 변수 시작 ******************/	
 	public static final String itemIDForServerHost = "common.host";
@@ -103,11 +97,25 @@ public class ProjectPartConfiguration implements ConfigurationIF {
 	public static final String itemIDForClientConnectionMaxCount = "client.connection.max_count";
 	private Integer  clientConnectionMaxCount = null;
 	
-	
+	/** 연결 폴 지원자 활동 주기 */
 	public static final String itemIDForClientConnectionPoolSupporterTimeInterval = "client.connection.pool.supportor.time_interval";
 	private Long  clientConnectionPoolSupporterTimeInterval = null;
 	
-	/***** 연결 클래스 관련 환경 변수 종료 *****/	
+	/** 연결 폴로무터 연결을 얻기 위한 재 시도 간격 */
+	public static final String itemIDForRetryIntervaTimeToGetConnection = "client.connection.pool.retry_interval_time_to_get_connection";
+	private Long clientRetryIntervaTimeToGetConnection = null;
+	
+	/***** 연결 클래스 관련 환경 변수 종료 *****/
+	
+	/** 비동기에서 송신할 데이터가 담긴 랩 버퍼당 생존 시간 */
+	public static final String itemIDForAliveTimePerWrapBuffer = "client.asyn.alive_time_per_wrapbuffer";
+	private Long clientAsynAliveTimePerWrapBuffer = null;
+	
+	/** 비동기에서 입력 메시지 스트림 큐에 입력 메시지 스트림을 다시 추가하는 간격 */
+	public static final String itemIDForRetryIntervaTimeToAddInputMessage = "client.asyn.retry_interval_time_to_add_input_message";
+	private Long clientAsynRetryIntervaTimeToAddInputMessage = null;
+	
+	
 	
 	/** 비동기+공유 연결의 개인 메일함 갯수 */
 	public static final String itemIDForClientMailboxCountPerAsynShareConnection = "client.asyn.share_connection.mailbox_count";
@@ -165,68 +173,17 @@ public class ProjectPartConfiguration implements ConfigurationIF {
 	
 	/************* server 변수 종료 ******************/
 	
-	
-	public ProjectPartConfiguration(ProjectType projectType, String subProjectName) {
-		if (null == projectType) {
-			throw new IllegalArgumentException("the parameter projectType is null");
-		}
 		
-		this.projectType = projectType;
-				
-		if (this.projectType.equals(ProjectType.MAIN)) {
-			prefexOfItemID = new StringBuilder("mainproject.").toString();
-			this.subProjectName = null;
-		} else {
-			if (null == subProjectName) {
-				throw new IllegalArgumentException("the parameter subProjectName is null");
-			}
-			
-			this.subProjectName = subProjectName;
-			prefexOfItemID = new StringBuilder("subproject.").append(subProjectName)
-					.append(".").toString();
-		}
-	}
-
-	@Override
-	public void toValue(SequencedProperties sourceSequencedProperties)
-			throws IllegalArgumentException, PartConfigurationException {
-		toValueForServerHost(sourceSequencedProperties);
-		toValueForServerPort(sourceSequencedProperties);
-		toValueForByteOrder(sourceSequencedProperties);
-		toValueForCharset(sourceSequencedProperties);
-		toValueForMessageProtocolType(sourceSequencedProperties);		
-		
-		toValueForClientMonitorTimeInterval(sourceSequencedProperties);
-		toValueForWhetherClientWrapBufferIsDirect(sourceSequencedProperties);
-		toValueForClientWrapBufferMaxCntPerMessage(sourceSequencedProperties);
-		toValueForClientWrapBufferSize(sourceSequencedProperties);
-		toValueForClientWrapBufferPoolSize(sourceSequencedProperties);
-		toValueForClientConnectionType(sourceSequencedProperties);
-		toValueForClientConnectionTimeout(sourceSequencedProperties);
-		toValueForClientConnectionCount(sourceSequencedProperties);
-		toValueForClientConnectionMaxCount(sourceSequencedProperties);
-		toValueForClientConnectionPoolSupporterTimeInterval(sourceSequencedProperties);
-		toValueForClientMailboxCountPerAsynShareConnection(sourceSequencedProperties);
-		toValueForClientAsynInputMessageQueueCapacity(sourceSequencedProperties);
-		toValueForClientAsynOutputMessageQueueCapacity(sourceSequencedProperties);
-		toValueForClientSelectorWakeupInterval(sourceSequencedProperties);
-		
-		
-		toValueForServerMonitorTimeInterval(sourceSequencedProperties);
-		toValueForWhetherServerWrapBufferIsDirect(sourceSequencedProperties);
-		toValueForServerWrapBufferMaxCntPerMessage(sourceSequencedProperties);
-		toValueForServerWrapBufferSize(sourceSequencedProperties);
-		toValueForServerWrapBufferPoolSize(sourceSequencedProperties);
-		toValueForServerMaxClients(sourceSequencedProperties);
-		toValueForServerInputMessageQueueCapacity(sourceSequencedProperties);
-		toValueForServerOutputMessageQueueCapacity(sourceSequencedProperties);		
-	}
+	/**
+	 * @return 항목 식별자의 접두어, ex) mainproject. or subproject.<sub project name>.
+	 */
+	protected abstract String getPrefexOfItemID();
 	
 	@Override
-	public void checkForDependencies(SequencedProperties sourceSequencedProperties) throws IllegalArgumentException, PartConfigurationException {
+	public void checkForDependencies() throws PartConfigurationException {
 		if (clientConnectionMaxCount < clientConnectionCount) {
-			String clientConnectionMaxCountItemKey = new StringBuilder().append(prefexOfItemID).append(itemIDForClientConnectionMaxCount).append(".value").toString();
-			String clientConnectionCountItemKey = new StringBuilder().append(prefexOfItemID).append(itemIDForClientConnectionCount).append(".value").toString();
+			String clientConnectionMaxCountItemKey = new StringBuilder().append(getPrefexOfItemID()).append(itemIDForClientConnectionMaxCount).append(".value").toString();
+			String clientConnectionCountItemKey = new StringBuilder().append(getPrefexOfItemID()).append(itemIDForClientConnectionCount).append(".value").toString();
 			String errorMessage = new StringBuilder().append("연결 갯수[key=")
 					.append(clientConnectionCountItemKey)
 					.append(", value=")
@@ -239,6 +196,44 @@ public class ProjectPartConfiguration implements ConfigurationIF {
 			throw new PartConfigurationException(clientConnectionCountItemKey, errorMessage);
 		}
 	}
+
+	@Override
+	public void fromProperties(SequencedProperties sourceSequencedProperties)
+			throws IllegalArgumentException, PartConfigurationException {
+		fromPropertiesForServerHost(sourceSequencedProperties);
+		fromPropertiesForServerPort(sourceSequencedProperties);
+		fromPropertiesForByteOrder(sourceSequencedProperties);
+		fromPropertiesForCharset(sourceSequencedProperties);
+		fromPropertiesForMessageProtocolType(sourceSequencedProperties);		
+		
+		fromPropertiesForClientMonitorTimeInterval(sourceSequencedProperties);
+		fromPropertiesForWhetherClientWrapBufferIsDirect(sourceSequencedProperties);
+		fromPropertiesForClientWrapBufferMaxCntPerMessage(sourceSequencedProperties);
+		fromPropertiesForClientWrapBufferSize(sourceSequencedProperties);
+		fromPropertiesForClientWrapBufferPoolSize(sourceSequencedProperties);
+		fromPropertiesForClientConnectionType(sourceSequencedProperties);
+		fromPropertiesForClientConnectionTimeout(sourceSequencedProperties);
+		fromPropertiesForClientConnectionCount(sourceSequencedProperties);
+		fromPropertiesForClientConnectionMaxCount(sourceSequencedProperties);
+		fromPropertiesForClientConnectionPoolSupporterTimeInterval(sourceSequencedProperties);		
+		fromPropertiesForRetryIntervaTimeToGetConnection(sourceSequencedProperties);
+		
+		fromPropertiesForAliveTimePerWrapBuffer(sourceSequencedProperties);
+		fromPropertiesForRetryIntervaTimeToAddInputMessage(sourceSequencedProperties);
+		fromPropertiesForClientMailboxCountPerAsynShareConnection(sourceSequencedProperties);
+		fromPropertiesForClientAsynInputMessageQueueCapacity(sourceSequencedProperties);
+		fromPropertiesForClientAsynOutputMessageQueueCapacity(sourceSequencedProperties);
+		fromPropertiesForClientSelectorWakeupInterval(sourceSequencedProperties);		
+		
+		fromPropertiesForServerMonitorTimeInterval(sourceSequencedProperties);
+		fromPropertiesForWhetherServerWrapBufferIsDirect(sourceSequencedProperties);
+		fromPropertiesForServerWrapBufferMaxCntPerMessage(sourceSequencedProperties);
+		fromPropertiesForServerWrapBufferSize(sourceSequencedProperties);
+		fromPropertiesForServerWrapBufferPoolSize(sourceSequencedProperties);
+		fromPropertiesForServerMaxClients(sourceSequencedProperties);
+		fromPropertiesForServerInputMessageQueueCapacity(sourceSequencedProperties);
+		fromPropertiesForServerOutputMessageQueueCapacity(sourceSequencedProperties);		
+	}	
 
 	@Override
 	public void toProperties(SequencedProperties targetSequencedProperties) throws IllegalArgumentException {		
@@ -259,6 +254,11 @@ public class ProjectPartConfiguration implements ConfigurationIF {
 		toPropertiesForClientConnectionCount(targetSequencedProperties);
 		toPropertiesForClientConnectionMaxCount(targetSequencedProperties);
 		toPropertiesForClientConnectionPoolSupporterTimeInterval(targetSequencedProperties);
+		
+		toPropertiesForRetryIntervaTimeToGetConnection(targetSequencedProperties);
+		toPropertiesForAliveTimePerWrapBuffer(targetSequencedProperties);
+		toPropertiesForRetryIntervaTimeToAddInputMessage(targetSequencedProperties);
+		
 		toPropertiesForClientMailboxCountPerAsynShareConnection(targetSequencedProperties);
 		toPropertiesForClientAsynInputMessageQueueCapacity(targetSequencedProperties);
 		toPropertiesForClientAsynOutputMessageQueueCapacity(targetSequencedProperties);
@@ -276,9 +276,9 @@ public class ProjectPartConfiguration implements ConfigurationIF {
 	}
 	
 	
-	public void toValueForServerHost(SequencedProperties sourceSequencedProperties)
+	public void fromPropertiesForServerHost(SequencedProperties sourceSequencedProperties)
 			throws PartConfigurationException {
-		String itemKey = new StringBuilder().append(prefexOfItemID).append(itemIDForServerHost).append(".value").toString();
+		String itemKey = new StringBuilder().append(getPrefexOfItemID()).append(itemIDForServerHost).append(".value").toString();
 
 		String itemValue = sourceSequencedProperties.getProperty(itemKey);
 
@@ -308,23 +308,19 @@ public class ProjectPartConfiguration implements ConfigurationIF {
 	}
 
 	public void toPropertiesForServerHost(SequencedProperties targetSequencedProperties) {
-		String itemDescKey = new StringBuilder().append(prefexOfItemID).append(itemIDForServerHost).append(".desc").toString();
+		String itemDescKey = new StringBuilder().append(getPrefexOfItemID()).append(itemIDForServerHost).append(".desc").toString();
 		String itemDescValue = "클라이언트에서 접속할 서버 주소, default value[localhost]";
 		targetSequencedProperties.put(itemDescKey, itemDescValue);		
 		
-		String itemKey = new StringBuilder().append(prefexOfItemID).append(itemIDForServerHost).append(".value").toString();
+		String itemKey = new StringBuilder().append(getPrefexOfItemID()).append(itemIDForServerHost).append(".value").toString();
 		String itemValue = (null == serverHost) ? "localhost" : serverHost;
 		targetSequencedProperties.put(itemKey, itemValue);
-		
-		String guiItemTypeKey = new StringBuilder().append(prefexOfItemID).append(itemIDForServerHost).append(".gui_item_type").toString();
-		String guiItemTypeValue = GUIItemType.DATA.name().toLowerCase();
-		targetSequencedProperties.put(guiItemTypeKey, guiItemTypeValue);
 	}
 
 	
-	public void toValueForServerPort(SequencedProperties sourceSequencedProperties)
+	public void fromPropertiesForServerPort(SequencedProperties sourceSequencedProperties)
 			throws PartConfigurationException {
-		String itemKey = new StringBuilder().append(prefexOfItemID).append(itemIDForServerPort).append(".value").toString();
+		String itemKey = new StringBuilder().append(getPrefexOfItemID()).append(itemIDForServerPort).append(".value").toString();
 
 		String itemValue = sourceSequencedProperties.getProperty(itemKey);
 
@@ -352,22 +348,18 @@ public class ProjectPartConfiguration implements ConfigurationIF {
 	}
 
 	public void toPropertiesForServerPort(SequencedProperties targetSequencedProperties) {
-		String itemDescKey = new StringBuilder().append(prefexOfItemID).append(itemIDForServerPort).append(".desc").toString();
+		String itemDescKey = new StringBuilder().append(getPrefexOfItemID()).append(itemIDForServerPort).append(".desc").toString();
 		String itemDescValue = "포트 번호, default value[9090], min[1024], max[2147483647]";
 		targetSequencedProperties.put(itemDescKey, itemDescValue);		
 		
-		String itemKey = new StringBuilder().append(prefexOfItemID).append(itemIDForServerPort).append(".value").toString();
+		String itemKey = new StringBuilder().append(getPrefexOfItemID()).append(itemIDForServerPort).append(".value").toString();
 		String itemValue = (null == serverPort) ? "9090" : String.valueOf(serverPort);
 		targetSequencedProperties.put(itemKey, itemValue);
-		
-		String guiItemTypeKey = new StringBuilder().append(prefexOfItemID).append(itemIDForServerPort).append(".gui_item_type").toString();
-		String guiItemTypeValue = GUIItemType.DATA.name().toLowerCase();
-		targetSequencedProperties.put(guiItemTypeKey, guiItemTypeValue);
 	}
 	
-	public void toValueForByteOrder(SequencedProperties sourceSequencedProperties)
+	public void fromPropertiesForByteOrder(SequencedProperties sourceSequencedProperties)
 			throws PartConfigurationException {
-		String itemKey = new StringBuilder().append(prefexOfItemID).append(itemIDForByteOrder).append(".value").toString();
+		String itemKey = new StringBuilder().append(getPrefexOfItemID()).append(itemIDForByteOrder).append(".value").toString();
 
 		String itemValue = sourceSequencedProperties.getProperty(itemKey);
 
@@ -397,22 +389,18 @@ public class ProjectPartConfiguration implements ConfigurationIF {
 	}
 
 	public void toPropertiesForByteOrder(SequencedProperties targetSequencedProperties) {
-		String itemDescKey = new StringBuilder().append(prefexOfItemID).append(itemIDForByteOrder).append(".desc").toString();
+		String itemDescKey = new StringBuilder().append(getPrefexOfItemID()).append(itemIDForByteOrder).append(".desc").toString();
 		String itemDescValue = "바이트 오더, default value[LITTLE_ENDIAN], the byteorder set[BIG_ENDIAN, LITTLE_ENDIAN]";
 		targetSequencedProperties.put(itemDescKey, itemDescValue);		
 		
-		String itemKey = new StringBuilder().append(prefexOfItemID).append(itemIDForByteOrder).append(".value").toString();
+		String itemKey = new StringBuilder().append(getPrefexOfItemID()).append(itemIDForByteOrder).append(".value").toString();
 		String itemValue = (null == byteOrder) ? ByteOrder.LITTLE_ENDIAN.toString() : byteOrder.toString();
 		targetSequencedProperties.put(itemKey, itemValue);
-		
-		String guiItemTypeKey = new StringBuilder().append(prefexOfItemID).append(itemIDForByteOrder).append(".gui_item_type").toString();
-		String guiItemTypeValue = GUIItemType.DATA.name().toLowerCase();
-		targetSequencedProperties.put(guiItemTypeKey, guiItemTypeValue);
 	}
 	
-	public void toValueForCharset(SequencedProperties sourceSequencedProperties)
+	public void fromPropertiesForCharset(SequencedProperties sourceSequencedProperties)
 			throws PartConfigurationException {
-		String itemKey = new StringBuilder().append(prefexOfItemID).append(itemIDForCharset).append(".value").toString();
+		String itemKey = new StringBuilder().append(getPrefexOfItemID()).append(itemIDForCharset).append(".value").toString();
 
 		String itemValue = sourceSequencedProperties.getProperty(itemKey);
 
@@ -442,23 +430,19 @@ public class ProjectPartConfiguration implements ConfigurationIF {
 	}
 
 	public void toPropertiesForCharset(SequencedProperties targetSequencedProperties) {
-		String itemDescKey = new StringBuilder().append(prefexOfItemID).append(itemIDForCharset).append(".desc").toString();
+		String itemDescKey = new StringBuilder().append(getPrefexOfItemID()).append(itemIDForCharset).append(".desc").toString();
 		String itemDescValue = "문자셋, default value[UTF-8]";
 		targetSequencedProperties.put(itemDescKey, itemDescValue);		
 		
-		String itemKey = new StringBuilder().append(prefexOfItemID).append(itemIDForCharset).append(".value").toString();
+		String itemKey = new StringBuilder().append(getPrefexOfItemID()).append(itemIDForCharset).append(".value").toString();
 		String itemValue = (null == charset) ? "UTF-8" : charset.name();
 		targetSequencedProperties.put(itemKey, itemValue);
-		
-		String guiItemTypeKey = new StringBuilder().append(prefexOfItemID).append(itemIDForCharset).append(".gui_item_type").toString();
-		String guiItemTypeValue = GUIItemType.DATA.name().toLowerCase();
-		targetSequencedProperties.put(guiItemTypeKey, guiItemTypeValue);
 	}
 	
 	
-	public void toValueForMessageProtocolType(SequencedProperties sourceSequencedProperties)
+	public void fromPropertiesForMessageProtocolType(SequencedProperties sourceSequencedProperties)
 			throws PartConfigurationException {
-		String itemKey = new StringBuilder().append(prefexOfItemID).append(itemIDForMessageProtocolType).append(".value").toString();
+		String itemKey = new StringBuilder().append(getPrefexOfItemID()).append(itemIDForMessageProtocolType).append(".value").toString();
 
 		String itemValue = sourceSequencedProperties.getProperty(itemKey);
 
@@ -488,22 +472,18 @@ public class ProjectPartConfiguration implements ConfigurationIF {
 	}
 
 	public void toPropertiesForMessageProtocolType(SequencedProperties targetSequencedProperties) {
-		String itemDescKey = new StringBuilder().append(prefexOfItemID).append(itemIDForMessageProtocolType).append(".desc").toString();
+		String itemDescKey = new StringBuilder().append(getPrefexOfItemID()).append(itemIDForMessageProtocolType).append(".desc").toString();
 		String itemDescValue = "메시지 프로토콜, DHB:교차 md5 헤더+바디, DJSON:길이+존슨문자열, THB:길이+바디, default value[DHB], the message protocol set[DJSON, DHB, THB]";
 		targetSequencedProperties.put(itemDescKey, itemDescValue);		
 		
-		String itemKey = new StringBuilder().append(prefexOfItemID).append(itemIDForMessageProtocolType).append(".value").toString();
+		String itemKey = new StringBuilder().append(getPrefexOfItemID()).append(itemIDForMessageProtocolType).append(".value").toString();
 		String itemValue = (null == messageProtocolType) ? MessageProtocolType.DHB.name() : messageProtocolType.name();
 		targetSequencedProperties.put(itemKey, itemValue);
-		
-		String guiItemTypeKey = new StringBuilder().append(prefexOfItemID).append(itemIDForMessageProtocolType).append(".gui_item_type").toString();
-		String guiItemTypeValue = GUIItemType.DATA.name().toLowerCase();
-		targetSequencedProperties.put(guiItemTypeKey, guiItemTypeValue);
 	}
 	
-	public void toValueForClientMonitorTimeInterval(SequencedProperties sourceSequencedProperties)
+	public void fromPropertiesForClientMonitorTimeInterval(SequencedProperties sourceSequencedProperties)
 			throws PartConfigurationException {
-		String itemKey = new StringBuilder().append(prefexOfItemID).append(itemIDForClientMonitorTimeInterval).append(".value").toString();
+		String itemKey = new StringBuilder().append(getPrefexOfItemID()).append(itemIDForClientMonitorTimeInterval).append(".value").toString();
 
 		String itemValue = sourceSequencedProperties.getProperty(itemKey);
 
@@ -533,22 +513,18 @@ public class ProjectPartConfiguration implements ConfigurationIF {
 	}
 
 	public void toPropertiesForClientMonitorTimeInterval(SequencedProperties targetSequencedProperties) {
-		String itemDescKey = new StringBuilder().append(prefexOfItemID).append(itemIDForClientMonitorTimeInterval).append(".desc").toString();
+		String itemDescKey = new StringBuilder().append(getPrefexOfItemID()).append(itemIDForClientMonitorTimeInterval).append(".desc").toString();
 		String itemDescValue = "클라이언트 모니터링 주기, 단위 ms, default value[5000], min[1000], max[2147483647]";
 		targetSequencedProperties.put(itemDescKey, itemDescValue);		
 		
-		String itemKey = new StringBuilder().append(prefexOfItemID).append(itemIDForClientMonitorTimeInterval).append(".value").toString();
+		String itemKey = new StringBuilder().append(getPrefexOfItemID()).append(itemIDForClientMonitorTimeInterval).append(".value").toString();
 		String itemValue = (null == clientMonitorTimeInterval) ? "5000" : String.valueOf(clientMonitorTimeInterval);
 		targetSequencedProperties.put(itemKey, itemValue);
-		
-		String guiItemTypeKey = new StringBuilder().append(prefexOfItemID).append(itemIDForClientMonitorTimeInterval).append(".gui_item_type").toString();
-		String guiItemTypeValue = GUIItemType.DATA.name().toLowerCase();
-		targetSequencedProperties.put(guiItemTypeKey, guiItemTypeValue);
 	}
 	
-	public void toValueForWhetherClientWrapBufferIsDirect(SequencedProperties sourceSequencedProperties)
+	public void fromPropertiesForWhetherClientWrapBufferIsDirect(SequencedProperties sourceSequencedProperties)
 			throws PartConfigurationException {
-		String itemKey = new StringBuilder().append(prefexOfItemID).append(itemIDForWhetherClientWrapBufferIsDirect).append(".value").toString();
+		String itemKey = new StringBuilder().append(getPrefexOfItemID()).append(itemIDForWhetherClientWrapBufferIsDirect).append(".value").toString();
 
 		String itemValue = sourceSequencedProperties.getProperty(itemKey);
 
@@ -578,23 +554,19 @@ public class ProjectPartConfiguration implements ConfigurationIF {
 	}
 
 	public void toPropertiesForWhetherClientWrapBufferIsDirect(SequencedProperties targetSequencedProperties) {
-		String itemDescKey = new StringBuilder().append(prefexOfItemID).append(itemIDForWhetherClientWrapBufferIsDirect).append(".desc").toString();
+		String itemDescKey = new StringBuilder().append(getPrefexOfItemID()).append(itemIDForWhetherClientWrapBufferIsDirect).append(".desc").toString();
 		String itemDescValue = "whether client wrap buffer is direct, default value[true], the boolean set[false, true]";
 		targetSequencedProperties.put(itemDescKey, itemDescValue);		
 		
-		String itemKey = new StringBuilder().append(prefexOfItemID).append(itemIDForWhetherClientWrapBufferIsDirect).append(".value").toString();
+		String itemKey = new StringBuilder().append(getPrefexOfItemID()).append(itemIDForWhetherClientWrapBufferIsDirect).append(".value").toString();
 		String itemValue = (null == whetherClientWrapBufferIsDirect) ? Boolean.TRUE.toString() : whetherClientWrapBufferIsDirect.toString();
 		targetSequencedProperties.put(itemKey, itemValue);
-		
-		String guiItemTypeKey = new StringBuilder().append(prefexOfItemID).append(itemIDForWhetherClientWrapBufferIsDirect).append(".gui_item_type").toString();
-		String guiItemTypeValue = GUIItemType.DATA.name().toLowerCase();
-		targetSequencedProperties.put(guiItemTypeKey, guiItemTypeValue);
 	}
 	
 	
-	public void toValueForClientWrapBufferMaxCntPerMessage(SequencedProperties sourceSequencedProperties)
+	public void fromPropertiesForClientWrapBufferMaxCntPerMessage(SequencedProperties sourceSequencedProperties)
 			throws PartConfigurationException {
-		String itemKey = new StringBuilder().append(prefexOfItemID).append(itemIDForClientWrapBufferMaxCntPerMessage).append(".value").toString();
+		String itemKey = new StringBuilder().append(getPrefexOfItemID()).append(itemIDForClientWrapBufferMaxCntPerMessage).append(".value").toString();
 
 		String itemValue = sourceSequencedProperties.getProperty(itemKey);
 
@@ -623,22 +595,18 @@ public class ProjectPartConfiguration implements ConfigurationIF {
 	}
 
 	public void toPropertiesForClientWrapBufferMaxCntPerMessage(SequencedProperties targetSequencedProperties) {
-		String itemDescKey = new StringBuilder().append(prefexOfItemID).append(itemIDForClientWrapBufferMaxCntPerMessage).append(".desc").toString();
+		String itemDescKey = new StringBuilder().append(getPrefexOfItemID()).append(itemIDForClientWrapBufferMaxCntPerMessage).append(".desc").toString();
 		String itemDescValue = "클라이언트에서 1개 메시지당 할당 받을 수 있는 랩 버퍼 최대 갯수, default value[1000], min[1], max[2147483647]";
 		targetSequencedProperties.put(itemDescKey, itemDescValue);		
 		
-		String itemKey = new StringBuilder().append(prefexOfItemID).append(itemIDForClientWrapBufferMaxCntPerMessage).append(".value").toString();
+		String itemKey = new StringBuilder().append(getPrefexOfItemID()).append(itemIDForClientWrapBufferMaxCntPerMessage).append(".value").toString();
 		String itemValue = (null == clientWrapBufferMaxCntPerMessage) ? "1000" : String.valueOf(clientWrapBufferMaxCntPerMessage);
 		targetSequencedProperties.put(itemKey, itemValue);
-		
-		String guiItemTypeKey = new StringBuilder().append(prefexOfItemID).append(itemIDForClientWrapBufferMaxCntPerMessage).append(".gui_item_type").toString();
-		String guiItemTypeValue = GUIItemType.DATA.name().toLowerCase();
-		targetSequencedProperties.put(guiItemTypeKey, guiItemTypeValue);
 	}
 	
-	public void toValueForClientWrapBufferSize(SequencedProperties sourceSequencedProperties)
+	public void fromPropertiesForClientWrapBufferSize(SequencedProperties sourceSequencedProperties)
 			throws PartConfigurationException {
-		String itemKey = new StringBuilder().append(prefexOfItemID).append(itemIDForClientWrapBufferSize).append(".value").toString();
+		String itemKey = new StringBuilder().append(getPrefexOfItemID()).append(itemIDForClientWrapBufferSize).append(".value").toString();
 
 		String itemValue = sourceSequencedProperties.getProperty(itemKey);
 
@@ -668,23 +636,19 @@ public class ProjectPartConfiguration implements ConfigurationIF {
 	}
 
 	public void toPropertiesForClientWrapBufferSize(SequencedProperties targetSequencedProperties) {
-		String itemDescKey = new StringBuilder().append(prefexOfItemID).append(itemIDForClientWrapBufferSize).append(".desc").toString();
+		String itemDescKey = new StringBuilder().append(getPrefexOfItemID()).append(itemIDForClientWrapBufferSize).append(".desc").toString();
 		String itemDescValue = "클라이언트 랩 버퍼 크기, 단위 byte, default value[4096], min[1024], max[2147483647]";
 		targetSequencedProperties.put(itemDescKey, itemDescValue);		
 		
-		String itemKey = new StringBuilder().append(prefexOfItemID).append(itemIDForClientWrapBufferSize).append(".value").toString();
+		String itemKey = new StringBuilder().append(getPrefexOfItemID()).append(itemIDForClientWrapBufferSize).append(".value").toString();
 		String itemValue = (null == clientWrapBufferSize) ? "4096" : String.valueOf(clientWrapBufferSize);
 		targetSequencedProperties.put(itemKey, itemValue);
-		
-		String guiItemTypeKey = new StringBuilder().append(prefexOfItemID).append(itemIDForClientWrapBufferSize).append(".gui_item_type").toString();
-		String guiItemTypeValue = GUIItemType.DATA.name().toLowerCase();
-		targetSequencedProperties.put(guiItemTypeKey, guiItemTypeValue);
 	}
 	
 	
-	public void toValueForClientWrapBufferPoolSize(SequencedProperties sourceSequencedProperties)
+	public void fromPropertiesForClientWrapBufferPoolSize(SequencedProperties sourceSequencedProperties)
 			throws PartConfigurationException {
-		String itemKey = new StringBuilder().append(prefexOfItemID).append(itemIDForClientWrapBufferPoolSize).append(".value").toString();
+		String itemKey = new StringBuilder().append(getPrefexOfItemID()).append(itemIDForClientWrapBufferPoolSize).append(".value").toString();
 
 		String itemValue = sourceSequencedProperties.getProperty(itemKey);
 
@@ -714,23 +678,19 @@ public class ProjectPartConfiguration implements ConfigurationIF {
 	}
 
 	public void toPropertiesForClientWrapBufferPoolSize(SequencedProperties targetSequencedProperties) {
-		String itemDescKey = new StringBuilder().append(prefexOfItemID).append(itemIDForClientWrapBufferPoolSize).append(".desc").toString();
+		String itemDescKey = new StringBuilder().append(getPrefexOfItemID()).append(itemIDForClientWrapBufferPoolSize).append(".desc").toString();
 		String itemDescValue = "클라이언트 랩 버퍼 폴 크기, default value[1000], min[1], max[2147483647]";
 		targetSequencedProperties.put(itemDescKey, itemDescValue);		
 		
-		String itemKey = new StringBuilder().append(prefexOfItemID).append(itemIDForClientWrapBufferPoolSize).append(".value").toString();
+		String itemKey = new StringBuilder().append(getPrefexOfItemID()).append(itemIDForClientWrapBufferPoolSize).append(".value").toString();
 		String itemValue = (null == clientWrapBufferPoolSize) ? "1000" : String.valueOf(clientWrapBufferPoolSize);
 		targetSequencedProperties.put(itemKey, itemValue);
-		
-		String guiItemTypeKey = new StringBuilder().append(prefexOfItemID).append(itemIDForClientWrapBufferPoolSize).append(".gui_item_type").toString();
-		String guiItemTypeValue = GUIItemType.DATA.name().toLowerCase();
-		targetSequencedProperties.put(guiItemTypeKey, guiItemTypeValue);
 	}
 	
 	
-	public void toValueForClientConnectionType(SequencedProperties sourceSequencedProperties)
+	public void fromPropertiesForClientConnectionType(SequencedProperties sourceSequencedProperties)
 			throws PartConfigurationException {
-		String itemKey = new StringBuilder().append(prefexOfItemID).append(itemIDForClientConnectionType).append(".value").toString();
+		String itemKey = new StringBuilder().append(getPrefexOfItemID()).append(itemIDForClientConnectionType).append(".value").toString();
 
 		String itemValue = sourceSequencedProperties.getProperty(itemKey);
 
@@ -760,22 +720,18 @@ public class ProjectPartConfiguration implements ConfigurationIF {
 	}
 
 	public void toPropertiesForClientConnectionType(SequencedProperties targetSequencedProperties) {
-		String itemDescKey = new StringBuilder().append(prefexOfItemID).append(itemIDForClientConnectionType).append(".desc").toString();
+		String itemDescKey = new StringBuilder().append(getPrefexOfItemID()).append(itemIDForClientConnectionType).append(".desc").toString();
 		String itemDescValue = "클라이언트 연결 종류, ASYN:비동기, SYNC:동기, default value[ASYN], the connection type set[ASYN, SYNC]";
 		targetSequencedProperties.put(itemDescKey, itemDescValue);		
 		
-		String itemKey = new StringBuilder().append(prefexOfItemID).append(itemIDForClientConnectionType).append(".value").toString();
+		String itemKey = new StringBuilder().append(getPrefexOfItemID()).append(itemIDForClientConnectionType).append(".value").toString();
 		String itemValue = (null == clientConnectionType) ? ClientConnectionType.ASYN.name() : clientConnectionType.name();
 		targetSequencedProperties.put(itemKey, itemValue);
-		
-		String guiItemTypeKey = new StringBuilder().append(prefexOfItemID).append(itemIDForClientConnectionType).append(".gui_item_type").toString();
-		String guiItemTypeValue = GUIItemType.DATA.name().toLowerCase();
-		targetSequencedProperties.put(guiItemTypeKey, guiItemTypeValue);
 	}
 	
-	public void toValueForClientConnectionTimeout(SequencedProperties sourceSequencedProperties)
+	public void fromPropertiesForClientConnectionTimeout(SequencedProperties sourceSequencedProperties)
 			throws PartConfigurationException {
-		String itemKey = new StringBuilder().append(prefexOfItemID).append(itemIDForClientConnectionTimeout).append(".value").toString();
+		String itemKey = new StringBuilder().append(getPrefexOfItemID()).append(itemIDForClientConnectionTimeout).append(".value").toString();
 
 		String itemValue = sourceSequencedProperties.getProperty(itemKey);
 
@@ -805,22 +761,18 @@ public class ProjectPartConfiguration implements ConfigurationIF {
 	}
 
 	public void toPropertiesForClientConnectionTimeout(SequencedProperties targetSequencedProperties) {
-		String itemDescKey = new StringBuilder().append(prefexOfItemID).append(itemIDForClientConnectionTimeout).append(".desc").toString();
+		String itemDescKey = new StringBuilder().append(getPrefexOfItemID()).append(itemIDForClientConnectionTimeout).append(".desc").toString();
 		String itemDescValue = "연결 타임아웃, 단위 ms, default value[5000], min[1000], max[2147483647]";
 		targetSequencedProperties.put(itemDescKey, itemDescValue);		
 		
-		String itemKey = new StringBuilder().append(prefexOfItemID).append(itemIDForClientConnectionTimeout).append(".value").toString();
+		String itemKey = new StringBuilder().append(getPrefexOfItemID()).append(itemIDForClientConnectionTimeout).append(".value").toString();
 		String itemValue = (null == clientConnectionTimeout) ? "5000" : String.valueOf(clientConnectionTimeout);
 		targetSequencedProperties.put(itemKey, itemValue);
-		
-		String guiItemTypeKey = new StringBuilder().append(prefexOfItemID).append(itemIDForClientConnectionTimeout).append(".gui_item_type").toString();
-		String guiItemTypeValue = GUIItemType.DATA.name().toLowerCase();
-		targetSequencedProperties.put(guiItemTypeKey, guiItemTypeValue);
 	}
 	
-	public void toValueForClientConnectionCount(SequencedProperties sourceSequencedProperties)
+	public void fromPropertiesForClientConnectionCount(SequencedProperties sourceSequencedProperties)
 			throws PartConfigurationException {
-		String itemKey = new StringBuilder().append(prefexOfItemID).append(itemIDForClientConnectionCount).append(".value").toString();
+		String itemKey = new StringBuilder().append(getPrefexOfItemID()).append(itemIDForClientConnectionCount).append(".value").toString();
 
 		String itemValue = sourceSequencedProperties.getProperty(itemKey);
 
@@ -850,22 +802,18 @@ public class ProjectPartConfiguration implements ConfigurationIF {
 	}
 
 	public void toPropertiesForClientConnectionCount(SequencedProperties targetSequencedProperties) {
-		String itemDescKey = new StringBuilder().append(prefexOfItemID).append(itemIDForClientConnectionCount).append(".desc").toString();
+		String itemDescKey = new StringBuilder().append(getPrefexOfItemID()).append(itemIDForClientConnectionCount).append(".desc").toString();
 		String itemDescValue = "연결 갯수, default value[5], min[1], max[2147483647]";
 		targetSequencedProperties.put(itemDescKey, itemDescValue);		
 		
-		String itemKey = new StringBuilder().append(prefexOfItemID).append(itemIDForClientConnectionCount).append(".value").toString();
+		String itemKey = new StringBuilder().append(getPrefexOfItemID()).append(itemIDForClientConnectionCount).append(".value").toString();
 		String itemValue = (null == clientConnectionCount) ? "5" : String.valueOf(clientConnectionCount);
 		targetSequencedProperties.put(itemKey, itemValue);
-		
-		String guiItemTypeKey = new StringBuilder().append(prefexOfItemID).append(itemIDForClientConnectionCount).append(".gui_item_type").toString();
-		String guiItemTypeValue = GUIItemType.DATA.name().toLowerCase();
-		targetSequencedProperties.put(guiItemTypeKey, guiItemTypeValue);
 	}
 	
-	public void toValueForClientConnectionMaxCount(SequencedProperties sourceSequencedProperties)
+	public void fromPropertiesForClientConnectionMaxCount(SequencedProperties sourceSequencedProperties)
 			throws PartConfigurationException {
-		String itemKey = new StringBuilder().append(prefexOfItemID).append(itemIDForClientConnectionMaxCount).append(".value").toString();
+		String itemKey = new StringBuilder().append(getPrefexOfItemID()).append(itemIDForClientConnectionMaxCount).append(".value").toString();
 
 		String itemValue = sourceSequencedProperties.getProperty(itemKey);
 
@@ -895,22 +843,18 @@ public class ProjectPartConfiguration implements ConfigurationIF {
 	}
 
 	public void toPropertiesForClientConnectionMaxCount(SequencedProperties targetSequencedProperties) {
-		String itemDescKey = new StringBuilder().append(prefexOfItemID).append(itemIDForClientConnectionMaxCount).append(".desc").toString();
+		String itemDescKey = new StringBuilder().append(getPrefexOfItemID()).append(itemIDForClientConnectionMaxCount).append(".desc").toString();
 		String itemDescValue = "최대 연결 갯수, default value[5], min[1], max[2147483647]";
 		targetSequencedProperties.put(itemDescKey, itemDescValue);		
 		
-		String itemKey = new StringBuilder().append(prefexOfItemID).append(itemIDForClientConnectionMaxCount).append(".value").toString();
+		String itemKey = new StringBuilder().append(getPrefexOfItemID()).append(itemIDForClientConnectionMaxCount).append(".value").toString();
 		String itemValue = (null == clientConnectionMaxCount) ? "5" : String.valueOf(clientConnectionMaxCount);
 		targetSequencedProperties.put(itemKey, itemValue);
-		
-		String guiItemTypeKey = new StringBuilder().append(prefexOfItemID).append(itemIDForClientConnectionMaxCount).append(".gui_item_type").toString();
-		String guiItemTypeValue = GUIItemType.DATA.name().toLowerCase();
-		targetSequencedProperties.put(guiItemTypeKey, guiItemTypeValue);
 	}
 	
-	public void toValueForClientConnectionPoolSupporterTimeInterval(SequencedProperties sourceSequencedProperties)
+	public void fromPropertiesForClientConnectionPoolSupporterTimeInterval(SequencedProperties sourceSequencedProperties)
 			throws PartConfigurationException {
-		String itemKey = new StringBuilder().append(prefexOfItemID).append(itemIDForClientConnectionPoolSupporterTimeInterval).append(".value").toString();
+		String itemKey = new StringBuilder().append(getPrefexOfItemID()).append(itemIDForClientConnectionPoolSupporterTimeInterval).append(".value").toString();
 
 		String itemValue = sourceSequencedProperties.getProperty(itemKey);
 
@@ -940,22 +884,145 @@ public class ProjectPartConfiguration implements ConfigurationIF {
 	}
 
 	public void toPropertiesForClientConnectionPoolSupporterTimeInterval(SequencedProperties targetSequencedProperties) {
-		String itemDescKey = new StringBuilder().append(prefexOfItemID).append(itemIDForClientConnectionPoolSupporterTimeInterval).append(".desc").toString();
-		String itemDescValue = "클라이언트 연결 지원자 수행 주기, 단위 ms, 디폴트 600000, 최소 1000, 최대 Long.MAX_VALUE";
+		String itemDescKey = new StringBuilder().append(getPrefexOfItemID()).append(itemIDForClientConnectionPoolSupporterTimeInterval).append(".desc").toString();
+		String itemDescValue = "클라이언트 연결 지원자 수행 주기, 단위 ms, 디폴트 600000, 최소 1000, 최대 Integer.MAX_VALUE";
 		targetSequencedProperties.put(itemDescKey, itemDescValue);		
 		
-		String itemKey = new StringBuilder().append(prefexOfItemID).append(itemIDForClientConnectionPoolSupporterTimeInterval).append(".value").toString();
+		String itemKey = new StringBuilder().append(getPrefexOfItemID()).append(itemIDForClientConnectionPoolSupporterTimeInterval).append(".value").toString();
 		String itemValue = (null == clientConnectionPoolSupporterTimeInterval) ? "600000" : String.valueOf(clientConnectionPoolSupporterTimeInterval);
 		targetSequencedProperties.put(itemKey, itemValue);
-		
-		String guiItemTypeKey = new StringBuilder().append(prefexOfItemID).append(itemIDForClientConnectionPoolSupporterTimeInterval).append(".gui_item_type").toString();
-		String guiItemTypeValue = GUIItemType.DATA.name().toLowerCase();
-		targetSequencedProperties.put(guiItemTypeKey, guiItemTypeValue);
 	}
 	
-	public void toValueForClientMailboxCountPerAsynShareConnection(SequencedProperties sourceSequencedProperties)
+	public void fromPropertiesForRetryIntervaTimeToGetConnection(SequencedProperties sourceSequencedProperties)
 			throws PartConfigurationException {
-		String itemKey = new StringBuilder().append(prefexOfItemID).append(itemIDForClientMailboxCountPerAsynShareConnection).append(".value").toString();
+		String itemKey = new StringBuilder().append(getPrefexOfItemID()).append(itemIDForRetryIntervaTimeToGetConnection).append(".value").toString();
+
+		String itemValue = sourceSequencedProperties.getProperty(itemKey);
+
+		if (null == itemValue) {
+			String errorMessage = new StringBuilder().append("the item '").append(itemKey)
+					.append("' does not exist in the parameter sourceSequencedProperties").toString();
+
+			throw new PartConfigurationException(itemKey, errorMessage);
+		}
+
+
+		GeneralConverterReturningLongBetweenMinAndMax nativeValueConverter = new GeneralConverterReturningLongBetweenMinAndMax(1000L, (long)Integer.MAX_VALUE);
+		
+		try {
+
+			clientRetryIntervaTimeToGetConnection = nativeValueConverter.valueOf(itemValue);
+		} catch (Exception e) {
+			String errorMessage = new StringBuilder()
+					.append("fail to converter the parameter sequencedProperties's item[").append(itemKey)
+					.append("] value[").append(itemValue).append("] to value using the value converter[")
+					.append(GeneralConverterReturningNoTrimString.class.getName()).append("], errmsg=").append(e.getMessage()).toString();
+
+			log.log(Level.WARNING, errorMessage, e);
+
+			throw new PartConfigurationException(itemKey, errorMessage);
+		}
+	}
+
+	public void toPropertiesForRetryIntervaTimeToGetConnection(SequencedProperties targetSequencedProperties) {
+		String itemDescKey = new StringBuilder().append(getPrefexOfItemID()).append(itemIDForRetryIntervaTimeToGetConnection).append(".desc").toString();
+		String itemDescValue = "연결 폴로부터 연결을 얻기 위한 재 시도 간격, 단위 nanoseconds, 디폴트 5000, 최소 1000, 최대 Integer.MAX_VALUE";
+		targetSequencedProperties.put(itemDescKey, itemDescValue);		
+		
+		String itemKey = new StringBuilder().append(getPrefexOfItemID()).append(itemIDForRetryIntervaTimeToGetConnection).append(".value").toString();
+		String itemValue = (null == clientRetryIntervaTimeToGetConnection) ? "5000" : String.valueOf(clientRetryIntervaTimeToGetConnection);
+		targetSequencedProperties.put(itemKey, itemValue);
+	}
+	
+	
+	public void fromPropertiesForAliveTimePerWrapBuffer(SequencedProperties sourceSequencedProperties)
+			throws PartConfigurationException {
+		String itemKey = new StringBuilder().append(getPrefexOfItemID()).append(itemIDForAliveTimePerWrapBuffer).append(".value").toString();
+
+		String itemValue = sourceSequencedProperties.getProperty(itemKey);
+
+		if (null == itemValue) {
+			String errorMessage = new StringBuilder().append("the item '").append(itemKey)
+					.append("' does not exist in the parameter sourceSequencedProperties").toString();
+
+			throw new PartConfigurationException(itemKey, errorMessage);
+		}
+
+
+		GeneralConverterReturningLongBetweenMinAndMax nativeValueConverter = new GeneralConverterReturningLongBetweenMinAndMax(100L, (long)Integer.MAX_VALUE);
+		
+		try {
+
+			clientAsynAliveTimePerWrapBuffer = nativeValueConverter.valueOf(itemValue);
+		} catch (Exception e) {
+			String errorMessage = new StringBuilder()
+					.append("fail to converter the parameter sequencedProperties's item[").append(itemKey)
+					.append("] value[").append(itemValue).append("] to value using the value converter[")
+					.append(GeneralConverterReturningNoTrimString.class.getName()).append("], errmsg=").append(e.getMessage()).toString();
+
+			log.log(Level.WARNING, errorMessage, e);
+
+			throw new PartConfigurationException(itemKey, errorMessage);
+		}
+	}
+
+	public void toPropertiesForAliveTimePerWrapBuffer(SequencedProperties targetSequencedProperties) {
+		String itemDescKey = new StringBuilder().append(getPrefexOfItemID()).append(itemIDForAliveTimePerWrapBuffer).append(".desc").toString();
+		String itemDescValue = "비동기에서 송신할 데이터가 담긴 랩 버퍼당 생존 시간, 단위 nanoseconds, 디폴트 400, 최소 100, 최대 Integer.MAX_VALUE";
+		targetSequencedProperties.put(itemDescKey, itemDescValue);		
+		
+		String itemKey = new StringBuilder().append(getPrefexOfItemID()).append(itemIDForAliveTimePerWrapBuffer).append(".value").toString();
+		String itemValue = (null == clientAsynAliveTimePerWrapBuffer) ? "400" : String.valueOf(clientAsynAliveTimePerWrapBuffer);
+		targetSequencedProperties.put(itemKey, itemValue);
+	}
+	
+	
+	public void fromPropertiesForRetryIntervaTimeToAddInputMessage(SequencedProperties sourceSequencedProperties)
+			throws PartConfigurationException {
+		String itemKey = new StringBuilder().append(getPrefexOfItemID()).append(itemIDForRetryIntervaTimeToAddInputMessage).append(".value").toString();
+
+		String itemValue = sourceSequencedProperties.getProperty(itemKey);
+
+		if (null == itemValue) {
+			String errorMessage = new StringBuilder().append("the item '").append(itemKey)
+					.append("' does not exist in the parameter sourceSequencedProperties").toString();
+
+			throw new PartConfigurationException(itemKey, errorMessage);
+		}
+
+
+		GeneralConverterReturningLongBetweenMinAndMax nativeValueConverter = new GeneralConverterReturningLongBetweenMinAndMax(100L, (long)Integer.MAX_VALUE);
+		
+		try {
+
+			clientAsynRetryIntervaTimeToAddInputMessage = nativeValueConverter.valueOf(itemValue);
+		} catch (Exception e) {
+			String errorMessage = new StringBuilder()
+					.append("fail to converter the parameter sequencedProperties's item[").append(itemKey)
+					.append("] value[").append(itemValue).append("] to value using the value converter[")
+					.append(GeneralConverterReturningNoTrimString.class.getName()).append("], errmsg=").append(e.getMessage()).toString();
+
+			log.log(Level.WARNING, errorMessage, e);
+
+			throw new PartConfigurationException(itemKey, errorMessage);
+		}
+	}
+
+	public void toPropertiesForRetryIntervaTimeToAddInputMessage(SequencedProperties targetSequencedProperties) {
+		String itemDescKey = new StringBuilder().append(getPrefexOfItemID()).append(itemIDForRetryIntervaTimeToAddInputMessage).append(".desc").toString();
+		String itemDescValue = "비동기에서 입력 메시지 스트림 큐에 입력 메시지 스트림을 다시 추가하는 간격, 단위 nanoseconds, 디폴트 400, 최소 100, 최대 Integer.MAX_VALUE";
+		targetSequencedProperties.put(itemDescKey, itemDescValue);		
+		
+		String itemKey = new StringBuilder().append(getPrefexOfItemID()).append(itemIDForRetryIntervaTimeToAddInputMessage).append(".value").toString();
+		String itemValue = (null == clientAsynRetryIntervaTimeToAddInputMessage) ? "400" : String.valueOf(clientAsynRetryIntervaTimeToAddInputMessage);
+		targetSequencedProperties.put(itemKey, itemValue);
+	}
+	
+	
+	
+	public void fromPropertiesForClientMailboxCountPerAsynShareConnection(SequencedProperties sourceSequencedProperties)
+			throws PartConfigurationException {
+		String itemKey = new StringBuilder().append(getPrefexOfItemID()).append(itemIDForClientMailboxCountPerAsynShareConnection).append(".value").toString();
 
 		String itemValue = sourceSequencedProperties.getProperty(itemKey);
 
@@ -985,22 +1052,18 @@ public class ProjectPartConfiguration implements ConfigurationIF {
 	}
 
 	public void toPropertiesForClientMailboxCountPerAsynShareConnection(SequencedProperties targetSequencedProperties) {
-		String itemDescKey = new StringBuilder().append(prefexOfItemID).append(itemIDForClientMailboxCountPerAsynShareConnection).append(".desc").toString();
+		String itemDescKey = new StringBuilder().append(getPrefexOfItemID()).append(itemIDForClientMailboxCountPerAsynShareConnection).append(".desc").toString();
 		String itemDescValue = "비동기+공유 연결 1개당 메일함 갯수, default value[2], min[1], max[2147483647]";
 		targetSequencedProperties.put(itemDescKey, itemDescValue);		
 		
-		String itemKey = new StringBuilder().append(prefexOfItemID).append(itemIDForClientMailboxCountPerAsynShareConnection).append(".value").toString();
+		String itemKey = new StringBuilder().append(getPrefexOfItemID()).append(itemIDForClientMailboxCountPerAsynShareConnection).append(".value").toString();
 		String itemValue = (null == clientMailboxCountPerAsynShareConnection) ? "2" : String.valueOf(clientMailboxCountPerAsynShareConnection);
 		targetSequencedProperties.put(itemKey, itemValue);
-		
-		String guiItemTypeKey = new StringBuilder().append(prefexOfItemID).append(itemIDForClientMailboxCountPerAsynShareConnection).append(".gui_item_type").toString();
-		String guiItemTypeValue = GUIItemType.DATA.name().toLowerCase();
-		targetSequencedProperties.put(guiItemTypeKey, guiItemTypeValue);
 	}
 	
-	public void toValueForClientAsynInputMessageQueueCapacity(SequencedProperties sourceSequencedProperties)
+	public void fromPropertiesForClientAsynInputMessageQueueCapacity(SequencedProperties sourceSequencedProperties)
 			throws PartConfigurationException {
-		String itemKey = new StringBuilder().append(prefexOfItemID).append(itemIDForClientAsynInputMessageQueueCapacity).append(".value").toString();
+		String itemKey = new StringBuilder().append(getPrefexOfItemID()).append(itemIDForClientAsynInputMessageQueueCapacity).append(".value").toString();
 
 		String itemValue = sourceSequencedProperties.getProperty(itemKey);
 
@@ -1030,22 +1093,18 @@ public class ProjectPartConfiguration implements ConfigurationIF {
 	}
 
 	public void toPropertiesForClientAsynInputMessageQueueCapacity(SequencedProperties targetSequencedProperties) {
-		String itemDescKey = new StringBuilder().append(prefexOfItemID).append(itemIDForClientAsynInputMessageQueueCapacity).append(".desc").toString();
+		String itemDescKey = new StringBuilder().append(getPrefexOfItemID()).append(itemIDForClientAsynInputMessageQueueCapacity).append(".desc").toString();
 		String itemDescValue = "클라이언트 비동기용 입력 메시지 큐가 최대 수용할 수 있는 크기, default value[10], min[1], max[2147483647]";
 		targetSequencedProperties.put(itemDescKey, itemDescValue);		
 		
-		String itemKey = new StringBuilder().append(prefexOfItemID).append(itemIDForClientAsynInputMessageQueueCapacity).append(".value").toString();
+		String itemKey = new StringBuilder().append(getPrefexOfItemID()).append(itemIDForClientAsynInputMessageQueueCapacity).append(".value").toString();
 		String itemValue = (null == clientAsynInputMessageQueueCapacity) ? "10" : String.valueOf(clientAsynInputMessageQueueCapacity);
 		targetSequencedProperties.put(itemKey, itemValue);
-		
-		String guiItemTypeKey = new StringBuilder().append(prefexOfItemID).append(itemIDForClientAsynInputMessageQueueCapacity).append(".gui_item_type").toString();
-		String guiItemTypeValue = GUIItemType.DATA.name().toLowerCase();
-		targetSequencedProperties.put(guiItemTypeKey, guiItemTypeValue);
 	}
 	
-	public void toValueForClientAsynOutputMessageQueueCapacity(SequencedProperties sourceSequencedProperties)
+	public void fromPropertiesForClientAsynOutputMessageQueueCapacity(SequencedProperties sourceSequencedProperties)
 			throws PartConfigurationException {
-		String itemKey = new StringBuilder().append(prefexOfItemID).append(itemIDForClientAsynOutputMessageQueueCapacity).append(".value").toString();
+		String itemKey = new StringBuilder().append(getPrefexOfItemID()).append(itemIDForClientAsynOutputMessageQueueCapacity).append(".value").toString();
 
 		String itemValue = sourceSequencedProperties.getProperty(itemKey);
 
@@ -1075,22 +1134,18 @@ public class ProjectPartConfiguration implements ConfigurationIF {
 	}
 
 	public void toPropertiesForClientAsynOutputMessageQueueCapacity(SequencedProperties targetSequencedProperties) {
-		String itemDescKey = new StringBuilder().append(prefexOfItemID).append(itemIDForClientAsynOutputMessageQueueCapacity).append(".desc").toString();
+		String itemDescKey = new StringBuilder().append(getPrefexOfItemID()).append(itemIDForClientAsynOutputMessageQueueCapacity).append(".desc").toString();
 		String itemDescValue = "클라이언트 비동기용 출력 메시지 큐가 최대 수용할 수 있는 크기, default value[10], min[1], max[2147483647]";
 		targetSequencedProperties.put(itemDescKey, itemDescValue);		
 		
-		String itemKey = new StringBuilder().append(prefexOfItemID).append(itemIDForClientAsynOutputMessageQueueCapacity).append(".value").toString();
+		String itemKey = new StringBuilder().append(getPrefexOfItemID()).append(itemIDForClientAsynOutputMessageQueueCapacity).append(".value").toString();
 		String itemValue = (null == clientAsynOutputMessageQueueCapacity) ? "10" : String.valueOf(clientAsynOutputMessageQueueCapacity);
 		targetSequencedProperties.put(itemKey, itemValue);
-		
-		String guiItemTypeKey = new StringBuilder().append(prefexOfItemID).append(itemIDForClientAsynOutputMessageQueueCapacity).append(".gui_item_type").toString();
-		String guiItemTypeValue = GUIItemType.DATA.name().toLowerCase();
-		targetSequencedProperties.put(guiItemTypeKey, guiItemTypeValue);
 	}
 	
-	public void toValueForClientSelectorWakeupInterval(SequencedProperties sourceSequencedProperties)
+	public void fromPropertiesForClientSelectorWakeupInterval(SequencedProperties sourceSequencedProperties)
 			throws PartConfigurationException {
-		String itemKey = new StringBuilder().append(prefexOfItemID).append(itemIDForClientSelectorWakeupInterval).append(".value").toString();
+		String itemKey = new StringBuilder().append(getPrefexOfItemID()).append(itemIDForClientSelectorWakeupInterval).append(".value").toString();
 
 		String itemValue = sourceSequencedProperties.getProperty(itemKey);
 
@@ -1119,22 +1174,18 @@ public class ProjectPartConfiguration implements ConfigurationIF {
 	}
 
 	public void toPropertiesForClientSelectorWakeupInterval(SequencedProperties targetSequencedProperties) {
-		String itemDescKey = new StringBuilder().append(prefexOfItemID).append(itemIDForClientSelectorWakeupInterval).append(".desc").toString();
+		String itemDescKey = new StringBuilder().append(getPrefexOfItemID()).append(itemIDForClientSelectorWakeupInterval).append(".desc").toString();
 		String itemDescValue = "클라이언트 selector 를 깨우는 주기. 단위 ms, default value[10], min[1], max[2147483647]";
 		targetSequencedProperties.put(itemDescKey, itemDescValue);		
 		
-		String itemKey = new StringBuilder().append(prefexOfItemID).append(itemIDForClientSelectorWakeupInterval).append(".value").toString();
+		String itemKey = new StringBuilder().append(getPrefexOfItemID()).append(itemIDForClientSelectorWakeupInterval).append(".value").toString();
 		String itemValue = (null == clientSelectorWakeupInterval) ? "10" : String.valueOf(clientSelectorWakeupInterval);
 		targetSequencedProperties.put(itemKey, itemValue);
-		
-		String guiItemTypeKey = new StringBuilder().append(prefexOfItemID).append(itemIDForClientSelectorWakeupInterval).append(".gui_item_type").toString();
-		String guiItemTypeValue = GUIItemType.DATA.name().toLowerCase();
-		targetSequencedProperties.put(guiItemTypeKey, guiItemTypeValue);
 	}
 	
-	public void toValueForServerMonitorTimeInterval(SequencedProperties sourceSequencedProperties)
+	public void fromPropertiesForServerMonitorTimeInterval(SequencedProperties sourceSequencedProperties)
 			throws PartConfigurationException {
-		String itemKey = new StringBuilder().append(prefexOfItemID).append(itemIDForServerMonitorTimeInterval).append(".value").toString();
+		String itemKey = new StringBuilder().append(getPrefexOfItemID()).append(itemIDForServerMonitorTimeInterval).append(".value").toString();
 
 		String itemValue = sourceSequencedProperties.getProperty(itemKey);
 
@@ -1164,22 +1215,18 @@ public class ProjectPartConfiguration implements ConfigurationIF {
 	}
 
 	public void toPropertiesForServerMonitorTimeInterval(SequencedProperties targetSequencedProperties) {
-		String itemDescKey = new StringBuilder().append(prefexOfItemID).append(itemIDForServerMonitorTimeInterval).append(".desc").toString();
+		String itemDescKey = new StringBuilder().append(getPrefexOfItemID()).append(itemIDForServerMonitorTimeInterval).append(".desc").toString();
 		String itemDescValue = "서버 모니터링 주기, 단위 ms, default value[5000], min[1000], max[2147483647]";
 		targetSequencedProperties.put(itemDescKey, itemDescValue);		
 		
-		String itemKey = new StringBuilder().append(prefexOfItemID).append(itemIDForServerMonitorTimeInterval).append(".value").toString();
+		String itemKey = new StringBuilder().append(getPrefexOfItemID()).append(itemIDForServerMonitorTimeInterval).append(".value").toString();
 		String itemValue = (null == serverMonitorTimeInterval) ? "5000" : String.valueOf(serverMonitorTimeInterval);
 		targetSequencedProperties.put(itemKey, itemValue);
-		
-		String guiItemTypeKey = new StringBuilder().append(prefexOfItemID).append(itemIDForServerMonitorTimeInterval).append(".gui_item_type").toString();
-		String guiItemTypeValue = GUIItemType.DATA.name().toLowerCase();
-		targetSequencedProperties.put(guiItemTypeKey, guiItemTypeValue);
 	}
 	
-	public void toValueForWhetherServerWrapBufferIsDirect(SequencedProperties sourceSequencedProperties)
+	public void fromPropertiesForWhetherServerWrapBufferIsDirect(SequencedProperties sourceSequencedProperties)
 			throws PartConfigurationException {
-		String itemKey = new StringBuilder().append(prefexOfItemID).append(itemIDForWhetherServerWrapBufferIsDirect).append(".value").toString();
+		String itemKey = new StringBuilder().append(getPrefexOfItemID()).append(itemIDForWhetherServerWrapBufferIsDirect).append(".value").toString();
 
 		String itemValue = sourceSequencedProperties.getProperty(itemKey);
 
@@ -1209,22 +1256,18 @@ public class ProjectPartConfiguration implements ConfigurationIF {
 	}
 
 	public void toPropertiesForWhetherServerWrapBufferIsDirect(SequencedProperties targetSequencedProperties) {
-		String itemDescKey = new StringBuilder().append(prefexOfItemID).append(itemIDForWhetherServerWrapBufferIsDirect).append(".desc").toString();
+		String itemDescKey = new StringBuilder().append(getPrefexOfItemID()).append(itemIDForWhetherServerWrapBufferIsDirect).append(".desc").toString();
 		String itemDescValue = "whether server wrap buffer is direct, default value[true], the boolean set[false, true]";
 		targetSequencedProperties.put(itemDescKey, itemDescValue);		
 		
-		String itemKey = new StringBuilder().append(prefexOfItemID).append(itemIDForWhetherServerWrapBufferIsDirect).append(".value").toString();
+		String itemKey = new StringBuilder().append(getPrefexOfItemID()).append(itemIDForWhetherServerWrapBufferIsDirect).append(".value").toString();
 		String itemValue = (null == whetherServerWrapBufferIsDirect) ? Boolean.TRUE.toString() : whetherServerWrapBufferIsDirect.toString();
 		targetSequencedProperties.put(itemKey, itemValue);
-		
-		String guiItemTypeKey = new StringBuilder().append(prefexOfItemID).append(itemIDForWhetherServerWrapBufferIsDirect).append(".gui_item_type").toString();
-		String guiItemTypeValue = GUIItemType.DATA.name().toLowerCase();
-		targetSequencedProperties.put(guiItemTypeKey, guiItemTypeValue);
 	}
 	
-	public void toValueForServerWrapBufferMaxCntPerMessage(SequencedProperties sourceSequencedProperties)
+	public void fromPropertiesForServerWrapBufferMaxCntPerMessage(SequencedProperties sourceSequencedProperties)
 			throws PartConfigurationException {
-		String itemKey = new StringBuilder().append(prefexOfItemID).append(itemIDForServerWrapBufferMaxCntPerMessage).append(".value").toString();
+		String itemKey = new StringBuilder().append(getPrefexOfItemID()).append(itemIDForServerWrapBufferMaxCntPerMessage).append(".value").toString();
 
 		String itemValue = sourceSequencedProperties.getProperty(itemKey);
 
@@ -1253,22 +1296,18 @@ public class ProjectPartConfiguration implements ConfigurationIF {
 	}
 
 	public void toPropertiesForServerWrapBufferMaxCntPerMessage(SequencedProperties targetSequencedProperties) {
-		String itemDescKey = new StringBuilder().append(prefexOfItemID).append(itemIDForServerWrapBufferMaxCntPerMessage).append(".desc").toString();
+		String itemDescKey = new StringBuilder().append(getPrefexOfItemID()).append(itemIDForServerWrapBufferMaxCntPerMessage).append(".desc").toString();
 		String itemDescValue = "서버에서 1개 메시지당 할당 받을 수 있는 랩 버퍼 최대 갯수, default value[1000], min[1], max[2147483647]";
 		targetSequencedProperties.put(itemDescKey, itemDescValue);		
 		
-		String itemKey = new StringBuilder().append(prefexOfItemID).append(itemIDForServerWrapBufferMaxCntPerMessage).append(".value").toString();
+		String itemKey = new StringBuilder().append(getPrefexOfItemID()).append(itemIDForServerWrapBufferMaxCntPerMessage).append(".value").toString();
 		String itemValue = (null == serverWrapBufferMaxCntPerMessage) ? "1000" : String.valueOf(serverWrapBufferMaxCntPerMessage);
 		targetSequencedProperties.put(itemKey, itemValue);
-		
-		String guiItemTypeKey = new StringBuilder().append(prefexOfItemID).append(itemIDForServerWrapBufferMaxCntPerMessage).append(".gui_item_type").toString();
-		String guiItemTypeValue = GUIItemType.DATA.name().toLowerCase();
-		targetSequencedProperties.put(guiItemTypeKey, guiItemTypeValue);
 	}
 	
-	public void toValueForServerWrapBufferSize(SequencedProperties sourceSequencedProperties)
+	public void fromPropertiesForServerWrapBufferSize(SequencedProperties sourceSequencedProperties)
 			throws PartConfigurationException {
-		String itemKey = new StringBuilder().append(prefexOfItemID).append(itemIDForServerWrapBufferSize).append(".value").toString();
+		String itemKey = new StringBuilder().append(getPrefexOfItemID()).append(itemIDForServerWrapBufferSize).append(".value").toString();
 
 		String itemValue = sourceSequencedProperties.getProperty(itemKey);
 
@@ -1297,23 +1336,19 @@ public class ProjectPartConfiguration implements ConfigurationIF {
 	}
 
 	public void toPropertiesForServerWrapBufferSize(SequencedProperties targetSequencedProperties) {
-		String itemDescKey = new StringBuilder().append(prefexOfItemID).append(itemIDForServerWrapBufferSize).append(".desc").toString();
+		String itemDescKey = new StringBuilder().append(getPrefexOfItemID()).append(itemIDForServerWrapBufferSize).append(".desc").toString();
 		String itemDescValue = "서버 랩 버퍼 크기, 단위 byte, default value[4096], min[1024], max[2147483647]";
 		targetSequencedProperties.put(itemDescKey, itemDescValue);		
 		
-		String itemKey = new StringBuilder().append(prefexOfItemID).append(itemIDForServerWrapBufferSize).append(".value").toString();
+		String itemKey = new StringBuilder().append(getPrefexOfItemID()).append(itemIDForServerWrapBufferSize).append(".value").toString();
 		String itemValue = (null == serverWrapBufferSize) ? "4096" : String.valueOf(serverWrapBufferSize);
 		targetSequencedProperties.put(itemKey, itemValue);
-		
-		String guiItemTypeKey = new StringBuilder().append(prefexOfItemID).append(itemIDForServerWrapBufferSize).append(".gui_item_type").toString();
-		String guiItemTypeValue = GUIItemType.DATA.name().toLowerCase();
-		targetSequencedProperties.put(guiItemTypeKey, guiItemTypeValue);
 	}
 	
 	
-	public void toValueForServerWrapBufferPoolSize(SequencedProperties sourceSequencedProperties)
+	public void fromPropertiesForServerWrapBufferPoolSize(SequencedProperties sourceSequencedProperties)
 			throws PartConfigurationException {
-		String itemKey = new StringBuilder().append(prefexOfItemID).append(itemIDForServerWrapBufferPoolSize).append(".value").toString();
+		String itemKey = new StringBuilder().append(getPrefexOfItemID()).append(itemIDForServerWrapBufferPoolSize).append(".value").toString();
 
 		String itemValue = sourceSequencedProperties.getProperty(itemKey);
 
@@ -1342,23 +1377,19 @@ public class ProjectPartConfiguration implements ConfigurationIF {
 	}
 
 	public void toPropertiesForServerWrapBufferPoolSize(SequencedProperties targetSequencedProperties) {
-		String itemDescKey = new StringBuilder().append(prefexOfItemID).append(itemIDForServerWrapBufferPoolSize).append(".desc").toString();
+		String itemDescKey = new StringBuilder().append(getPrefexOfItemID()).append(itemIDForServerWrapBufferPoolSize).append(".desc").toString();
 		String itemDescValue = "서버 랩 버퍼 폴 크기, default value[1000], min[1], max[2147483647]";
 		targetSequencedProperties.put(itemDescKey, itemDescValue);		
 		
-		String itemKey = new StringBuilder().append(prefexOfItemID).append(itemIDForServerWrapBufferPoolSize).append(".value").toString();
+		String itemKey = new StringBuilder().append(getPrefexOfItemID()).append(itemIDForServerWrapBufferPoolSize).append(".value").toString();
 		String itemValue = (null == serverWrapBufferPoolSize) ? "1000" : String.valueOf(serverWrapBufferPoolSize);
 		targetSequencedProperties.put(itemKey, itemValue);
-		
-		String guiItemTypeKey = new StringBuilder().append(prefexOfItemID).append(itemIDForServerWrapBufferPoolSize).append(".gui_item_type").toString();
-		String guiItemTypeValue = GUIItemType.DATA.name().toLowerCase();
-		targetSequencedProperties.put(guiItemTypeKey, guiItemTypeValue);
 	}
 	
 	
-	public void toValueForServerMaxClients(SequencedProperties sourceSequencedProperties)
+	public void fromPropertiesForServerMaxClients(SequencedProperties sourceSequencedProperties)
 			throws PartConfigurationException {
-		String itemKey = new StringBuilder().append(prefexOfItemID).append(itemIDForServerMaxClients).append(".value").toString();
+		String itemKey = new StringBuilder().append(getPrefexOfItemID()).append(itemIDForServerMaxClients).append(".value").toString();
 
 		String itemValue = sourceSequencedProperties.getProperty(itemKey);
 
@@ -1386,23 +1417,19 @@ public class ProjectPartConfiguration implements ConfigurationIF {
 	}
 
 	public void toPropertiesForServerMaxClients(SequencedProperties targetSequencedProperties) {
-		String itemDescKey = new StringBuilder().append(prefexOfItemID).append(itemIDForServerMaxClients).append(".desc").toString();
+		String itemDescKey = new StringBuilder().append(getPrefexOfItemID()).append(itemIDForServerMaxClients).append(".desc").toString();
 		String itemDescValue = "서버에 접속할 수 있는 최대 클라이언트 수, default value[5], min[1], max[2147483647]";
 		targetSequencedProperties.put(itemDescKey, itemDescValue);		
 		
-		String itemKey = new StringBuilder().append(prefexOfItemID).append(itemIDForServerMaxClients).append(".value").toString();
+		String itemKey = new StringBuilder().append(getPrefexOfItemID()).append(itemIDForServerMaxClients).append(".value").toString();
 		String itemValue = (null == serverMaxClients) ? "5" : String.valueOf(serverMaxClients);
 		targetSequencedProperties.put(itemKey, itemValue);
-		
-		String guiItemTypeKey = new StringBuilder().append(prefexOfItemID).append(itemIDForServerMaxClients).append(".gui_item_type").toString();
-		String guiItemTypeValue = GUIItemType.DATA.name().toLowerCase();
-		targetSequencedProperties.put(guiItemTypeKey, guiItemTypeValue);
 	}
 	
 	
-	public void toValueForServerInputMessageQueueCapacity(SequencedProperties sourceSequencedProperties)
+	public void fromPropertiesForServerInputMessageQueueCapacity(SequencedProperties sourceSequencedProperties)
 			throws PartConfigurationException {
-		String itemKey = new StringBuilder().append(prefexOfItemID).append(itemIDForServerInputMessageQueueCapacity).append(".value").toString();
+		String itemKey = new StringBuilder().append(getPrefexOfItemID()).append(itemIDForServerInputMessageQueueCapacity).append(".value").toString();
 
 		String itemValue = sourceSequencedProperties.getProperty(itemKey);
 
@@ -1432,22 +1459,18 @@ public class ProjectPartConfiguration implements ConfigurationIF {
 	}
 
 	public void toPropertiesForServerInputMessageQueueCapacity(SequencedProperties targetSequencedProperties) {
-		String itemDescKey = new StringBuilder().append(prefexOfItemID).append(itemIDForServerInputMessageQueueCapacity).append(".desc").toString();
+		String itemDescKey = new StringBuilder().append(getPrefexOfItemID()).append(itemIDForServerInputMessageQueueCapacity).append(".desc").toString();
 		String itemDescValue = "서버 입력 메시지 큐가 최대 수용할 수 있는 크기, default value[10], min[1], max[2147483647]";
 		targetSequencedProperties.put(itemDescKey, itemDescValue);		
 		
-		String itemKey = new StringBuilder().append(prefexOfItemID).append(itemIDForServerInputMessageQueueCapacity).append(".value").toString();
+		String itemKey = new StringBuilder().append(getPrefexOfItemID()).append(itemIDForServerInputMessageQueueCapacity).append(".value").toString();
 		String itemValue = (null == serverInputMessageQueueCapacity) ? "10" : String.valueOf(serverInputMessageQueueCapacity);
 		targetSequencedProperties.put(itemKey, itemValue);
-		
-		String guiItemTypeKey = new StringBuilder().append(prefexOfItemID).append(itemIDForServerInputMessageQueueCapacity).append(".gui_item_type").toString();
-		String guiItemTypeValue = GUIItemType.DATA.name().toLowerCase();
-		targetSequencedProperties.put(guiItemTypeKey, guiItemTypeValue);
 	}
 	
-	public void toValueForServerOutputMessageQueueCapacity(SequencedProperties sourceSequencedProperties)
+	public void fromPropertiesForServerOutputMessageQueueCapacity(SequencedProperties sourceSequencedProperties)
 			throws PartConfigurationException {
-		String itemKey = new StringBuilder().append(prefexOfItemID).append(itemIDForServerOutputMessageQueueCapacity).append(".value").toString();
+		String itemKey = new StringBuilder().append(getPrefexOfItemID()).append(itemIDForServerOutputMessageQueueCapacity).append(".value").toString();
 
 		String itemValue = sourceSequencedProperties.getProperty(itemKey);
 
@@ -1477,23 +1500,16 @@ public class ProjectPartConfiguration implements ConfigurationIF {
 	}
 
 	public void toPropertiesForServerOutputMessageQueueCapacity(SequencedProperties targetSequencedProperties) {
-		String itemDescKey = new StringBuilder().append(prefexOfItemID).append(itemIDForServerOutputMessageQueueCapacity).append(".desc").toString();
+		String itemDescKey = new StringBuilder().append(getPrefexOfItemID()).append(itemIDForServerOutputMessageQueueCapacity).append(".desc").toString();
 		String itemDescValue = "클라이언트 비동기용 출력 메시지 큐가 최대 수용할 수 있는 크기, default value[10], min[1], max[2147483647]";
 		targetSequencedProperties.put(itemDescKey, itemDescValue);		
 		
-		String itemKey = new StringBuilder().append(prefexOfItemID).append(itemIDForServerOutputMessageQueueCapacity).append(".value").toString();
+		String itemKey = new StringBuilder().append(getPrefexOfItemID()).append(itemIDForServerOutputMessageQueueCapacity).append(".value").toString();
 		String itemValue = (null == serverOutputMessageQueueCapacity) ? "10" : String.valueOf(serverOutputMessageQueueCapacity);
 		targetSequencedProperties.put(itemKey, itemValue);
-		
-		String guiItemTypeKey = new StringBuilder().append(prefexOfItemID).append(itemIDForServerOutputMessageQueueCapacity).append(".gui_item_type").toString();
-		String guiItemTypeValue = GUIItemType.DATA.name().toLowerCase();
-		targetSequencedProperties.put(guiItemTypeKey, guiItemTypeValue);
 	}
 
-	// FIXME!	
-	public String getSubProjectName() {
-		return subProjectName;
-	}
+	
 	
 	public String getServerHost() {
 		return serverHost;
@@ -1643,7 +1659,17 @@ public class ProjectPartConfiguration implements ConfigurationIF {
 	public void setClientConnectionPoolSupporterTimeInterval(Long clientConnectionPoolSupporterTimeInterval) {
 		this.clientConnectionPoolSupporterTimeInterval = clientConnectionPoolSupporterTimeInterval;
 	}
+	
+	
+	public Long getClientAsynAliveTimePerWrapBuffer() {
+		return clientAsynAliveTimePerWrapBuffer;
+	}
 
+	
+	public void setClientAsynAliveTimePerWrapBuffer(Long clientAsynAliveTimePerWrapBuffer) {
+		this.clientAsynAliveTimePerWrapBuffer = clientAsynAliveTimePerWrapBuffer;
+	}
+	
 
 	public Integer getClientMailboxCountPerAsynShareConnection() {
 		return clientMailboxCountPerAsynShareConnection;
@@ -1776,7 +1802,20 @@ public class ProjectPartConfiguration implements ConfigurationIF {
 	public void setServerOutputMessageQueueCapacity(Integer serverOutputMessageQueueCapacity) {
 		this.serverOutputMessageQueueCapacity = serverOutputMessageQueueCapacity;
 	}
-	
-	
 
+	public Long getClientRetryIntervaTimeToGetConnection() {
+		return clientRetryIntervaTimeToGetConnection;
+	}
+
+	public void setClientRetryIntervaTimeToGetConnection(Long clientRetryIntervaTimeToGetConnection) {
+		this.clientRetryIntervaTimeToGetConnection = clientRetryIntervaTimeToGetConnection;
+	}
+
+	public Long getClientAsynRetryIntervaTimeToAddInputMessage() {
+		return clientAsynRetryIntervaTimeToAddInputMessage;
+	}
+
+	public void setClientAsynRetryIntervaTimeToAddInputMessage(Long clientAsynRetryIntervaTimeToAddInputMessage) {
+		this.clientAsynRetryIntervaTimeToAddInputMessage = clientAsynRetryIntervaTimeToAddInputMessage;
+	}	
 }

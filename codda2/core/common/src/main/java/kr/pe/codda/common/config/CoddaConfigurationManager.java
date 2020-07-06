@@ -150,6 +150,8 @@ public final class CoddaConfigurationManager {
 		
 		try {
 			runningProjectConfiguration = new CoddaConfiguration(installedPathString, runningProjectName);
+			
+			
 		} catch (IllegalArgumentException e) {
 			String errorMessage = new StringBuilder()
 					.append("check java system proprties -D")
@@ -166,6 +168,14 @@ public final class CoddaConfigurationManager {
 			log.log(Level.SEVERE, errorMessage);
 
 			System.exit(1);
+		} catch (Exception e) {
+			log.log(Level.SEVERE, "unknown error", e);
+
+			System.exit(1);
+		}
+		
+		try {
+			runningProjectConfiguration.load();
 		} catch (FileNotFoundException e) {
 			String errorMessage = new StringBuilder("the configuration file[")
 					.append(configFilePathString).append("] doesn't exist").toString();
@@ -177,9 +187,16 @@ public final class CoddaConfigurationManager {
 			log.log(Level.SEVERE, errorMessage, e);
 			System.exit(1);
 		} catch (PartConfigurationException e) {
-			String errorMessage = new StringBuilder("the configuration file[")
-					.append(configFilePathString).append("] has bad format").toString();
-			log.log(Level.SEVERE, errorMessage, e);
+			String errorMessage = new StringBuilder("the itemkey[")
+					.append(e.getItemKey())
+					.append("]'s value in config file[")
+					.append(configFilePathString).append("] is bad, errmsg=")
+					.append(e.getMessage()).toString();
+			log.log(Level.SEVERE, errorMessage);
+			System.exit(1);
+		} catch (Exception e) {
+			log.log(Level.SEVERE, "unknown error", e);
+
 			System.exit(1);
 		}
 	}

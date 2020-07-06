@@ -19,28 +19,11 @@ package kr.pe.codda.common.config;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.StringTokenizer;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import kr.pe.codda.common.buildsystem.pathsupporter.ProjectBuildSytemPathSupporter;
-import kr.pe.codda.common.config.fileorpathstringgetter.AbstractFileOrPathStringReturner;
-import kr.pe.codda.common.config.itemidinfo.ItemIDDefiner;
-import kr.pe.codda.common.config.itemidinfo.ItemIDInfo;
-import kr.pe.codda.common.config.itemidinfo.ItemIDInfoManger;
-import kr.pe.codda.common.config.subset.DBCPPartConfigurationManager;
-import kr.pe.codda.common.config.subset.SubProjectPartConfigurationManager;
-import kr.pe.codda.common.config.subset.CommonPartConfiguration;
-import kr.pe.codda.common.config.subset.DBCPParConfiguration;
-import kr.pe.codda.common.config.subset.ProjectPartConfiguration;
+import kr.pe.codda.common.config.part.MainProjectPartConfiguration;
 import kr.pe.codda.common.etc.CommonStaticFinalVars;
 import kr.pe.codda.common.exception.PartConfigurationException;
-import kr.pe.codda.common.type.ProjectType;
 import kr.pe.codda.common.util.CommonStaticUtil;
 import kr.pe.codda.common.util.SequencedProperties;
 import kr.pe.codda.common.util.SequencedPropertiesUtil;
@@ -52,17 +35,14 @@ import kr.pe.codda.common.util.SequencedPropertiesUtil;
  *
  */
 public class CoddaConfiguration {
-	private Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
+	// private Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
 
-	private String mainProjectName = null;
-	private String installedPathString = null;
+	private final String mainProjectName;
+	private final String installedPathString;
 
-	private String configFilePathString = null;
+	private final String configFilePathString;
 
-	private DBCPPartConfigurationManager dbcpPartConfigurationManger = null;
-	private CommonPartConfiguration commonPartConfiguration = null;
-	private ProjectPartConfiguration mainProjectPartConfiguration = null;
-	private SubProjectPartConfigurationManager subProjectPartConfigurationManger = null;
+	private DefaultConfiguration defaultConfiguration = new DefaultConfiguration();
 
 	private SequencedProperties configSequencedProperties = null;
 
@@ -71,12 +51,9 @@ public class CoddaConfiguration {
 	 * @param installedPathString 설치 경로
 	 * @param mainProjectName 메인 프로젝트 이름
 	 * @throws IllegalArgumentException 파라미터 값이 잘못되엇을 경우 던지는 예외
-	 * @throws PartConfigurationException 설정 파일 내용이 잘못되었을 경우 던지는 예외
-	 * @throws FileNotFoundException 설정 파일이 없는 경우 던지는 예외
-	 * @throws IOException 설정 파일 적재할때 에러 발생시 던지는 예외
 	 */
 	public CoddaConfiguration(String installedPathString, String mainProjectName)
-			throws IllegalArgumentException, PartConfigurationException, FileNotFoundException, IOException {
+			throws IllegalArgumentException {
 		if (null == installedPathString) {
 			throw new IllegalArgumentException("the parameter installedPathString is null");
 		}
@@ -115,307 +92,23 @@ public class CoddaConfiguration {
 		}
 
 		this.mainProjectName = mainProjectName;
-		this.installedPathString = installedPathString;
-		this.configFilePathString = ProjectBuildSytemPathSupporter
-				.getProejctConfigFilePathString(installedPathString, mainProjectName);
+		this.installedPathString = installedPathString;		
 		
-		this.configSequencedProperties = SequencedPropertiesUtil
-				.loadSequencedPropertiesFile(configFilePathString, CommonStaticFinalVars.SOURCE_FILE_CHARSET);
-
-		initAllPartItems(mainProjectName);
-		convertConfigSequencedPropertiesToAllPartItemsWithValidation(this.configSequencedProperties);
+		configFilePathString = ProjectBuildSytemPathSupporter
+				.getProejctConfigFilePathString(installedPathString, mainProjectName);
 	}
 
-	/**
-	 * 멤버 변수 초기화
-	 * @param mainProjectName 메인 프로젝트 이름
-	 */
-	private void initAllPartItems(String mainProjectName) {
-		this.dbcpPartConfigurationManger = new DBCPPartConfigurationManager();
-		this.commonPartConfiguration = new CommonPartConfiguration();
-		this.mainProjectPartConfiguration = new ProjectPartConfiguration(ProjectType.MAIN, mainProjectName);
-		this.subProjectPartConfigurationManger = new SubProjectPartConfigurationManager();
-	}
-
-	/**
-	 * 지정한 프로퍼티 내용을 검증하여 해당 내용을 각 파트 설정으로 옮김.
-	 * 
-	 * @param configSequencedProperties 설정 파일 내용이 담긴 프로퍼티
-	 * @throws PartConfigurationException 설정 파일 내용이 담긴 프로퍼티가 잘못되어 있다면 던지는 예외
-	 */
-	public void convertConfigSequencedPropertiesToAllPartItemsWithValidation(
-			SequencedProperties configSequencedProperties) throws PartConfigurationException {
-		List<String> subProjectNameList = new ArrayList<>();
-		Set<String> subProjectNameSet = new HashSet<>();
-		{
-			String itemValue = configSequencedProperties
-					.getProperty(CommonStaticFinalVars.SUBPROJECT_NAME_LIST_KEY_STRING);
-			if (null == itemValue) {
-				String errorMessage = new StringBuilder("the sub project name list key(=")
-						.append(CommonStaticFinalVars.SUBPROJECT_NAME_LIST_KEY_STRING)
-						.append(") was not found in the conifg file[").append(configFilePathString)
-						.append("]").toString();
-				throw new PartConfigurationException(errorMessage);
-			}
-
-			itemValue = itemValue.trim();
-
-			if (!itemValue.equals("")) {
-				StringTokenizer tokens = new StringTokenizer(itemValue, ",");
-				while (tokens.hasMoreTokens()) {
-					String token = tokens.nextToken();
-					String subProjectName = token.trim();
-					if (subProjectNameSet.contains(subProjectName)) {
-						String errorMessage = new StringBuilder("sub project name[").append(subProjectName)
-								.append("] over at the project name list of the conifg file[")
-								.append(configFilePathString).append("]").toString();
-						throw new PartConfigurationException(errorMessage);
-					}
-
-					subProjectNameList.add(subProjectName);
-					subProjectNameSet.add(subProjectName);
-				}
-			}
-		}
-
-		List<String> dbcpNameList = new ArrayList<>();
-		Set<String> dbcpNameSet = new HashSet<>();
-		{
-			String itemValue = configSequencedProperties
-					.getProperty(CommonStaticFinalVars.DBCP_NAME_LIST_KEY_STRING);
-			if (null == itemValue) {
-				String errorMessage = new StringBuilder("the dbcp name list key(=")
-						.append(CommonStaticFinalVars.DBCP_NAME_LIST_KEY_STRING)
-						.append(") was not found in the conifg file[").append(configFilePathString)
-						.append("]").toString();
-				throw new PartConfigurationException(errorMessage);
-			}
-
-			itemValue = itemValue.trim();
-
-			if (!itemValue.equals("")) {
-				StringTokenizer tokens = new StringTokenizer(itemValue, ",");
-
-				while (tokens.hasMoreTokens()) {
-					String token = tokens.nextToken();
-					String dbcpName = token.trim();
-					if (dbcpNameSet.contains(dbcpName)) {
-						String errorMessage = new StringBuilder("dbcp name[").append(dbcpName)
-								.append("] over at the dbcp name list of the conifg file[")
-								.append(configFilePathString).append("]").toString();
-						throw new PartConfigurationException(errorMessage);
-					}
-
-					dbcpNameList.add(dbcpName);
-					dbcpNameSet.add(dbcpName);
-				}
-			}
-		}
-
-		ItemIDInfoManger itemIDInfoManger = ItemIDInfoManger.getInstance();
-		/**
-		 * 설정 프로퍼티 파일의 항목 키 전체가 올바른지 검사하기 check item key invalidation by item in the
-		 * config file
-		 */
-		@SuppressWarnings("unchecked")
-		Enumeration<String> itemKeys = configSequencedProperties.keys();
-		while (itemKeys.hasMoreElements()) {
-			String itemKey = itemKeys.nextElement();
-
-			if (itemKey.equals(CommonStaticFinalVars.SUBPROJECT_NAME_LIST_KEY_STRING)
-					|| itemKey.equals(CommonStaticFinalVars.SUBPROJECT_NAME_LIST_KEY_STRING)) {
-				continue;
-			}
-
-			@SuppressWarnings("unused")
-			ItemIDInfo<?> itemIDInfo = null;
-			try {
-				itemIDInfo = itemIDInfoManger.getItemIDInfoFromKey(itemKey, dbcpNameSet, subProjectNameSet);
-			} catch (IllegalArgumentException e) {
-				// log.warn("", e);
-
-				String errorMessage = new StringBuilder("error message=[").append(e.getMessage())
-						.append("], the conifg file[").append(configFilePathString).append("]")
-						.toString();
-				throw new PartConfigurationException(errorMessage);
-			}
-		}
-
-		List<ItemIDInfo<?>> dbcpItemIDInfoList = itemIDInfoManger.getUnmodifiableDBCPPartItemIDInfoList();
-		for (String dbcpName : dbcpNameList) {
-			String prefixOfItemID = new StringBuilder("dbcp.").append(dbcpName).append(".").toString();
-
-			DBCPParConfiguration dbcpPartItems = new DBCPParConfiguration(dbcpName);
-			for (ItemIDInfo<?> itemIDInfo : dbcpItemIDInfoList) {
-				String itemID = itemIDInfo.getItemID();
-				String itemKey = new StringBuilder(prefixOfItemID).append(itemID).toString();
-				String itemValue = configSequencedProperties.getProperty(itemKey);
-				if (null == itemValue) {
-					String errorMessage = new StringBuilder("the item key[").append(itemKey)
-							.append("] was not found in the conifg file[").append(configFilePathString)
-							.append("]").toString();
-					throw new PartConfigurationException(errorMessage);
-				}
-
-				boolean isInactive = itemIDInfoManger.isDisabled(itemID, prefixOfItemID,
-						configSequencedProperties);
-				if (!isInactive) {
-					Object nativeValue = itemIDInfoManger.getNativeValueAfterValidChecker(itemKey,
-							configSequencedProperties);
-
-					try {
-						dbcpPartItems.mapping(itemKey, nativeValue);
-					} catch (IllegalArgumentException | ClassCastException | PartConfigurationException e) {
-						String errorMessage = new StringBuilder("fail to map item key[").append(itemKey)
-								.append("]'s value[").append(itemValue)
-								.append("] to the dbcp part value object's variable in the conifg file[")
-								.append(configFilePathString).append("]").toString();
-						throw new PartConfigurationException(errorMessage);
-					}
-				} else {
-					String errorMessage = new StringBuilder()
-							.append("this item key[")
-							.append(itemKey)
-							.append("'s value has null becase its status is inactive").toString();
-					
-					log.log(Level.INFO, errorMessage);
-				}
-
-			}
-			dbcpPartConfigurationManger.addDBCPParConfiguration(dbcpPartItems);
-		}
-
-		List<ItemIDInfo<?>> commonItemIDInfoList = itemIDInfoManger.getUnmodifiableCommonPartItemIDInfoList();
-		for (ItemIDInfo<?> itemIDInfo : commonItemIDInfoList) {
-			String itemID = itemIDInfo.getItemID();
-			String itemKey = itemID;
-			String itemValue = configSequencedProperties.getProperty(itemKey);
-			if (null == itemValue) {
-				String errorMessage = new StringBuilder("the item key[").append(itemKey)
-						.append("] was not found in the conifg file[").append(configFilePathString)
-						.append("]").toString();
-				throw new PartConfigurationException(errorMessage);
-			}
-
-			boolean isInactive = itemIDInfoManger.isDisabled(itemID, "", configSequencedProperties);
-			if (!isInactive) {
-				Object nativeValue = itemIDInfoManger.getNativeValueAfterValidChecker(itemKey,
-						configSequencedProperties);
-
-				try {
-					commonPartConfiguration.mapping(itemKey, nativeValue);
-				} catch (IllegalArgumentException | ClassCastException | PartConfigurationException e) {
-					String errorMessage = new StringBuilder("fail to map item key[").append(itemKey)
-							.append("]'s value[").append(itemValue)
-							.append("] to the common part value object's variable in the conifg file[")
-							.append(configFilePathString).append("]").toString();
-					throw new PartConfigurationException(errorMessage);
-				}
-			} else {
-				String errorMessage = new StringBuilder()
-						.append("this item key[")
-						.append(itemKey)
-						.append("'s value has null becase its status is inactive").toString();
-				
-				log.log(Level.INFO, errorMessage);
-			}
-
-		}
-
-		List<ItemIDInfo<?>> projectItemIDInfoList = itemIDInfoManger.getUnmodifiableProjectPartItemIDInfoList();
-
-		/** main project part */
-		for (ItemIDInfo<?> itemIDInfo : projectItemIDInfoList) {
-			String itemID = itemIDInfo.getItemID();
-			String itemKey = new StringBuilder("mainproject.").append(itemID).toString();
-			String itemValue = configSequencedProperties.getProperty(itemKey);
-			if (null == itemValue) {
-				String errorMessage = new StringBuilder("the item key[").append(itemKey)
-						.append("] was not found in the conifg file[").append(configFilePathString)
-						.append("]").toString();
-				throw new PartConfigurationException(errorMessage);
-			}
-
-			boolean isInactive = itemIDInfoManger.isDisabled(itemID, "mainproject.",
-					configSequencedProperties);
-			if (!isInactive) {
-				Object nativeValue = itemIDInfoManger.getNativeValueAfterValidChecker(itemKey,
-						configSequencedProperties);
-
-				try {
-					mainProjectPartConfiguration.mapping(itemKey, nativeValue);
-				} catch (IllegalArgumentException | ClassCastException | PartConfigurationException e) {
-					String errorMessage = new StringBuilder("fail to map item key[").append(itemKey)
-							.append("]'s value[").append(itemValue)
-							.append("] to the project part value object's variable in the conifg file[")
-							.append(configFilePathString).append("]").toString();
-					log.log(Level.INFO, errorMessage, e);
-					
-					throw new PartConfigurationException(errorMessage);
-				}
-			} else {
-				String errorMessage = new StringBuilder()
-						.append("this item key[")
-						.append(itemKey)
-						.append("'s value has null becase its status is inactive").toString();
-				
-				log.log(Level.INFO, errorMessage);
-			}
-		}
-
-		for (String subProjectName : subProjectNameList) {
-			String prefixOfItemID = new StringBuilder("subproject.").append(subProjectName).append(".").toString();
-
-			ProjectPartConfiguration subProjectPartItems = new ProjectPartConfiguration(ProjectType.SUB,
-					subProjectName);
-			for (ItemIDInfo<?> itemIDInfo : projectItemIDInfoList) {
-				String itemID = itemIDInfo.getItemID();
-				String itemKey = new StringBuilder(prefixOfItemID).append(itemID).toString();
-				String itemValue = configSequencedProperties.getProperty(itemKey);
-				if (null == itemValue) {
-					String errorMessage = new StringBuilder("the item key[").append(itemKey)
-							.append("] was not found in the conifg file[").append(configFilePathString)
-							.append("]").toString();
-					throw new PartConfigurationException(errorMessage);
-				}
-
-				boolean isInactive = itemIDInfoManger.isDisabled(itemID, prefixOfItemID,
-						configSequencedProperties);
-				if (!isInactive) {
-					Object nativeValue = itemIDInfoManger.getNativeValueAfterValidChecker(itemKey,
-							configSequencedProperties);
-
-					try {
-						subProjectPartItems.mapping(itemKey, nativeValue);
-					} catch (IllegalArgumentException | ClassCastException | PartConfigurationException e) {
-						String errorMessage = new StringBuilder("fail to map item key[").append(itemKey)
-								.append("]'s value[").append(itemValue)
-								.append("] to the project part value object's variable in the conifg file[")
-								.append(configFilePathString).append("]").toString();
-						throw new PartConfigurationException(errorMessage);
-					}
-				} else {
-					String errorMessage = new StringBuilder()
-							.append("this item key[")
-							.append(itemKey)
-							.append("'s value has null becase its status is inactive").toString();
-					
-					log.log(Level.INFO, errorMessage);
-				}
-			}
-
-			subProjectPartConfigurationManger.addSubProjectPartConfiguration(subProjectPartItems);
-		}
-	}
 
 	/**
 	 * 만약 서버 주소가 다르다면 새로운 서버 주소로 교체후 저장한다.
 	 * 
 	 * @param newServerHost 새로운 서버 호스트 주소
 	 * @param newServerPort 새로운 서버 포트
+	 * @throws IllegalArgumentException 파라미터 값이 null 이거나 잘못된 값이 들어올 경우 던지는 예외
+	 * @throws IllegalStateException 컨피그 파일을 먼저 로딩 안하고 호출할 경우 던지는 예외
 	 * @throws IOException 저장시 에러 발생시 던지는 예외
 	 */
-	public void changeServerAddressIfDifferent(String newServerHost, int newServerPort) throws IOException {
+	public void changeServerAddressIfDifferent(String newServerHost, int newServerPort) throws IllegalArgumentException, IllegalStateException, IOException {
 		if (null == newServerHost) {
 			throw new IllegalArgumentException("the parameter newServerHost is null");
 		}
@@ -427,6 +120,14 @@ public class CoddaConfiguration {
 		if (CommonStaticUtil.hasLeadingOrTailingWhiteSpace(newServerHost)) {
 			throw new IllegalArgumentException("the parameter newServerHost has any leading or tailing white space");
 		}
+		
+		if (null == configSequencedProperties) {
+			throw new IllegalStateException("config file not load");
+		}
+		
+		
+		MainProjectPartConfiguration mainProjectPartConfiguration = defaultConfiguration.getMainProjectPartConfiguration();
+		
 
 		String oldSeverHost = mainProjectPartConfiguration.getServerHost();
 		int oldServerPort = mainProjectPartConfiguration.getServerPort();
@@ -435,271 +136,42 @@ public class CoddaConfiguration {
 			return;
 		}
 
-		mainProjectPartConfiguration.changeServerAddress(newServerHost, newServerPort);
+		mainProjectPartConfiguration.setServerHost(newServerHost);
+		mainProjectPartConfiguration.setServerPort(newServerPort);
+		
+		mainProjectPartConfiguration.toPropertiesForServerHost(configSequencedProperties);
+		mainProjectPartConfiguration.toPropertiesForServerPort(configSequencedProperties);		
 
-		String serverHostKey = new StringBuilder("mainproject.")
-				.append(ItemIDDefiner.ProjectPartItemIDDefiner.COMMON_HOST_ITEMID).toString();
-		configSequencedProperties.setProperty(serverHostKey, newServerHost);
-
-		String serverPortKey = new StringBuilder("mainproject.")
-				.append(ItemIDDefiner.ProjectPartItemIDDefiner.COMMON_PORT_ITEMID).toString();
-		configSequencedProperties.setProperty(serverPortKey, String.valueOf(newServerPort));
-
-		overwriteFile();
-	}
-
-
-	/**
-	 * 설정 파일 정보가 담긴 시퀀스 프로퍼티의 내용을 설정 파일에 덮어 쓴다.
-	 * @throws IOException 입출력 에러 발생시 던지는 예외
-	 */
-	private void overwriteFile() throws IOException {
 		SequencedPropertiesUtil.overwriteSequencedPropertiesFile(configSequencedProperties,
 				getConfigPropertiesTitle(), configFilePathString,
 				CommonStaticFinalVars.SOURCE_FILE_CHARSET);
 	}
 
-	/**
-	 * 수정한 내용을 설정 파일에 덮어 쓴다.
-	 * @throws IOException 입출력 에러 발생시 던지는 예외
-	 * @throws PartConfigurationException 설정 파일 내용이 담긴 시퀀스 프로퍼티가 잘못되었다면 던지는 예외
-	 */
-	public void applyModifiedConfigSequencedProperties() throws IOException, PartConfigurationException {
-		initAllPartItems(mainProjectName);
-		convertConfigSequencedPropertiesToAllPartItemsWithValidation(configSequencedProperties);
-		overwriteFile();
+	
+	public void setDefaultConfiguration(DefaultConfiguration defaultConfiguration) {
+		if (null == defaultConfiguration) {
+			throw new IllegalArgumentException("the parameter defaultConfiguration is null");
+		}
+		
+		this.defaultConfiguration = defaultConfiguration;
 	}
 
-	/**
-	 * 지정한 설치 경로와 지정한 메인 프로젝트 이름에 맞도록 설정 파일 내용을 갱신한다.
-	 * 
-	 * @param installedPathString 설치 경로
-	 * @param mainProjectName 메인 프로젝트 이름
-	 * @throws IOException 입출력 에러 발생시 던지는 예외
-	 * @throws PartConfigurationException 설정 파일 내용이 담긴 시퀀스 프로퍼티가 잘못되었다면 던지는 예외
-	 */
-	public static void applyInstalledPath(String installedPathString, String mainProjectName)
-			throws IOException, PartConfigurationException {
-		String configFilePathString = ProjectBuildSytemPathSupporter
-				.getProejctConfigFilePathString(installedPathString, mainProjectName);
-
+	public DefaultConfiguration getDefaultConfiguration() {
+		return defaultConfiguration;
+	}	
+	
+	
+	public void load() throws IllegalArgumentException, PartConfigurationException, FileNotFoundException, IOException {
 		SequencedProperties configSequencedProperties = SequencedPropertiesUtil
 				.loadSequencedPropertiesFile(configFilePathString, CommonStaticFinalVars.SOURCE_FILE_CHARSET);
-
-		List<String> subProjectNameList = buildSubProjectNameList(configFilePathString,
-				configSequencedProperties);
-
-		List<String> dbcpNameList = buildDBCPNameList(configFilePathString, configSequencedProperties);
-
-		ItemIDInfoManger itemIDInfoManger = ItemIDInfoManger.getInstance();
-
-		/** common */
-		List<ItemIDInfo<?>> commonPartItemIDInfoList = itemIDInfoManger
-				.getUnmodifiableCommonPartItemIDInfoList();
-		{
-			for (ItemIDInfo<?> itemIDConfigInfo : commonPartItemIDInfoList) {
-				String itemID = itemIDConfigInfo.getItemID();
-				String itemKey = itemID;
-
-				AbstractFileOrPathStringReturner fileOrPathStringGetter = itemIDInfoManger
-						.getFileOrPathStringReturner(itemID);
-
-				if (null != fileOrPathStringGetter) {
-					String itemValue = fileOrPathStringGetter
-							.getFileOrPathString(installedPathString, mainProjectName);
-
-					configSequencedProperties.put(itemKey, itemValue);
-				}
-			}
-		}
-
-		/** dbcp */
-		List<ItemIDInfo<?>> dbcpPartItemIDInfoList = itemIDInfoManger.getUnmodifiableDBCPPartItemIDInfoList();
-		{
-			for (String dbcpName : dbcpNameList) {
-				String prefixOfItemID = new StringBuilder("dbcp.").append(dbcpName).append(".").toString();
-				for (ItemIDInfo<?> itemIDConfigInfo : dbcpPartItemIDInfoList) {
-					String itemID = itemIDConfigInfo.getItemID();
-					String itemKey = new StringBuilder(prefixOfItemID).append(itemID).toString();
-
-					AbstractFileOrPathStringReturner fileOrPathStringGetter = itemIDInfoManger
-							.getFileOrPathStringReturner(itemID);
-
-					if (null != fileOrPathStringGetter) {
-						String itemValue = fileOrPathStringGetter.getFileOrPathString(
-								installedPathString, mainProjectName, dbcpName);
-						configSequencedProperties.put(itemKey, itemValue);
-					}
-				}
-			}
-
-		}
-
-		/** main project */
-		List<ItemIDInfo<?>> projectPartItemIDInfoList = itemIDInfoManger
-				.getUnmodifiableProjectPartItemIDInfoList();
-		{
-			String prefixOfItemID = new StringBuilder("mainproject.").toString();
-			for (ItemIDInfo<?> itemIDConfigInfo : projectPartItemIDInfoList) {
-
-				String itemID = itemIDConfigInfo.getItemID();
-				String itemKey = new StringBuilder(prefixOfItemID).append(itemID).toString();
-
-				AbstractFileOrPathStringReturner fileOrPathStringGetter = itemIDInfoManger
-						.getFileOrPathStringReturner(itemID);
-
-				if (null != fileOrPathStringGetter) {
-					String itemValue = fileOrPathStringGetter
-							.getFileOrPathString(installedPathString, mainProjectName);
-
-					configSequencedProperties.put(itemKey, itemValue);
-				}
-			}
-		}
-
-		/** sub project */
-		{
-			for (String subProjectName : subProjectNameList) {
-				String prefixOfItemID = new StringBuilder("subproject.").append(subProjectName).append(".").toString();
-				for (ItemIDInfo<?> itemIDConfigInfo : projectPartItemIDInfoList) {
-
-					String itemID = itemIDConfigInfo.getItemID();
-					String itemKey = new StringBuilder(prefixOfItemID).append(itemID).toString();
-
-					AbstractFileOrPathStringReturner fileOrPathStringGetter = itemIDInfoManger
-							.getFileOrPathStringReturner(itemID);
-
-					if (null != fileOrPathStringGetter) {
-						String itemValue = fileOrPathStringGetter.getFileOrPathString(
-								installedPathString, mainProjectName);
-
-						configSequencedProperties.put(itemKey, itemValue);
-					}
-				}
-			}
-		}
-
-		SequencedPropertiesUtil.overwriteSequencedPropertiesFile(configSequencedProperties,
-				getConfigPropertiesTitle(mainProjectName), configFilePathString,
-				CommonStaticFinalVars.SOURCE_FILE_CHARSET);
-
+		
+		defaultConfiguration.fromProperteisWithDependencyCheck(configSequencedProperties);
+		
+		/** 에러 없는 경우에 설정 */
+		this.configSequencedProperties = configSequencedProperties;
 	}
-
-	/** 
-	 * @param configFilePathString 설정 파일 경로 문자열
-	 * @param configSequencedProperties 설정 파일이 담긴 시퀀스 프로퍼터 
-	 * @return 파라미터 '설정 파일이 담긴 시퀀스 프로퍼터' 에서 dbcp 이름 목록 값에서 추출한 dbcp 이름 목록
-	 * @throws PartConfigurationException 설정 파일 내용이 담긴 시퀀스 프로퍼티에 dbcp 이름 목록이 존재하지 않거나 중복된 dbcp 이름을 가졌다면 던지는 예외
-	 */
-	private static List<String> buildDBCPNameList(String configFilePathString,
-			SequencedProperties configSequencedProperties) throws PartConfigurationException {
-		List<String> dbcpNameList = new ArrayList<>();
-		Set<String> dbcpNameSet = new HashSet<>();
-		{
-			String itemValue = configSequencedProperties
-					.getProperty(CommonStaticFinalVars.DBCP_NAME_LIST_KEY_STRING);
-			if (null == itemValue) {
-				String errorMessage = new StringBuilder("the dbcp name list key(=")
-						.append(CommonStaticFinalVars.DBCP_NAME_LIST_KEY_STRING)
-						.append(") was not found in the conifg file[").append(configFilePathString)
-						.append("]").toString();
-				throw new PartConfigurationException(errorMessage);
-			}
-
-			itemValue = itemValue.trim();
-
-			if (!itemValue.equals("")) {
-				StringTokenizer tokens = new StringTokenizer(itemValue, ",");
-
-				while (tokens.hasMoreTokens()) {
-					String token = tokens.nextToken();
-					String dbcpName = token.trim();
-					if (dbcpNameSet.contains(dbcpName)) {
-						String errorMessage = new StringBuilder("dbcp name[").append(dbcpName)
-								.append("] over at the dbcp name list of the conifg file[")
-								.append(configFilePathString).append("]").toString();
-						throw new PartConfigurationException(errorMessage);
-					}
-
-					dbcpNameList.add(dbcpName);
-					dbcpNameSet.add(dbcpName);
-				}
-			}
-		}
-		return dbcpNameList;
-	}
-
-	/**
-	 * @param configFilePathString 설정 파일 경로 문자열
-	 * @param configSequencedProperties 설정 파일 내용이 담긴 시퀀스 프로퍼티
-	 * @return 파라미터 '설정 파일이 담긴 시퀀스 프로퍼터' 에서 서브 프록젝트 이름 목록 값에서 추출한 서브 프로젝트 이름 목록이 존재하지 않거나 중복된 서브 프로젝트 이름을 가졌다면 던지는 예외
-	 * @throws PartConfigurationException
-	 */
-	private static List<String> buildSubProjectNameList(String configFilePathString,
-			SequencedProperties configSequencedProperties) throws PartConfigurationException {
-		List<String> subProjectNameList = new ArrayList<>();
-		Set<String> subProjectNameSet = new HashSet<>();
-		{
-			String itemValue = configSequencedProperties
-					.getProperty(CommonStaticFinalVars.SUBPROJECT_NAME_LIST_KEY_STRING);
-			if (null == itemValue) {
-				String errorMessage = new StringBuilder("the sub project name list key(=")
-						.append(CommonStaticFinalVars.SUBPROJECT_NAME_LIST_KEY_STRING)
-						.append(") was not found in the conifg file[").append(configFilePathString)
-						.append("]").toString();
-				throw new PartConfigurationException(errorMessage);
-			}
-
-			itemValue = itemValue.trim();
-
-			if (!itemValue.equals("")) {
-				StringTokenizer tokens = new StringTokenizer(itemValue, ",");
-				while (tokens.hasMoreTokens()) {
-					String token = tokens.nextToken();
-					String subProjectName = token.trim();
-					if (subProjectNameSet.contains(subProjectName)) {
-						String errorMessage = new StringBuilder("sub project name[").append(subProjectName)
-								.append("] over at the project name list of the conifg file[")
-								.append(configFilePathString).append("]").toString();
-						throw new PartConfigurationException(errorMessage);
-					}
-
-					subProjectNameList.add(subProjectName);
-					subProjectNameSet.add(subProjectName);
-				}
-			}
-		}
-		return subProjectNameList;
-	}
-
-	/**
-	 * @return 공통 파트 설정
-	 */
-	public CommonPartConfiguration getCommonPartConfiguration() {
-		return commonPartConfiguration;
-	}
-
-	/**
-	 * @return 메인 프로젝트 파트 설정
-	 */
-	public ProjectPartConfiguration getMainProjectPartConfiguration() {
-		return mainProjectPartConfiguration;
-	}
-
-	/**
-	 * @return 서브 프로젝트 파트 설정 관리자
-	 */
-	public SubProjectPartConfigurationManager getSubProjectPartConfigurationManager() {
-		return subProjectPartConfigurationManger;
-	}
+		
 	
-	/**
-	 * @return dbcp 파트 설정 관리자
-	 */
-	public DBCPPartConfigurationManager getDBCPPartConfigurationManager() {
-		return dbcpPartConfigurationManger;
-	}
-
 	/**
 	 * @return 메인 프로젝트 이름
 	 */
@@ -717,9 +189,11 @@ public class CoddaConfiguration {
 	/** 
 	 * @return 설정 파일 내용이 담긴 시퀀스 프로퍼티
 	 */
+	/*
 	public SequencedProperties getConfigurationSequencedPropties() {
 		return configSequencedProperties;
 	}
+	*/
 
 	/**
 	 * @return 설정 파일의 제목

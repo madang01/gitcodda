@@ -27,7 +27,7 @@ import kr.pe.codda.common.etc.CommonStaticFinalVars;
  * @author Won Jonghoon
  *
  */
-public class AyncThreadSafeSingleConnectedConnectionAdder implements AsynConnectedConnectionAdderIF {
+public class AyncConnectedShareSingleConnectionAdder implements AsynConnectedConnectionAdderIF {
 	private Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
 	
 	private final Object monitor = new Object();

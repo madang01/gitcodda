@@ -113,7 +113,7 @@ public class ServerOutgoingStream implements ServerOutgoingStreamIF {
 			// log.info("workingStreamBuffer is not null, ret="+ret +",
 			// workingStreamBuffer.hasRemaining="+workingStreamBuffer.hasRemaining());
 
-			if (!workingStreamBuffer.hasRemaining()) {
+			if (! workingStreamBuffer.hasRemaining()) {
 
 				streamBufferCount--;
 				streamBufferArrayDeque.removeFirst().releaseAllWrapBuffers();
@@ -123,9 +123,8 @@ public class ServerOutgoingStream implements ServerOutgoingStreamIF {
 					// log.info("송신할 스트림 없음");
 
 					workingStreamBuffer = null;
-					/** socket write event turn off */
 					ret = -1;
-
+					/** socket write event turn off */
 					ownerSelectionKey.interestOps(ownerSelectionKey.interestOps() & ~SelectionKey.OP_WRITE);
 				} else {
 					workingStreamBuffer = streamBufferArrayDeque.peekFirst();
@@ -136,6 +135,9 @@ public class ServerOutgoingStream implements ServerOutgoingStreamIF {
 
 			}
 		}
+		
+		// FIXME!
+		// log.info("ret="+ret);
 
 		return ret;
 

@@ -13,7 +13,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-package kr.pe.codda.common.config2.part;
+package kr.pe.codda.common.config.part;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
@@ -34,7 +34,6 @@ import org.junit.Test;
 import kr.pe.codda.common.etc.CommonStaticFinalVars;
 import kr.pe.codda.common.type.ClientConnectionType;
 import kr.pe.codda.common.type.MessageProtocolType;
-import kr.pe.codda.common.type.ProjectType;
 import kr.pe.codda.common.util.JDKLoggerCustomFormatter;
 import kr.pe.codda.common.util.SequencedProperties;
 
@@ -42,7 +41,7 @@ import kr.pe.codda.common.util.SequencedProperties;
  * @author Won Jonghoon
  *
  */
-public class ProjectPartConfigurationTest {
+public class MainProjectPartConfigurationTest {
 	private Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
 
 	/**
@@ -89,37 +88,18 @@ public class ProjectPartConfigurationTest {
 	}
 	
 	@Test
-	public void testProjectPartConfiguration_서브프로젝트_theParameterSubProjectNameIsNull() {
-		
-		try {
-			new ProjectPartConfiguration(ProjectType.SUB, null);
-			
-			fail("no IllegalArgumentException");
-		} catch(IllegalArgumentException e) {
-			String acutalErrorMessage = e.getMessage();
-			String expectedErrorMessage = "the parameter subProjectName is null";
-			
-			assertEquals(expectedErrorMessage, acutalErrorMessage);
-			
-		} catch(Exception e) {
-			log.log(Level.WARNING, "unknown error", e);
-			fail("unknown error");
-		}
-	}
-
-	@Test
 	public void testToValueForServerHost() {		
 		SequencedProperties sourceSequencedProperties = new SequencedProperties();
 		
-		ProjectPartConfiguration actualProjectPartConfiguration = new ProjectPartConfiguration(ProjectType.SUB, "auth_pc1");
+		AbstractProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
 		actualProjectPartConfiguration.setServerHost("172.12.1.31");
 		
 		actualProjectPartConfiguration.toPropertiesForServerHost(sourceSequencedProperties);
 		
-		ProjectPartConfiguration expectedProjectPartConfiguration = new ProjectPartConfiguration(ProjectType.SUB, "auth_pc1");
+		AbstractProjectPartConfiguration expectedProjectPartConfiguration = new MainProjectPartConfiguration();
 		
 		try {
-			expectedProjectPartConfiguration.toValueForServerHost(sourceSequencedProperties);
+			expectedProjectPartConfiguration.fromPropertiesForServerHost(sourceSequencedProperties);
 		} catch (Exception e) {
 			log.log(Level.WARNING, "fail to call 'toValue'", e);
 			
@@ -134,7 +114,7 @@ public class ProjectPartConfigurationTest {
 	public void testToPropertiesForServerHost_서브프로젝트() {	
 		SequencedProperties sourceSequencedProperties = new SequencedProperties();
 		
-		ProjectPartConfiguration actualProjectPartConfiguration = new ProjectPartConfiguration(ProjectType.SUB, "auth_pc1");
+		AbstractProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
 		actualProjectPartConfiguration.setServerHost("172.12.1.31");
 		
 		actualProjectPartConfiguration.toPropertiesForServerHost(sourceSequencedProperties);
@@ -146,7 +126,7 @@ public class ProjectPartConfigurationTest {
 	public void testToPropertiesForServerHost_메인프로젝트() {	
 		SequencedProperties sourceSequencedProperties = new SequencedProperties();
 		
-		ProjectPartConfiguration actualProjectPartConfiguration = new ProjectPartConfiguration(ProjectType.MAIN, null);
+		AbstractProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
 		actualProjectPartConfiguration.setServerHost("172.12.1.31");
 		
 		actualProjectPartConfiguration.toPropertiesForServerHost(sourceSequencedProperties);
@@ -158,15 +138,15 @@ public class ProjectPartConfigurationTest {
 	public void testToValueForServerPort() {		
 		SequencedProperties sourceSequencedProperties = new SequencedProperties();
 		
-		ProjectPartConfiguration actualProjectPartConfiguration = new ProjectPartConfiguration(ProjectType.SUB, "auth_pc1");
+		AbstractProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
 		actualProjectPartConfiguration.setServerPort(9090);
 		
 		actualProjectPartConfiguration.toPropertiesForServerPort(sourceSequencedProperties);
 		
-		ProjectPartConfiguration expectedProjectPartConfiguration = new ProjectPartConfiguration(ProjectType.SUB, "auth_pc1");
+		AbstractProjectPartConfiguration expectedProjectPartConfiguration = new MainProjectPartConfiguration();
 		
 		try {
-			expectedProjectPartConfiguration.toValueForServerPort(sourceSequencedProperties);
+			expectedProjectPartConfiguration.fromPropertiesForServerPort(sourceSequencedProperties);
 		} catch (Exception e) {
 			log.log(Level.WARNING, "fail to call 'toValue'", e);
 			
@@ -182,7 +162,7 @@ public class ProjectPartConfigurationTest {
 	public void testToPropertiesForServerPort() {	
 		SequencedProperties sourceSequencedProperties = new SequencedProperties();
 		
-		ProjectPartConfiguration actualProjectPartConfiguration = new ProjectPartConfiguration(ProjectType.SUB, "auth_pc1");
+		AbstractProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
 		actualProjectPartConfiguration.setServerPort(9090);
 		
 		actualProjectPartConfiguration.toPropertiesForServerPort(sourceSequencedProperties);
@@ -194,15 +174,15 @@ public class ProjectPartConfigurationTest {
 	public void testToValueForByteOrder() {		
 		SequencedProperties sourceSequencedProperties = new SequencedProperties();
 		
-		ProjectPartConfiguration actualProjectPartConfiguration = new ProjectPartConfiguration(ProjectType.SUB, "auth_pc1");
+		AbstractProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
 		actualProjectPartConfiguration.setByteOrder(ByteOrder.BIG_ENDIAN);
 		
 		actualProjectPartConfiguration.toPropertiesForByteOrder(sourceSequencedProperties);
 		
-		ProjectPartConfiguration expectedProjectPartConfiguration = new ProjectPartConfiguration(ProjectType.SUB, "auth_pc1");
+		AbstractProjectPartConfiguration expectedProjectPartConfiguration = new MainProjectPartConfiguration();
 		
 		try {
-			expectedProjectPartConfiguration.toValueForByteOrder(sourceSequencedProperties);
+			expectedProjectPartConfiguration.fromPropertiesForByteOrder(sourceSequencedProperties);
 		} catch (Exception e) {
 			log.log(Level.WARNING, "fail to call 'toValue'", e);
 			
@@ -217,7 +197,7 @@ public class ProjectPartConfigurationTest {
 	public void testToPropertiesForByteOrder() {	
 		SequencedProperties sourceSequencedProperties = new SequencedProperties();
 		
-		ProjectPartConfiguration actualProjectPartConfiguration = new ProjectPartConfiguration(ProjectType.SUB, "auth_pc1");
+		AbstractProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
 		actualProjectPartConfiguration.setByteOrder(ByteOrder.BIG_ENDIAN);
 		
 		actualProjectPartConfiguration.toPropertiesForByteOrder(sourceSequencedProperties);
@@ -229,15 +209,15 @@ public class ProjectPartConfigurationTest {
 	public void testToValueForCharset() {		
 		SequencedProperties sourceSequencedProperties = new SequencedProperties();
 		
-		ProjectPartConfiguration actualProjectPartConfiguration = new ProjectPartConfiguration(ProjectType.SUB, "auth_pc1");
+		AbstractProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
 		actualProjectPartConfiguration.setCharset(Charset.defaultCharset());
 		
 		actualProjectPartConfiguration.toPropertiesForCharset(sourceSequencedProperties);
 		
-		ProjectPartConfiguration expectedProjectPartConfiguration = new ProjectPartConfiguration(ProjectType.SUB, "auth_pc1");
+		AbstractProjectPartConfiguration expectedProjectPartConfiguration = new MainProjectPartConfiguration();
 		
 		try {
-			expectedProjectPartConfiguration.toValueForCharset(sourceSequencedProperties);
+			expectedProjectPartConfiguration.fromPropertiesForCharset(sourceSequencedProperties);
 		} catch (Exception e) {
 			log.log(Level.WARNING, "fail to call 'toValue'", e);
 			
@@ -253,7 +233,7 @@ public class ProjectPartConfigurationTest {
 	public void testToPropertiesForCharset() {	
 		SequencedProperties sourceSequencedProperties = new SequencedProperties();
 		
-		ProjectPartConfiguration actualProjectPartConfiguration = new ProjectPartConfiguration(ProjectType.SUB, "auth_pc1");
+		AbstractProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
 		actualProjectPartConfiguration.setCharset(Charset.defaultCharset());
 		
 		actualProjectPartConfiguration.toPropertiesForCharset(sourceSequencedProperties);
@@ -265,15 +245,15 @@ public class ProjectPartConfigurationTest {
 	public void testToValueForMessageProtocolType() {		
 		SequencedProperties sourceSequencedProperties = new SequencedProperties();
 		
-		ProjectPartConfiguration actualProjectPartConfiguration = new ProjectPartConfiguration(ProjectType.SUB, "auth_pc1");
+		AbstractProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
 		actualProjectPartConfiguration.setMessageProtocolType(MessageProtocolType.DJSON);
 		
 		actualProjectPartConfiguration.toPropertiesForMessageProtocolType(sourceSequencedProperties);
 		
-		ProjectPartConfiguration expectedProjectPartConfiguration = new ProjectPartConfiguration(ProjectType.SUB, "auth_pc1");
+		AbstractProjectPartConfiguration expectedProjectPartConfiguration = new MainProjectPartConfiguration();
 		
 		try {
-			expectedProjectPartConfiguration.toValueForMessageProtocolType(sourceSequencedProperties);
+			expectedProjectPartConfiguration.fromPropertiesForMessageProtocolType(sourceSequencedProperties);
 		} catch (Exception e) {
 			log.log(Level.WARNING, "fail to call 'toValue'", e);
 			
@@ -289,7 +269,7 @@ public class ProjectPartConfigurationTest {
 	public void testToPropertiesForMessageProtocolType() {	
 		SequencedProperties sourceSequencedProperties = new SequencedProperties();
 		
-		ProjectPartConfiguration actualProjectPartConfiguration = new ProjectPartConfiguration(ProjectType.SUB, "auth_pc1");
+		AbstractProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
 		actualProjectPartConfiguration.setMessageProtocolType(MessageProtocolType.DJSON);
 		
 		actualProjectPartConfiguration.toPropertiesForMessageProtocolType(sourceSequencedProperties);
@@ -302,15 +282,15 @@ public class ProjectPartConfigurationTest {
 	public void testToValueForClientMonitorTimeInterval() {		
 		SequencedProperties sourceSequencedProperties = new SequencedProperties();
 		
-		ProjectPartConfiguration actualProjectPartConfiguration = new ProjectPartConfiguration(ProjectType.SUB, "auth_pc1");
+		AbstractProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
 		actualProjectPartConfiguration.setClientMonitorTimeInterval(1234L);
 		
 		actualProjectPartConfiguration.toPropertiesForClientMonitorTimeInterval(sourceSequencedProperties);
 		
-		ProjectPartConfiguration expectedProjectPartConfiguration = new ProjectPartConfiguration(ProjectType.SUB, "auth_pc1");
+		AbstractProjectPartConfiguration expectedProjectPartConfiguration = new MainProjectPartConfiguration();
 		
 		try {
-			expectedProjectPartConfiguration.toValueForClientMonitorTimeInterval(sourceSequencedProperties);
+			expectedProjectPartConfiguration.fromPropertiesForClientMonitorTimeInterval(sourceSequencedProperties);
 		} catch (Exception e) {
 			log.log(Level.WARNING, "fail to call 'toValue'", e);
 			
@@ -326,7 +306,7 @@ public class ProjectPartConfigurationTest {
 	public void testToPropertiesForClientMonitorTimeInterval() {	
 		SequencedProperties sourceSequencedProperties = new SequencedProperties();
 		
-		ProjectPartConfiguration actualProjectPartConfiguration = new ProjectPartConfiguration(ProjectType.SUB, "auth_pc1");
+		AbstractProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
 		actualProjectPartConfiguration.setClientMonitorTimeInterval(1234L);
 		
 		actualProjectPartConfiguration.toPropertiesForClientMonitorTimeInterval(sourceSequencedProperties);
@@ -338,15 +318,15 @@ public class ProjectPartConfigurationTest {
 	public void testToValueForWhetherClientWrapBufferIsDirect() {		
 		SequencedProperties sourceSequencedProperties = new SequencedProperties();
 		
-		ProjectPartConfiguration actualProjectPartConfiguration = new ProjectPartConfiguration(ProjectType.SUB, "auth_pc1");
+		AbstractProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
 		actualProjectPartConfiguration.setWhetherClientWrapBufferIsDirect(false);
 		
 		actualProjectPartConfiguration.toPropertiesForWhetherClientWrapBufferIsDirect(sourceSequencedProperties);
 		
-		ProjectPartConfiguration expectedProjectPartConfiguration = new ProjectPartConfiguration(ProjectType.SUB, "auth_pc1");
+		AbstractProjectPartConfiguration expectedProjectPartConfiguration = new MainProjectPartConfiguration();
 		
 		try {
-			expectedProjectPartConfiguration.toValueForWhetherClientWrapBufferIsDirect(sourceSequencedProperties);
+			expectedProjectPartConfiguration.fromPropertiesForWhetherClientWrapBufferIsDirect(sourceSequencedProperties);
 		} catch (Exception e) {
 			log.log(Level.WARNING, "fail to call 'toValue'", e);
 			
@@ -362,7 +342,7 @@ public class ProjectPartConfigurationTest {
 	public void testToPropertiesForWhetherClientWrapBufferIsDirect() {	
 		SequencedProperties sourceSequencedProperties = new SequencedProperties();
 		
-		ProjectPartConfiguration actualProjectPartConfiguration = new ProjectPartConfiguration(ProjectType.SUB, "auth_pc1");
+		AbstractProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
 		actualProjectPartConfiguration.setWhetherClientWrapBufferIsDirect(false);
 		
 		actualProjectPartConfiguration.toPropertiesForWhetherClientWrapBufferIsDirect(sourceSequencedProperties);
@@ -374,15 +354,15 @@ public class ProjectPartConfigurationTest {
 	public void testToValueForClientWrapBufferMaxCntPerMessage() {		
 		SequencedProperties sourceSequencedProperties = new SequencedProperties();
 		
-		ProjectPartConfiguration actualProjectPartConfiguration = new ProjectPartConfiguration(ProjectType.SUB, "auth_pc1");
+		AbstractProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
 		actualProjectPartConfiguration.setClientWrapBufferMaxCntPerMessage(1234);
 		
 		actualProjectPartConfiguration.toPropertiesForClientWrapBufferMaxCntPerMessage(sourceSequencedProperties);
 		
-		ProjectPartConfiguration expectedProjectPartConfiguration = new ProjectPartConfiguration(ProjectType.SUB, "auth_pc1");
+		AbstractProjectPartConfiguration expectedProjectPartConfiguration = new MainProjectPartConfiguration();
 		
 		try {
-			expectedProjectPartConfiguration.toValueForClientWrapBufferMaxCntPerMessage(sourceSequencedProperties);
+			expectedProjectPartConfiguration.fromPropertiesForClientWrapBufferMaxCntPerMessage(sourceSequencedProperties);
 		} catch (Exception e) {
 			log.log(Level.WARNING, "fail to call 'toValue'", e);
 			
@@ -398,7 +378,7 @@ public class ProjectPartConfigurationTest {
 	public void testToPropertiesForClientWrapBufferMaxCntPerMessage() {	
 		SequencedProperties sourceSequencedProperties = new SequencedProperties();
 		
-		ProjectPartConfiguration actualProjectPartConfiguration = new ProjectPartConfiguration(ProjectType.SUB, "auth_pc1");
+		AbstractProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
 		actualProjectPartConfiguration.setClientWrapBufferMaxCntPerMessage(1234);
 		
 		actualProjectPartConfiguration.toPropertiesForClientWrapBufferMaxCntPerMessage(sourceSequencedProperties);
@@ -410,15 +390,15 @@ public class ProjectPartConfigurationTest {
 	public void testToValueForClientWrapBufferSize() {		
 		SequencedProperties sourceSequencedProperties = new SequencedProperties();
 		
-		ProjectPartConfiguration actualProjectPartConfiguration = new ProjectPartConfiguration(ProjectType.SUB, "auth_pc1");
+		AbstractProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
 		actualProjectPartConfiguration.setClientWrapBufferSize(1234);
 		
 		actualProjectPartConfiguration.toPropertiesForClientWrapBufferSize(sourceSequencedProperties);
 		
-		ProjectPartConfiguration expectedProjectPartConfiguration = new ProjectPartConfiguration(ProjectType.SUB, "auth_pc1");
+		AbstractProjectPartConfiguration expectedProjectPartConfiguration = new MainProjectPartConfiguration();
 		
 		try {
-			expectedProjectPartConfiguration.toValueForClientWrapBufferSize(sourceSequencedProperties);
+			expectedProjectPartConfiguration.fromPropertiesForClientWrapBufferSize(sourceSequencedProperties);
 		} catch (Exception e) {
 			log.log(Level.WARNING, "fail to call 'toValue'", e);
 			
@@ -434,7 +414,7 @@ public class ProjectPartConfigurationTest {
 	public void testToPropertiesForClientWrapBufferSize() {	
 		SequencedProperties sourceSequencedProperties = new SequencedProperties();
 		
-		ProjectPartConfiguration actualProjectPartConfiguration = new ProjectPartConfiguration(ProjectType.SUB, "auth_pc1");
+		AbstractProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
 		actualProjectPartConfiguration.setClientWrapBufferSize(1234);
 		
 		actualProjectPartConfiguration.toPropertiesForClientWrapBufferSize(sourceSequencedProperties);
@@ -446,15 +426,15 @@ public class ProjectPartConfigurationTest {
 	public void testToValueForClientWrapBufferPoolSize() {		
 		SequencedProperties sourceSequencedProperties = new SequencedProperties();
 		
-		ProjectPartConfiguration actualProjectPartConfiguration = new ProjectPartConfiguration(ProjectType.SUB, "auth_pc1");
+		AbstractProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
 		actualProjectPartConfiguration.setClientWrapBufferPoolSize(4321);
 		
 		actualProjectPartConfiguration.toPropertiesForClientWrapBufferPoolSize(sourceSequencedProperties);
 		
-		ProjectPartConfiguration expectedProjectPartConfiguration = new ProjectPartConfiguration(ProjectType.SUB, "auth_pc1");
+		AbstractProjectPartConfiguration expectedProjectPartConfiguration = new MainProjectPartConfiguration();
 		
 		try {
-			expectedProjectPartConfiguration.toValueForClientWrapBufferPoolSize(sourceSequencedProperties);
+			expectedProjectPartConfiguration.fromPropertiesForClientWrapBufferPoolSize(sourceSequencedProperties);
 		} catch (Exception e) {
 			log.log(Level.WARNING, "fail to call 'toValue'", e);
 			
@@ -470,7 +450,7 @@ public class ProjectPartConfigurationTest {
 	public void testToPropertiesForClientWrapBufferPoolSize() {	
 		SequencedProperties sourceSequencedProperties = new SequencedProperties();
 		
-		ProjectPartConfiguration actualProjectPartConfiguration = new ProjectPartConfiguration(ProjectType.SUB, "auth_pc1");
+		AbstractProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
 		actualProjectPartConfiguration.setClientWrapBufferPoolSize(4321);
 		
 		actualProjectPartConfiguration.toPropertiesForClientWrapBufferPoolSize(sourceSequencedProperties);
@@ -482,15 +462,15 @@ public class ProjectPartConfigurationTest {
 	public void testToValueForClientConnectionType() {		
 		SequencedProperties sourceSequencedProperties = new SequencedProperties();
 		
-		ProjectPartConfiguration actualProjectPartConfiguration = new ProjectPartConfiguration(ProjectType.SUB, "auth_pc1");
+		AbstractProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
 		actualProjectPartConfiguration.setClientConnectionType(ClientConnectionType.SYNC);
 		
 		actualProjectPartConfiguration.toPropertiesForClientConnectionType(sourceSequencedProperties);
 		
-		ProjectPartConfiguration expectedProjectPartConfiguration = new ProjectPartConfiguration(ProjectType.SUB, "auth_pc1");
+		AbstractProjectPartConfiguration expectedProjectPartConfiguration = new MainProjectPartConfiguration();
 		
 		try {
-			expectedProjectPartConfiguration.toValueForClientConnectionType(sourceSequencedProperties);
+			expectedProjectPartConfiguration.fromPropertiesForClientConnectionType(sourceSequencedProperties);
 		} catch (Exception e) {
 			log.log(Level.WARNING, "fail to call 'toValue'", e);
 			
@@ -506,7 +486,7 @@ public class ProjectPartConfigurationTest {
 	public void testToPropertiesForClientConnectionType() {	
 		SequencedProperties sourceSequencedProperties = new SequencedProperties();
 		
-		ProjectPartConfiguration actualProjectPartConfiguration = new ProjectPartConfiguration(ProjectType.SUB, "auth_pc1");
+		AbstractProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
 		actualProjectPartConfiguration.setClientConnectionType(ClientConnectionType.SYNC);
 		
 		actualProjectPartConfiguration.toPropertiesForClientConnectionType(sourceSequencedProperties);
@@ -518,15 +498,15 @@ public class ProjectPartConfigurationTest {
 	public void testToValueForClientConnectionTimeout() {		
 		SequencedProperties sourceSequencedProperties = new SequencedProperties();
 		
-		ProjectPartConfiguration actualProjectPartConfiguration = new ProjectPartConfiguration(ProjectType.SUB, "auth_pc1");
+		AbstractProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
 		actualProjectPartConfiguration.setClientConnectionTimeout(5500L);
 		
 		actualProjectPartConfiguration.toPropertiesForClientConnectionTimeout(sourceSequencedProperties);
 		
-		ProjectPartConfiguration expectedProjectPartConfiguration = new ProjectPartConfiguration(ProjectType.SUB, "auth_pc1");
+		AbstractProjectPartConfiguration expectedProjectPartConfiguration = new MainProjectPartConfiguration();
 		
 		try {
-			expectedProjectPartConfiguration.toValueForClientConnectionTimeout(sourceSequencedProperties);
+			expectedProjectPartConfiguration.fromPropertiesForClientConnectionTimeout(sourceSequencedProperties);
 		} catch (Exception e) {
 			log.log(Level.WARNING, "fail to call 'toValue'", e);
 			
@@ -542,7 +522,7 @@ public class ProjectPartConfigurationTest {
 	public void testToPropertiesForClientConnectionTimeout() {	
 		SequencedProperties sourceSequencedProperties = new SequencedProperties();
 		
-		ProjectPartConfiguration actualProjectPartConfiguration = new ProjectPartConfiguration(ProjectType.SUB, "auth_pc1");
+		AbstractProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
 		actualProjectPartConfiguration.setClientConnectionTimeout(5500L);
 		
 		actualProjectPartConfiguration.toPropertiesForClientConnectionTimeout(sourceSequencedProperties);
@@ -554,15 +534,15 @@ public class ProjectPartConfigurationTest {
 	public void testToValueForClientConnectionCount() {		
 		SequencedProperties sourceSequencedProperties = new SequencedProperties();
 		
-		ProjectPartConfiguration actualProjectPartConfiguration = new ProjectPartConfiguration(ProjectType.SUB, "auth_pc1");
+		AbstractProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
 		actualProjectPartConfiguration.setClientConnectionCount(7);
 		
 		actualProjectPartConfiguration.toPropertiesForClientConnectionCount(sourceSequencedProperties);
 		
-		ProjectPartConfiguration expectedProjectPartConfiguration = new ProjectPartConfiguration(ProjectType.SUB, "auth_pc1");
+		AbstractProjectPartConfiguration expectedProjectPartConfiguration = new MainProjectPartConfiguration();
 		
 		try {
-			expectedProjectPartConfiguration.toValueForClientConnectionCount(sourceSequencedProperties);
+			expectedProjectPartConfiguration.fromPropertiesForClientConnectionCount(sourceSequencedProperties);
 		} catch (Exception e) {
 			log.log(Level.WARNING, "fail to call 'toValue'", e);
 			
@@ -578,7 +558,7 @@ public class ProjectPartConfigurationTest {
 	public void testToPropertiesForClientConnectionCount() {	
 		SequencedProperties sourceSequencedProperties = new SequencedProperties();
 		
-		ProjectPartConfiguration actualProjectPartConfiguration = new ProjectPartConfiguration(ProjectType.SUB, "auth_pc1");
+		AbstractProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
 		actualProjectPartConfiguration.setClientConnectionCount(7);
 		
 		actualProjectPartConfiguration.toPropertiesForClientConnectionCount(sourceSequencedProperties);
@@ -590,15 +570,15 @@ public class ProjectPartConfigurationTest {
 	public void testToValueForClientConnectionMaxCount() {		
 		SequencedProperties sourceSequencedProperties = new SequencedProperties();
 		
-		ProjectPartConfiguration actualProjectPartConfiguration = new ProjectPartConfiguration(ProjectType.SUB, "auth_pc1");
+		AbstractProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
 		actualProjectPartConfiguration.setClientConnectionMaxCount(9);
 		
 		actualProjectPartConfiguration.toPropertiesForClientConnectionMaxCount(sourceSequencedProperties);
 		
-		ProjectPartConfiguration expectedProjectPartConfiguration = new ProjectPartConfiguration(ProjectType.SUB, "auth_pc1");
+		AbstractProjectPartConfiguration expectedProjectPartConfiguration = new MainProjectPartConfiguration();
 		
 		try {
-			expectedProjectPartConfiguration.toValueForClientConnectionMaxCount(sourceSequencedProperties);
+			expectedProjectPartConfiguration.fromPropertiesForClientConnectionMaxCount(sourceSequencedProperties);
 		} catch (Exception e) {
 			log.log(Level.WARNING, "fail to call 'toValue'", e);
 			
@@ -614,7 +594,7 @@ public class ProjectPartConfigurationTest {
 	public void testToPropertiesForClientConnectionMaxCount() {	
 		SequencedProperties sourceSequencedProperties = new SequencedProperties();
 		
-		ProjectPartConfiguration actualProjectPartConfiguration = new ProjectPartConfiguration(ProjectType.SUB, "auth_pc1");
+		AbstractProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
 		actualProjectPartConfiguration.setClientConnectionMaxCount(9);
 		
 		actualProjectPartConfiguration.toPropertiesForClientConnectionMaxCount(sourceSequencedProperties);
@@ -626,15 +606,15 @@ public class ProjectPartConfigurationTest {
 	public void testToValueForClientConnectionPoolSupporterTimeInterval() {		
 		SequencedProperties sourceSequencedProperties = new SequencedProperties();
 		
-		ProjectPartConfiguration actualProjectPartConfiguration = new ProjectPartConfiguration(ProjectType.SUB, "auth_pc1");
+		AbstractProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
 		actualProjectPartConfiguration.setClientConnectionPoolSupporterTimeInterval(12345L);
 		
 		actualProjectPartConfiguration.toPropertiesForClientConnectionPoolSupporterTimeInterval(sourceSequencedProperties);
 		
-		ProjectPartConfiguration expectedProjectPartConfiguration = new ProjectPartConfiguration(ProjectType.SUB, "auth_pc1");
+		AbstractProjectPartConfiguration expectedProjectPartConfiguration = new MainProjectPartConfiguration();
 		
 		try {
-			expectedProjectPartConfiguration.toValueForClientConnectionPoolSupporterTimeInterval(sourceSequencedProperties);
+			expectedProjectPartConfiguration.fromPropertiesForClientConnectionPoolSupporterTimeInterval(sourceSequencedProperties);
 		} catch (Exception e) {
 			log.log(Level.WARNING, "fail to call 'toValue'", e);
 			
@@ -650,7 +630,7 @@ public class ProjectPartConfigurationTest {
 	public void testToPropertiesForClientConnectionPoolSupporterTimeInterval() {	
 		SequencedProperties sourceSequencedProperties = new SequencedProperties();
 		
-		ProjectPartConfiguration actualProjectPartConfiguration = new ProjectPartConfiguration(ProjectType.SUB, "auth_pc1");
+		AbstractProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
 		actualProjectPartConfiguration.setClientConnectionPoolSupporterTimeInterval(12345L);
 		
 		actualProjectPartConfiguration.toPropertiesForClientConnectionPoolSupporterTimeInterval(sourceSequencedProperties);
@@ -662,15 +642,15 @@ public class ProjectPartConfigurationTest {
 	public void testToValueForClientMailboxCountPerAsynShareConnection() {		
 		SequencedProperties sourceSequencedProperties = new SequencedProperties();
 		
-		ProjectPartConfiguration actualProjectPartConfiguration = new ProjectPartConfiguration(ProjectType.SUB, "auth_pc1");
+		AbstractProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
 		actualProjectPartConfiguration.setClientMailboxCountPerAsynShareConnection(17);
 		
 		actualProjectPartConfiguration.toPropertiesForClientMailboxCountPerAsynShareConnection(sourceSequencedProperties);
 		
-		ProjectPartConfiguration expectedProjectPartConfiguration = new ProjectPartConfiguration(ProjectType.SUB, "auth_pc1");
+		AbstractProjectPartConfiguration expectedProjectPartConfiguration = new MainProjectPartConfiguration();
 		
 		try {
-			expectedProjectPartConfiguration.toValueForClientMailboxCountPerAsynShareConnection(sourceSequencedProperties);
+			expectedProjectPartConfiguration.fromPropertiesForClientMailboxCountPerAsynShareConnection(sourceSequencedProperties);
 		} catch (Exception e) {
 			log.log(Level.WARNING, "fail to call 'toValue'", e);
 			
@@ -686,7 +666,7 @@ public class ProjectPartConfigurationTest {
 	public void testToPropertiesForClientMailboxCountPerAsynShareConnection() {	
 		SequencedProperties sourceSequencedProperties = new SequencedProperties();
 		
-		ProjectPartConfiguration actualProjectPartConfiguration = new ProjectPartConfiguration(ProjectType.SUB, "auth_pc1");
+		AbstractProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
 		actualProjectPartConfiguration.setClientMailboxCountPerAsynShareConnection(17);
 		
 		actualProjectPartConfiguration.toPropertiesForClientMailboxCountPerAsynShareConnection(sourceSequencedProperties);
@@ -698,15 +678,15 @@ public class ProjectPartConfigurationTest {
 	public void testToValueForClientAsynInputMessageQueueCapacity() {		
 		SequencedProperties sourceSequencedProperties = new SequencedProperties();
 		
-		ProjectPartConfiguration actualProjectPartConfiguration = new ProjectPartConfiguration(ProjectType.SUB, "auth_pc1");
+		AbstractProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
 		actualProjectPartConfiguration.setClientAsynInputMessageQueueCapacity(17);
 		
 		actualProjectPartConfiguration.toPropertiesForClientAsynInputMessageQueueCapacity(sourceSequencedProperties);
 		
-		ProjectPartConfiguration expectedProjectPartConfiguration = new ProjectPartConfiguration(ProjectType.SUB, "auth_pc1");
+		AbstractProjectPartConfiguration expectedProjectPartConfiguration = new MainProjectPartConfiguration();
 		
 		try {
-			expectedProjectPartConfiguration.toValueForClientAsynInputMessageQueueCapacity(sourceSequencedProperties);
+			expectedProjectPartConfiguration.fromPropertiesForClientAsynInputMessageQueueCapacity(sourceSequencedProperties);
 		} catch (Exception e) {
 			log.log(Level.WARNING, "fail to call 'toValue'", e);
 			
@@ -722,7 +702,7 @@ public class ProjectPartConfigurationTest {
 	public void testToPropertiesForClientAsynInputMessageQueueCapacity() {	
 		SequencedProperties sourceSequencedProperties = new SequencedProperties();
 		
-		ProjectPartConfiguration actualProjectPartConfiguration = new ProjectPartConfiguration(ProjectType.SUB, "auth_pc1");
+		AbstractProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
 		actualProjectPartConfiguration.setClientAsynInputMessageQueueCapacity(17);
 		
 		actualProjectPartConfiguration.toPropertiesForClientAsynInputMessageQueueCapacity(sourceSequencedProperties);
@@ -734,15 +714,15 @@ public class ProjectPartConfigurationTest {
 	public void testToValueForClientAsynOutputMessageQueueCapacity() {		
 		SequencedProperties sourceSequencedProperties = new SequencedProperties();
 		
-		ProjectPartConfiguration actualProjectPartConfiguration = new ProjectPartConfiguration(ProjectType.SUB, "auth_pc1");
+		AbstractProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
 		actualProjectPartConfiguration.setClientAsynOutputMessageQueueCapacity(19);
 		
 		actualProjectPartConfiguration.toPropertiesForClientAsynOutputMessageQueueCapacity(sourceSequencedProperties);
 		
-		ProjectPartConfiguration expectedProjectPartConfiguration = new ProjectPartConfiguration(ProjectType.SUB, "auth_pc1");
+		AbstractProjectPartConfiguration expectedProjectPartConfiguration = new MainProjectPartConfiguration();
 		
 		try {
-			expectedProjectPartConfiguration.toValueForClientAsynOutputMessageQueueCapacity(sourceSequencedProperties);
+			expectedProjectPartConfiguration.fromPropertiesForClientAsynOutputMessageQueueCapacity(sourceSequencedProperties);
 		} catch (Exception e) {
 			log.log(Level.WARNING, "fail to call 'toValue'", e);
 			
@@ -758,7 +738,7 @@ public class ProjectPartConfigurationTest {
 	public void testToPropertiesForClientAsynOutputMessageQueueCapacity() {	
 		SequencedProperties sourceSequencedProperties = new SequencedProperties();
 		
-		ProjectPartConfiguration actualProjectPartConfiguration = new ProjectPartConfiguration(ProjectType.SUB, "auth_pc1");
+		AbstractProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
 		actualProjectPartConfiguration.setClientAsynOutputMessageQueueCapacity(19);
 		
 		actualProjectPartConfiguration.toPropertiesForClientAsynOutputMessageQueueCapacity(sourceSequencedProperties);
@@ -770,15 +750,15 @@ public class ProjectPartConfigurationTest {
 	public void testToValueForClientSelectorWakeupInterval() {		
 		SequencedProperties sourceSequencedProperties = new SequencedProperties();
 		
-		ProjectPartConfiguration actualProjectPartConfiguration = new ProjectPartConfiguration(ProjectType.SUB, "auth_pc1");
+		AbstractProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
 		actualProjectPartConfiguration.setClientSelectorWakeupInterval(21L);
 		
 		actualProjectPartConfiguration.toPropertiesForClientSelectorWakeupInterval(sourceSequencedProperties);
 		
-		ProjectPartConfiguration expectedProjectPartConfiguration = new ProjectPartConfiguration(ProjectType.SUB, "auth_pc1");
+		AbstractProjectPartConfiguration expectedProjectPartConfiguration = new MainProjectPartConfiguration();
 		
 		try {
-			expectedProjectPartConfiguration.toValueForClientSelectorWakeupInterval(sourceSequencedProperties);
+			expectedProjectPartConfiguration.fromPropertiesForClientSelectorWakeupInterval(sourceSequencedProperties);
 		} catch (Exception e) {
 			log.log(Level.WARNING, "fail to call 'toValue'", e);
 			
@@ -794,7 +774,7 @@ public class ProjectPartConfigurationTest {
 	public void testToPropertiesForClientSelectorWakeupInterval() {	
 		SequencedProperties sourceSequencedProperties = new SequencedProperties();
 		
-		ProjectPartConfiguration actualProjectPartConfiguration = new ProjectPartConfiguration(ProjectType.SUB, "auth_pc1");
+		AbstractProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
 		actualProjectPartConfiguration.setClientSelectorWakeupInterval(21L);
 		
 		actualProjectPartConfiguration.toPropertiesForClientSelectorWakeupInterval(sourceSequencedProperties);
@@ -806,15 +786,15 @@ public class ProjectPartConfigurationTest {
 	public void testToValueForServerMonitorTimeInterval() {		
 		SequencedProperties sourceSequencedProperties = new SequencedProperties();
 		
-		ProjectPartConfiguration actualProjectPartConfiguration = new ProjectPartConfiguration(ProjectType.SUB, "auth_pc1");
+		AbstractProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
 		actualProjectPartConfiguration.setServerMonitorTimeInterval(29L);
 		
 		actualProjectPartConfiguration.toPropertiesForServerMonitorTimeInterval(sourceSequencedProperties);
 		
-		ProjectPartConfiguration expectedProjectPartConfiguration = new ProjectPartConfiguration(ProjectType.SUB, "auth_pc1");
+		AbstractProjectPartConfiguration expectedProjectPartConfiguration = new MainProjectPartConfiguration();
 		
 		try {
-			expectedProjectPartConfiguration.toValueForServerMonitorTimeInterval(sourceSequencedProperties);
+			expectedProjectPartConfiguration.fromPropertiesForServerMonitorTimeInterval(sourceSequencedProperties);
 		} catch (Exception e) {
 			log.log(Level.WARNING, "fail to call 'toValue'", e);
 			
@@ -830,7 +810,7 @@ public class ProjectPartConfigurationTest {
 	public void testToPropertiesForServerMonitorTimeInterval() {	
 		SequencedProperties sourceSequencedProperties = new SequencedProperties();
 		
-		ProjectPartConfiguration actualProjectPartConfiguration = new ProjectPartConfiguration(ProjectType.SUB, "auth_pc1");
+		AbstractProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
 		actualProjectPartConfiguration.setServerMonitorTimeInterval(29L);
 		
 		actualProjectPartConfiguration.toPropertiesForServerMonitorTimeInterval(sourceSequencedProperties);
@@ -842,15 +822,15 @@ public class ProjectPartConfigurationTest {
 	public void testToValueForWhetherServerWrapBufferIsDirect() {		
 		SequencedProperties sourceSequencedProperties = new SequencedProperties();
 		
-		ProjectPartConfiguration actualProjectPartConfiguration = new ProjectPartConfiguration(ProjectType.SUB, "auth_pc1");
+		AbstractProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
 		actualProjectPartConfiguration.setWhetherServerWrapBufferIsDirect(false);
 		
 		actualProjectPartConfiguration.toPropertiesForWhetherServerWrapBufferIsDirect(sourceSequencedProperties);
 		
-		ProjectPartConfiguration expectedProjectPartConfiguration = new ProjectPartConfiguration(ProjectType.SUB, "auth_pc1");
+		AbstractProjectPartConfiguration expectedProjectPartConfiguration = new MainProjectPartConfiguration();
 		
 		try {
-			expectedProjectPartConfiguration.toValueForWhetherServerWrapBufferIsDirect(sourceSequencedProperties);
+			expectedProjectPartConfiguration.fromPropertiesForWhetherServerWrapBufferIsDirect(sourceSequencedProperties);
 		} catch (Exception e) {
 			log.log(Level.WARNING, "fail to call 'toValue'", e);
 			
@@ -866,7 +846,7 @@ public class ProjectPartConfigurationTest {
 	public void testToPropertiesForWhetherServerWrapBufferIsDirect() {	
 		SequencedProperties sourceSequencedProperties = new SequencedProperties();
 		
-		ProjectPartConfiguration actualProjectPartConfiguration = new ProjectPartConfiguration(ProjectType.SUB, "auth_pc1");
+		AbstractProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
 		actualProjectPartConfiguration.setWhetherServerWrapBufferIsDirect(false);
 		
 		actualProjectPartConfiguration.toPropertiesForWhetherServerWrapBufferIsDirect(sourceSequencedProperties);
@@ -878,15 +858,15 @@ public class ProjectPartConfigurationTest {
 	public void testToValueForServerWrapBufferMaxCntPerMessage() {		
 		SequencedProperties sourceSequencedProperties = new SequencedProperties();
 		
-		ProjectPartConfiguration actualProjectPartConfiguration = new ProjectPartConfiguration(ProjectType.SUB, "auth_pc1");
+		AbstractProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
 		actualProjectPartConfiguration.setServerWrapBufferMaxCntPerMessage(21);
 		
 		actualProjectPartConfiguration.toPropertiesForServerWrapBufferMaxCntPerMessage(sourceSequencedProperties);
 		
-		ProjectPartConfiguration expectedProjectPartConfiguration = new ProjectPartConfiguration(ProjectType.SUB, "auth_pc1");
+		AbstractProjectPartConfiguration expectedProjectPartConfiguration = new MainProjectPartConfiguration();
 		
 		try {
-			expectedProjectPartConfiguration.toValueForServerWrapBufferMaxCntPerMessage(sourceSequencedProperties);
+			expectedProjectPartConfiguration.fromPropertiesForServerWrapBufferMaxCntPerMessage(sourceSequencedProperties);
 		} catch (Exception e) {
 			log.log(Level.WARNING, "fail to call 'toValue'", e);
 			
@@ -902,7 +882,7 @@ public class ProjectPartConfigurationTest {
 	public void testToPropertiesForServerWrapBufferMaxCntPerMessage() {	
 		SequencedProperties sourceSequencedProperties = new SequencedProperties();
 		
-		ProjectPartConfiguration actualProjectPartConfiguration = new ProjectPartConfiguration(ProjectType.SUB, "auth_pc1");
+		AbstractProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
 		actualProjectPartConfiguration.setServerWrapBufferMaxCntPerMessage(21);
 		
 		actualProjectPartConfiguration.toPropertiesForServerWrapBufferMaxCntPerMessage(sourceSequencedProperties);
@@ -914,15 +894,15 @@ public class ProjectPartConfigurationTest {
 	public void testToValueForServerWrapBufferSize() {		
 		SequencedProperties sourceSequencedProperties = new SequencedProperties();
 		
-		ProjectPartConfiguration actualProjectPartConfiguration = new ProjectPartConfiguration(ProjectType.SUB, "auth_pc1");
+		AbstractProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
 		actualProjectPartConfiguration.setServerWrapBufferSize(8096);
 		
 		actualProjectPartConfiguration.toPropertiesForServerWrapBufferSize(sourceSequencedProperties);
 		
-		ProjectPartConfiguration expectedProjectPartConfiguration = new ProjectPartConfiguration(ProjectType.SUB, "auth_pc1");
+		AbstractProjectPartConfiguration expectedProjectPartConfiguration = new MainProjectPartConfiguration();
 		
 		try {
-			expectedProjectPartConfiguration.toValueForServerWrapBufferSize(sourceSequencedProperties);
+			expectedProjectPartConfiguration.fromPropertiesForServerWrapBufferSize(sourceSequencedProperties);
 		} catch (Exception e) {
 			log.log(Level.WARNING, "fail to call 'toValue'", e);
 			
@@ -938,7 +918,7 @@ public class ProjectPartConfigurationTest {
 	public void testToPropertiesForServerWrapBufferSize() {	
 		SequencedProperties sourceSequencedProperties = new SequencedProperties();
 		
-		ProjectPartConfiguration actualProjectPartConfiguration = new ProjectPartConfiguration(ProjectType.SUB, "auth_pc1");
+		AbstractProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
 		actualProjectPartConfiguration.setServerWrapBufferSize(8096);
 		
 		actualProjectPartConfiguration.toPropertiesForServerWrapBufferSize(sourceSequencedProperties);
@@ -950,15 +930,15 @@ public class ProjectPartConfigurationTest {
 	public void testToValueForServerWrapBufferPoolSize() {		
 		SequencedProperties sourceSequencedProperties = new SequencedProperties();
 		
-		ProjectPartConfiguration actualProjectPartConfiguration = new ProjectPartConfiguration(ProjectType.SUB, "auth_pc1");
+		AbstractProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
 		actualProjectPartConfiguration.setServerWrapBufferPoolSize(21);
 		
 		actualProjectPartConfiguration.toPropertiesForServerWrapBufferPoolSize(sourceSequencedProperties);
 		
-		ProjectPartConfiguration expectedProjectPartConfiguration = new ProjectPartConfiguration(ProjectType.SUB, "auth_pc1");
+		AbstractProjectPartConfiguration expectedProjectPartConfiguration = new MainProjectPartConfiguration();
 		
 		try {
-			expectedProjectPartConfiguration.toValueForServerWrapBufferPoolSize(sourceSequencedProperties);
+			expectedProjectPartConfiguration.fromPropertiesForServerWrapBufferPoolSize(sourceSequencedProperties);
 		} catch (Exception e) {
 			log.log(Level.WARNING, "fail to call 'toValue'", e);
 			
@@ -974,7 +954,7 @@ public class ProjectPartConfigurationTest {
 	public void testToPropertiesForServerWrapBufferPoolSize() {	
 		SequencedProperties sourceSequencedProperties = new SequencedProperties();
 		
-		ProjectPartConfiguration actualProjectPartConfiguration = new ProjectPartConfiguration(ProjectType.SUB, "auth_pc1");
+		AbstractProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
 		actualProjectPartConfiguration.setServerWrapBufferPoolSize(21);
 		
 		actualProjectPartConfiguration.toPropertiesForServerWrapBufferPoolSize(sourceSequencedProperties);
@@ -986,15 +966,15 @@ public class ProjectPartConfigurationTest {
 	public void testToValueForServerMaxClients() {		
 		SequencedProperties sourceSequencedProperties = new SequencedProperties();
 		
-		ProjectPartConfiguration actualProjectPartConfiguration = new ProjectPartConfiguration(ProjectType.SUB, "auth_pc1");
+		AbstractProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
 		actualProjectPartConfiguration.setServerMaxClients(20);
 		
 		actualProjectPartConfiguration.toPropertiesForServerMaxClients(sourceSequencedProperties);
 		
-		ProjectPartConfiguration expectedProjectPartConfiguration = new ProjectPartConfiguration(ProjectType.SUB, "auth_pc1");
+		AbstractProjectPartConfiguration expectedProjectPartConfiguration = new MainProjectPartConfiguration();
 		
 		try {
-			expectedProjectPartConfiguration.toValueForServerMaxClients(sourceSequencedProperties);
+			expectedProjectPartConfiguration.fromPropertiesForServerMaxClients(sourceSequencedProperties);
 		} catch (Exception e) {
 			log.log(Level.WARNING, "fail to call 'toValue'", e);
 			
@@ -1010,7 +990,7 @@ public class ProjectPartConfigurationTest {
 	public void testToPropertiesForServerMaxClients() {	
 		SequencedProperties sourceSequencedProperties = new SequencedProperties();
 		
-		ProjectPartConfiguration actualProjectPartConfiguration = new ProjectPartConfiguration(ProjectType.SUB, "auth_pc1");
+		AbstractProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
 		actualProjectPartConfiguration.setServerMaxClients(20);
 		
 		actualProjectPartConfiguration.toPropertiesForServerMaxClients(sourceSequencedProperties);
@@ -1022,15 +1002,15 @@ public class ProjectPartConfigurationTest {
 	public void testToValueForServerInputMessageQueueCapacity() {		
 		SequencedProperties sourceSequencedProperties = new SequencedProperties();
 		
-		ProjectPartConfiguration actualProjectPartConfiguration = new ProjectPartConfiguration(ProjectType.SUB, "auth_pc1");
+		AbstractProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
 		actualProjectPartConfiguration.setServerInputMessageQueueCapacity(100);
 		
 		actualProjectPartConfiguration.toPropertiesForServerInputMessageQueueCapacity(sourceSequencedProperties);
 		
-		ProjectPartConfiguration expectedProjectPartConfiguration = new ProjectPartConfiguration(ProjectType.SUB, "auth_pc1");
+		AbstractProjectPartConfiguration expectedProjectPartConfiguration = new MainProjectPartConfiguration();
 		
 		try {
-			expectedProjectPartConfiguration.toValueForServerInputMessageQueueCapacity(sourceSequencedProperties);
+			expectedProjectPartConfiguration.fromPropertiesForServerInputMessageQueueCapacity(sourceSequencedProperties);
 		} catch (Exception e) {
 			log.log(Level.WARNING, "fail to call 'toValue'", e);
 			
@@ -1046,7 +1026,7 @@ public class ProjectPartConfigurationTest {
 	public void testToPropertiesForServerInputMessageQueueCapacity() {	
 		SequencedProperties sourceSequencedProperties = new SequencedProperties();
 		
-		ProjectPartConfiguration actualProjectPartConfiguration = new ProjectPartConfiguration(ProjectType.SUB, "auth_pc1");
+		AbstractProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
 		actualProjectPartConfiguration.setServerInputMessageQueueCapacity(100);
 		
 		actualProjectPartConfiguration.toPropertiesForServerInputMessageQueueCapacity(sourceSequencedProperties);
@@ -1058,15 +1038,15 @@ public class ProjectPartConfigurationTest {
 	public void testToValueForServerOutputMessageQueueCapacity() {		
 		SequencedProperties sourceSequencedProperties = new SequencedProperties();
 		
-		ProjectPartConfiguration actualProjectPartConfiguration = new ProjectPartConfiguration(ProjectType.SUB, "auth_pc1");
+		AbstractProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
 		actualProjectPartConfiguration.setServerOutputMessageQueueCapacity(100);
 		
 		actualProjectPartConfiguration.toPropertiesForServerOutputMessageQueueCapacity(sourceSequencedProperties);
 		
-		ProjectPartConfiguration expectedProjectPartConfiguration = new ProjectPartConfiguration(ProjectType.SUB, "auth_pc1");
+		AbstractProjectPartConfiguration expectedProjectPartConfiguration = new MainProjectPartConfiguration();
 		
 		try {
-			expectedProjectPartConfiguration.toValueForServerOutputMessageQueueCapacity(sourceSequencedProperties);
+			expectedProjectPartConfiguration.fromPropertiesForServerOutputMessageQueueCapacity(sourceSequencedProperties);
 		} catch (Exception e) {
 			log.log(Level.WARNING, "fail to call 'toValue'", e);
 			
@@ -1082,7 +1062,7 @@ public class ProjectPartConfigurationTest {
 	public void testToPropertiesForServerOutputMessageQueueCapacity() {	
 		SequencedProperties sourceSequencedProperties = new SequencedProperties();
 		
-		ProjectPartConfiguration actualProjectPartConfiguration = new ProjectPartConfiguration(ProjectType.SUB, "auth_pc1");
+		AbstractProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
 		actualProjectPartConfiguration.setServerOutputMessageQueueCapacity(100);
 		
 		actualProjectPartConfiguration.toPropertiesForServerOutputMessageQueueCapacity(sourceSequencedProperties);

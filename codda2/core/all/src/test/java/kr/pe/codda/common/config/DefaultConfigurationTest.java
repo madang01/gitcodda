@@ -13,12 +13,11 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-package kr.pe.codda.common.config2.part;
+package kr.pe.codda.common.config;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
-import java.io.File;
+import java.util.Enumeration;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Handler;
 import java.util.logging.Level;
@@ -38,14 +37,16 @@ import kr.pe.codda.common.util.SequencedProperties;
  * @author Won Jonghoon
  *
  */
-public class DBCPParConfigurationTest {
+public class DefaultConfigurationTest {
 	private Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
+	
 
 	/**
 	 * @throws java.lang.Exception
 	 */
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
+		
 		Logger rootLogger = Logger.getLogger("");
 
 		Handler[] handlers = rootLogger.getHandlers();
@@ -85,39 +86,35 @@ public class DBCPParConfigurationTest {
 	}
 
 	@Test
-	public void testToValueForJDFMemberLoginPage() {		
+	public void test() {
+		String installedPathString = "D:\\gitcodda\\codda2";
+		String mainProjectName = "sample_base";
+		
+		
+		log.info(installedPathString+"="+installedPathString);
+		log.info(mainProjectName+"="+mainProjectName);
+		
 		SequencedProperties sourceSequencedProperties = new SequencedProperties();
 		
-		DBCPParConfiguration actualDBCPParConfiguration = new DBCPParConfiguration("lt_sb_db");
-		actualDBCPParConfiguration.setDBCPConfigFile(new File("D:\\gitcodda\\codda2\\project\\sample_base\\resources\\dbcp\\dbcp.lt_sb_db.properties"));
+		DefaultConfiguration  defaultConfiguration = new DefaultConfiguration();		
 		
-		actualDBCPParConfiguration.toPropertiesForDBCPConfigFile(sourceSequencedProperties);
+		defaultConfiguration.toProperties(sourceSequencedProperties);
 		
-		DBCPParConfiguration expectedDBCPParConfiguration = new DBCPParConfiguration("lt_sb_db");
+		DefaultConfiguration.applyIntalledPath(installedPathString, mainProjectName, sourceSequencedProperties);
 		
-		try {
-			expectedDBCPParConfiguration.toValueForDBCPConfigFile(sourceSequencedProperties);
-		} catch (Exception e) {
-			log.log(Level.WARNING, "fail to call 'toValue'", e);
+		@SuppressWarnings("unchecked")
+		Enumeration<String> keys = sourceSequencedProperties.keys();
+		
+		while(keys.hasMoreElements()) {
+			String key = keys.nextElement();
+			String value = sourceSequencedProperties.getProperty(key);
 			
-			fail("fail to call 'toValue'");
-		}	
+			System.out.println(key+"="+value);
+		}
 		
 		
-		assertEquals(expectedDBCPParConfiguration.getDBCPConfigFile(), actualDBCPParConfiguration.getDBCPConfigFile());
-	}
-
-	
-	@Test
-	public void testToPropertiesForJDFMemberLoginPage() {	
-		SequencedProperties sourceSequencedProperties = new SequencedProperties();
 		
-		DBCPParConfiguration actualDBCPParConfiguration = new DBCPParConfiguration("lt_sb_db");
-		actualDBCPParConfiguration.setDBCPConfigFile(new File("D:\\gitcodda\\codda2\\project\\sample_base\\resources\\dbcp\\dbcp.lt_sb_db.properties"));
-		
-		actualDBCPParConfiguration.toPropertiesForDBCPConfigFile(sourceSequencedProperties);
-		
-		log.info(sourceSequencedProperties.toString());
+		fail("Not yet implemented");
 	}
 
 }

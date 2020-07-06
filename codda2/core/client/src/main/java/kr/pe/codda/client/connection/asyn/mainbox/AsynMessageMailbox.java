@@ -34,7 +34,7 @@ public abstract class AsynMessageMailbox {
 	 * @return 클라이언트 비동기 메일 박스 식별자
 	 */
 	public static int getMailboxID() {
-		return CommonStaticFinalVars.COUNT_ASYN_MAILBOX_ID;
+		return CommonStaticFinalVars.ASYN_MAILBOX_ID;
 	}
 
 	/*

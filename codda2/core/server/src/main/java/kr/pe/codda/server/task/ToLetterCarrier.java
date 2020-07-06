@@ -51,7 +51,7 @@ public class ToLetterCarrier {
 	private MessageEncoderManagerIF messageCodecManager = null;
 	
 	private boolean isAddedSyncOuputMessage = false;
-	private boolean isAddedCountAsynOuputMessage = false;
+	
 	
 	/**
 	 * 생서자
@@ -94,8 +94,7 @@ public class ToLetterCarrier {
 	private void doAddOutputMessage(AcceptedConnection toAcceptedConnection,
 			AbstractMessage outputMessage, 
 			MessageProtocolIF messageProtocol) throws InterruptedException {
-		String messageIDOfOutputMessage = outputMessage.getMessageID();
-	
+		String messageIDOfOutputMessage = outputMessage.getMessageID();	
 				
 		
 		AbstractMessageEncoder messageEncoder = null;
@@ -216,7 +215,7 @@ public class ToLetterCarrier {
 	}	
 	
 	public void addBypassOutputMessage(AbstractMessage bypassOutputMessage) throws InterruptedException {		
-		if (inputMessage.getMailboxID() == CommonStaticFinalVars.COUNT_ASYN_MAILBOX_ID) {
+		if (inputMessage.getMailboxID() == CommonStaticFinalVars.ASYN_MAILBOX_ID) {
 			addAsynOutputMessage(bypassOutputMessage);
 		} else {
 			addSyncOutputMessage(bypassOutputMessage);
@@ -227,7 +226,7 @@ public class ToLetterCarrier {
 		if (null == syncOutputMessage) {
 			throw new IllegalArgumentException("the parameter syncOutputMessage is null");
 		}
-		if (CommonStaticFinalVars.COUNT_ASYN_MAILBOX_ID == inputMessage.getMailboxID()) {			
+		if (CommonStaticFinalVars.ASYN_MAILBOX_ID == inputMessage.getMailboxID()) {			
 			throw new IllegalArgumentException("the synchronous output message can't be added becase the inputMessage is a asynchronous message");
 		}
 		
@@ -248,12 +247,7 @@ public class ToLetterCarrier {
 			throw new IllegalArgumentException("the parameter asynOutputMessage is null");
 		}
 		
-		if (isAddedCountAsynOuputMessage) {
-			asynOutputMessage.setMailboxID(CommonStaticFinalVars.NOCOUNT_ASYN_MAILBOX_ID);
-		} else {
-			isAddedCountAsynOuputMessage = true;
-			asynOutputMessage.setMailboxID(CommonStaticFinalVars.COUNT_ASYN_MAILBOX_ID);
-		}
+		asynOutputMessage.setMailboxID(CommonStaticFinalVars.ASYN_MAILBOX_ID);
 		
 		asynOutputMessage.setMailID(fromAcceptedConnection.getServerMailID());	
 		
@@ -291,7 +285,7 @@ public class ToLetterCarrier {
 		
 		AcceptedConnection loignUserAcceptedConnection = (AcceptedConnection)attachedObject;
 		
-		asynOutputMessage.setMailboxID(CommonStaticFinalVars.NOCOUNT_ASYN_MAILBOX_ID);
+		asynOutputMessage.setMailboxID(CommonStaticFinalVars.ASYN_MAILBOX_ID);
 		asynOutputMessage.setMailID(loignUserAcceptedConnection.getServerMailID());		
 		
 		doAddOutputMessage(loignUserAcceptedConnection, asynOutputMessage, messageProtocol);
