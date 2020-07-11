@@ -19,7 +19,6 @@ import java.io.File;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import kr.pe.codda.common.config.PartConfigurationIF;
 import kr.pe.codda.common.config.nativevalueconverter.GeneralConverterReturningNoTrimString;
 import kr.pe.codda.common.config.nativevalueconverter.GeneralConverterReturningRegularFile;
 import kr.pe.codda.common.config.nativevalueconverter.SetTypeConverterOfSessionKeyRSAKeypairSource;
@@ -28,6 +27,7 @@ import kr.pe.codda.common.config.nativevalueconverter.SetTypeConverterReturningI
 import kr.pe.codda.common.config.nativevalueconverter.SetTypeConverterReturningString;
 import kr.pe.codda.common.exception.PartConfigurationException;
 import kr.pe.codda.common.type.GUIItemType;
+import kr.pe.codda.common.type.KeyTypeOfConfieFile;
 import kr.pe.codda.common.type.SessionKey;
 import kr.pe.codda.common.util.SequencedProperties;
 
@@ -38,6 +38,8 @@ import kr.pe.codda.common.util.SequencedProperties;
 public class CommonPartConfiguration implements PartConfigurationIF {
 
 	private final Logger log = Logger.getLogger(CommonPartConfiguration.class.getName());
+	
+	private final String prefixBeforeItemID = "";
 
 	public static final String itemIDForJDFMemberLoginPage = "jdf.member_login_page";
 	private String jdfMemberLoginPage = null;
@@ -83,11 +85,6 @@ public class CommonPartConfiguration implements PartConfigurationIF {
 	
 	/*******************************************************************************************************/
 	
-	
-	
-	
-	
-
 	@Override
 	public void fromProperties(SequencedProperties sourceSequencedProperties)
 			throws IllegalArgumentException, PartConfigurationException {
@@ -111,11 +108,10 @@ public class CommonPartConfiguration implements PartConfigurationIF {
 			fromPropertiesForRSAPrivatekeyFileOfSessionKey(sourceSequencedProperties);
 		}
 		fromPropertiesForRSAKeySizeOfSessionKey(sourceSequencedProperties);
+		fromPropertiesForSymmetricIVSizeOfSessionKey(sourceSequencedProperties);
 		fromPropertiesForSymmetricKeyAlgorithmOfSessionKey(sourceSequencedProperties);
 		fromPropertiesForSymmetricKeySizeOfSessionKey(sourceSequencedProperties);
 		/** session key end */
-		
-		// FIXME!
 	}
 
 	@Override
@@ -141,11 +137,13 @@ public class CommonPartConfiguration implements PartConfigurationIF {
 		toPropertiesForRSAKeySizeOfSessionKey(targetSequencedProperties);
 		toPropertiesForSymmetricKeyAlgorithmOfSessionKey(targetSequencedProperties);
 		toPropertiesForSymmetricKeySizeOfSessionKey(targetSequencedProperties);
+		toPropertiesForSymmetricIVSizeOfSessionKey(targetSequencedProperties);
 	}
 
 	public void fromPropertiesForJDFMemberLoginPage(SequencedProperties sourceSequencedProperties)
 			throws PartConfigurationException {
-		String itemKey = new StringBuilder().append(itemIDForJDFMemberLoginPage).append(".value").toString();
+		String itemKey = RunningProjectConfiguration.buildKeyOfConfigFile(
+				prefixBeforeItemID, itemIDForJDFMemberLoginPage, KeyTypeOfConfieFile.VALUE);
 
 		String itemValue = sourceSequencedProperties.getProperty(itemKey);
 
@@ -175,18 +173,21 @@ public class CommonPartConfiguration implements PartConfigurationIF {
 	}
 
 	public void toPropertiesForJDFMemberLoginPage(SequencedProperties targetSequencedProperties) {
-		String itemDescKey = new StringBuilder().append(itemIDForJDFMemberLoginPage).append(".desc").toString();
+		String itemDescKey = RunningProjectConfiguration.buildKeyOfConfigFile(
+				prefixBeforeItemID, itemIDForJDFMemberLoginPage, KeyTypeOfConfieFile.DESC);
 		String itemDescValue = "일반 회원용 사이트의 로그인 페이지 URL, 루트로 시작하는 절대경로 권장함";
 		targetSequencedProperties.put(itemDescKey, itemDescValue);		
 		
-		String itemKey = new StringBuilder().append(itemIDForJDFMemberLoginPage).append(".value").toString();
+		String itemKey = RunningProjectConfiguration.buildKeyOfConfigFile(
+				prefixBeforeItemID, itemIDForJDFMemberLoginPage, KeyTypeOfConfieFile.VALUE);
 		String itemValue = (null == jdfMemberLoginPage) ? "/sitemenu/member/MemberLoginInput.jsp" : jdfMemberLoginPage;
 		targetSequencedProperties.put(itemKey, itemValue);
 	}
 
 	public void fromPropertiesForJDFAdminLoginPage(SequencedProperties sourceSequencedProperties)
 			throws PartConfigurationException {
-		String itemKey = new StringBuilder().append(itemIDForJDFAdminLoginPage).append(".value").toString();
+		String itemKey = RunningProjectConfiguration.buildKeyOfConfigFile(
+				prefixBeforeItemID, itemIDForJDFAdminLoginPage, KeyTypeOfConfieFile.VALUE);
 
 		String itemValue = sourceSequencedProperties.getProperty(itemKey);
 
@@ -214,18 +215,21 @@ public class CommonPartConfiguration implements PartConfigurationIF {
 	}
 
 	public void toPropertiesForJDFAdminLoginPage(SequencedProperties targetSequencedProperties) {
-		String itemDescKey = new StringBuilder().append(itemIDForJDFAdminLoginPage).append(".desc").toString();
+		String itemDescKey = RunningProjectConfiguration.buildKeyOfConfigFile(
+				prefixBeforeItemID, itemIDForJDFAdminLoginPage, KeyTypeOfConfieFile.DESC);
 		String itemDescValue = "관리자 사이트의 로그인 페이지 URL, 루트로 시작하는 절대경로 권장함";
 		targetSequencedProperties.put(itemDescKey, itemDescValue);
 		
-		String itemKey = new StringBuilder().append(itemIDForJDFAdminLoginPage).append(".value").toString();
+		String itemKey = RunningProjectConfiguration.buildKeyOfConfigFile(
+				prefixBeforeItemID, itemIDForJDFAdminLoginPage, KeyTypeOfConfieFile.VALUE);
 		String itemValue = (null == jdfAdminLoginPage) ? "/sitemenu/member/AdminLoginInput.jsp" : jdfAdminLoginPage;
 		targetSequencedProperties.put(itemKey, itemValue);
 	}
 	
 	public void fromPropertiesForJDFSessionKeyRedirectPage(SequencedProperties sourceSequencedProperties)
 			throws PartConfigurationException {
-		String itemKey = new StringBuilder().append(itemIDForJDFSessionKeyRedirectPage).append(".value").toString();
+		String itemKey = RunningProjectConfiguration.buildKeyOfConfigFile(
+				prefixBeforeItemID, itemIDForJDFSessionKeyRedirectPage, KeyTypeOfConfieFile.VALUE);
 
 		String itemValue = sourceSequencedProperties.getProperty(itemKey);
 
@@ -254,18 +258,21 @@ public class CommonPartConfiguration implements PartConfigurationIF {
 	}
 
 	public void toPropertiesForJDFSessionKeyRedirectPage(SequencedProperties targetSequencedProperties) {
-		String itemDescKey = new StringBuilder().append(itemIDForJDFSessionKeyRedirectPage).append(".desc").toString();
+		String itemDescKey = RunningProjectConfiguration.buildKeyOfConfigFile(
+				prefixBeforeItemID, itemIDForJDFSessionKeyRedirectPage, KeyTypeOfConfieFile.DESC);
 		String itemDescValue = "세션키 없을때 가져오는 페이지 URL, 루트로 시작하는 절대경로 권장함";
 		targetSequencedProperties.put(itemDescKey, itemDescValue);
 		
-		String itemKey = new StringBuilder().append(itemIDForJDFSessionKeyRedirectPage).append(".value").toString();
+		String itemKey = RunningProjectConfiguration.buildKeyOfConfigFile(
+				prefixBeforeItemID, itemIDForJDFSessionKeyRedirectPage, KeyTypeOfConfieFile.VALUE);
 		String itemValue = (null == jdfSessionKeyRedirectPage) ? "/sessionKeyRedirect.jsp" : jdfSessionKeyRedirectPage;
 		targetSequencedProperties.put(itemKey, itemValue);
 	}
 	
 	public void fromPropertiesForJDFErrorMessagePage(SequencedProperties sourceSequencedProperties)
 			throws PartConfigurationException {
-		String itemKey = new StringBuilder().append(itemIDForJDFErrorMessagePage).append(".value").toString();
+		String itemKey = RunningProjectConfiguration.buildKeyOfConfigFile(
+				prefixBeforeItemID, itemIDForJDFErrorMessagePage, KeyTypeOfConfieFile.VALUE);
 
 		String itemValue = sourceSequencedProperties.getProperty(itemKey);
 
@@ -293,18 +300,21 @@ public class CommonPartConfiguration implements PartConfigurationIF {
 	}
 
 	public void toPropertiesForJDFErrorMessagePage(SequencedProperties targetSequencedProperties) {
-		String itemDescKey = new StringBuilder().append(itemIDForJDFErrorMessagePage).append(".desc").toString();
+		String itemDescKey = RunningProjectConfiguration.buildKeyOfConfigFile(
+				prefixBeforeItemID, itemIDForJDFErrorMessagePage, KeyTypeOfConfieFile.DESC);
 		String itemDescValue = "JDF 서블릿 처리중 에러 발생시 에러 내용을 출력 해주는 페이지 URL, 루트로 시작하는 절대경로 권장함";
 		targetSequencedProperties.put(itemDescKey, itemDescValue);
 		
-		String itemKey = new StringBuilder().append(itemIDForJDFErrorMessagePage).append(".value").toString();
+		String itemKey = RunningProjectConfiguration.buildKeyOfConfigFile(
+				prefixBeforeItemID, itemIDForJDFErrorMessagePage, KeyTypeOfConfieFile.VALUE);
 		String itemValue = (null == jdfErrorMessagePage) ? "/errorMessagePage.jsp" : jdfErrorMessagePage;
 		targetSequencedProperties.put(itemKey, itemValue);
 	}
 	
 	public void fromPropertiesForJDFServletTrace(SequencedProperties sourceSequencedProperties)
 			throws PartConfigurationException {
-		String itemKey = new StringBuilder().append(itemIDForJDFServletTrace).append(".value").toString();
+		String itemKey = RunningProjectConfiguration.buildKeyOfConfigFile(
+				prefixBeforeItemID, itemIDForJDFServletTrace, KeyTypeOfConfieFile.VALUE);
 
 		String itemValue = sourceSequencedProperties.getProperty(itemKey);
 
@@ -332,18 +342,21 @@ public class CommonPartConfiguration implements PartConfigurationIF {
 	}
 
 	public void toPropertiesForJDFServletTrace(SequencedProperties targetSequencedProperties) {
-		String itemDescKey = new StringBuilder().append(itemIDForJDFServletTrace).append(".desc").toString();
+		String itemDescKey = RunningProjectConfiguration.buildKeyOfConfigFile(
+				prefixBeforeItemID, itemIDForJDFServletTrace, KeyTypeOfConfieFile.DESC);
 		String itemDescValue = "JDF 서블릿의 응답 속도 추적 여부, 디폴트 false";
 		targetSequencedProperties.put(itemDescKey, itemDescValue);
 		
-		String itemKey = new StringBuilder().append(itemIDForJDFServletTrace).append(".value").toString();
+		String itemKey = RunningProjectConfiguration.buildKeyOfConfigFile(
+				prefixBeforeItemID, itemIDForJDFServletTrace, KeyTypeOfConfieFile.VALUE);
 		String itemValue = (null == jdfServletTrace) ? Boolean.FALSE.toString() : jdfServletTrace.toString();
 		targetSequencedProperties.put(itemKey, itemValue);
 	}
 	
 	public void fromPropertiesForRSAKeypairSourceOfSessionKey(SequencedProperties sourceSequencedProperties)
 			throws PartConfigurationException {
-		String itemKey = new StringBuilder().append(itemIDForRSAKeypairSourceOfSessionKey).append(".value").toString();
+		String itemKey = RunningProjectConfiguration.buildKeyOfConfigFile(
+				prefixBeforeItemID, itemIDForRSAKeypairSourceOfSessionKey, KeyTypeOfConfieFile.VALUE);
 
 		String itemValue = sourceSequencedProperties.getProperty(itemKey);
 
@@ -374,11 +387,13 @@ public class CommonPartConfiguration implements PartConfigurationIF {
 	
 
 	public void toPropertiesForRSAKeypairSourceOfSessionKey(SequencedProperties targetSequencedProperties) {
-		String itemDescKey = new StringBuilder().append(itemIDForRSAKeypairSourceOfSessionKey).append(".desc").toString();
+		String itemDescKey = RunningProjectConfiguration.buildKeyOfConfigFile(
+				prefixBeforeItemID, itemIDForRSAKeypairSourceOfSessionKey, KeyTypeOfConfieFile.DESC);
 		String itemDescValue = "세션키에 사용되는 공개키 키쌍 생성 방법, SERVER:내부적으로 RSA 키쌍 생성, File:외부 파일를 읽어와서 RSA  키쌍을 생성, 디폴트:SERVER";
 		targetSequencedProperties.put(itemDescKey, itemDescValue);
 
-		String itemKey = new StringBuilder().append(itemIDForRSAKeypairSourceOfSessionKey).append(".value").toString();
+		String itemKey = RunningProjectConfiguration.buildKeyOfConfigFile(
+				prefixBeforeItemID, itemIDForRSAKeypairSourceOfSessionKey, KeyTypeOfConfieFile.VALUE);
 		String itemValue = (null == rsaKeypairSourceOfSessionKey) ? SessionKey.RSAKeypairSourceType.SERVER.toString() : rsaKeypairSourceOfSessionKey.toString();
 		targetSequencedProperties.put(itemKey, itemValue);
 	}
@@ -386,25 +401,13 @@ public class CommonPartConfiguration implements PartConfigurationIF {
 	public void fromPropertiesForRSAPublickeyFileOfSessionKey(SequencedProperties sourceSequencedProperties)
 			throws PartConfigurationException {
 		
-		
-			String itemKey = new StringBuilder().append(itemIDForRSAPublickeyFileOfSessionKey).append(".value").toString();
+			String itemKey = RunningProjectConfiguration.buildKeyOfConfigFile(
+					prefixBeforeItemID, itemIDForRSAPublickeyFileOfSessionKey, KeyTypeOfConfieFile.VALUE);
 
 			String itemValue = sourceSequencedProperties.getProperty(itemKey);
 
 			if (null == itemValue) {
 				String errorMessage = new StringBuilder().append("the item '").append(itemKey)
-						.append("' does not exist in the parameter sourceSequencedProperties").toString();
-
-				throw new PartConfigurationException(itemKey, errorMessage);
-			}
-
-			String itemConverterKey = new StringBuilder().append(itemIDForRSAPublickeyFileOfSessionKey).append(".converter")
-					.toString();
-
-			String itemConverterValue = sourceSequencedProperties.getProperty(itemConverterKey);
-
-			if (null == itemConverterValue) {
-				String errorMessage = new StringBuilder().append("the item '").append(itemConverterKey)
 						.append("' does not exist in the parameter sourceSequencedProperties").toString();
 
 				throw new PartConfigurationException(itemKey, errorMessage);
@@ -427,29 +430,34 @@ public class CommonPartConfiguration implements PartConfigurationIF {
 	}
 
 	public void toPropertiesForRSAPublickeyFileOfSessionKey(SequencedProperties targetSequencedProperties) {
-		String itemDescKey = new StringBuilder().append(itemIDForRSAPublickeyFileOfSessionKey).append(".desc").toString();
+		String itemDescKey = RunningProjectConfiguration.buildKeyOfConfigFile(
+				prefixBeforeItemID, itemIDForRSAPublickeyFileOfSessionKey, KeyTypeOfConfieFile.DESC);
 		String itemDescValue = "세션키에 사용되는 RSA 공개키 파일, '세션키에 사용되는 공개키 키쌍 생성 방법'이 FILE 인 경우에 유효하다";
 		targetSequencedProperties.put(itemDescKey, itemDescValue);
 		
-		String itemKey = new StringBuilder().append(itemIDForRSAPublickeyFileOfSessionKey).append(".value").toString();
+		String itemKey = RunningProjectConfiguration.buildKeyOfConfigFile(
+				prefixBeforeItemID, itemIDForRSAPublickeyFileOfSessionKey, KeyTypeOfConfieFile.VALUE);
 				
 		String itemValue = (null == rsaPublickeyFileOfSessionKey) ? "" : rsaPublickeyFileOfSessionKey.getAbsolutePath();
 		targetSequencedProperties.put(itemKey, itemValue);
 		
 		
-		String guiItemTypeKey = new StringBuilder().append(itemIDForRSAPublickeyFileOfSessionKey).append(".gui_item_type").toString();
+		String guiItemTypeKey = RunningProjectConfiguration.buildKeyOfConfigFile(
+				prefixBeforeItemID, itemIDForRSAPublickeyFileOfSessionKey, KeyTypeOfConfieFile.GUI_ITEM_TYPE);
 		String guiItemTypeValue = GUIItemType.FILE.name().toLowerCase();
 		targetSequencedProperties.put(guiItemTypeKey, guiItemTypeValue);		
 		
 		
-		String guiProjectHomeBaseRelativePathKey = new StringBuilder().append(itemIDForRSAPublickeyFileOfSessionKey).append(".file").toString();
+		String guiProjectHomeBaseRelativePathKey = RunningProjectConfiguration.buildKeyOfConfigFile(
+				prefixBeforeItemID, itemIDForRSAPublickeyFileOfSessionKey, KeyTypeOfConfieFile.FILE);
 		String guiProjectHomeBaseRelativePathValue = "resources/rsa_keypair/codda.publickey";
 		targetSequencedProperties.put(guiProjectHomeBaseRelativePathKey, guiProjectHomeBaseRelativePathValue);
 	}
 	
 	public void fromPropertiesForRSAPrivatekeyFileOfSessionKey(SequencedProperties sourceSequencedProperties)
 			throws PartConfigurationException {
-		String itemKey = new StringBuilder().append(itemIDForRSAPrivatekeyFileOfSessionKey).append(".value").toString();
+		String itemKey = RunningProjectConfiguration.buildKeyOfConfigFile(
+				prefixBeforeItemID, itemIDForRSAPrivatekeyFileOfSessionKey, KeyTypeOfConfieFile.VALUE);
 		String itemValue = sourceSequencedProperties.getProperty(itemKey);
 
 		if (null == itemValue) {
@@ -475,20 +483,24 @@ public class CommonPartConfiguration implements PartConfigurationIF {
 	}
 
 	public void toPropertiesForRSAPrivatekeyFileOfSessionKey(SequencedProperties targetSequencedProperties) {
-		String itemDescKey = new StringBuilder().append(itemIDForRSAPrivatekeyFileOfSessionKey).append(".desc").toString();
+		String itemDescKey = RunningProjectConfiguration.buildKeyOfConfigFile(
+				prefixBeforeItemID, itemIDForRSAPrivatekeyFileOfSessionKey, KeyTypeOfConfieFile.DESC);
 		String itemDescValue = "세션키에 사용되는 RSA 개인 파일, '세션키에 사용되는 공개키 키쌍 생성 방법'이 FILE 인 경우에 유효하다";
 		targetSequencedProperties.put(itemDescKey, itemDescValue);
 
-		String itemKey = new StringBuilder().append(itemIDForRSAPrivatekeyFileOfSessionKey).append(".value").toString();		
+		String itemKey = RunningProjectConfiguration.buildKeyOfConfigFile(
+				prefixBeforeItemID, itemIDForRSAPrivatekeyFileOfSessionKey, KeyTypeOfConfieFile.VALUE);		
 		String itemValue = (null == rsaPrivatekeyFileOfSessionKey) ? "" : rsaPrivatekeyFileOfSessionKey.getAbsolutePath();
 		targetSequencedProperties.put(itemKey, itemValue);
 		
-		String guiItemTypeKey = new StringBuilder().append(itemIDForRSAPrivatekeyFileOfSessionKey).append(".gui_item_type").toString();
+		String guiItemTypeKey = RunningProjectConfiguration.buildKeyOfConfigFile(
+				prefixBeforeItemID, itemIDForRSAPrivatekeyFileOfSessionKey, KeyTypeOfConfieFile.GUI_ITEM_TYPE);
 		String guiItemTypeValue = GUIItemType.FILE.name().toLowerCase();
 		targetSequencedProperties.put(guiItemTypeKey, guiItemTypeValue);		
 		
 		
-		String guiProjectHomeBaseRelativePathKey = new StringBuilder().append(itemIDForRSAPrivatekeyFileOfSessionKey).append(".file").toString();
+		String guiProjectHomeBaseRelativePathKey = RunningProjectConfiguration.buildKeyOfConfigFile(
+				prefixBeforeItemID, itemIDForRSAPrivatekeyFileOfSessionKey, KeyTypeOfConfieFile.FILE);
 		String guiProjectHomeBaseRelativePathValue = "resources/rsa_keypair/codda.privatekey";
 		targetSequencedProperties.put(guiProjectHomeBaseRelativePathKey, guiProjectHomeBaseRelativePathValue);
 	}
@@ -496,7 +508,8 @@ public class CommonPartConfiguration implements PartConfigurationIF {
 	
 	public void fromPropertiesForRSAKeySizeOfSessionKey(SequencedProperties sourceSequencedProperties)
 			throws PartConfigurationException {
-		String itemKey = new StringBuilder().append(itemIDForRSAKeySizeOfSessionKey).append(".value").toString();
+		String itemKey = RunningProjectConfiguration.buildKeyOfConfigFile(
+				prefixBeforeItemID, itemIDForRSAKeySizeOfSessionKey, KeyTypeOfConfieFile.VALUE);
 
 		String itemValue = sourceSequencedProperties.getProperty(itemKey);
 
@@ -526,18 +539,21 @@ public class CommonPartConfiguration implements PartConfigurationIF {
 
 
 	public void toPropertiesForRSAKeySizeOfSessionKey(SequencedProperties targetSequencedProperties) {		
-		String itemDescKey = new StringBuilder().append(itemIDForRSAKeySizeOfSessionKey).append(".desc").toString();
+		String itemDescKey = RunningProjectConfiguration.buildKeyOfConfigFile(
+				prefixBeforeItemID, itemIDForRSAKeySizeOfSessionKey, KeyTypeOfConfieFile.DESC);
 		String itemDescValue = "세션키에 사용하는 공개키 크기, 단위 byte, default value[1024], the integer set[512, 1024, 2048]";
 		targetSequencedProperties.put(itemDescKey, itemDescValue);
 
-		String itemKey = new StringBuilder().append(itemIDForRSAKeySizeOfSessionKey).append(".value").toString();
+		String itemKey = RunningProjectConfiguration.buildKeyOfConfigFile(
+				prefixBeforeItemID, itemIDForRSAKeySizeOfSessionKey, KeyTypeOfConfieFile.VALUE);
 		String itemValue = (null == rsaKeySizeOfSessionKey) ? "1024" : String.valueOf(rsaKeySizeOfSessionKey);
 		targetSequencedProperties.put(itemKey, itemValue);
 	}
 	
 	public void fromPropertiesForSymmetricKeyAlgorithmOfSessionKey(SequencedProperties sourceSequencedProperties)
 			throws PartConfigurationException {
-		String itemKey = new StringBuilder().append(itemIDForSymmetricKeyAlgorithmOfSessionKey).append(".value").toString();
+		String itemKey = RunningProjectConfiguration.buildKeyOfConfigFile(
+				prefixBeforeItemID, itemIDForSymmetricKeyAlgorithmOfSessionKey, KeyTypeOfConfieFile.VALUE);
 
 		String itemValue = sourceSequencedProperties.getProperty(itemKey);
 
@@ -565,11 +581,13 @@ public class CommonPartConfiguration implements PartConfigurationIF {
 	}
 
 	public void toPropertiesForSymmetricKeyAlgorithmOfSessionKey(SequencedProperties targetSequencedProperties) {		
-		String itemDescKey = new StringBuilder().append(itemIDForSymmetricKeyAlgorithmOfSessionKey).append(".desc").toString();
+		String itemDescKey = RunningProjectConfiguration.buildKeyOfConfigFile(
+				prefixBeforeItemID, itemIDForSymmetricKeyAlgorithmOfSessionKey, KeyTypeOfConfieFile.DESC);
 		String itemDescValue = "세션키에 사용되는 대칭키 알고리즘, default value[AES], the string set[DES, DESede, AES]";
 		targetSequencedProperties.put(itemDescKey, itemDescValue);
 
-		String itemKey = new StringBuilder().append(itemIDForSymmetricKeyAlgorithmOfSessionKey).append(".value").toString();
+		String itemKey = RunningProjectConfiguration.buildKeyOfConfigFile(
+				prefixBeforeItemID, itemIDForSymmetricKeyAlgorithmOfSessionKey, KeyTypeOfConfieFile.VALUE);
 		String itemValue = (null == symmetricKeyAlgorithmOfSessionKey) ? "AES" : symmetricKeyAlgorithmOfSessionKey;
 		targetSequencedProperties.put(itemKey, itemValue);
 	}
@@ -577,7 +595,8 @@ public class CommonPartConfiguration implements PartConfigurationIF {
 	
 	public void fromPropertiesForSymmetricKeySizeOfSessionKey(SequencedProperties sourceSequencedProperties)
 			throws PartConfigurationException {
-		String itemKey = new StringBuilder().append(itemIDForSymmetricKeySizeOfSessionKey).append(".value").toString();
+		String itemKey = RunningProjectConfiguration.buildKeyOfConfigFile(
+				prefixBeforeItemID, itemIDForSymmetricKeySizeOfSessionKey, KeyTypeOfConfieFile.VALUE);
 
 		String itemValue = sourceSequencedProperties.getProperty(itemKey);
 
@@ -606,18 +625,21 @@ public class CommonPartConfiguration implements PartConfigurationIF {
 
 
 	public void toPropertiesForSymmetricKeySizeOfSessionKey(SequencedProperties targetSequencedProperties) {		
-		String itemDescKey = new StringBuilder().append(itemIDForSymmetricKeySizeOfSessionKey).append(".desc").toString();
+		String itemDescKey = RunningProjectConfiguration.buildKeyOfConfigFile(
+				prefixBeforeItemID, itemIDForSymmetricKeySizeOfSessionKey, KeyTypeOfConfieFile.DESC);
 		String itemDescValue = "세션키에 사용되는 대칭키 크기, default value[16], the integer set[24, 16, 8]";
 		targetSequencedProperties.put(itemDescKey, itemDescValue);
 
-		String itemKey = new StringBuilder().append(itemIDForSymmetricKeySizeOfSessionKey).append(".value").toString();
+		String itemKey = RunningProjectConfiguration.buildKeyOfConfigFile(
+				prefixBeforeItemID, itemIDForSymmetricKeySizeOfSessionKey, KeyTypeOfConfieFile.VALUE);
 		String itemValue = (null == symmetricKeySizeOfSessionKey) ? "16" : String.valueOf(symmetricKeySizeOfSessionKey);
 		targetSequencedProperties.put(itemKey, itemValue);
 	}
 	
 	public void fromPropertiesForSymmetricIVSizeOfSessionKey(SequencedProperties sourceSequencedProperties)
 			throws PartConfigurationException {
-		String itemKey = new StringBuilder().append(itemIDForSymmetricIVSizeOfSessionKey).append(".value").toString();
+		String itemKey = RunningProjectConfiguration.buildKeyOfConfigFile(
+				prefixBeforeItemID, itemIDForSymmetricIVSizeOfSessionKey, KeyTypeOfConfieFile.VALUE);
 
 		String itemValue = sourceSequencedProperties.getProperty(itemKey);
 
@@ -645,16 +667,17 @@ public class CommonPartConfiguration implements PartConfigurationIF {
 	}
 
 	public void toPropertiesForSymmetricIVSizeOfSessionKey(SequencedProperties targetSequencedProperties) {		
-		String itemDescKey = new StringBuilder().append(itemIDForSymmetricIVSizeOfSessionKey).append(".desc").toString();
+		String itemDescKey = RunningProjectConfiguration.buildKeyOfConfigFile(
+				prefixBeforeItemID, itemIDForSymmetricIVSizeOfSessionKey, KeyTypeOfConfieFile.DESC);
 		String itemDescValue = "세션키에 사용되는 대칭키와 쌍을 이루어 함께 사용되는 IV 크기, default value[16], the integer set[24, 16, 8]";
 		targetSequencedProperties.put(itemDescKey, itemDescValue);
 
-		String itemKey = new StringBuilder().append(itemIDForSymmetricIVSizeOfSessionKey).append(".value").toString();
+		String itemKey = RunningProjectConfiguration.buildKeyOfConfigFile(
+				prefixBeforeItemID, itemIDForSymmetricIVSizeOfSessionKey, KeyTypeOfConfieFile.VALUE);
 		String itemValue = (null == symmetricIVSizeOfSessionKey) ? "16" : String.valueOf(symmetricIVSizeOfSessionKey);
 		targetSequencedProperties.put(itemKey, itemValue);
 	}
 	
-	// FIXME!
 	
 	public String getJDFMemberLoginPage() {
 		return jdfMemberLoginPage;
@@ -754,4 +777,37 @@ public class CommonPartConfiguration implements PartConfigurationIF {
 	public void setSymmetricIVSizeOfSessionKey(Integer symmetricIVSizeOfSessionKey) {		
 		this.symmetricIVSizeOfSessionKey = symmetricIVSizeOfSessionKey;
 	}
+
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("CommonPartConfiguration [jdfMemberLoginPage=");
+		builder.append(jdfMemberLoginPage);
+		builder.append(", jdfAdminLoginPage=");
+		builder.append(jdfAdminLoginPage);
+		builder.append(", jdfSessionKeyRedirectPage=");
+		builder.append(jdfSessionKeyRedirectPage);
+		builder.append(", jdfErrorMessagePage=");
+		builder.append(jdfErrorMessagePage);
+		builder.append(", jdfServletTrace=");
+		builder.append(jdfServletTrace);
+		builder.append(", rsaKeypairSourceOfSessionKey=");
+		builder.append(rsaKeypairSourceOfSessionKey);
+		builder.append(", rsaPublickeyFileOfSessionKey=");
+		builder.append(rsaPublickeyFileOfSessionKey);
+		builder.append(", rsaPrivatekeyFileOfSessionKey=");
+		builder.append(rsaPrivatekeyFileOfSessionKey);
+		builder.append(", rsaKeySizeOfSessionKey=");
+		builder.append(rsaKeySizeOfSessionKey);
+		builder.append(", symmetricKeyAlgorithmOfSessionKey=");
+		builder.append(symmetricKeyAlgorithmOfSessionKey);
+		builder.append(", symmetricKeySizeOfSessionKey=");
+		builder.append(symmetricKeySizeOfSessionKey);
+		builder.append(", symmetricIVSizeOfSessionKey=");
+		builder.append(symmetricIVSizeOfSessionKey);
+		builder.append("]");
+		return builder.toString();
+	}
+	
+	
 }

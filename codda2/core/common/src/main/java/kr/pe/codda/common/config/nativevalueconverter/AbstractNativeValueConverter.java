@@ -15,7 +15,7 @@
  * limitations under the License.
  *******************************************************************************/
 
-package kr.pe.codda.common.config;
+package kr.pe.codda.common.config.nativevalueconverter;
 
 /**
  * 자바 타입 값 변환기 추상화 클래스

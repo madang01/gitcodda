@@ -17,14 +17,10 @@
 package kr.pe.codda.common.config;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import kr.pe.codda.common.buildsystem.pathsupporter.ProjectBuildSytemPathSupporter;
 import kr.pe.codda.common.etc.CommonStaticFinalVars;
-import kr.pe.codda.common.exception.PartConfigurationException;
 import kr.pe.codda.common.util.CommonStaticUtil;
 
 /**
@@ -42,7 +38,7 @@ import kr.pe.codda.common.util.CommonStaticUtil;
 public final class CoddaConfigurationManager {
 	private Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
 
-	private CoddaConfiguration runningProjectConfiguration = null;
+	private CoddaConfiguration coddaConfiguration = null;
 
 	/** 동기화 안쓰고 싱글턴 구현을 위한 내부 클래스 */
 	private static final class ConfigurationManagerHolder {
@@ -145,11 +141,10 @@ public final class CoddaConfigurationManager {
 			System.exit(1);
 		}
 
-		String configFilePathString = ProjectBuildSytemPathSupporter
-				.getProejctConfigFilePathString(installedPathString, runningProjectName);
+		
 		
 		try {
-			runningProjectConfiguration = new CoddaConfiguration(installedPathString, runningProjectName);
+			coddaConfiguration = new CoddaConfiguration(installedPathString, runningProjectName);
 			
 			
 		} catch (IllegalArgumentException e) {
@@ -173,9 +168,12 @@ public final class CoddaConfigurationManager {
 
 			System.exit(1);
 		}
+		/*
 		
+		String configFilePathString = ProjectBuildSytemPathSupporter
+				.getProejctConfigFilePathString(installedPathString, runningProjectName);
 		try {
-			runningProjectConfiguration.load();
+			coddaConfiguration.loadConfigFile();
 		} catch (FileNotFoundException e) {
 			String errorMessage = new StringBuilder("the configuration file[")
 					.append(configFilePathString).append("] doesn't exist").toString();
@@ -199,13 +197,14 @@ public final class CoddaConfigurationManager {
 
 			System.exit(1);
 		}
+		*/
 	}
 
 	/**
 	 * @return 기동중인 코다 설정
 	 */
-	public CoddaConfiguration getRunningProjectConfiguration() {
-		return runningProjectConfiguration;
+	public CoddaConfiguration getCoddaConfiguration() {
+		return coddaConfiguration;
 	}
 
 }

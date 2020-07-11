@@ -19,8 +19,6 @@ package kr.pe.codda.common.config.nativevalueconverter;
 
 import java.nio.ByteOrder;
 
-import kr.pe.codda.common.config.AbstractSetTypeNativeValueConverter;
-
 /**
  * 빅엔디안 혹은 리틀 엔디안 이라는 지정한 값 집합을 갖는 ByteOrder 타입 값 변환기 
  * @author Won Jonghoon

@@ -17,7 +17,6 @@
 package kr.pe.codda.server;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -25,9 +24,8 @@ import kr.pe.codda.common.buildsystem.pathsupporter.ProjectBuildSytemPathSupport
 import kr.pe.codda.common.buildsystem.pathsupporter.ServerBuildSytemPathSupporter;
 import kr.pe.codda.common.config.CoddaConfiguration;
 import kr.pe.codda.common.config.CoddaConfigurationManager;
-import kr.pe.codda.common.config.DefaultConfiguration;
-import kr.pe.codda.common.config.part.AbstractProjectPartConfiguration;
-import kr.pe.codda.common.config.part.SubProjectPartConfiguration;
+import kr.pe.codda.common.config.part.RunningProjectConfiguration;
+import kr.pe.codda.common.config.part.MainProjectPartConfiguration;
 import kr.pe.codda.common.etc.CommonStaticFinalVars;
 import kr.pe.codda.common.exception.NoMoreWrapBufferException;
 import kr.pe.codda.common.exception.PartConfigurationException;
@@ -46,7 +44,7 @@ public final class MainServerManager {
 	/** 모니터 객체 */
 	// private final Object monitor = new Object();
 
-	private List<String> subProjectNamelist = null;;
+	
 	private HashMap<String, AnyProjectServer> subProjectServerHash = new HashMap<String, AnyProjectServer>(); 
 	private AnyProjectServer mainProjectServer = null;
 	private ServerProjectMonitor serverProjectMonitor = null;
@@ -72,18 +70,15 @@ public final class MainServerManager {
 	 */
 	private MainServerManager() {
 		// try {
-			CoddaConfiguration runningProjectConfiguration = 
+			CoddaConfiguration coddaConfiguration = 
 					CoddaConfigurationManager.getInstance()
-					.getRunningProjectConfiguration();
+					.getCoddaConfiguration();			
 			
+			installedPathString = coddaConfiguration.getInstalledPathString();
+			mainProjectName = coddaConfiguration.getMainProjectName();			
 			
-			
-			installedPathString = runningProjectConfiguration.getInstalledPathString();
-			mainProjectName = runningProjectConfiguration.getMainProjectName();
-			
-			
-			DefaultConfiguration defaultConfiguration = runningProjectConfiguration.getDefaultConfiguration();
-			AbstractProjectPartConfiguration mainProjectPartConfiguration = defaultConfiguration.getMainProjectPartConfiguration();
+			RunningProjectConfiguration runningProjectConfiguration = coddaConfiguration.getRunningProjectConfiguration();
+			MainProjectPartConfiguration mainProjectPartConfiguration = runningProjectConfiguration.getMainProjectPartConfiguration();
 			
 			String serverAPPINFClassPathString = ServerBuildSytemPathSupporter
 					.getServerAPPINFClassPathString(installedPathString, 
@@ -97,26 +92,7 @@ public final class MainServerManager {
 			} catch (PartConfigurationException e) {
 				log.log(Level.WARNING, "CoddaConfigurationException", e);
 			}
-			
-			subProjectNamelist = defaultConfiguration.getSubProjectNameList();
-					
-			for (String subProjectName : subProjectNamelist) {
-				AnyProjectServer subProjectServer = null;
-				try {
-					
-					SubProjectPartConfiguration subProjectPartConfiguration = defaultConfiguration.getSubProjectPartConfiguration(subProjectName);
-					
-					subProjectServer = new AnyProjectServer(subProjectPartConfiguration.getSubProjectName(), serverAPPINFClassPathString, projectResourcesPathString, subProjectPartConfiguration);
-					
-					subProjectServerHash.put(subProjectName, subProjectServer);
-				} catch (NoMoreWrapBufferException e) {
-					log.log(Level.WARNING, "NoMoreDataPacketBufferException", e);
-				} catch (PartConfigurationException e) {
-					log.log(Level.WARNING, "CoddaConfigurationException", e);
-				}
-				
-			}
-			
+						
 			serverProjectMonitor = new ServerProjectMonitor(
 					mainProjectPartConfiguration.getServerMonitorTimeInterval());
 			serverProjectMonitor.start();
@@ -197,16 +173,6 @@ public final class MainServerManager {
 		pollStateStringBuilder.append("]'s AnyProjectServer state");
 		pollStateStringBuilder.append(CommonStaticFinalVars.NEWLINE);
 		pollStateStringBuilder.append(mainProjectServer.getProjectServerState());
-		
-		for (String subProjectName : subProjectNamelist) {
-			AnyProjectServer subProjectServer = subProjectServerHash.get(subProjectName);
-			pollStateStringBuilder.append(CommonStaticFinalVars.NEWLINE);
-			pollStateStringBuilder.append("sub projectName[");
-			pollStateStringBuilder.append(subProjectName);
-			pollStateStringBuilder.append("]'s AnyProjectServer state");
-			pollStateStringBuilder.append(CommonStaticFinalVars.NEWLINE);
-			pollStateStringBuilder.append(subProjectServer.getProjectServerState());
-		}
 		
 		return pollStateStringBuilder.toString();
 	}

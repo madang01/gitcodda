@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *******************************************************************************/
-package kr.pe.codda.common.config;
+package kr.pe.codda.common.config.nativevalueconverter;
 
 import java.util.HashSet;
 import java.util.Set;

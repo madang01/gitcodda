@@ -19,8 +19,6 @@ package kr.pe.codda.common.config.nativevalueconverter;
 
 import java.io.File;
 
-import kr.pe.codda.common.config.AbstractNativeValueConverter;
-
 /**
  * 시스템에 실제하고 읽기 가능한 경로 변환기
  * @author Won Jonghoon

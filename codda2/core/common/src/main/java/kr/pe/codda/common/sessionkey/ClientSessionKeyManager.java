@@ -20,6 +20,7 @@ package kr.pe.codda.common.sessionkey;
 import kr.pe.codda.common.config.CoddaConfiguration;
 import kr.pe.codda.common.config.CoddaConfigurationManager;
 import kr.pe.codda.common.config.part.CommonPartConfiguration;
+import kr.pe.codda.common.config.part.RunningProjectConfiguration;
 import kr.pe.codda.common.exception.SymmetricException;
 
 /**
@@ -52,10 +53,14 @@ public final class ClientSessionKeyManager {
 	}
 	
 	private ClientSessionKeyManager() {
-		CoddaConfiguration runningProjectConfiguration = 
+		CoddaConfiguration coddaConfiguration = 
 				CoddaConfigurationManager.getInstance()
-				.getRunningProjectConfiguration();		
-		CommonPartConfiguration commonPart = runningProjectConfiguration.getDefaultConfiguration().getCommonPartConfiguration();
+				.getCoddaConfiguration();	
+		
+		
+		RunningProjectConfiguration runningProjectConfiguration = coddaConfiguration.getRunningProjectConfiguration();
+		
+		CommonPartConfiguration commonPart = runningProjectConfiguration.getCommonPartConfiguration();
 		
 		symmetricKeyAlgorithm = commonPart.getSymmetricKeyAlgorithmOfSessionKey();
 		symmetricKeySize = commonPart.getSymmetricKeySizeOfSessionKey();

@@ -21,8 +21,9 @@ package kr.pe.codda.common.config.part;
  */
 public class SubProjectPartConfiguration extends AbstractProjectPartConfiguration {
 	private final String subProjectName;
-	private final String prefexOfItemID;
+	private final String prefixBeforeItemID;
 	
+	public static final String FIRST_PREFIX = "subproject";
 	
 	public SubProjectPartConfiguration(String subProjectName) {
 		if (null == subProjectName) {
@@ -31,16 +32,16 @@ public class SubProjectPartConfiguration extends AbstractProjectPartConfiguratio
 		
 		this.subProjectName = subProjectName;
 
-		prefexOfItemID = new StringBuilder("subproject.").append(subProjectName)
+		prefixBeforeItemID = new StringBuilder()
+				.append(FIRST_PREFIX)
+				.append(".").append(subProjectName)
 				.append(".").toString();
 		
 	}
 	
-	
-	protected String getPrefexOfItemID() {
-		return prefexOfItemID;
+	public String getPrefixBeforeItemID() {
+		return prefixBeforeItemID;
 	}
-	
 	
 	public String getSubProjectName() {
 		return subProjectName;

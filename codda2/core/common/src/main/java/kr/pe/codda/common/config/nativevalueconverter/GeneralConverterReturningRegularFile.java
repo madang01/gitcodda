@@ -19,8 +19,6 @@ package kr.pe.codda.common.config.nativevalueconverter;
 
 import java.io.File;
 
-import kr.pe.codda.common.config.AbstractNativeValueConverter;
-
 public class GeneralConverterReturningRegularFile extends
 		AbstractNativeValueConverter<File> {
 

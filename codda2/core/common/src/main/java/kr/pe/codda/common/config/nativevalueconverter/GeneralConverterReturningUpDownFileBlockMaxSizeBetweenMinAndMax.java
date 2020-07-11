@@ -17,8 +17,6 @@
 
 package kr.pe.codda.common.config.nativevalueconverter;
 
-import kr.pe.codda.common.config.AbstractNativeValueConverter;
-
 /**
  * 1024 배수로 최소 최대 크기가 정해진 파일 송수신 파일 블락 값 변환기, 단 최대값은 1024 보다 크거나 같아야 한다.
  * 

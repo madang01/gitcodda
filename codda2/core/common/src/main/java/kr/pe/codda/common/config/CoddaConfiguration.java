@@ -21,6 +21,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import kr.pe.codda.common.buildsystem.pathsupporter.ProjectBuildSytemPathSupporter;
+import kr.pe.codda.common.config.part.RunningProjectConfiguration;
 import kr.pe.codda.common.config.part.MainProjectPartConfiguration;
 import kr.pe.codda.common.etc.CommonStaticFinalVars;
 import kr.pe.codda.common.exception.PartConfigurationException;
@@ -41,10 +42,10 @@ public class CoddaConfiguration {
 	private final String installedPathString;
 
 	private final String configFilePathString;
+	
+	private final String titleOfConfigFile;
 
-	private DefaultConfiguration defaultConfiguration = new DefaultConfiguration();
-
-	private SequencedProperties configSequencedProperties = null;
+	private RunningProjectConfiguration runningProjectConfiguration = new RunningProjectConfiguration();
 
 	/**
 	 * 생성자
@@ -96,6 +97,8 @@ public class CoddaConfiguration {
 		
 		configFilePathString = ProjectBuildSytemPathSupporter
 				.getProejctConfigFilePathString(installedPathString, mainProjectName);
+		
+		titleOfConfigFile = new StringBuilder("project[").append(mainProjectName).append("]'s config file").toString();
 	}
 
 
@@ -105,10 +108,9 @@ public class CoddaConfiguration {
 	 * @param newServerHost 새로운 서버 호스트 주소
 	 * @param newServerPort 새로운 서버 포트
 	 * @throws IllegalArgumentException 파라미터 값이 null 이거나 잘못된 값이 들어올 경우 던지는 예외
-	 * @throws IllegalStateException 컨피그 파일을 먼저 로딩 안하고 호출할 경우 던지는 예외
 	 * @throws IOException 저장시 에러 발생시 던지는 예외
 	 */
-	public void changeServerAddressIfDifferent(String newServerHost, int newServerPort) throws IllegalArgumentException, IllegalStateException, IOException {
+	public void changeServerAddressIfDifferent(String newServerHost, int newServerPort) throws IllegalArgumentException, IOException {
 		if (null == newServerHost) {
 			throw new IllegalArgumentException("the parameter newServerHost is null");
 		}
@@ -120,13 +122,8 @@ public class CoddaConfiguration {
 		if (CommonStaticUtil.hasLeadingOrTailingWhiteSpace(newServerHost)) {
 			throw new IllegalArgumentException("the parameter newServerHost has any leading or tailing white space");
 		}
-		
-		if (null == configSequencedProperties) {
-			throw new IllegalStateException("config file not load");
-		}
-		
-		
-		MainProjectPartConfiguration mainProjectPartConfiguration = defaultConfiguration.getMainProjectPartConfiguration();
+				
+		MainProjectPartConfiguration mainProjectPartConfiguration = runningProjectConfiguration.getMainProjectPartConfiguration();
 		
 
 		String oldSeverHost = mainProjectPartConfiguration.getServerHost();
@@ -139,36 +136,64 @@ public class CoddaConfiguration {
 		mainProjectPartConfiguration.setServerHost(newServerHost);
 		mainProjectPartConfiguration.setServerPort(newServerPort);
 		
-		mainProjectPartConfiguration.toPropertiesForServerHost(configSequencedProperties);
-		mainProjectPartConfiguration.toPropertiesForServerPort(configSequencedProperties);		
+		SequencedProperties configFileSequencedProperties = SequencedPropertiesUtil
+				.loadSequencedPropertiesFile(configFilePathString, CommonStaticFinalVars.SOURCE_FILE_CHARSET);
+		
+		mainProjectPartConfiguration.toPropertiesForServerHost(configFileSequencedProperties);
+		mainProjectPartConfiguration.toPropertiesForServerPort(configFileSequencedProperties);		
 
-		SequencedPropertiesUtil.overwriteSequencedPropertiesFile(configSequencedProperties,
-				getConfigPropertiesTitle(), configFilePathString,
+		SequencedPropertiesUtil.overwriteSequencedPropertiesFile(configFileSequencedProperties,
+				titleOfConfigFile, configFilePathString,
 				CommonStaticFinalVars.SOURCE_FILE_CHARSET);
 	}
 
-	
-	public void setDefaultConfiguration(DefaultConfiguration defaultConfiguration) {
-		if (null == defaultConfiguration) {
-			throw new IllegalArgumentException("the parameter defaultConfiguration is null");
+	/**
+	 * 기동중인 프로젝트 설정을 파라미터 '새 기동중인 프로젝트 설정' 로 한다.
+	 * @param newRunningProjectConfiguration
+	 */
+	public void setRunningProjectConfiguration(RunningProjectConfiguration newRunningProjectConfiguration) {
+		if (null == newRunningProjectConfiguration) {
+			throw new IllegalArgumentException("the parameter newRunningProjectConfiguration is null");
 		}
 		
-		this.defaultConfiguration = defaultConfiguration;
+		this.runningProjectConfiguration = newRunningProjectConfiguration;
 	}
 
-	public DefaultConfiguration getDefaultConfiguration() {
-		return defaultConfiguration;
+	/**
+	 * @return 기동중인 프로젝트 설정
+	 */
+	public RunningProjectConfiguration getRunningProjectConfiguration() {
+		return runningProjectConfiguration;
 	}	
 	
-	
-	public void load() throws IllegalArgumentException, PartConfigurationException, FileNotFoundException, IOException {
+	/**
+	 * 설정 파일 내용을 읽어와서 그 내용을 '기동중인 프로젝트 설정' 에 저장한후 의존성 검사를 수행한다.
+	 * 
+	 * @throws IllegalArgumentException
+	 * @throws PartConfigurationException
+	 * @throws FileNotFoundException
+	 * @throws IOException
+	 */
+	public void loadConfigFile() throws IllegalArgumentException, PartConfigurationException, FileNotFoundException, IOException {
 		SequencedProperties configSequencedProperties = SequencedPropertiesUtil
 				.loadSequencedPropertiesFile(configFilePathString, CommonStaticFinalVars.SOURCE_FILE_CHARSET);
 		
-		defaultConfiguration.fromProperteisWithDependencyCheck(configSequencedProperties);
+		runningProjectConfiguration.fromProperties(configSequencedProperties);
 		
-		/** 에러 없는 경우에 설정 */
-		this.configSequencedProperties = configSequencedProperties;
+		runningProjectConfiguration.checkForDependencies();
+	}
+	
+	/**
+	 * '기동중인 프로젝트 설정' 의 내용을 시퀀스 프로퍼티로 변환한후 설정 파일에 저장한다.
+	 * 
+	 * @throws FileNotFoundException 설정 파일이 없을때 던지는 예외
+	 * @throws IOException 설정 파일 덮어 쓸때 IO 에러 발생시 던지는 예외
+	 */
+	public void saveConfigFile() throws FileNotFoundException, IOException {
+		SequencedProperties targetSequencedProperties = new SequencedProperties();
+		runningProjectConfiguration.toProperties(targetSequencedProperties);
+				
+		SequencedPropertiesUtil.overwriteSequencedPropertiesFile(targetSequencedProperties, titleOfConfigFile, configFilePathString, CommonStaticFinalVars.SOURCE_FILE_CHARSET);
 	}
 		
 	
@@ -186,27 +211,13 @@ public class CoddaConfiguration {
 		return installedPathString;
 	}
 
-	/** 
-	 * @return 설정 파일 내용이 담긴 시퀀스 프로퍼티
-	 */
-	/*
-	public SequencedProperties getConfigurationSequencedPropties() {
-		return configSequencedProperties;
-	}
-	*/
+	
 
 	/**
-	 * @return 설정 파일의 제목
+	 * @return 메인 프로젝트 설정 파일의 제목
 	 */
-	public String getConfigPropertiesTitle() {
-		return getConfigPropertiesTitle(mainProjectName);
+	public String getTitleOfConfigFile() {		
+		return titleOfConfigFile;
 	}
 
-	/**
-	 * @param mainProjectName 메인 프로젝트 이름
-	 * @return 지정한 '메인 프로젝트 이름' 을 갖는 설정 파일 제목
-	 */
-	public static String getConfigPropertiesTitle(String mainProjectName) {
-		return new StringBuilder("project[").append(mainProjectName).append("]'s config file").toString();
-	}
 }

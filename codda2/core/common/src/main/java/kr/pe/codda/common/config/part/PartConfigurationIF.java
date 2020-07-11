@@ -13,7 +13,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-package kr.pe.codda.common.config;
+package kr.pe.codda.common.config.part;
 
 import kr.pe.codda.common.exception.PartConfigurationException;
 import kr.pe.codda.common.util.SequencedProperties;
@@ -50,4 +50,5 @@ public interface PartConfigurationIF {
 	 * @throws IllegalArgumentException 설정 파일에 저장할 시퀀스 프로퍼티가 null 인 경우 던지는 예외
 	 */
 	public void toProperties(SequencedProperties targetSequencedProperties) throws IllegalArgumentException;	 
+	
 }

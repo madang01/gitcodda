@@ -25,6 +25,7 @@ import java.util.logging.Logger;
 import kr.pe.codda.common.config.CoddaConfiguration;
 import kr.pe.codda.common.config.CoddaConfigurationManager;
 import kr.pe.codda.common.config.part.CommonPartConfiguration;
+import kr.pe.codda.common.config.part.RunningProjectConfiguration;
 import kr.pe.codda.common.etc.CommonStaticFinalVars;
 import kr.pe.codda.common.exception.SymmetricException;
 import kr.pe.codda.common.type.SessionKey;
@@ -43,9 +44,12 @@ public abstract class AbstractRSAPublickeyReturner {
 	 */
 	public final byte[] getMainProjectPublickeyBytes() throws SymmetricException {
 		byte[] publicKeyBytes = null;
-		CoddaConfiguration runningProjectConfiguration = CoddaConfigurationManager.getInstance()
-				.getRunningProjectConfiguration();
-		CommonPartConfiguration commonPart = runningProjectConfiguration.getDefaultConfiguration().getCommonPartConfiguration();
+		CoddaConfiguration coddaConfiguration = CoddaConfigurationManager.getInstance()
+				.getCoddaConfiguration();
+		
+		RunningProjectConfiguration runningProjectConfiguration = coddaConfiguration.getRunningProjectConfiguration();
+		
+		CommonPartConfiguration commonPart = runningProjectConfiguration.getCommonPartConfiguration();
 
 		SessionKey.RSAKeypairSourceType rsaKeyPairSoureOfSessionkey = commonPart
 				.getRSAKeypairSourceOfSessionKey();
@@ -106,9 +110,12 @@ public abstract class AbstractRSAPublickeyReturner {
 		
 		byte[] publicKeyBytes = null;
 
-		CoddaConfiguration runningProjectConfiguration = CoddaConfigurationManager.getInstance()
-				.getRunningProjectConfiguration();
-		CommonPartConfiguration commonPart = runningProjectConfiguration.getDefaultConfiguration().getCommonPartConfiguration();
+		CoddaConfiguration coddaConfiguration = CoddaConfigurationManager.getInstance()
+				.getCoddaConfiguration();
+		
+		RunningProjectConfiguration runningProjectConfiguration = coddaConfiguration.getRunningProjectConfiguration();
+		
+		CommonPartConfiguration commonPart = runningProjectConfiguration.getCommonPartConfiguration();
 
 		File rsaPublickeyFile = null;
 	

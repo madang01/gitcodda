@@ -19,8 +19,6 @@ package kr.pe.codda.common.config.nativevalueconverter;
 
 import java.nio.charset.Charset;
 
-import kr.pe.codda.common.config.AbstractNativeValueConverter;
-
 /**
  * 문자셋 값 변환기
  * @author Won Jonghoon

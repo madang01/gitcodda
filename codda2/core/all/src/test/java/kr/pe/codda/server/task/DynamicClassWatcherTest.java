@@ -119,7 +119,7 @@ public class DynamicClassWatcherTest {
 		String tmp01FilePathString = new StringBuilder().append(implPathString).append(File.separatorChar)
 				.append("tmp01.tmp").toString();
 
-		File tmp01File = new File(tmp01FilePathString);
+		final File tmp01File = new File(tmp01FilePathString);
 
 		try {
 			CommonStaticUtil.createNewFile(tmp01File, "hello01", CommonStaticFinalVars.DEFUALT_CHARSET);
@@ -144,7 +144,7 @@ public class DynamicClassWatcherTest {
 		String tmp02FilePathString = new StringBuilder().append(messagePathString).append(File.separatorChar)
 				.append("tmp02.tmp").toString();
 
-		File tmp02File = new File(tmp02FilePathString);
+		final File tmp02File = new File(tmp02FilePathString);
 
 		try {
 			CommonStaticUtil.createNewFile(tmp02File, "hello02", CommonStaticFinalVars.DEFUALT_CHARSET);

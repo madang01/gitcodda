@@ -91,12 +91,12 @@ public class MainProjectPartConfigurationTest {
 	public void testToValueForServerHost() {		
 		SequencedProperties sourceSequencedProperties = new SequencedProperties();
 		
-		AbstractProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
+		MainProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
 		actualProjectPartConfiguration.setServerHost("172.12.1.31");
 		
 		actualProjectPartConfiguration.toPropertiesForServerHost(sourceSequencedProperties);
 		
-		AbstractProjectPartConfiguration expectedProjectPartConfiguration = new MainProjectPartConfiguration();
+		MainProjectPartConfiguration expectedProjectPartConfiguration = new MainProjectPartConfiguration();
 		
 		try {
 			expectedProjectPartConfiguration.fromPropertiesForServerHost(sourceSequencedProperties);
@@ -114,7 +114,7 @@ public class MainProjectPartConfigurationTest {
 	public void testToPropertiesForServerHost_서브프로젝트() {	
 		SequencedProperties sourceSequencedProperties = new SequencedProperties();
 		
-		AbstractProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
+		MainProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
 		actualProjectPartConfiguration.setServerHost("172.12.1.31");
 		
 		actualProjectPartConfiguration.toPropertiesForServerHost(sourceSequencedProperties);
@@ -126,7 +126,7 @@ public class MainProjectPartConfigurationTest {
 	public void testToPropertiesForServerHost_메인프로젝트() {	
 		SequencedProperties sourceSequencedProperties = new SequencedProperties();
 		
-		AbstractProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
+		MainProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
 		actualProjectPartConfiguration.setServerHost("172.12.1.31");
 		
 		actualProjectPartConfiguration.toPropertiesForServerHost(sourceSequencedProperties);
@@ -138,12 +138,12 @@ public class MainProjectPartConfigurationTest {
 	public void testToValueForServerPort() {		
 		SequencedProperties sourceSequencedProperties = new SequencedProperties();
 		
-		AbstractProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
+		MainProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
 		actualProjectPartConfiguration.setServerPort(9090);
 		
 		actualProjectPartConfiguration.toPropertiesForServerPort(sourceSequencedProperties);
 		
-		AbstractProjectPartConfiguration expectedProjectPartConfiguration = new MainProjectPartConfiguration();
+		MainProjectPartConfiguration expectedProjectPartConfiguration = new MainProjectPartConfiguration();
 		
 		try {
 			expectedProjectPartConfiguration.fromPropertiesForServerPort(sourceSequencedProperties);
@@ -162,7 +162,7 @@ public class MainProjectPartConfigurationTest {
 	public void testToPropertiesForServerPort() {	
 		SequencedProperties sourceSequencedProperties = new SequencedProperties();
 		
-		AbstractProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
+		MainProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
 		actualProjectPartConfiguration.setServerPort(9090);
 		
 		actualProjectPartConfiguration.toPropertiesForServerPort(sourceSequencedProperties);
@@ -174,12 +174,12 @@ public class MainProjectPartConfigurationTest {
 	public void testToValueForByteOrder() {		
 		SequencedProperties sourceSequencedProperties = new SequencedProperties();
 		
-		AbstractProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
+		MainProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
 		actualProjectPartConfiguration.setByteOrder(ByteOrder.BIG_ENDIAN);
 		
 		actualProjectPartConfiguration.toPropertiesForByteOrder(sourceSequencedProperties);
 		
-		AbstractProjectPartConfiguration expectedProjectPartConfiguration = new MainProjectPartConfiguration();
+		MainProjectPartConfiguration expectedProjectPartConfiguration = new MainProjectPartConfiguration();
 		
 		try {
 			expectedProjectPartConfiguration.fromPropertiesForByteOrder(sourceSequencedProperties);
@@ -197,7 +197,7 @@ public class MainProjectPartConfigurationTest {
 	public void testToPropertiesForByteOrder() {	
 		SequencedProperties sourceSequencedProperties = new SequencedProperties();
 		
-		AbstractProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
+		MainProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
 		actualProjectPartConfiguration.setByteOrder(ByteOrder.BIG_ENDIAN);
 		
 		actualProjectPartConfiguration.toPropertiesForByteOrder(sourceSequencedProperties);
@@ -209,12 +209,12 @@ public class MainProjectPartConfigurationTest {
 	public void testToValueForCharset() {		
 		SequencedProperties sourceSequencedProperties = new SequencedProperties();
 		
-		AbstractProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
+		MainProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
 		actualProjectPartConfiguration.setCharset(Charset.defaultCharset());
 		
 		actualProjectPartConfiguration.toPropertiesForCharset(sourceSequencedProperties);
 		
-		AbstractProjectPartConfiguration expectedProjectPartConfiguration = new MainProjectPartConfiguration();
+		MainProjectPartConfiguration expectedProjectPartConfiguration = new MainProjectPartConfiguration();
 		
 		try {
 			expectedProjectPartConfiguration.fromPropertiesForCharset(sourceSequencedProperties);
@@ -233,7 +233,7 @@ public class MainProjectPartConfigurationTest {
 	public void testToPropertiesForCharset() {	
 		SequencedProperties sourceSequencedProperties = new SequencedProperties();
 		
-		AbstractProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
+		MainProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
 		actualProjectPartConfiguration.setCharset(Charset.defaultCharset());
 		
 		actualProjectPartConfiguration.toPropertiesForCharset(sourceSequencedProperties);
@@ -245,12 +245,12 @@ public class MainProjectPartConfigurationTest {
 	public void testToValueForMessageProtocolType() {		
 		SequencedProperties sourceSequencedProperties = new SequencedProperties();
 		
-		AbstractProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
+		MainProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
 		actualProjectPartConfiguration.setMessageProtocolType(MessageProtocolType.DJSON);
 		
 		actualProjectPartConfiguration.toPropertiesForMessageProtocolType(sourceSequencedProperties);
 		
-		AbstractProjectPartConfiguration expectedProjectPartConfiguration = new MainProjectPartConfiguration();
+		MainProjectPartConfiguration expectedProjectPartConfiguration = new MainProjectPartConfiguration();
 		
 		try {
 			expectedProjectPartConfiguration.fromPropertiesForMessageProtocolType(sourceSequencedProperties);
@@ -269,7 +269,7 @@ public class MainProjectPartConfigurationTest {
 	public void testToPropertiesForMessageProtocolType() {	
 		SequencedProperties sourceSequencedProperties = new SequencedProperties();
 		
-		AbstractProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
+		MainProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
 		actualProjectPartConfiguration.setMessageProtocolType(MessageProtocolType.DJSON);
 		
 		actualProjectPartConfiguration.toPropertiesForMessageProtocolType(sourceSequencedProperties);
@@ -282,12 +282,12 @@ public class MainProjectPartConfigurationTest {
 	public void testToValueForClientMonitorTimeInterval() {		
 		SequencedProperties sourceSequencedProperties = new SequencedProperties();
 		
-		AbstractProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
+		MainProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
 		actualProjectPartConfiguration.setClientMonitorTimeInterval(1234L);
 		
 		actualProjectPartConfiguration.toPropertiesForClientMonitorTimeInterval(sourceSequencedProperties);
 		
-		AbstractProjectPartConfiguration expectedProjectPartConfiguration = new MainProjectPartConfiguration();
+		MainProjectPartConfiguration expectedProjectPartConfiguration = new MainProjectPartConfiguration();
 		
 		try {
 			expectedProjectPartConfiguration.fromPropertiesForClientMonitorTimeInterval(sourceSequencedProperties);
@@ -306,7 +306,7 @@ public class MainProjectPartConfigurationTest {
 	public void testToPropertiesForClientMonitorTimeInterval() {	
 		SequencedProperties sourceSequencedProperties = new SequencedProperties();
 		
-		AbstractProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
+		MainProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
 		actualProjectPartConfiguration.setClientMonitorTimeInterval(1234L);
 		
 		actualProjectPartConfiguration.toPropertiesForClientMonitorTimeInterval(sourceSequencedProperties);
@@ -318,12 +318,12 @@ public class MainProjectPartConfigurationTest {
 	public void testToValueForWhetherClientWrapBufferIsDirect() {		
 		SequencedProperties sourceSequencedProperties = new SequencedProperties();
 		
-		AbstractProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
+		MainProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
 		actualProjectPartConfiguration.setWhetherClientWrapBufferIsDirect(false);
 		
 		actualProjectPartConfiguration.toPropertiesForWhetherClientWrapBufferIsDirect(sourceSequencedProperties);
 		
-		AbstractProjectPartConfiguration expectedProjectPartConfiguration = new MainProjectPartConfiguration();
+		MainProjectPartConfiguration expectedProjectPartConfiguration = new MainProjectPartConfiguration();
 		
 		try {
 			expectedProjectPartConfiguration.fromPropertiesForWhetherClientWrapBufferIsDirect(sourceSequencedProperties);
@@ -342,7 +342,7 @@ public class MainProjectPartConfigurationTest {
 	public void testToPropertiesForWhetherClientWrapBufferIsDirect() {	
 		SequencedProperties sourceSequencedProperties = new SequencedProperties();
 		
-		AbstractProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
+		MainProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
 		actualProjectPartConfiguration.setWhetherClientWrapBufferIsDirect(false);
 		
 		actualProjectPartConfiguration.toPropertiesForWhetherClientWrapBufferIsDirect(sourceSequencedProperties);
@@ -354,12 +354,12 @@ public class MainProjectPartConfigurationTest {
 	public void testToValueForClientWrapBufferMaxCntPerMessage() {		
 		SequencedProperties sourceSequencedProperties = new SequencedProperties();
 		
-		AbstractProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
+		MainProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
 		actualProjectPartConfiguration.setClientWrapBufferMaxCntPerMessage(1234);
 		
 		actualProjectPartConfiguration.toPropertiesForClientWrapBufferMaxCntPerMessage(sourceSequencedProperties);
 		
-		AbstractProjectPartConfiguration expectedProjectPartConfiguration = new MainProjectPartConfiguration();
+		MainProjectPartConfiguration expectedProjectPartConfiguration = new MainProjectPartConfiguration();
 		
 		try {
 			expectedProjectPartConfiguration.fromPropertiesForClientWrapBufferMaxCntPerMessage(sourceSequencedProperties);
@@ -378,7 +378,7 @@ public class MainProjectPartConfigurationTest {
 	public void testToPropertiesForClientWrapBufferMaxCntPerMessage() {	
 		SequencedProperties sourceSequencedProperties = new SequencedProperties();
 		
-		AbstractProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
+		MainProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
 		actualProjectPartConfiguration.setClientWrapBufferMaxCntPerMessage(1234);
 		
 		actualProjectPartConfiguration.toPropertiesForClientWrapBufferMaxCntPerMessage(sourceSequencedProperties);
@@ -390,12 +390,12 @@ public class MainProjectPartConfigurationTest {
 	public void testToValueForClientWrapBufferSize() {		
 		SequencedProperties sourceSequencedProperties = new SequencedProperties();
 		
-		AbstractProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
+		MainProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
 		actualProjectPartConfiguration.setClientWrapBufferSize(1234);
 		
 		actualProjectPartConfiguration.toPropertiesForClientWrapBufferSize(sourceSequencedProperties);
 		
-		AbstractProjectPartConfiguration expectedProjectPartConfiguration = new MainProjectPartConfiguration();
+		MainProjectPartConfiguration expectedProjectPartConfiguration = new MainProjectPartConfiguration();
 		
 		try {
 			expectedProjectPartConfiguration.fromPropertiesForClientWrapBufferSize(sourceSequencedProperties);
@@ -414,7 +414,7 @@ public class MainProjectPartConfigurationTest {
 	public void testToPropertiesForClientWrapBufferSize() {	
 		SequencedProperties sourceSequencedProperties = new SequencedProperties();
 		
-		AbstractProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
+		MainProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
 		actualProjectPartConfiguration.setClientWrapBufferSize(1234);
 		
 		actualProjectPartConfiguration.toPropertiesForClientWrapBufferSize(sourceSequencedProperties);
@@ -426,12 +426,12 @@ public class MainProjectPartConfigurationTest {
 	public void testToValueForClientWrapBufferPoolSize() {		
 		SequencedProperties sourceSequencedProperties = new SequencedProperties();
 		
-		AbstractProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
+		MainProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
 		actualProjectPartConfiguration.setClientWrapBufferPoolSize(4321);
 		
 		actualProjectPartConfiguration.toPropertiesForClientWrapBufferPoolSize(sourceSequencedProperties);
 		
-		AbstractProjectPartConfiguration expectedProjectPartConfiguration = new MainProjectPartConfiguration();
+		MainProjectPartConfiguration expectedProjectPartConfiguration = new MainProjectPartConfiguration();
 		
 		try {
 			expectedProjectPartConfiguration.fromPropertiesForClientWrapBufferPoolSize(sourceSequencedProperties);
@@ -450,7 +450,7 @@ public class MainProjectPartConfigurationTest {
 	public void testToPropertiesForClientWrapBufferPoolSize() {	
 		SequencedProperties sourceSequencedProperties = new SequencedProperties();
 		
-		AbstractProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
+		MainProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
 		actualProjectPartConfiguration.setClientWrapBufferPoolSize(4321);
 		
 		actualProjectPartConfiguration.toPropertiesForClientWrapBufferPoolSize(sourceSequencedProperties);
@@ -462,12 +462,12 @@ public class MainProjectPartConfigurationTest {
 	public void testToValueForClientConnectionType() {		
 		SequencedProperties sourceSequencedProperties = new SequencedProperties();
 		
-		AbstractProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
+		MainProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
 		actualProjectPartConfiguration.setClientConnectionType(ClientConnectionType.SYNC);
 		
 		actualProjectPartConfiguration.toPropertiesForClientConnectionType(sourceSequencedProperties);
 		
-		AbstractProjectPartConfiguration expectedProjectPartConfiguration = new MainProjectPartConfiguration();
+		MainProjectPartConfiguration expectedProjectPartConfiguration = new MainProjectPartConfiguration();
 		
 		try {
 			expectedProjectPartConfiguration.fromPropertiesForClientConnectionType(sourceSequencedProperties);
@@ -486,7 +486,7 @@ public class MainProjectPartConfigurationTest {
 	public void testToPropertiesForClientConnectionType() {	
 		SequencedProperties sourceSequencedProperties = new SequencedProperties();
 		
-		AbstractProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
+		MainProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
 		actualProjectPartConfiguration.setClientConnectionType(ClientConnectionType.SYNC);
 		
 		actualProjectPartConfiguration.toPropertiesForClientConnectionType(sourceSequencedProperties);
@@ -498,12 +498,12 @@ public class MainProjectPartConfigurationTest {
 	public void testToValueForClientConnectionTimeout() {		
 		SequencedProperties sourceSequencedProperties = new SequencedProperties();
 		
-		AbstractProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
+		MainProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
 		actualProjectPartConfiguration.setClientConnectionTimeout(5500L);
 		
 		actualProjectPartConfiguration.toPropertiesForClientConnectionTimeout(sourceSequencedProperties);
 		
-		AbstractProjectPartConfiguration expectedProjectPartConfiguration = new MainProjectPartConfiguration();
+		MainProjectPartConfiguration expectedProjectPartConfiguration = new MainProjectPartConfiguration();
 		
 		try {
 			expectedProjectPartConfiguration.fromPropertiesForClientConnectionTimeout(sourceSequencedProperties);
@@ -522,7 +522,7 @@ public class MainProjectPartConfigurationTest {
 	public void testToPropertiesForClientConnectionTimeout() {	
 		SequencedProperties sourceSequencedProperties = new SequencedProperties();
 		
-		AbstractProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
+		MainProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
 		actualProjectPartConfiguration.setClientConnectionTimeout(5500L);
 		
 		actualProjectPartConfiguration.toPropertiesForClientConnectionTimeout(sourceSequencedProperties);
@@ -534,12 +534,12 @@ public class MainProjectPartConfigurationTest {
 	public void testToValueForClientConnectionCount() {		
 		SequencedProperties sourceSequencedProperties = new SequencedProperties();
 		
-		AbstractProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
+		MainProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
 		actualProjectPartConfiguration.setClientConnectionCount(7);
 		
 		actualProjectPartConfiguration.toPropertiesForClientConnectionCount(sourceSequencedProperties);
 		
-		AbstractProjectPartConfiguration expectedProjectPartConfiguration = new MainProjectPartConfiguration();
+		MainProjectPartConfiguration expectedProjectPartConfiguration = new MainProjectPartConfiguration();
 		
 		try {
 			expectedProjectPartConfiguration.fromPropertiesForClientConnectionCount(sourceSequencedProperties);
@@ -558,7 +558,7 @@ public class MainProjectPartConfigurationTest {
 	public void testToPropertiesForClientConnectionCount() {	
 		SequencedProperties sourceSequencedProperties = new SequencedProperties();
 		
-		AbstractProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
+		MainProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
 		actualProjectPartConfiguration.setClientConnectionCount(7);
 		
 		actualProjectPartConfiguration.toPropertiesForClientConnectionCount(sourceSequencedProperties);
@@ -570,12 +570,12 @@ public class MainProjectPartConfigurationTest {
 	public void testToValueForClientConnectionMaxCount() {		
 		SequencedProperties sourceSequencedProperties = new SequencedProperties();
 		
-		AbstractProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
+		MainProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
 		actualProjectPartConfiguration.setClientConnectionMaxCount(9);
 		
 		actualProjectPartConfiguration.toPropertiesForClientConnectionMaxCount(sourceSequencedProperties);
 		
-		AbstractProjectPartConfiguration expectedProjectPartConfiguration = new MainProjectPartConfiguration();
+		MainProjectPartConfiguration expectedProjectPartConfiguration = new MainProjectPartConfiguration();
 		
 		try {
 			expectedProjectPartConfiguration.fromPropertiesForClientConnectionMaxCount(sourceSequencedProperties);
@@ -594,7 +594,7 @@ public class MainProjectPartConfigurationTest {
 	public void testToPropertiesForClientConnectionMaxCount() {	
 		SequencedProperties sourceSequencedProperties = new SequencedProperties();
 		
-		AbstractProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
+		MainProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
 		actualProjectPartConfiguration.setClientConnectionMaxCount(9);
 		
 		actualProjectPartConfiguration.toPropertiesForClientConnectionMaxCount(sourceSequencedProperties);
@@ -606,12 +606,12 @@ public class MainProjectPartConfigurationTest {
 	public void testToValueForClientConnectionPoolSupporterTimeInterval() {		
 		SequencedProperties sourceSequencedProperties = new SequencedProperties();
 		
-		AbstractProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
+		MainProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
 		actualProjectPartConfiguration.setClientConnectionPoolSupporterTimeInterval(12345L);
 		
 		actualProjectPartConfiguration.toPropertiesForClientConnectionPoolSupporterTimeInterval(sourceSequencedProperties);
 		
-		AbstractProjectPartConfiguration expectedProjectPartConfiguration = new MainProjectPartConfiguration();
+		MainProjectPartConfiguration expectedProjectPartConfiguration = new MainProjectPartConfiguration();
 		
 		try {
 			expectedProjectPartConfiguration.fromPropertiesForClientConnectionPoolSupporterTimeInterval(sourceSequencedProperties);
@@ -630,7 +630,7 @@ public class MainProjectPartConfigurationTest {
 	public void testToPropertiesForClientConnectionPoolSupporterTimeInterval() {	
 		SequencedProperties sourceSequencedProperties = new SequencedProperties();
 		
-		AbstractProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
+		MainProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
 		actualProjectPartConfiguration.setClientConnectionPoolSupporterTimeInterval(12345L);
 		
 		actualProjectPartConfiguration.toPropertiesForClientConnectionPoolSupporterTimeInterval(sourceSequencedProperties);
@@ -642,12 +642,12 @@ public class MainProjectPartConfigurationTest {
 	public void testToValueForClientMailboxCountPerAsynShareConnection() {		
 		SequencedProperties sourceSequencedProperties = new SequencedProperties();
 		
-		AbstractProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
+		MainProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
 		actualProjectPartConfiguration.setClientMailboxCountPerAsynShareConnection(17);
 		
 		actualProjectPartConfiguration.toPropertiesForClientMailboxCountPerAsynShareConnection(sourceSequencedProperties);
 		
-		AbstractProjectPartConfiguration expectedProjectPartConfiguration = new MainProjectPartConfiguration();
+		MainProjectPartConfiguration expectedProjectPartConfiguration = new MainProjectPartConfiguration();
 		
 		try {
 			expectedProjectPartConfiguration.fromPropertiesForClientMailboxCountPerAsynShareConnection(sourceSequencedProperties);
@@ -666,7 +666,7 @@ public class MainProjectPartConfigurationTest {
 	public void testToPropertiesForClientMailboxCountPerAsynShareConnection() {	
 		SequencedProperties sourceSequencedProperties = new SequencedProperties();
 		
-		AbstractProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
+		MainProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
 		actualProjectPartConfiguration.setClientMailboxCountPerAsynShareConnection(17);
 		
 		actualProjectPartConfiguration.toPropertiesForClientMailboxCountPerAsynShareConnection(sourceSequencedProperties);
@@ -678,12 +678,12 @@ public class MainProjectPartConfigurationTest {
 	public void testToValueForClientAsynInputMessageQueueCapacity() {		
 		SequencedProperties sourceSequencedProperties = new SequencedProperties();
 		
-		AbstractProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
+		MainProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
 		actualProjectPartConfiguration.setClientAsynInputMessageQueueCapacity(17);
 		
 		actualProjectPartConfiguration.toPropertiesForClientAsynInputMessageQueueCapacity(sourceSequencedProperties);
 		
-		AbstractProjectPartConfiguration expectedProjectPartConfiguration = new MainProjectPartConfiguration();
+		MainProjectPartConfiguration expectedProjectPartConfiguration = new MainProjectPartConfiguration();
 		
 		try {
 			expectedProjectPartConfiguration.fromPropertiesForClientAsynInputMessageQueueCapacity(sourceSequencedProperties);
@@ -702,7 +702,7 @@ public class MainProjectPartConfigurationTest {
 	public void testToPropertiesForClientAsynInputMessageQueueCapacity() {	
 		SequencedProperties sourceSequencedProperties = new SequencedProperties();
 		
-		AbstractProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
+		MainProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
 		actualProjectPartConfiguration.setClientAsynInputMessageQueueCapacity(17);
 		
 		actualProjectPartConfiguration.toPropertiesForClientAsynInputMessageQueueCapacity(sourceSequencedProperties);
@@ -714,12 +714,12 @@ public class MainProjectPartConfigurationTest {
 	public void testToValueForClientAsynOutputMessageQueueCapacity() {		
 		SequencedProperties sourceSequencedProperties = new SequencedProperties();
 		
-		AbstractProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
+		MainProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
 		actualProjectPartConfiguration.setClientAsynOutputMessageQueueCapacity(19);
 		
 		actualProjectPartConfiguration.toPropertiesForClientAsynOutputMessageQueueCapacity(sourceSequencedProperties);
 		
-		AbstractProjectPartConfiguration expectedProjectPartConfiguration = new MainProjectPartConfiguration();
+		MainProjectPartConfiguration expectedProjectPartConfiguration = new MainProjectPartConfiguration();
 		
 		try {
 			expectedProjectPartConfiguration.fromPropertiesForClientAsynOutputMessageQueueCapacity(sourceSequencedProperties);
@@ -738,7 +738,7 @@ public class MainProjectPartConfigurationTest {
 	public void testToPropertiesForClientAsynOutputMessageQueueCapacity() {	
 		SequencedProperties sourceSequencedProperties = new SequencedProperties();
 		
-		AbstractProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
+		MainProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
 		actualProjectPartConfiguration.setClientAsynOutputMessageQueueCapacity(19);
 		
 		actualProjectPartConfiguration.toPropertiesForClientAsynOutputMessageQueueCapacity(sourceSequencedProperties);
@@ -750,12 +750,12 @@ public class MainProjectPartConfigurationTest {
 	public void testToValueForClientSelectorWakeupInterval() {		
 		SequencedProperties sourceSequencedProperties = new SequencedProperties();
 		
-		AbstractProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
+		MainProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
 		actualProjectPartConfiguration.setClientSelectorWakeupInterval(21L);
 		
 		actualProjectPartConfiguration.toPropertiesForClientSelectorWakeupInterval(sourceSequencedProperties);
 		
-		AbstractProjectPartConfiguration expectedProjectPartConfiguration = new MainProjectPartConfiguration();
+		MainProjectPartConfiguration expectedProjectPartConfiguration = new MainProjectPartConfiguration();
 		
 		try {
 			expectedProjectPartConfiguration.fromPropertiesForClientSelectorWakeupInterval(sourceSequencedProperties);
@@ -774,7 +774,7 @@ public class MainProjectPartConfigurationTest {
 	public void testToPropertiesForClientSelectorWakeupInterval() {	
 		SequencedProperties sourceSequencedProperties = new SequencedProperties();
 		
-		AbstractProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
+		MainProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
 		actualProjectPartConfiguration.setClientSelectorWakeupInterval(21L);
 		
 		actualProjectPartConfiguration.toPropertiesForClientSelectorWakeupInterval(sourceSequencedProperties);
@@ -786,12 +786,12 @@ public class MainProjectPartConfigurationTest {
 	public void testToValueForServerMonitorTimeInterval() {		
 		SequencedProperties sourceSequencedProperties = new SequencedProperties();
 		
-		AbstractProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
-		actualProjectPartConfiguration.setServerMonitorTimeInterval(29L);
+		MainProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
+		actualProjectPartConfiguration.setServerMonitorTimeInterval(2000L);
 		
 		actualProjectPartConfiguration.toPropertiesForServerMonitorTimeInterval(sourceSequencedProperties);
 		
-		AbstractProjectPartConfiguration expectedProjectPartConfiguration = new MainProjectPartConfiguration();
+		MainProjectPartConfiguration expectedProjectPartConfiguration = new MainProjectPartConfiguration();
 		
 		try {
 			expectedProjectPartConfiguration.fromPropertiesForServerMonitorTimeInterval(sourceSequencedProperties);
@@ -810,7 +810,7 @@ public class MainProjectPartConfigurationTest {
 	public void testToPropertiesForServerMonitorTimeInterval() {	
 		SequencedProperties sourceSequencedProperties = new SequencedProperties();
 		
-		AbstractProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
+		MainProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
 		actualProjectPartConfiguration.setServerMonitorTimeInterval(29L);
 		
 		actualProjectPartConfiguration.toPropertiesForServerMonitorTimeInterval(sourceSequencedProperties);
@@ -822,12 +822,12 @@ public class MainProjectPartConfigurationTest {
 	public void testToValueForWhetherServerWrapBufferIsDirect() {		
 		SequencedProperties sourceSequencedProperties = new SequencedProperties();
 		
-		AbstractProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
+		MainProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
 		actualProjectPartConfiguration.setWhetherServerWrapBufferIsDirect(false);
 		
 		actualProjectPartConfiguration.toPropertiesForWhetherServerWrapBufferIsDirect(sourceSequencedProperties);
 		
-		AbstractProjectPartConfiguration expectedProjectPartConfiguration = new MainProjectPartConfiguration();
+		MainProjectPartConfiguration expectedProjectPartConfiguration = new MainProjectPartConfiguration();
 		
 		try {
 			expectedProjectPartConfiguration.fromPropertiesForWhetherServerWrapBufferIsDirect(sourceSequencedProperties);
@@ -846,7 +846,7 @@ public class MainProjectPartConfigurationTest {
 	public void testToPropertiesForWhetherServerWrapBufferIsDirect() {	
 		SequencedProperties sourceSequencedProperties = new SequencedProperties();
 		
-		AbstractProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
+		MainProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
 		actualProjectPartConfiguration.setWhetherServerWrapBufferIsDirect(false);
 		
 		actualProjectPartConfiguration.toPropertiesForWhetherServerWrapBufferIsDirect(sourceSequencedProperties);
@@ -858,12 +858,12 @@ public class MainProjectPartConfigurationTest {
 	public void testToValueForServerWrapBufferMaxCntPerMessage() {		
 		SequencedProperties sourceSequencedProperties = new SequencedProperties();
 		
-		AbstractProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
+		MainProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
 		actualProjectPartConfiguration.setServerWrapBufferMaxCntPerMessage(21);
 		
 		actualProjectPartConfiguration.toPropertiesForServerWrapBufferMaxCntPerMessage(sourceSequencedProperties);
 		
-		AbstractProjectPartConfiguration expectedProjectPartConfiguration = new MainProjectPartConfiguration();
+		MainProjectPartConfiguration expectedProjectPartConfiguration = new MainProjectPartConfiguration();
 		
 		try {
 			expectedProjectPartConfiguration.fromPropertiesForServerWrapBufferMaxCntPerMessage(sourceSequencedProperties);
@@ -882,7 +882,7 @@ public class MainProjectPartConfigurationTest {
 	public void testToPropertiesForServerWrapBufferMaxCntPerMessage() {	
 		SequencedProperties sourceSequencedProperties = new SequencedProperties();
 		
-		AbstractProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
+		MainProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
 		actualProjectPartConfiguration.setServerWrapBufferMaxCntPerMessage(21);
 		
 		actualProjectPartConfiguration.toPropertiesForServerWrapBufferMaxCntPerMessage(sourceSequencedProperties);
@@ -894,12 +894,12 @@ public class MainProjectPartConfigurationTest {
 	public void testToValueForServerWrapBufferSize() {		
 		SequencedProperties sourceSequencedProperties = new SequencedProperties();
 		
-		AbstractProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
+		MainProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
 		actualProjectPartConfiguration.setServerWrapBufferSize(8096);
 		
 		actualProjectPartConfiguration.toPropertiesForServerWrapBufferSize(sourceSequencedProperties);
 		
-		AbstractProjectPartConfiguration expectedProjectPartConfiguration = new MainProjectPartConfiguration();
+		MainProjectPartConfiguration expectedProjectPartConfiguration = new MainProjectPartConfiguration();
 		
 		try {
 			expectedProjectPartConfiguration.fromPropertiesForServerWrapBufferSize(sourceSequencedProperties);
@@ -918,7 +918,7 @@ public class MainProjectPartConfigurationTest {
 	public void testToPropertiesForServerWrapBufferSize() {	
 		SequencedProperties sourceSequencedProperties = new SequencedProperties();
 		
-		AbstractProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
+		MainProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
 		actualProjectPartConfiguration.setServerWrapBufferSize(8096);
 		
 		actualProjectPartConfiguration.toPropertiesForServerWrapBufferSize(sourceSequencedProperties);
@@ -930,12 +930,12 @@ public class MainProjectPartConfigurationTest {
 	public void testToValueForServerWrapBufferPoolSize() {		
 		SequencedProperties sourceSequencedProperties = new SequencedProperties();
 		
-		AbstractProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
+		MainProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
 		actualProjectPartConfiguration.setServerWrapBufferPoolSize(21);
 		
 		actualProjectPartConfiguration.toPropertiesForServerWrapBufferPoolSize(sourceSequencedProperties);
 		
-		AbstractProjectPartConfiguration expectedProjectPartConfiguration = new MainProjectPartConfiguration();
+		MainProjectPartConfiguration expectedProjectPartConfiguration = new MainProjectPartConfiguration();
 		
 		try {
 			expectedProjectPartConfiguration.fromPropertiesForServerWrapBufferPoolSize(sourceSequencedProperties);
@@ -954,7 +954,7 @@ public class MainProjectPartConfigurationTest {
 	public void testToPropertiesForServerWrapBufferPoolSize() {	
 		SequencedProperties sourceSequencedProperties = new SequencedProperties();
 		
-		AbstractProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
+		MainProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
 		actualProjectPartConfiguration.setServerWrapBufferPoolSize(21);
 		
 		actualProjectPartConfiguration.toPropertiesForServerWrapBufferPoolSize(sourceSequencedProperties);
@@ -966,12 +966,12 @@ public class MainProjectPartConfigurationTest {
 	public void testToValueForServerMaxClients() {		
 		SequencedProperties sourceSequencedProperties = new SequencedProperties();
 		
-		AbstractProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
+		MainProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
 		actualProjectPartConfiguration.setServerMaxClients(20);
 		
 		actualProjectPartConfiguration.toPropertiesForServerMaxClients(sourceSequencedProperties);
 		
-		AbstractProjectPartConfiguration expectedProjectPartConfiguration = new MainProjectPartConfiguration();
+		MainProjectPartConfiguration expectedProjectPartConfiguration = new MainProjectPartConfiguration();
 		
 		try {
 			expectedProjectPartConfiguration.fromPropertiesForServerMaxClients(sourceSequencedProperties);
@@ -990,7 +990,7 @@ public class MainProjectPartConfigurationTest {
 	public void testToPropertiesForServerMaxClients() {	
 		SequencedProperties sourceSequencedProperties = new SequencedProperties();
 		
-		AbstractProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
+		MainProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
 		actualProjectPartConfiguration.setServerMaxClients(20);
 		
 		actualProjectPartConfiguration.toPropertiesForServerMaxClients(sourceSequencedProperties);
@@ -1002,12 +1002,12 @@ public class MainProjectPartConfigurationTest {
 	public void testToValueForServerInputMessageQueueCapacity() {		
 		SequencedProperties sourceSequencedProperties = new SequencedProperties();
 		
-		AbstractProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
+		MainProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
 		actualProjectPartConfiguration.setServerInputMessageQueueCapacity(100);
 		
 		actualProjectPartConfiguration.toPropertiesForServerInputMessageQueueCapacity(sourceSequencedProperties);
 		
-		AbstractProjectPartConfiguration expectedProjectPartConfiguration = new MainProjectPartConfiguration();
+		MainProjectPartConfiguration expectedProjectPartConfiguration = new MainProjectPartConfiguration();
 		
 		try {
 			expectedProjectPartConfiguration.fromPropertiesForServerInputMessageQueueCapacity(sourceSequencedProperties);
@@ -1026,7 +1026,7 @@ public class MainProjectPartConfigurationTest {
 	public void testToPropertiesForServerInputMessageQueueCapacity() {	
 		SequencedProperties sourceSequencedProperties = new SequencedProperties();
 		
-		AbstractProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
+		MainProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
 		actualProjectPartConfiguration.setServerInputMessageQueueCapacity(100);
 		
 		actualProjectPartConfiguration.toPropertiesForServerInputMessageQueueCapacity(sourceSequencedProperties);
@@ -1038,12 +1038,12 @@ public class MainProjectPartConfigurationTest {
 	public void testToValueForServerOutputMessageQueueCapacity() {		
 		SequencedProperties sourceSequencedProperties = new SequencedProperties();
 		
-		AbstractProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
+		MainProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
 		actualProjectPartConfiguration.setServerOutputMessageQueueCapacity(100);
 		
 		actualProjectPartConfiguration.toPropertiesForServerOutputMessageQueueCapacity(sourceSequencedProperties);
 		
-		AbstractProjectPartConfiguration expectedProjectPartConfiguration = new MainProjectPartConfiguration();
+		MainProjectPartConfiguration expectedProjectPartConfiguration = new MainProjectPartConfiguration();
 		
 		try {
 			expectedProjectPartConfiguration.fromPropertiesForServerOutputMessageQueueCapacity(sourceSequencedProperties);
@@ -1062,7 +1062,7 @@ public class MainProjectPartConfigurationTest {
 	public void testToPropertiesForServerOutputMessageQueueCapacity() {	
 		SequencedProperties sourceSequencedProperties = new SequencedProperties();
 		
-		AbstractProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
+		MainProjectPartConfiguration actualProjectPartConfiguration = new MainProjectPartConfiguration();
 		actualProjectPartConfiguration.setServerOutputMessageQueueCapacity(100);
 		
 		actualProjectPartConfiguration.toPropertiesForServerOutputMessageQueueCapacity(sourceSequencedProperties);

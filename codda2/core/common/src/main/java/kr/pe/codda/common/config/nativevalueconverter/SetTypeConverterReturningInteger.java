@@ -17,8 +17,6 @@
 
 package kr.pe.codda.common.config.nativevalueconverter;
 
-import kr.pe.codda.common.config.AbstractSetTypeNativeValueConverter;
-
 /**
  * 지정한 값들의 집합에 속한 값들만 허용하는 Integer 타입 값 변환기
  *   

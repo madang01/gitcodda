@@ -40,7 +40,7 @@ public class CoddaConfigurationManagerTest {
 		CoddaConfiguration runningProjectConfiguration = 
 				CoddaConfigurationManager.getInstance()
 				
-				.getRunningProjectConfiguration();
+				.getCoddaConfiguration();
 		DBCPPartConfigurationManager allDBCPPart = runningProjectConfiguration.getDBCPPartConfigurationManager();
 		CommonPartConfiguration commonPart = runningProjectConfiguration.getCommonPartConfiguration();
 		AbstractProjectPartConfiguration mainProjectPart = runningProjectConfiguration.getMainProjectPartConfiguration();

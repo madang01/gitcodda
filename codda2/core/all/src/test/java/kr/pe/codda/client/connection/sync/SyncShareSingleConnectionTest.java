@@ -41,7 +41,6 @@ import kr.pe.codda.client.AnyProjectConnectionPoolIF;
 import kr.pe.codda.client.ConnectionIF;
 import kr.pe.codda.common.buildsystem.pathsupporter.ProjectBuildSytemPathSupporter;
 import kr.pe.codda.common.buildsystem.pathsupporter.ServerBuildSytemPathSupporter;
-import kr.pe.codda.common.config.part.AbstractProjectPartConfiguration;
 import kr.pe.codda.common.config.part.MainProjectPartConfiguration;
 import kr.pe.codda.common.etc.CommonStaticFinalVars;
 import kr.pe.codda.common.exception.PartConfigurationException;
@@ -171,12 +170,12 @@ public class SyncShareSingleConnectionTest {
 	public void tearDown() throws Exception {
 	}
 
-	private AbstractProjectPartConfiguration buildMainProjectPartConfiguration(String projectName, String serverHost, int serverPort,
+	private MainProjectPartConfiguration buildMainProjectPartConfiguration(String projectName, String serverHost, int serverPort,
 			int clientConnectionCount, int clientConnectionMaxCount, MessageProtocolType messageProtocolType,
 			boolean whetherClientWrapBufferIsDirect, ClientConnectionType clientConnectionType, int serverMaxClients, int clientMailboxCountPerAsynShareConnection) throws PartConfigurationException {
 		 
 		
-		AbstractProjectPartConfiguration projectPartConfigurationForTest = new MainProjectPartConfiguration();
+		MainProjectPartConfiguration projectPartConfigurationForTest = new MainProjectPartConfiguration();
 		
 		SequencedProperties sequencedPropertiesHavingDefault = new SequencedProperties();
 		projectPartConfigurationForTest.toProperties(sequencedPropertiesHavingDefault);
@@ -238,7 +237,7 @@ public class SyncShareSingleConnectionTest {
 	@Test
 	public void testSendSyncInputMessage_threadSafeOK() {
 		String testProjectName = "sample_test";
-		AbstractProjectPartConfiguration projectPartConfigurationForTest = null;
+		MainProjectPartConfiguration projectPartConfigurationForTest = null;
 		MessageProtocolType messageProtocolTypeForTest = MessageProtocolType.THB;
 		boolean clientDataPacketBufferIsDirect = false;
 		String serverHost = null;

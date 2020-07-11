@@ -21,7 +21,7 @@ import java.nio.ByteOrder;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import kr.pe.codda.common.config.part.AbstractProjectPartConfiguration;
+import kr.pe.codda.common.config.part.MainProjectPartConfiguration;
 import kr.pe.codda.common.etc.CommonStaticFinalVars;
 import kr.pe.codda.common.etc.StreamCharsetFamily;
 import kr.pe.codda.common.exception.NoMoreWrapBufferException;
@@ -68,30 +68,30 @@ public class AnyProjectServer {
 	 * 생성자
 	 * @param serverAPPINFClassPathString 서버 클래스로더의 동적 클래스 경로 문자열
 	 * @param projectResourcesPathString 서버 클래스로더의 리소스 경로 문자열
-	 * @param projectPartConfiguration 프로젝트 설정
+	 * @param mainProjectPartConfiguration 프로젝트 설정
 	 * @throws NoMoreWrapBufferException 랩 버퍼 폴에 랩 버퍼가 없을 경우 던지는 예외
 	 * @throws PartConfigurationException 설정 관련 작업중 에러 발생시 던지는 예외
 	 */
 	public AnyProjectServer(String projectName, String serverAPPINFClassPathString,
-			String projectResourcesPathString, AbstractProjectPartConfiguration projectPartConfiguration)
+			String projectResourcesPathString, MainProjectPartConfiguration mainProjectPartConfiguration)
 			throws NoMoreWrapBufferException, PartConfigurationException {
 		
 		// this.projectName = projectName;
 		
 		
-		final String serverHost = projectPartConfiguration.getServerHost();
-		final int serverPort = projectPartConfiguration.getServerPort();
-		final int serverMaxClient = projectPartConfiguration.getServerMaxClients();
-		final long connectionTimeout = projectPartConfiguration.getClientConnectionTimeout();
-		final StreamCharsetFamily streamCharsetFamily = new StreamCharsetFamily(projectPartConfiguration.getCharset());
-		final ByteOrder projectByteOrder = projectPartConfiguration.getByteOrder();
+		final String serverHost = mainProjectPartConfiguration.getServerHost();
+		final int serverPort = mainProjectPartConfiguration.getServerPort();
+		final int serverMaxClient = mainProjectPartConfiguration.getServerMaxClients();
+		final long connectionTimeout = mainProjectPartConfiguration.getClientConnectionTimeout();
+		final StreamCharsetFamily streamCharsetFamily = new StreamCharsetFamily(mainProjectPartConfiguration.getCharset());
+		final ByteOrder projectByteOrder = mainProjectPartConfiguration.getByteOrder();
 		// final int serverInputMessageQueueCapacity = projectPartConfiguration.getServerInputMessageQueueCapacity();
-		final int serverOutputMessageQueueCapacity = projectPartConfiguration.getServerOutputMessageQueueCapacity();
-		final MessageProtocolType messageProtocolType = projectPartConfiguration.getMessageProtocolType();
-		final boolean serverDataPacketBufferIsDirect = projectPartConfiguration.getWhetherServerWrapBufferIsDirect();		
-		final int serverDataPacketBufferMaxCntPerMessage = projectPartConfiguration.getServerWrapBufferMaxCntPerMessage();
-		final int serverDataPacketBufferSize = projectPartConfiguration.getServerWrapBufferSize();
-		final int serverDataPacketBufferPoolSize = projectPartConfiguration.getServerWrapBufferPoolSize();
+		final int serverOutputMessageQueueCapacity = mainProjectPartConfiguration.getServerOutputMessageQueueCapacity();
+		final MessageProtocolType messageProtocolType = mainProjectPartConfiguration.getMessageProtocolType();
+		final boolean serverDataPacketBufferIsDirect = mainProjectPartConfiguration.getWhetherServerWrapBufferIsDirect();		
+		final int serverDataPacketBufferMaxCntPerMessage = mainProjectPartConfiguration.getServerWrapBufferMaxCntPerMessage();
+		final int serverDataPacketBufferSize = mainProjectPartConfiguration.getServerWrapBufferSize();
+		final int serverDataPacketBufferPoolSize = mainProjectPartConfiguration.getServerWrapBufferPoolSize();
 		
 		
 		this.wrapBufferPool = new WrapBufferPool(serverDataPacketBufferIsDirect, 

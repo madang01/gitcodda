@@ -23,6 +23,7 @@ import java.security.KeyPair;
 import kr.pe.codda.common.config.CoddaConfiguration;
 import kr.pe.codda.common.config.CoddaConfigurationManager;
 import kr.pe.codda.common.config.part.CommonPartConfiguration;
+import kr.pe.codda.common.config.part.RunningProjectConfiguration;
 import kr.pe.codda.common.exception.SymmetricException;
 import kr.pe.codda.common.type.SessionKey;
 
@@ -50,9 +51,12 @@ public final class ServerSessionkeyManager {
 	private ServerSessionkeyManager() {
 		
 		try {
-			CoddaConfiguration runningProjectConfiguration = CoddaConfigurationManager.getInstance()
-					.getRunningProjectConfiguration();
-			CommonPartConfiguration commonPart = runningProjectConfiguration.getDefaultConfiguration().getCommonPartConfiguration();
+			CoddaConfiguration coddaConfiguration = CoddaConfigurationManager.getInstance()
+					.getCoddaConfiguration();
+			
+			RunningProjectConfiguration runningProjectConfiguration = coddaConfiguration.getRunningProjectConfiguration();
+			
+			CommonPartConfiguration commonPart = runningProjectConfiguration.getCommonPartConfiguration();
 			
 			int symmetricIVSize = commonPart.getSymmetricIVSizeOfSessionKey();
 			int symmetricKeySize = commonPart.getSymmetricKeySizeOfSessionKey();

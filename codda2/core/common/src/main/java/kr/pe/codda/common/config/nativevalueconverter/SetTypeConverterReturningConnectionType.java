@@ -17,7 +17,6 @@
 
 package kr.pe.codda.common.config.nativevalueconverter;
 
-import kr.pe.codda.common.config.AbstractSetTypeNativeValueConverter;
 import kr.pe.codda.common.type.ClientConnectionType;
 
 /**

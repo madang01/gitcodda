@@ -190,7 +190,7 @@ public final class AnyProjectConnectionPool implements AnyProjectConnectionPoolI
 				clientTaskManger = new ClientTaskMangerUsingSystemClassLoader();
 			} else {
 				CoddaConfiguration runningProjectConfiguration = CoddaConfigurationManager.getInstance()
-						.getRunningProjectConfiguration();
+						.getCoddaConfiguration();
 				String installedPathString = runningProjectConfiguration.getInstalledPathString();
 				
 				String clientClassloaderClassPathString = new StringBuilder()

@@ -25,6 +25,7 @@ package kr.pe.codda.common.exception;
 
 @SuppressWarnings("serial")
 public class DBCPDataSourceNotFoundException extends Exception {
+	
 
 	/**
 	 * 생성자
@@ -33,5 +34,6 @@ public class DBCPDataSourceNotFoundException extends Exception {
 	public DBCPDataSourceNotFoundException(String errorMessage) {
 		super(errorMessage);
 	}
+	
 
 }

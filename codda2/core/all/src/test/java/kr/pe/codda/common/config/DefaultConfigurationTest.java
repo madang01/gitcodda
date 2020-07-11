@@ -29,6 +29,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import kr.pe.codda.common.config.part.RunningProjectConfiguration;
 import kr.pe.codda.common.etc.CommonStaticFinalVars;
 import kr.pe.codda.common.util.JDKLoggerCustomFormatter;
 import kr.pe.codda.common.util.SequencedProperties;
@@ -96,11 +97,11 @@ public class DefaultConfigurationTest {
 		
 		SequencedProperties sourceSequencedProperties = new SequencedProperties();
 		
-		DefaultConfiguration  defaultConfiguration = new DefaultConfiguration();		
+		RunningProjectConfiguration  defaultConfiguration = new RunningProjectConfiguration();		
 		
 		defaultConfiguration.toProperties(sourceSequencedProperties);
 		
-		DefaultConfiguration.applyIntalledPath(installedPathString, mainProjectName, sourceSequencedProperties);
+		RunningProjectConfiguration.applyIntalledPath(installedPathString, mainProjectName, sourceSequencedProperties);
 		
 		@SuppressWarnings("unchecked")
 		Enumeration<String> keys = sourceSequencedProperties.keys();

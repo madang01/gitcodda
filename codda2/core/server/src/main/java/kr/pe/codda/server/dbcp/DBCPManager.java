@@ -34,8 +34,8 @@ import org.apache.commons.dbcp2.BasicDataSourceFactory;
 
 import kr.pe.codda.common.config.CoddaConfiguration;
 import kr.pe.codda.common.config.CoddaConfigurationManager;
-import kr.pe.codda.common.config.DefaultConfiguration;
 import kr.pe.codda.common.config.part.DBCPParConfiguration;
+import kr.pe.codda.common.config.part.RunningProjectConfiguration;
 import kr.pe.codda.common.etc.CommonStaticFinalVars;
 import kr.pe.codda.common.exception.DBCPDataSourceNotFoundException;
 
@@ -70,17 +70,15 @@ public final class DBCPManager {
 	 * 동기화 쓰지 않고 싱글턴 구현을 위한 생성자
 	 */
 	private DBCPManager() {
-		CoddaConfiguration runningProjectConfiguration = CoddaConfigurationManager.getInstance()
-				.getRunningProjectConfiguration();
+		CoddaConfiguration coddaConfiguration = CoddaConfigurationManager.getInstance()
+				.getCoddaConfiguration();
 		
-		DefaultConfiguration defaultConfiguration = runningProjectConfiguration.getDefaultConfiguration();
+		RunningProjectConfiguration runningProjectConfiguration = coddaConfiguration.getRunningProjectConfiguration();
 
-		
-
-		dbcpNameList = defaultConfiguration.getDBCPNameList();
+		dbcpNameList = runningProjectConfiguration.getDBCPNameList();
 
 		for (String dbcpName : dbcpNameList) {
-			DBCPParConfiguration dbcpParConfiguration = defaultConfiguration.getDBCPParConfiguration(dbcpName);
+			DBCPParConfiguration dbcpParConfiguration = runningProjectConfiguration.getDBCPParConfiguration(dbcpName);
 			if (null == dbcpParConfiguration) {
 				log.log(Level.WARNING, "the dbcp name[" + dbcpName + "] is bad, check dbcp part of config file");
 				continue;

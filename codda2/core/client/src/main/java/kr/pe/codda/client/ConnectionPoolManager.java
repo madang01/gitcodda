@@ -23,7 +23,7 @@ import java.util.logging.Logger;
 
 import kr.pe.codda.common.config.CoddaConfiguration;
 import kr.pe.codda.common.config.CoddaConfigurationManager;
-import kr.pe.codda.common.config.DefaultConfiguration;
+import kr.pe.codda.common.config.part.RunningProjectConfiguration;
 import kr.pe.codda.common.config.part.MainProjectPartConfiguration;
 import kr.pe.codda.common.config.part.SubProjectPartConfiguration;
 import kr.pe.codda.common.etc.CommonStaticFinalVars;
@@ -69,14 +69,14 @@ public final class ConnectionPoolManager {
 	 * @throws NoMoreWrapBufferException
 	 */
 	private ConnectionPoolManager() {
-		CoddaConfiguration runningProjectConfiguration = CoddaConfigurationManager.getInstance()
-				.getRunningProjectConfiguration();
+		CoddaConfiguration coddaConfiguration = CoddaConfigurationManager.getInstance()
+				.getCoddaConfiguration();
 		
-		mainProjectName = runningProjectConfiguration.getMainProjectName();
+		mainProjectName = coddaConfiguration.getMainProjectName();
 		
+		RunningProjectConfiguration runningProjectConfiguration = coddaConfiguration.getRunningProjectConfiguration();
 		
-		DefaultConfiguration defaultConfiguration = runningProjectConfiguration.getDefaultConfiguration();
-		MainProjectPartConfiguration mainProjectPartConfiguration = defaultConfiguration.getMainProjectPartConfiguration();		
+		MainProjectPartConfiguration mainProjectPartConfiguration = runningProjectConfiguration.getMainProjectPartConfiguration();		
 
 		try {
 			mainProjectConnectionPool = new AnyProjectConnectionPool(mainProjectName, mainProjectPartConfiguration);
@@ -88,12 +88,14 @@ public final class ConnectionPoolManager {
 		}
 		
 
-		subProjectNameList = defaultConfiguration.getSubProjectNameList();
+		subProjectNameList = runningProjectConfiguration.getSubProjectNameList();
 
 		for (String subProjectName : subProjectNameList) {
 			AnyProjectConnectionPool subClientProject = null;
 			try {
-				SubProjectPartConfiguration subProjectPartConfiguration = defaultConfiguration.getSubProjectPartConfiguration(subProjectName);
+				SubProjectPartConfiguration subProjectPartConfiguration = runningProjectConfiguration.getSubProjectPartConfiguration(subProjectName);
+				
+				
 				
 				subClientProject = new AnyProjectConnectionPool(subProjectName, subProjectPartConfiguration);
 				subProjectConnectionPoolHash.put(subProjectName, subClientProject);

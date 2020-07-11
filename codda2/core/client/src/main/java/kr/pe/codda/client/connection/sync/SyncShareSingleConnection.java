@@ -45,7 +45,6 @@ import kr.pe.codda.common.io.WrapBufferPoolIF;
 import kr.pe.codda.common.message.AbstractMessage;
 import kr.pe.codda.common.message.codec.AbstractMessageEncoder;
 import kr.pe.codda.common.protocol.MessageProtocolIF;
-import kr.pe.codda.common.util.HexUtil;
 
 /**
  * 쓰레드 세이프 한 동기 단일 연결, 폴에 소속되지 않고 개별적 요청시 생성된다. 

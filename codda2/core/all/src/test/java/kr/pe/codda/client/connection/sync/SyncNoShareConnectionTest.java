@@ -39,7 +39,6 @@ import kr.pe.codda.client.AnyProjectConnectionPool;
 import kr.pe.codda.client.AnyProjectConnectionPoolIF;
 import kr.pe.codda.common.buildsystem.pathsupporter.ProjectBuildSytemPathSupporter;
 import kr.pe.codda.common.buildsystem.pathsupporter.ServerBuildSytemPathSupporter;
-import kr.pe.codda.common.config.part.AbstractProjectPartConfiguration;
 import kr.pe.codda.common.config.part.MainProjectPartConfiguration;
 import kr.pe.codda.common.etc.CommonStaticFinalVars;
 import kr.pe.codda.common.exception.PartConfigurationException;
@@ -164,11 +163,11 @@ public class SyncNoShareConnectionTest {
 	public void tearDown() throws Exception {
 	}
 
-	private AbstractProjectPartConfiguration buildMainProjectPartConfiguration(String projectName, String serverHost, int serverPort,
+	private MainProjectPartConfiguration buildMainProjectPartConfiguration(String projectName, String serverHost, int serverPort,
 			int clientConnectionCount, int clientConnectionMaxCount, MessageProtocolType messageProtocolType, boolean whetherClientWrapBufferIsDirect,
 			ClientConnectionType clientConnectionType, int serverMaxClients) throws PartConfigurationException {
 
-		AbstractProjectPartConfiguration projectPartConfigurationForTest = new MainProjectPartConfiguration();
+		MainProjectPartConfiguration projectPartConfigurationForTest = new MainProjectPartConfiguration();
 		
 		SequencedProperties sequencedPropertiesHavingDefault = new SequencedProperties();
 		projectPartConfigurationForTest.toProperties(sequencedPropertiesHavingDefault);
@@ -235,7 +234,7 @@ public class SyncNoShareConnectionTest {
 		int clientConnectionCount = 3;
 		int clientConnectionMaxCount = 5;
 		boolean whetherClientWrapBufferIsDirect = false;
-		AbstractProjectPartConfiguration projectPartConfigurationForTest = null;
+		MainProjectPartConfiguration projectPartConfigurationForTest = null;
 		MessageProtocolType messageProtocolTypeForTest = MessageProtocolType.DHB;
 		int serverMaxClients = 1000;
 
