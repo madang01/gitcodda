@@ -67,10 +67,23 @@ public class RunningProjectConfigurationTest {
 	}
 
 	@Test
-	public void testToProperties() {
+	public void testToProperties_모든항목() {
 		RunningProjectConfiguration runningProjectConfiguration = new RunningProjectConfiguration();
 		
-		runningProjectConfiguration.getCommonPartConfiguration().setRSAKeypairSourceOfSessionKey(SessionKey.RSAKeypairSourceType.FILE);
+		DBCPParConfiguration newDBCPParConfigurationForSampleBase = new DBCPParConfiguration("sb_db");
+		DBCPParConfiguration newDBCPParConfigurationForGeneralTestOfSampleBase = new DBCPParConfiguration("gt_sb_db");
+		DBCPParConfiguration newDBCPParConfigurationForLoadTestOfSampleBase = new DBCPParConfiguration("lt_sb_db");
+		
+		runningProjectConfiguration.addDBCPParConfiguration(newDBCPParConfigurationForSampleBase);
+		runningProjectConfiguration.addDBCPParConfiguration(newDBCPParConfigurationForGeneralTestOfSampleBase);
+		runningProjectConfiguration.addDBCPParConfiguration(newDBCPParConfigurationForLoadTestOfSampleBase);
+		
+		SubProjectPartConfiguration newSubProjectPartConfigurationForSampleTest = new SubProjectPartConfiguration("sample_test");
+		runningProjectConfiguration.addSubProjectPartConfiguration(newSubProjectPartConfigurationForSampleTest);
+		
+		/** 'RSA 키쌍 출처' 값의 디폴트는 서버로 공개키와 비밀키 파일 2개 항목이 null 이 되기때문에 'RSA 키쌍 출처' 를 외부 파일로 바꾸어 공개키와 비밀키 파일 2개 항목이 null 되는것을 방지함 */
+		CommonPartConfiguration commonPartConfiguration = runningProjectConfiguration.getCommonPartConfiguration();		
+		commonPartConfiguration.setRSAKeypairSourceOfSessionKey(SessionKey.RSAKeypairSourceType.FILE);
 		
 		
 		SequencedProperties configFileSequencedProperties = new SequencedProperties();
