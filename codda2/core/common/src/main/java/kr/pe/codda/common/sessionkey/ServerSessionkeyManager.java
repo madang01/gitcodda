@@ -22,8 +22,8 @@ import java.security.KeyPair;
 
 import kr.pe.codda.common.config.CoddaConfiguration;
 import kr.pe.codda.common.config.CoddaConfigurationManager;
-import kr.pe.codda.common.config.part.CommonPartConfiguration;
 import kr.pe.codda.common.config.part.RunningProjectConfiguration;
+import kr.pe.codda.common.config.part.SessionkeyPartConfiguration;
 import kr.pe.codda.common.exception.SymmetricException;
 import kr.pe.codda.common.type.SessionKey;
 
@@ -56,28 +56,28 @@ public final class ServerSessionkeyManager {
 			
 			RunningProjectConfiguration runningProjectConfiguration = coddaConfiguration.getRunningProjectConfiguration();
 			
-			CommonPartConfiguration commonPart = runningProjectConfiguration.getCommonPartConfiguration();
+			SessionkeyPartConfiguration sessionkeyPartConfiguration = runningProjectConfiguration.getSessionkeyPartConfiguration();
 			
-			int symmetricIVSize = commonPart.getSymmetricIVSizeOfSessionKey();
-			int symmetricKeySize = commonPart.getSymmetricKeySizeOfSessionKey();
+			int symmetricIVSize = sessionkeyPartConfiguration.getSymmetricIVSize();
+			int symmetricKeySize = sessionkeyPartConfiguration.getSymmetricKeySize();
 			
-			final String symmetricKeyAlgorithm = commonPart.getSymmetricKeyAlgorithmOfSessionKey();
+			final String symmetricKeyAlgorithm = sessionkeyPartConfiguration.getSymmetricKeyAlgorithm();
 			final KeyPair rsaKeypair;			
 
-			SessionKey.RSAKeypairSourceType rsaKeyPairSoureOfSessionkey = commonPart.getRSAKeypairSourceOfSessionKey();			
+			SessionKey.RSAKeypairSourceType rsaKeyPairSoure = sessionkeyPartConfiguration.getRSAKeypairSource();			
 
-			if (rsaKeyPairSoureOfSessionkey.equals(SessionKey.RSAKeypairSourceType.SERVER)) {
-				final int rsaKeySize = commonPart.getRSAKeySizeOfSessionKey();
+			if (rsaKeyPairSoure.equals(SessionKey.RSAKeypairSourceType.SERVER)) {
+				final int rsaKeySize = sessionkeyPartConfiguration.getRSAKeySize();
 
 				rsaKeypair = ServerRSAKeypairUtil.createRSAKeyPairFromKeyGenerator(rsaKeySize);
-			} else if (rsaKeyPairSoureOfSessionkey.equals(SessionKey.RSAKeypairSourceType.FILE)) {
-				final File rsaPrivateKeyFile = commonPart.getRSAPrivatekeyFileOfSessionKey();
-				final File rsaPublicKeyFile = commonPart.getRSAPublickeyFileOfSessionKey();
+			} else if (rsaKeyPairSoure.equals(SessionKey.RSAKeypairSourceType.FILE)) {
+				final File rsaPrivateKeyFile = sessionkeyPartConfiguration.getRSAPrivatekeyFile();
+				final File rsaPublicKeyFile = sessionkeyPartConfiguration.getRSAPublickeyFile();
 				
 				rsaKeypair = ServerRSAKeypairUtil.createRSAKeyPairFromFile(rsaPrivateKeyFile, rsaPublicKeyFile);
 			} else {
 				throw new SymmetricException(new StringBuilder("unknown rsa keypair source[")
-						.append(rsaKeyPairSoureOfSessionkey.toString()).append("]").toString());
+						.append(rsaKeyPairSoure.toString()).append("]").toString());
 			}
 			
 			mainProjectSeverSessionkey = new ServerSessionkey(new ServerRSA(rsaKeypair), symmetricKeyAlgorithm,

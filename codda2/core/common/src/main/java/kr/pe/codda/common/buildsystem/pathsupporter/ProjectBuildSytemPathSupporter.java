@@ -230,7 +230,7 @@ public abstract class ProjectBuildSytemPathSupporter {
 	 * @param mainProjectName 메인 프로젝트 이름
 	 * @return RSA Publickey file =&gt; [RSA keypair path]/[publickey short file name]
 	 */
-	public static String getSessionKeyRSAPublickeyFilePathString(String installedPathString, String mainProjectName) {
+	public static String getSessionKeyRSAPublicKeyFilePathString(String installedPathString, String mainProjectName) {
 		StringBuilder strBuilder = new StringBuilder(getSessionKeyRSAKeypairPathString(installedPathString, mainProjectName));
 		strBuilder.append(File.separator);
 		strBuilder.append(CommonStaticFinalVars.PUBLIC_KEY_FILE_NAME);
@@ -242,7 +242,7 @@ public abstract class ProjectBuildSytemPathSupporter {
 	 * @param mainProjectName 메인 프로젝트 이름
 	 * @return RSA Publickey file =&gt; [RSA keypair path]/[privatekey short file name]
 	 */
-	public static String getSessionKeyRSAPrivatekeyFilePathString(String installedPathString, String mainProjectName) {
+	public static String getSessionKeyRSAPrivateKeyFilePathString(String installedPathString, String mainProjectName) {
 		StringBuilder strBuilder = new StringBuilder(getSessionKeyRSAKeypairPathString(installedPathString, mainProjectName));
 		strBuilder.append(File.separator);
 		strBuilder.append(CommonStaticFinalVars.PRIVATE_KEY_FILE_NAME);

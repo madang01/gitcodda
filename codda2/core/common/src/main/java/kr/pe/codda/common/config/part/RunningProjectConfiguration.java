@@ -16,11 +16,8 @@ limitations under the License.
 package kr.pe.codda.common.config.part;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.logging.Logger;
@@ -28,8 +25,9 @@ import java.util.logging.Logger;
 import kr.pe.codda.common.buildsystem.pathsupporter.ProjectBuildSytemPathSupporter;
 import kr.pe.codda.common.etc.CommonStaticFinalVars;
 import kr.pe.codda.common.exception.PartConfigurationException;
-import kr.pe.codda.common.type.GUIItemType;
+import kr.pe.codda.common.type.ItemViewType;
 import kr.pe.codda.common.type.KeyTypeOfConfieFile;
+import kr.pe.codda.common.util.CommonStaticUtil;
 import kr.pe.codda.common.util.SequencedProperties;
 
 /**
@@ -39,17 +37,72 @@ import kr.pe.codda.common.util.SequencedProperties;
  * @author Won Jonghoon
  *
  */
-public class RunningProjectConfiguration implements PartConfigurationIF {
-	private List<String> dbcpNameList = new ArrayList<String>();
-	private HashMap<String, DBCPParConfiguration> dbcpPartConfigurationHash = new HashMap<String, DBCPParConfiguration>();
-
-	private CommonPartConfiguration commonPartConfiguration = new CommonPartConfiguration();
+public class RunningProjectConfiguration implements ConfigurationIF {
+	
+	private SessionkeyPartConfiguration sessionkeyPartConfiguration = new SessionkeyPartConfiguration();
+	
+	public ListTypePartConfiguration<DBCPParConfiguration> DBCP = new ListTypePartConfiguration<DBCPParConfiguration>("dbcp", DBCPParConfiguration.class);
 
 	private MainProjectPartConfiguration mainProjectPartConfiguration = new MainProjectPartConfiguration();
 
-	private List<String> subProjectNameList = new ArrayList<String>();
-	private HashMap<String, SubProjectPartConfiguration> subProjectPartConfigurationHash = new HashMap<String, SubProjectPartConfiguration>();
+	public ListTypePartConfiguration<SubProjectPartConfiguration> SUBPROJECT = new ListTypePartConfiguration<SubProjectPartConfiguration>("subject", SubProjectPartConfiguration.class);
 
+	public static String toSetValue(Set<String> valueSet) {
+		StringBuilder valueStringBuilder = new StringBuilder();
+		boolean isFirst = true;
+		for(String value : valueSet) {
+			if (isFirst) {				
+				isFirst = false;
+			} else {
+				valueStringBuilder.append(", ");
+			}
+			
+			valueStringBuilder.append(value);
+		}
+		
+		return valueStringBuilder.toString();
+	}
+	
+	public static Set<String> fromSetValue(String setValue) {
+		Set<String> valueSet = new HashSet<String>();
+		
+		StringTokenizer tokens = new StringTokenizer(setValue, ",");	
+
+		int inx=0;
+		while (tokens.hasMoreTokens()) {
+			String token = tokens.nextToken();
+			String element = token.trim();
+			
+			if (element.isEmpty()) {
+				String errorMessage = new StringBuilder()
+						.append("the ").append(element).append(" set[")
+						.append(inx)
+						.append("]'s element is empty").toString();
+				throw new IllegalArgumentException(errorMessage);
+			}
+			
+			if (CommonStaticUtil.hasLeadingOrTailingWhiteSpace(element)) {
+				String errorMessage = new StringBuilder()
+						.append("the set[")
+						.append(inx)
+						.append("]'s element has a leading or tailing white space").toString();
+				throw new IllegalArgumentException(errorMessage);
+			}
+						
+			if (valueSet.contains(element)) {
+				String errorMessage = new StringBuilder()
+						.append("the set[")
+						.append(inx)
+						.append("]'s element[").append(element)
+						.append("] already was registered").toString();
+				throw new IllegalArgumentException(errorMessage);
+			}
+			
+			valueSet.add(element);
+		}
+		
+		return valueSet;
+	}
 	
 	public static String buildKeyOfConfigFile(String prefixBeforeItemID, String itemID, KeyTypeOfConfieFile keyTypeOfConfieFile) {
 		StringBuilder firstStringBuilder = new StringBuilder().append(prefixBeforeItemID)
@@ -61,8 +114,10 @@ public class RunningProjectConfiguration implements PartConfigurationIF {
 			key = firstStringBuilder.append(".desc").toString();
 		} else if (KeyTypeOfConfieFile.VALUE.equals(keyTypeOfConfieFile)) {
 			key = firstStringBuilder.append(".value").toString();
-		} else if (KeyTypeOfConfieFile.GUI_ITEM_TYPE.equals(keyTypeOfConfieFile)) {
-			key = firstStringBuilder.append(".gui_item_type").toString();
+		} else if (KeyTypeOfConfieFile.SET.equals(keyTypeOfConfieFile)) {
+			key = firstStringBuilder.append(".set").toString();
+		} else if (KeyTypeOfConfieFile.ITEM_VIEW_TYPE.equals(keyTypeOfConfieFile)) {
+			key = firstStringBuilder.append(".item_view_type").toString();
 		} else if (KeyTypeOfConfieFile.FILE.equals(keyTypeOfConfieFile)) {
 			key = firstStringBuilder.append(".file").toString();
 		} else if (KeyTypeOfConfieFile.PATH.equals(keyTypeOfConfieFile)) {
@@ -104,24 +159,24 @@ public class RunningProjectConfiguration implements PartConfigurationIF {
 		while (keys.hasMoreElements()) {
 			String key = keys.nextElement();
 
-			if (key.endsWith(".gui_item_type")) {
+			if (key.endsWith(".item_view_type")) {
 				String value = sourceSequencedProperties.getProperty(key);
 
-				final GUIItemType guiItemType;
+				final ItemViewType itemViewType;
 
 				if (null == value) {
-					guiItemType = GUIItemType.DATA;
+					itemViewType = ItemViewType.DATA;
 				} else {
 					value = value.toUpperCase();
 
-					guiItemType = GUIItemType.valueOf(value);
+					itemViewType = ItemViewType.valueOf(value);
 				}
 
-				if (!GUIItemType.DATA.equals(guiItemType)) {
-					String subkey = key.substring(0, key.length() - ".gui_item_type".length());
+				if (ItemViewType.FILE.equals(itemViewType) || ItemViewType.PATH.equals(itemViewType)) {
+					String subkey = key.substring(0, key.length() - ".item_view_type".length());
 
 					String guiProjectHomeBaseRelativePathKey = new StringBuilder().append(subkey).append(".")
-							.append(guiItemType.name().toLowerCase()).toString();
+							.append(itemViewType.name().toLowerCase()).toString();
 
 					String guiProjectHomeBaseRelativePathValue = sourceSequencedProperties
 							.getProperty(guiProjectHomeBaseRelativePathKey);
@@ -160,7 +215,7 @@ public class RunningProjectConfiguration implements PartConfigurationIF {
 							.append("]'s value[").append(oldItemValue).append("] to new value[").append(newItemValue)
 							.append("]").toString();
 
-					Logger log = Logger.getLogger(CommonPartConfiguration.class.getName());
+					Logger log = Logger.getLogger(RunningProjectConfiguration.class.getName());
 					log.info(logMessage);
 				}
 			}
@@ -168,189 +223,9 @@ public class RunningProjectConfiguration implements PartConfigurationIF {
 		}
 	}
 	
-	/**
-	 * 
-	 * @param partName 파트 마다 유일한 값을 갖는 첫번째 접두어
-	 * @return 지정한 '첫번째 접두어' 를 갖는 이름 목록 키
-	 */
-	public String buildKeyForNameList(String firstPrefix) {
-		return new StringBuilder().append(firstPrefix)
-				.append(".name_list.value").toString();
-	}
-
-	/**
-	 * @param title            서브 이름 집합의 이름
-	 * @param subNameListKey   서브 이름 목록 키
-	 * @param subNameListValue 서브 이름 목록 값
-	 * @return 콤마를 구분자로 하는 서브 이름 목록 값으로 부터 추출한 서브 이름들을 집합에 넣어 반환한다.
-	 * @throws PartConfigurationException 서브 이름들중 중복된 것이 있으면 던지는 예외
-	 */
-	private Set<String> buildSubNameSet(String title, String subNameListKey, String subNameListValue)
-			throws PartConfigurationException {
-		Set<String> nameSet = new HashSet<>();
-		StringTokenizer tokens = new StringTokenizer(subNameListValue, ",");
-
-		while (tokens.hasMoreTokens()) {
-			String token = tokens.nextToken();
-			String name = token.trim();
-			if (nameSet.contains(name)) {
-				String errorMessage = new StringBuilder().append(title).append("'s sub name[").append(name)
-						.append("] is over").toString();
-				throw new PartConfigurationException(subNameListKey, errorMessage);
-			}
-
-			nameSet.add(name);
-		}
-
-		return nameSet;
-	}
-
-	/**
-	 * 주어진 시퀀스 프로퍼터리로 부터 DBCP 이름 목록 키의 값을 얻어와 콤마를 구분자로 추출한 DBCP 이름들이 담긴 집합을 반환한다.
-	 * 
-	 * @param sourceSequencedProperties DBCP 이름 목록 키의 값을 가진 시퀀스 프로퍼티
-	 * @return 주어진 시퀀스 프로퍼터리로 부터 DBCP 이름 목록 키의 값을 얻어와 콤마를 구분자로 추출한 DBCP 이름들이 담긴 집합
-	 * @throws PartConfigurationException 주어진 시퀀스 프로퍼티에 DBCP 이름 목록 키 값이 없을때 혹은 DBCP
-	 *                                    이름이 중복될때 던지는 예외
-	 */
-	private Set<String> buildDBCPSubNameSet(SequencedProperties sourceSequencedProperties)
-			throws PartConfigurationException {
-		
-		final String dbcpNameListKey = buildKeyForNameList(DBCPParConfiguration.FIRST_PREFIX);
-		
-		String dbcpNameListValue = sourceSequencedProperties.getProperty(dbcpNameListKey);
-
-		if (null == dbcpNameListValue) {
-			String errorMessage = new StringBuilder("the dbcp name list key(=").append(dbcpNameListKey)
-					.append(") was not found in the parameter sourceSequencedProperties").toString();
-			throw new PartConfigurationException(dbcpNameListKey, errorMessage);
-		}
-
-		dbcpNameListValue = dbcpNameListValue.trim();
-
-		if (dbcpNameListValue.isEmpty()) {
-			return new HashSet<String>();
-		}
-
-		Set<String> dbcpNameSet = buildSubNameSet("the dbcp", dbcpNameListKey, dbcpNameListValue);
-
-		return dbcpNameSet;
-	}
-
-	/**
-	 * 주어진 시퀀스 프로퍼터리로 부터 서브 프로젝트 이름 목록 키의 값을 얻어와 콤마를 구분자로 추출한 서브 프로젝트 이름들이 담긴 집합을
-	 * 반환한다.
-	 * 
-	 * @param sourceSequencedProperties 서브 프로젝트 이름 목록 키 값이 있는 시퀀스 프로퍼티
-	 * @return 주어진 시퀀스 프로퍼터리로 부터 서브 프로젝트 이름 목록 키의 값을 얻어와 콤마를 구분자로 추출한 서브 프로젝트 이름들이
-	 *         담긴 집합
-	 * @throws PartConfigurationException 주어진 시퀀스 프로퍼티에 서브 프로제트 이름 목록 키 값이 없을때 혹은 서브
-	 *                                    프로제트 이름이 중복될때 던지는 예외
-	 */
-	private Set<String> buildSubProjectSubNameSet(SequencedProperties sourceSequencedProperties)
-			throws PartConfigurationException {
-		final String subProjectNameListKey = buildKeyForNameList(SubProjectPartConfiguration.FIRST_PREFIX);
-		
-		String subProjectNameListValue = sourceSequencedProperties.getProperty(subProjectNameListKey);
-
-		if (null == subProjectNameListValue) {
-			String errorMessage = new StringBuilder("the sub project name list key(=")
-					.append(subProjectNameListKey)
-					.append(") was not found in the parameter sourceSequencedProperties").toString();
-			throw new PartConfigurationException(subProjectNameListKey, errorMessage);
-		}
-
-		subProjectNameListValue = subProjectNameListValue.trim();
-
-		if (subProjectNameListValue.isEmpty()) {
-			return new HashSet<String>();
-		}
-
-		Set<String> subProjectNameSet = buildSubNameSet("the sub project", subProjectNameListKey,
-				subProjectNameListValue);
-
-		return subProjectNameSet;
-	}
-
-	/**
-	 * 신규 DBCP 파트의 설정을 추가한다.
-	 * 
-	 * @param newDBCPParConfiguration 신규 DBCP 파트의 설정
-	 * @throws IllegalArgumentException 파라미터 '신규 DBCP 파트의 설정' 가 널인 경우 혹은 기 등록된 DBCP
-	 *                                  파트의 설정이 있는 경우 던지는 예외
-	 */
-	public void addDBCPParConfiguration(DBCPParConfiguration newDBCPParConfiguration) throws IllegalArgumentException {
-		if (null == newDBCPParConfiguration) {
-			throw new IllegalArgumentException("the parameter newDBCPParConfiguration is null");
-		}
-
-		String newDBCPName = newDBCPParConfiguration.getDBCPName();
-
-		for (String dbcpName : dbcpNameList) {
-
-			if (dbcpName.equals(newDBCPName)) {
-				String errorMessage = new StringBuilder().append("the parameter newDBCPParConfiguration[")
-						.append(newDBCPName).append("] was already registered").toString();
-				throw new IllegalArgumentException(errorMessage);
-			}
-
-		}
-
-		dbcpNameList.add(newDBCPName);
-		dbcpPartConfigurationHash.put(newDBCPName, newDBCPParConfiguration);
-	}
-
-	/**
-	 * 지정한 DBCP 이름을 갖는 DBCP 파트 설정을 삭제한다.
-	 * 
-	 * @param 삭제를 원하는 DBCP 파트 설정의 이름
-	 * @throws IllegalArgumentException 파라니터 '삭제를 원하는 DBCP 파트 설정의 이름' 이 널인 경우
-	 * @return 지정한 DBCP 이름을 갖는 DBCP 파트 설정 삭제 처리 성공 여부
-	 */
-	public boolean removeDBCPParConfiguration(String dbcpName) throws IllegalArgumentException {
-		if (null == dbcpName) {
-			throw new IllegalArgumentException("the parameter dbcpName is null");
-		}
-
-		if (!dbcpPartConfigurationHash.containsKey(dbcpName)) {
-			return false;
-		}
-
-		dbcpNameList.remove(dbcpName);
-		dbcpPartConfigurationHash.remove(dbcpName);
-		
-		return true;
-	}
-
-	/**
-	 * 지정한 DBCP 이름을 갖는 DBCP 파트 설정을 반환한다. 단 만약 지정한 DBCP 이름을 갖는 DBCP 파트 설정이 없는 경우 널 반환한다.
-	 * 
-	 * @param DBCP 파트 설정 이름
-	 * @return 지정한 DBCP 이름을 갖는 DBCP 파트 설정, 만약 지정한 DBCP 이름을 갖는 DBCP 파트 설정이 없는 경우 널 반환
-	 * @throws IllegalArgumentException 파라니터 'DBCP 파트 설정 이름' 이 널인 경우
-	 */
-	public DBCPParConfiguration getDBCPParConfiguration(String dbcpName) throws IllegalArgumentException {
-
-		if (null == dbcpName) {
-			throw new IllegalArgumentException("the parameter dbcpName is null");
-		}
-
-		return dbcpPartConfigurationHash.get(dbcpName);
-
-	}
-
-	/**
-	 * @return DBCP 이름 목록
-	 */
-	public List<String> getDBCPNameList() {
-		return dbcpNameList;
-	}
-
-	/**
-	 * @return 공통 파트 설정
-	 */
-	public CommonPartConfiguration getCommonPartConfiguration() {
-		return commonPartConfiguration;
+	
+	public SessionkeyPartConfiguration getSessionkeyPartConfiguration() {
+		return sessionkeyPartConfiguration;
 	}
 
 	/**
@@ -360,215 +235,49 @@ public class RunningProjectConfiguration implements PartConfigurationIF {
 		return mainProjectPartConfiguration;
 	}
 
-	/**
-	 * 신규 서브 프로젝트 파트 설정 추가
-	 * @param newSubProjectPartConfiguration 신규 서브 프로젝트 파트 설정
-	 * @throws IllegalArgumentException 파라미터 '신규 서브 프로젝트 파트 설정' 가 널인경우 혹은 같은 이름을 갖는 서브 프로젝트 파트 설정이 존재할 경우
-	 */
-	public void addSubProjectPartConfiguration(SubProjectPartConfiguration newSubProjectPartConfiguration)
-			throws IllegalArgumentException {
-		if (null == newSubProjectPartConfiguration) {
-			throw new IllegalArgumentException("the parameter newSubProjectPartConfiguration is null");
-		}
-
-		String newSubProjectName = newSubProjectPartConfiguration.getSubProjectName();
-
-		for (String subProjectName : subProjectNameList) {
-
-			if (subProjectName.equals(newSubProjectName)) {
-				String errorMessage = new StringBuilder().append("the parameter newSubProjectPartConfiguration[")
-						.append(newSubProjectName).append("] was already registered").toString();
-				throw new IllegalArgumentException(errorMessage);
-			}
-
-		}
-
-		subProjectNameList.add(newSubProjectName);
-		subProjectPartConfigurationHash.put(newSubProjectName, newSubProjectPartConfiguration);
-	}
-
-	/**
-	 * 지정한 이름을 갖는 서브 프로젝트 파트 설정을 삭제한다.
-	 * @param subProjectName 삭제를 원하는 서브 프로젝트 파트 설정의 이름
-	 * @return 지정한 이름을 갖는 서브 프로젝트 파트 설정을 삭제 처리 성공 여부
-	 * @throws IllegalArgumentException 파라미터 '삭제를 원하는 서브 프로젝트 파트 설정의 이름' 이 널인 경우
-	 */
-	public boolean removeSubProjectPartConfiguration(String subProjectName)
-			throws IllegalArgumentException {
-		if (null == subProjectName) {
-			throw new IllegalArgumentException("the parameter subProjectName is null");
-		}
-
-		if (! subProjectPartConfigurationHash.containsKey(subProjectName)) {
-			return false;
-		}
-		
-		subProjectNameList.remove(subProjectName);
-		subProjectPartConfigurationHash.remove(subProjectName);
-		
-		return true;
-
-	}
-
-	/**
-	 * 지정한 이름을 갖는 서브 프로젝트 파트 설정을 반환한다. 단 지정한 이름을 갖는 서브 프로젝트 파트 설정이 없는 경우 널 반환한다.
-	 * 
-	 * @param subProjectName 서브 프로젝트 파트 설정의 이름
-	 * @return 서브 프로젝트 파트 설정, 만약 지정한 이름을 갖는 서브 프로젝트 파트 설정이 없는 경우 널 반환
-	 * @throws IllegalArgumentException 파라미터 '서브 프로젝트 파트 설정의 이름' 이 널인 경우
-	 */
-	public SubProjectPartConfiguration getSubProjectPartConfiguration(String subProjectName)
-			throws IllegalArgumentException {
-
-		if (null == subProjectName) {
-			throw new IllegalArgumentException("the parameter subProjectName is null");
-		}
-
-		return subProjectPartConfigurationHash.get(subProjectName);
-	}
-
-	/**
-	 * @return 서브 프로젝트 파트 설정 목록
-	 */
-	public List<String> getSubProjectNameList() {
-		return subProjectNameList;
-	}
-
+	
 	
 	@Override
 	public void fromProperties(SequencedProperties sourceSequencedProperties)
 			throws IllegalArgumentException, PartConfigurationException {
 
-		commonPartConfiguration.fromProperties(sourceSequencedProperties);		
+		
+		sessionkeyPartConfiguration.fromProperties(sourceSequencedProperties);
 
-		Set<String> dbcpNameSet = buildDBCPSubNameSet(sourceSequencedProperties);
-
-		dbcpNameList.clear();
-		dbcpPartConfigurationHash.clear();
-		for (String dbcpName : dbcpNameSet) {
-			DBCPParConfiguration dbcpParConfiguration = new DBCPParConfiguration(dbcpName);
-
-			dbcpParConfiguration.fromProperties(sourceSequencedProperties);
-			
-			dbcpNameList.add(dbcpName);
-			dbcpPartConfigurationHash.put(dbcpName, dbcpParConfiguration);
-		}
+		DBCP.fromProperties(sourceSequencedProperties);
 
 		mainProjectPartConfiguration.fromProperties(sourceSequencedProperties);
 		
-
-		Set<String> subProjectNameSet = buildSubProjectSubNameSet(sourceSequencedProperties);
-
-		subProjectNameList.clear();
-		subProjectPartConfigurationHash.clear();
-		for (String subProjectName : subProjectNameSet) {
-			SubProjectPartConfiguration subProjectPartConfiguration = new SubProjectPartConfiguration(subProjectName);
-
-			subProjectPartConfiguration.fromProperties(sourceSequencedProperties);
-
-			subProjectNameList.add(subProjectName);
-			subProjectPartConfigurationHash.put(subProjectName, subProjectPartConfiguration);
-
-		}
+		SUBPROJECT.fromProperties(sourceSequencedProperties);
 	}
 	
 	@Override
 	public void checkForDependencies() throws PartConfigurationException {
-		commonPartConfiguration.checkForDependencies();
+		sessionkeyPartConfiguration.checkForDependencies();
 		
-		for (String dbcpName : dbcpNameList) {
-			DBCPParConfiguration dbcpParConfiguration = dbcpPartConfigurationHash.get(dbcpName);
-			dbcpParConfiguration.checkForDependencies();
-		}
+		DBCP.checkForDependencies();
 		
 		mainProjectPartConfiguration.checkForDependencies();
 		
-		for (String subProjectName : subProjectNameList) {
-			SubProjectPartConfiguration subProjectPartConfiguration = subProjectPartConfigurationHash.get(subProjectName);
-			subProjectPartConfiguration.checkForDependencies();
-		}
-	}
-
-	/**
-	 * @return DBCP 이름 목록을 바탕으로 만든 DBCP 이름 목록 값
-	 */
-	private String convertDBCPNameListToDBCPNameListValue() {
-		StringBuilder dbcpNameListValueBuilder = new StringBuilder();
-		boolean isFirst = true;
-		for (String dbcpName : dbcpNameList) {
-			if (isFirst) {
-				isFirst = false;
-			} else {
-				dbcpNameListValueBuilder.append(",");
-			}
-
-			dbcpNameListValueBuilder.append(dbcpName);
-		}
-
-		return dbcpNameListValueBuilder.toString();
-	}
-
-	/**
-	 * @return 서브 프로젝트 이름 목록을 바탕으로 만든 서브 프로젝트 이름 목록 값
-	 */
-	private String convertSubProjectNameListToSubProjectNameListValue() {
-		StringBuilder subProjectNameListValueBuilder = new StringBuilder();
-		boolean isFirst = true;
-		for (String subProjectName : subProjectNameList) {
-			if (isFirst) {
-				isFirst = false;
-			} else {
-				subProjectNameListValueBuilder.append(",");
-			}
-
-			subProjectNameListValueBuilder.append(subProjectName);
-		}
-
-		return subProjectNameListValueBuilder.toString();
+		SUBPROJECT.checkForDependencies();
 	}
 
 	@Override
 	public void toProperties(SequencedProperties targetSequencedProperties)
 			throws IllegalArgumentException, IllegalStateException {
-		final String dbcpNameListKey = buildKeyForNameList(DBCPParConfiguration.FIRST_PREFIX);
-		final String subProjectNameListKey = buildKeyForNameList(SubProjectPartConfiguration.FIRST_PREFIX);
-		
-		commonPartConfiguration.toProperties(targetSequencedProperties);
+		sessionkeyPartConfiguration.toProperties(targetSequencedProperties);
 
-		targetSequencedProperties.put(dbcpNameListKey, convertDBCPNameListToDBCPNameListValue());
-
-		for (String dbcpName : dbcpNameList) {
-			DBCPParConfiguration dbcpParConfiguration = dbcpPartConfigurationHash.get(dbcpName);
-			if (null == dbcpParConfiguration) {
-				// FIXME!, dead code but defence code
-				throw new IllegalStateException(
-						"the var 'dbcpParConfiguration' is null, dbcp hash has no key for dbcp name");
-			}
-
-			dbcpParConfiguration.toProperties(targetSequencedProperties);
-		}
+		DBCP.toProperties(targetSequencedProperties);
 
 		mainProjectPartConfiguration.toProperties(targetSequencedProperties);
 
-		targetSequencedProperties.put(subProjectNameListKey, convertSubProjectNameListToSubProjectNameListValue());
-
-		for (String subProjectName : subProjectNameList) {
-			SubProjectPartConfiguration subProjectPartConfiguration = subProjectPartConfigurationHash
-					.get(subProjectName);
-			if (null == subProjectPartConfiguration) {
-				// FIXME!, dead code
-				throw new IllegalStateException(
-						"the var 'subProjectPartConfiguration' is null, sub project hash has no key for sub project name");
-			}
-
-			subProjectPartConfiguration.toProperties(targetSequencedProperties);
-		}
+		SUBPROJECT.toProperties(targetSequencedProperties);
 	}
 	
 	public void checkVadlidation() throws IllegalStateException {
 		boolean isValid;
-		for (String dbcpName : dbcpNameList) {
-			DBCPParConfiguration dbcpParConfiguration = dbcpPartConfigurationHash.get(dbcpName);
+		for (String dbcpName : DBCP.getNameList()) {
+			DBCPParConfiguration dbcpParConfiguration = DBCP.getProjectPartConfiguration(dbcpName);
 			isValid = dbcpParConfiguration.toString().indexOf("null") >= 0;
 			
 			if (isValid) {
@@ -578,14 +287,15 @@ public class RunningProjectConfiguration implements PartConfigurationIF {
 				throw new IllegalStateException("the dbcp["+dbcpName+"] part configuration includes null");
 			}
 		}
-		
-		isValid = commonPartConfiguration.toString().indexOf("null") >= 0;
+		/*
+		isValid = jdfPartConfiguration.toString().indexOf("null") >= 0;
 		if (isValid) {
 			Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
-			log.warning(commonPartConfiguration.toString());
+			log.warning(jdfPartConfiguration.toString());
 			
 			throw new IllegalStateException("the common part configuration includes null");
 		}
+		*/
 		
 		isValid = mainProjectPartConfiguration.toString().indexOf("null") >= 0;
 		if (isValid) {
@@ -595,9 +305,8 @@ public class RunningProjectConfiguration implements PartConfigurationIF {
 			throw new IllegalStateException("the main-project part configuration includes null");
 		}
 		
-		for (String subProjectName : subProjectNameList) {
-			SubProjectPartConfiguration subProjectPartConfiguration = subProjectPartConfigurationHash
-					.get(subProjectName);
+		for (String subProjectName : SUBPROJECT.getNameList()) {
+			SubProjectPartConfiguration subProjectPartConfiguration = SUBPROJECT.getProjectPartConfiguration(subProjectName);
 			isValid = subProjectPartConfiguration.toString().indexOf("null") >= 0;
 			
 			if (isValid) {
@@ -608,4 +317,6 @@ public class RunningProjectConfiguration implements PartConfigurationIF {
 			}
 		}
 	}
+	
+	
 }

@@ -38,7 +38,7 @@ import kr.pe.codda.common.util.JDKLoggerCustomFormatter;
 public class SetTypeConverterOfSessionKeyRSAKeypairSourceTest {
 	private Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
 	
-	private SetTypeConverterOfSessionKeyRSAKeypairSource nativeValueConverter = null;
+	private SetTypeConverterOfRSAKeypairSource nativeValueConverter = null;
 	private SessionKey.RSAKeypairSourceType returnedValue = null;
 
 	
@@ -67,7 +67,7 @@ public class SetTypeConverterOfSessionKeyRSAKeypairSourceTest {
 	
 	@Before
 	public void setup() {
-		nativeValueConverter = new SetTypeConverterOfSessionKeyRSAKeypairSource();
+		nativeValueConverter = new SetTypeConverterOfRSAKeypairSource();
 	}
 	
 	@After

@@ -21,7 +21,7 @@ import java.util.logging.Logger;
 
 import kr.pe.codda.common.config.nativevalueconverter.GeneralConverterReturningRegularFile;
 import kr.pe.codda.common.exception.PartConfigurationException;
-import kr.pe.codda.common.type.GUIItemType;
+import kr.pe.codda.common.type.ItemViewType;
 import kr.pe.codda.common.type.KeyTypeOfConfieFile;
 import kr.pe.codda.common.util.SequencedProperties;
 
@@ -33,7 +33,7 @@ public class DBCPParConfiguration implements PartConfigurationIF {
 	private Logger log = Logger.getLogger(DBCPParConfiguration.class.getName());
 	
 
-	public static final String FIRST_PREFIX = "dbcp";
+	public static final String partName = "dbcp";
 	
 	
 	private final String dbcpName;
@@ -53,10 +53,15 @@ public class DBCPParConfiguration implements PartConfigurationIF {
 		this.dbcpName = dbcpName;
 		
 		prefixBeforeItemID = new StringBuilder()
-				.append(FIRST_PREFIX)
+				.append(partName)
 				.append(".").append(dbcpName)
 				.append(".").toString();
 	}	
+	
+	@Override
+	public String getPartName() {
+		return partName;
+	}
 	
 	@Override
 	public void fromProperties(SequencedProperties sourceSequencedProperties) throws IllegalArgumentException, PartConfigurationException {
@@ -128,15 +133,15 @@ public class DBCPParConfiguration implements PartConfigurationIF {
 		String itemValue = (null == dbcpConfigFile) ? "" : dbcpConfigFile.getAbsolutePath();		
 		targetSequencedProperties.put(itemKey, itemValue);
 		
-		String guiItemTypeKey = RunningProjectConfiguration
-				.buildKeyOfConfigFile(prefixBeforeItemID, itemIDOfDBCPConfigFile, KeyTypeOfConfieFile.GUI_ITEM_TYPE);
-		String guiItemTypeValue = GUIItemType.FILE.name().toLowerCase();
-		targetSequencedProperties.put(guiItemTypeKey, guiItemTypeValue);		
+		String itemViewTypeKey = RunningProjectConfiguration
+				.buildKeyOfConfigFile(prefixBeforeItemID, itemIDOfDBCPConfigFile, KeyTypeOfConfieFile.ITEM_VIEW_TYPE);
+		String itemViewTypeValue = ItemViewType.FILE.name().toLowerCase();
+		targetSequencedProperties.put(itemViewTypeKey, itemViewTypeValue);		
 		
-		String guiProjectHomeBaseRelativePathKey = RunningProjectConfiguration
+		String dbcpConfigFileKey = RunningProjectConfiguration
 				.buildKeyOfConfigFile(prefixBeforeItemID, itemIDOfDBCPConfigFile, KeyTypeOfConfieFile.FILE);
-		String guiProjectHomeBaseRelativePathValue = "resources/dbcp/dbcp."+dbcpName+".properties";
-		targetSequencedProperties.put(guiProjectHomeBaseRelativePathKey, guiProjectHomeBaseRelativePathValue);
+		String dbcpConfigFileValue = "resources/dbcp/dbcp."+dbcpName+".properties";
+		targetSequencedProperties.put(dbcpConfigFileKey, dbcpConfigFileValue);
 	}
 	
 	public String getDBCPName() {

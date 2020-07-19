@@ -75,10 +75,10 @@ public final class DBCPManager {
 		
 		RunningProjectConfiguration runningProjectConfiguration = coddaConfiguration.getRunningProjectConfiguration();
 
-		dbcpNameList = runningProjectConfiguration.getDBCPNameList();
+		dbcpNameList = runningProjectConfiguration.DBCP.getNameList();
 
 		for (String dbcpName : dbcpNameList) {
-			DBCPParConfiguration dbcpParConfiguration = runningProjectConfiguration.getDBCPParConfiguration(dbcpName);
+			DBCPParConfiguration dbcpParConfiguration = runningProjectConfiguration.DBCP.getProjectPartConfiguration(dbcpName);
 			if (null == dbcpParConfiguration) {
 				log.log(Level.WARNING, "the dbcp name[" + dbcpName + "] is bad, check dbcp part of config file");
 				continue;

@@ -319,7 +319,7 @@ public class ProjectBuildSytemPathSupporterTest {
 		}		*/
 		
 		String returnedValue = ProjectBuildSytemPathSupporter
-				.getSessionKeyRSAPublickeyFilePathString(installedPathString, mainProjectName);
+				.getSessionKeyRSAPublicKeyFilePathString(installedPathString, mainProjectName);
 		
 		assertEquals("the expected value comparison", expectedValue, returnedValue);
 	}
@@ -341,7 +341,7 @@ public class ProjectBuildSytemPathSupporterTest {
 		}	*/	
 		
 		String returnedValue = ProjectBuildSytemPathSupporter
-				.getSessionKeyRSAPrivatekeyFilePathString(installedPathString, mainProjectName);
+				.getSessionKeyRSAPrivateKeyFilePathString(installedPathString, mainProjectName);
 		
 		assertEquals("the expected value comparison", expectedValue, returnedValue);
 	}

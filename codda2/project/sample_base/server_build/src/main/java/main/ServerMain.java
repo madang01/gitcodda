@@ -4,12 +4,15 @@ package main;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import kr.pe.codda.common.config.CoddaConfiguration;
+import kr.pe.codda.common.config.CoddaConfigurationManager;
 import kr.pe.codda.common.etc.CommonStaticFinalVars;
 import kr.pe.codda.common.exception.ServerTaskException;
 import kr.pe.codda.impl.inner_message.MemberRegisterDecryptionReq;
 import kr.pe.codda.impl.task.server.MemberRegisterReqServerTask;
 import kr.pe.codda.server.AnyProjectServer;
 import kr.pe.codda.server.MainServerManager;
+import kr.pe.codda.server.config.SampleBaseConfiguration;
 import kr.pe.codda.server.lib.MemberRoleType;
 import kr.pe.codda.server.lib.ServerCommonStaticFinalVars;
 import kr.pe.codda.server.lib.ServerDBUtil;
@@ -18,6 +21,19 @@ public class ServerMain {
 
 	public static void main(String argv[]) {
 		Logger log = LoggerFactory.getLogger(CommonStaticFinalVars.BASE_PACKAGE_NAME);
+		
+		SampleBaseConfiguration sampleBaseConfiguration = new SampleBaseConfiguration();
+		
+		CoddaConfiguration coddaConfiguration = CoddaConfigurationManager.getInstance().getCoddaConfiguration();
+		
+		coddaConfiguration.setRunningProjectConfiguration(sampleBaseConfiguration);
+		
+		try {
+			coddaConfiguration.loadConfigFile();
+		} catch (Exception e) {
+			log.error("fail to load config file, errmsg=" + e.getMessage(), e);
+			System.exit(1);
+		}
 		
 		try {
 			MemberRegisterReqServerTask memberRegisterReqServerTask = new MemberRegisterReqServerTask();

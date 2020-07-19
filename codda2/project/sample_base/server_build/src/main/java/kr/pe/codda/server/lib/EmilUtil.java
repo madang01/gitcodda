@@ -71,10 +71,10 @@ public abstract class EmilUtil {
 	 * @throws Exception
 	 */
 	public static void sendEmail(String recipient, String subject, String body) throws Exception {
-		CoddaConfiguration mainProjectConfiguration = CoddaConfigurationManager.getInstance().getRunningProjectConfiguration();
+		CoddaConfiguration coddaConfiguration = CoddaConfigurationManager.getInstance().getCoddaConfiguration();
 		
-		String installedPathString = mainProjectConfiguration.getInstalledPathString();
-		String mainProjectName = mainProjectConfiguration.getMainProjectName();
+		String installedPathString = coddaConfiguration.getInstalledPathString();
+		String mainProjectName = coddaConfiguration.getMainProjectName();
 
 		String projectEmailPropertiesFilePathString = ProjectBuildSytemPathSupporter.getProjectEmailPropertiesFilePathString(installedPathString, mainProjectName);
 		

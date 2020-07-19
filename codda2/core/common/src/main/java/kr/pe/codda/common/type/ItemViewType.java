@@ -13,15 +13,12 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-package kr.pe.codda.common.config.part;
+package kr.pe.codda.common.type;
 
 /**
- * 설정 인터페이스
- * 
  * @author Won Jonghoon
  *
  */
-public interface PartConfigurationIF extends ConfigurationIF {
-	public String getPartName(); 
-	
+public enum ItemViewType {
+	DATA, SET, PATH, FILE;
 }

@@ -24,8 +24,8 @@ import java.util.logging.Logger;
 
 import kr.pe.codda.common.config.CoddaConfiguration;
 import kr.pe.codda.common.config.CoddaConfigurationManager;
-import kr.pe.codda.common.config.part.CommonPartConfiguration;
 import kr.pe.codda.common.config.part.RunningProjectConfiguration;
+import kr.pe.codda.common.config.part.SessionkeyPartConfiguration;
 import kr.pe.codda.common.etc.CommonStaticFinalVars;
 import kr.pe.codda.common.exception.SymmetricException;
 import kr.pe.codda.common.type.SessionKey;
@@ -49,18 +49,17 @@ public abstract class AbstractRSAPublickeyReturner {
 		
 		RunningProjectConfiguration runningProjectConfiguration = coddaConfiguration.getRunningProjectConfiguration();
 		
-		CommonPartConfiguration commonPart = runningProjectConfiguration.getCommonPartConfiguration();
 
-		SessionKey.RSAKeypairSourceType rsaKeyPairSoureOfSessionkey = commonPart
-				.getRSAKeypairSourceOfSessionKey();
+		SessionkeyPartConfiguration sessionkeyPartConfiguration = runningProjectConfiguration.getSessionkeyPartConfiguration();
+		SessionKey.RSAKeypairSourceType rsaKeypairSource = sessionkeyPartConfiguration.getRSAKeypairSource();
 		
-		if (rsaKeyPairSoureOfSessionkey.equals(SessionKey.RSAKeypairSourceType.SERVER)) {
+		if (null == rsaKeypairSource || SessionKey.RSAKeypairSourceType.SERVER.equals(rsaKeypairSource)) {
 			publicKeyBytes = getPublickeyBytesFromMainProjectServer();
-		} else if (rsaKeyPairSoureOfSessionkey.equals(SessionKey.RSAKeypairSourceType.FILE)) {
+		} else if (SessionKey.RSAKeypairSourceType.FILE.equals(rsaKeypairSource)) {
 			publicKeyBytes = getPublickeyBytesFromFile();
 		} else {
 			throw new SymmetricException(new StringBuilder("unknown rsa keypair source[")
-					.append(rsaKeyPairSoureOfSessionkey.toString()).append("]").toString());
+					.append(rsaKeypairSource.toString()).append("]").toString());
 		}
 		
 		return publicKeyBytes;
@@ -115,13 +114,13 @@ public abstract class AbstractRSAPublickeyReturner {
 		
 		RunningProjectConfiguration runningProjectConfiguration = coddaConfiguration.getRunningProjectConfiguration();
 		
-		CommonPartConfiguration commonPart = runningProjectConfiguration.getCommonPartConfiguration();
+		SessionkeyPartConfiguration sessionkeyPartConfiguration = runningProjectConfiguration.getSessionkeyPartConfiguration();
 
 		File rsaPublickeyFile = null;
 	
 		try {
 			
-			rsaPublickeyFile = commonPart.getRSAPublickeyFileOfSessionKey();
+			rsaPublickeyFile = sessionkeyPartConfiguration.getRSAPublickeyFile();
 			
 			publicKeyBytes = CommonStaticUtil.readFileToByteArray(rsaPublickeyFile, 10*1024*1024);	
 		} catch (IOException e) {

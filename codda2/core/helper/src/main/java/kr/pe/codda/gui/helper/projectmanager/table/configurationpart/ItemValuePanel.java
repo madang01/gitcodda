@@ -13,8 +13,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.UIManager;
 
-import kr.pe.codda.common.config.itemidinfo.ItemIDInfo;
-import kr.pe.codda.common.config.itemidinfo.ItemIDInfo.ViewType;
+import kr.pe.codda.common.type.GUIItemType;
 import kr.pe.codda.common.type.LineSeparatorType;
 import kr.pe.codda.common.util.CommonStaticUtil;
 import kr.pe.codda.gui.util.PathSwingAction;
@@ -32,7 +31,7 @@ public class ItemValuePanel extends JPanel {
 	private String itemDescriptionKey = null;
 	private String itemDescriptionValue = null;
 	
-	private ItemIDInfo.ViewType itemViewType = null;
+	private GUIItemType itemViewType = null;
 	private Set<String> itemSet = null;
 	private Frame mainFrame = null;
 	
@@ -46,7 +45,7 @@ public class ItemValuePanel extends JPanel {
 			String itemID, String prefixOfItemID,
 			String itemKey, 	String itemValue, 
 			String itemDescriptionKey, String itemDescriptionValue,
-			ItemIDInfo.ViewType itemViewType, 
+			GUIItemType itemViewType, 
 			Set<String> itemSet, Frame mainFrame) {
 		this.indexOfTableModel = indexOfTableModel;
 		this.itemID = itemID;
@@ -58,7 +57,7 @@ public class ItemValuePanel extends JPanel {
 		this.mainFrame = mainFrame;
 		this.itemViewType = itemViewType;
 						
-		if (itemViewType == ItemIDInfo.ViewType.FILE) {
+		if (itemViewType == GUIItemType.FILE) {
 			valueTextField = new JTextField();
 			valueTextField.setText(itemValue);
 			valueTextField.setPreferredSize(new Dimension(310,20));
@@ -74,7 +73,7 @@ public class ItemValuePanel extends JPanel {
 			PathSwingAction pathAction = new PathSwingAction(this.mainFrame, chooser, pathButton.getText(), valueTextField);
 			pathButton.setAction(pathAction);
 			add(pathButton);
-		} else if (itemViewType == ItemIDInfo.ViewType.PATH) {
+		} else if (itemViewType == GUIItemType.PATH) {
 			valueTextField = new JTextField();
 			valueTextField.setText(itemValue);
 			valueTextField.setPreferredSize(new Dimension(310,20));
@@ -90,7 +89,7 @@ public class ItemValuePanel extends JPanel {
 			PathSwingAction pathAction = new PathSwingAction(this.mainFrame, chooser, pathButton.getText(), valueTextField);
 			pathButton.setAction(pathAction);
 			add(pathButton);		
-		} else if (itemViewType == ViewType.SINGLE_SET) {
+		} else if (itemViewType == GUIItemType.SET) {
 			int selectedIndex = -1;
 			
 			valueComboBox = new JComboBox<String>();
@@ -142,11 +141,11 @@ public class ItemValuePanel extends JPanel {
 	}
 	
 	public void setItemValue(String itemValue) {
-		if (itemViewType == ItemIDInfo.ViewType.FILE) {
+		if (itemViewType == GUIItemType.FILE) {
 			valueTextField.setText(itemValue);
-		} else if (itemViewType == ItemIDInfo.ViewType.PATH) {
+		} else if (itemViewType == GUIItemType.PATH) {
 			valueTextField.setText(itemValue);		
-		} else if (itemViewType == ViewType.SINGLE_SET) {
+		} else if (itemViewType == GUIItemType.SET) {
 			int selectedIndex = -1;
 			
 			ComboBoxModel<String> comboBoxModel = valueComboBox.getModel();
@@ -194,7 +193,7 @@ public class ItemValuePanel extends JPanel {
 	}
 
 	public String getItemValue() {
-		if (itemViewType == ViewType.SINGLE_SET) {
+		if (itemViewType == GUIItemType.SET) {
 			return valueComboBox.getItemAt(valueComboBox.getSelectedIndex());
 		} else {
 			return valueTextField.getText();

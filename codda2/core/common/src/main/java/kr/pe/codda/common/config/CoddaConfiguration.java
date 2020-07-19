@@ -174,13 +174,15 @@ public class CoddaConfiguration {
 	 * @throws FileNotFoundException
 	 * @throws IOException
 	 */
-	public void loadConfigFile() throws IllegalArgumentException, PartConfigurationException, FileNotFoundException, IOException {
+	public SequencedProperties loadConfigFile() throws IllegalArgumentException, PartConfigurationException, FileNotFoundException, IOException {
 		SequencedProperties configSequencedProperties = SequencedPropertiesUtil
 				.loadSequencedPropertiesFile(configFilePathString, CommonStaticFinalVars.SOURCE_FILE_CHARSET);
 		
 		runningProjectConfiguration.fromProperties(configSequencedProperties);
 		
 		runningProjectConfiguration.checkForDependencies();
+		
+		return configSequencedProperties;
 	}
 	
 	/**
@@ -195,7 +197,18 @@ public class CoddaConfiguration {
 				
 		SequencedPropertiesUtil.overwriteSequencedPropertiesFile(targetSequencedProperties, titleOfConfigFile, configFilePathString, CommonStaticFinalVars.SOURCE_FILE_CHARSET);
 	}
+	
+	public void loadDefault() throws IllegalArgumentException, PartConfigurationException {
+		SequencedProperties defaultSequencedProperties = new SequencedProperties();
+		RunningProjectConfiguration runningProjectConfigurationWithoutInit = new RunningProjectConfiguration();		
+		runningProjectConfigurationWithoutInit.toProperties(defaultSequencedProperties);
+		RunningProjectConfiguration.applyIntalledPath(installedPathString, mainProjectName, defaultSequencedProperties);
 		
+		this.runningProjectConfiguration.fromProperties(defaultSequencedProperties);
+		
+	}
+	
+	
 	
 	/**
 	 * @return 메인 프로젝트 이름

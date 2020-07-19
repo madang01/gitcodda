@@ -20,10 +20,10 @@ package kr.pe.codda.common.config.part;
  *
  */
 public class SubProjectPartConfiguration extends AbstractProjectPartConfiguration {
+	private final String partName = "subproject";
 	private final String subProjectName;
 	private final String prefixBeforeItemID;
 	
-	public static final String FIRST_PREFIX = "subproject";
 	
 	public SubProjectPartConfiguration(String subProjectName) {
 		if (null == subProjectName) {
@@ -33,10 +33,14 @@ public class SubProjectPartConfiguration extends AbstractProjectPartConfiguratio
 		this.subProjectName = subProjectName;
 
 		prefixBeforeItemID = new StringBuilder()
-				.append(FIRST_PREFIX)
+				.append(partName)
 				.append(".").append(subProjectName)
 				.append(".").toString();
 		
+	}
+	
+	public String getPartName() {
+		return partName;
 	}
 	
 	public String getPrefixBeforeItemID() {

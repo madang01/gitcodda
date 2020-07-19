@@ -90,10 +90,11 @@ public abstract class ServerDBUtil {
 	 * @throws Exception
 	 */
 	private static void initializeUserMenuInfoTable(DSLContext dsl) throws Exception {
-		CoddaConfiguration mainProjectConfiguration = CoddaConfigurationManager.getInstance()
-				.getRunningProjectConfiguration();
-		String installedPathString = mainProjectConfiguration.getInstalledPathString();
-		String mainProjectName = mainProjectConfiguration.getMainProjectName();
+		CoddaConfiguration coddaConfiguration = CoddaConfigurationManager.getInstance()
+				.getCoddaConfiguration();
+		
+		String installedPathString = coddaConfiguration.getInstalledPathString();
+		String mainProjectName = coddaConfiguration.getMainProjectName();
 
 		String projectDBInitializationDirecotryPathString = ProjectBuildSytemPathSupporter
 				.getDBInitializationDirecotryPathString(installedPathString, mainProjectName);
@@ -206,10 +207,11 @@ public abstract class ServerDBUtil {
 	}
 
 	private static void initializeBoardInfoTable(DSLContext dsl) throws Exception {
-		CoddaConfiguration mainProjectConfiguration = CoddaConfigurationManager.getInstance()
-				.getRunningProjectConfiguration();
-		String installedPathString = mainProjectConfiguration.getInstalledPathString();
-		String mainProjectName = mainProjectConfiguration.getMainProjectName();
+		CoddaConfiguration coddaConfiguration = CoddaConfigurationManager.getInstance()
+				.getCoddaConfiguration();		
+		
+		String installedPathString = coddaConfiguration.getInstalledPathString();
+		String mainProjectName = coddaConfiguration.getMainProjectName();
 
 		String projectDBInitializationDirecotryPathString = ProjectBuildSytemPathSupporter
 				.getDBInitializationDirecotryPathString(installedPathString, mainProjectName);

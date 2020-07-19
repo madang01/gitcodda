@@ -88,14 +88,12 @@ public final class ConnectionPoolManager {
 		}
 		
 
-		subProjectNameList = runningProjectConfiguration.getSubProjectNameList();
+		subProjectNameList = runningProjectConfiguration.SUBPROJECT.getNameList();
 
 		for (String subProjectName : subProjectNameList) {
 			AnyProjectConnectionPool subClientProject = null;
 			try {
-				SubProjectPartConfiguration subProjectPartConfiguration = runningProjectConfiguration.getSubProjectPartConfiguration(subProjectName);
-				
-				
+				SubProjectPartConfiguration subProjectPartConfiguration = runningProjectConfiguration.SUBPROJECT.getProjectPartConfiguration(subProjectName);
 				
 				subClientProject = new AnyProjectConnectionPool(subProjectName, subProjectPartConfiguration);
 				subProjectConnectionPoolHash.put(subProjectName, subClientProject);

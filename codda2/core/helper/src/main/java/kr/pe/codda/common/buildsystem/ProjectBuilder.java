@@ -19,12 +19,10 @@ import kr.pe.codda.common.buildsystem.pathsupporter.ServerBuildSytemPathSupporte
 import kr.pe.codda.common.buildsystem.pathsupporter.WebClientBuildSystemPathSupporter;
 import kr.pe.codda.common.buildsystem.pathsupporter.WebRootBuildSystemPathSupporter;
 import kr.pe.codda.common.config.CoddaConfiguration;
-import kr.pe.codda.common.config.itemidinfo.ItemIDInfoManger;
-import kr.pe.codda.common.config.subset.DBCPPartConfigurationManager;
-import kr.pe.codda.common.config.subset.SubProjectPartConfigurationManager;
+import kr.pe.codda.common.config.part.RunningProjectConfiguration;
 import kr.pe.codda.common.etc.CommonStaticFinalVars;
 import kr.pe.codda.common.exception.BuildSystemException;
-import kr.pe.codda.common.exception.CoddaConfigurationException;
+import kr.pe.codda.common.exception.PartConfigurationException;
 import kr.pe.codda.common.message.builder.IOPartDynamicClassFileContentsBuilderManager;
 import kr.pe.codda.common.message.builder.info.MessageInfo;
 import kr.pe.codda.common.message.builder.info.MessageInfoSAXParser;
@@ -251,32 +249,51 @@ public class ProjectBuilder {
 		if (null == servletSystemLibrayPathString) servletSystemLibrayPathString = "";		
 		
 		
-		CoddaConfiguration configuration = null;
+		CoddaConfiguration coddaConfiguration = null;
 		
 		try {
-			configuration = new CoddaConfiguration(installedPathString, mainProjectName);
+			coddaConfiguration = new CoddaConfiguration(installedPathString, mainProjectName);
+		} catch (IllegalArgumentException e) {
+			log.warn(e.getMessage(), e);
+			throw new BuildSystemException(e.getMessage());
+		} catch (Exception e) {
+			String errorMessage = new StringBuilder().append("unknow error, errmsg=")
+					.append(e.getMessage()).toString();
+			log.warn(errorMessage, e);
+			throw new BuildSystemException(errorMessage);
+		}
+		
+		RunningProjectConfiguration runningProjectConfiguration = coddaConfiguration.getRunningProjectConfiguration();
+		
+		dbcpNameList = runningProjectConfiguration.DBCP.getNameList();
+		subProjectNameList = runningProjectConfiguration.SUBPROJECT.getNameList();	
+				
+		try {
+			configurationSequencedPropties = coddaConfiguration.loadConfigFile();
 		} catch (IllegalArgumentException e) {
 			log.warn(e.getMessage(), e);
 			throw new BuildSystemException(e.getMessage());
 		} catch (FileNotFoundException e) {
-			log.warn(e.getMessage(), e);
-			throw new BuildSystemException(e.getMessage());
+			String errorMessage = new StringBuilder().append("config file not found, errmsg=")
+					.append(e.getMessage()).toString();
+			log.warn(errorMessage, e);
+			throw new BuildSystemException(errorMessage);
+		} catch (PartConfigurationException e) {
+			String errorMessage = new StringBuilder().append("bad config file, errmsg=")
+					.append(e.getMessage()).toString();
+			log.warn(errorMessage, e);
+			throw new BuildSystemException(errorMessage);
 		} catch (IOException e) {
-			log.warn(e.getMessage(), e);
-			throw new BuildSystemException(e.getMessage());
-		} catch (CoddaConfigurationException e) {
-			log.warn(e.getMessage(), e);
-			throw new BuildSystemException(e.getMessage());
+			String errorMessage = new StringBuilder().append("io error, errmsg=")
+					.append(e.getMessage()).toString();
+			log.warn(errorMessage, e);
+			throw new BuildSystemException(errorMessage);
+		} catch (Exception e) {
+			String errorMessage = new StringBuilder().append("unknow error, errmsg=")
+					.append(e.getMessage()).toString();
+			log.warn(errorMessage, e);
+			throw new BuildSystemException(errorMessage);
 		}
-		
-		DBCPPartConfigurationManager dbcpPartConfigurationManager = configuration.getDBCPPartConfigurationManager();
-		SubProjectPartConfigurationManager subProjectPartConfigurationManager = configuration.getSubProjectPartConfigurationManager();
-		
-		dbcpNameList = dbcpPartConfigurationManager.getDBCPNameList();
-		subProjectNameList = subProjectPartConfigurationManager.getSubProjectNamelist();	
-				
-		configurationSequencedPropties =
-		configuration.getConfigurationSequencedPropties();
 		
 		return new MainProjectBuildSystemState(installedPathString, mainProjectName,
 				isServer, isAppClient, isWebClient, servletSystemLibrayPathString,
@@ -1461,17 +1478,27 @@ public class ProjectBuilder {
 	private void createNewConfigFile() throws BuildSystemException {
 		log.info("main project[{}]'s config file creation task start", mainProjectName);
 		
-		String projectConfigFilePathString = ProjectBuildSytemPathSupporter.getProejctConfigFilePathString(installedPathString, mainProjectName);
-
-		ItemIDInfoManger mainProjectItemIDInfo = ItemIDInfoManger.getInstance();
-
-		SequencedProperties newConfigSequencedProperties = mainProjectItemIDInfo.createNewConfigSequencedProperties(installedPathString, mainProjectName);
+		CoddaConfiguration coddaConfiguration = null;
 		
 		try {
-			SequencedPropertiesUtil.createNewSequencedPropertiesFile(newConfigSequencedProperties,
-					CoddaConfiguration.getConfigPropertiesTitle(mainProjectName), projectConfigFilePathString, CommonStaticFinalVars.SOURCE_FILE_CHARSET);
+			coddaConfiguration = new CoddaConfiguration(installedPathString, mainProjectName);
+		} catch (IllegalArgumentException e) {
+			log.warn(e.getMessage(), e);
+			throw new BuildSystemException(e.getMessage());
+		} catch (Exception e) {
+			String errorMessage = new StringBuilder().append("unknow error, errmsg=")
+					.append(e.getMessage()).toString();
+			log.warn(errorMessage, e);
+			throw new BuildSystemException(errorMessage);
+		}
+		
+		String configFilePathString = ProjectBuildSytemPathSupporter
+				.getProejctConfigFilePathString(installedPathString, mainProjectName);
+		
+		try {
+			coddaConfiguration.saveConfigFile();
 		} catch (IOException e) {
-			String errorMessage = new StringBuilder("fail to create the main project's configuration file[").append(projectConfigFilePathString)
+			String errorMessage = new StringBuilder("fail to create the main project's configuration file[").append(configFilePathString)
 					.append("]").toString();
 
 			log.warn(errorMessage, e);
@@ -1636,8 +1663,23 @@ public class ProjectBuilder {
 
 	private void applyInstalledPathToConfigFile() throws BuildSystemException {
 		String mainProejctConfigFilePathString = ProjectBuildSytemPathSupporter.getProejctConfigFilePathString(installedPathString, mainProjectName);
-		try {		
-			CoddaConfiguration.applyInstalledPath(installedPathString, mainProjectName);
+		CoddaConfiguration coddaConfiguration = null;
+		
+		try {
+			coddaConfiguration = new CoddaConfiguration(installedPathString, mainProjectName);
+		} catch (IllegalArgumentException e) {
+			log.warn(e.getMessage(), e);
+			throw new BuildSystemException(e.getMessage());
+		} catch (Exception e) {
+			String errorMessage = new StringBuilder().append("unknow error, errmsg=")
+					.append(e.getMessage()).toString();
+			log.warn(errorMessage, e);
+			throw new BuildSystemException(errorMessage);
+		}
+		
+		try {
+			RunningProjectConfiguration.applyIntalledPath(installedPathString, mainProjectName, coddaConfiguration.loadConfigFile());
+			
 		} catch (IllegalArgumentException e) {
 			String errorMessage = new StringBuilder("fail to apply installed path to the main project[")
 					.append(mainProjectName).append("] config file").toString();
@@ -1700,11 +1742,23 @@ public class ProjectBuilder {
 		log.info("main project[{}]'s config file overwrite task start", mainProjectName);
 		
 		String mainProjectConfigFilePathString = ProjectBuildSytemPathSupporter.getProejctConfigFilePathString(installedPathString, mainProjectName);
+		CoddaConfiguration coddaConfiguration = null;
+		
 		try {
-			
-			
+			coddaConfiguration = new CoddaConfiguration(installedPathString, mainProjectName);
+		} catch (IllegalArgumentException e) {
+			log.warn(e.getMessage(), e);
+			throw new BuildSystemException(e.getMessage());
+		} catch (Exception e) {
+			String errorMessage = new StringBuilder().append("unknow error, errmsg=")
+					.append(e.getMessage()).toString();
+			log.warn(errorMessage, e);
+			throw new BuildSystemException(errorMessage);
+		}		
+		
+		try {
 			SequencedPropertiesUtil.overwriteSequencedPropertiesFile(modifiedConfigSequencedProperties,
-					CoddaConfiguration.getConfigPropertiesTitle(mainProjectName), 
+					coddaConfiguration.getTitleOfConfigFile(), 
 					mainProjectConfigFilePathString, CommonStaticFinalVars.SOURCE_FILE_CHARSET);
 		} catch (IllegalArgumentException e) {
 			String errorMessage = new StringBuilder("fail to save the main project[").append(mainProjectName)
@@ -1729,24 +1783,24 @@ public class ProjectBuilder {
 
 	public SequencedProperties loadConfigPropertiesFile() throws BuildSystemException {
 		CoddaConfiguration mainProjectConfiguration = null;
+		SequencedProperties configSequencedProperties = null;
 		
 		try {
 			mainProjectConfiguration = new CoddaConfiguration(installedPathString, mainProjectName);
+			
+			configSequencedProperties = mainProjectConfiguration.loadConfigFile();
 		} catch (IllegalArgumentException e) {
 			log.warn(e.getMessage(), e);
 			throw new BuildSystemException(e.getMessage());
-		} catch (FileNotFoundException e) {
-			log.warn(e.getMessage(), e);
-			throw new BuildSystemException(e.getMessage());
-		} catch (IOException e) {
-			log.warn(e.getMessage(), e);
-			throw new BuildSystemException(e.getMessage());
-		} catch (CoddaConfigurationException e) {
-			log.warn(e.getMessage(), e);
-			throw new BuildSystemException(e.getMessage());
+	
+		} catch (Exception e) {
+			String errorMessage = new StringBuilder().append("unknow error, errmsg=")
+					.append(e.getMessage()).toString();
+			log.warn(errorMessage, e);
+			throw new BuildSystemException(errorMessage);
 		}
 		
-		return mainProjectConfiguration.getConfigurationSequencedPropties();
+		return configSequencedProperties;
 		
 	}
 

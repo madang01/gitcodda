@@ -30,6 +30,7 @@ import kr.pe.codda.common.config.nativevalueconverter.SetTypeConverterReturningC
 import kr.pe.codda.common.config.nativevalueconverter.SetTypeConverterReturningMessageProtocolType;
 import kr.pe.codda.common.exception.PartConfigurationException;
 import kr.pe.codda.common.type.ClientConnectionType;
+import kr.pe.codda.common.type.ItemViewType;
 import kr.pe.codda.common.type.KeyTypeOfConfieFile;
 import kr.pe.codda.common.type.MessageProtocolType;
 import kr.pe.codda.common.util.SequencedProperties;
@@ -43,76 +44,108 @@ public abstract class AbstractProjectPartConfiguration implements PartConfigurat
 
 	/************* common 변수 시작 ******************/
 	public static final String itemIDForServerHost = "common.host";
+	private GeneralConverterReturningNoTrimString nativeValueConverterForServerHost = new GeneralConverterReturningNoTrimString();
 	private String serverHost = null;
 
 	public static final String itemIDForServerPort = "common.port";
+	private GeneralConverterReturningIntegerBetweenMinAndMax nativeValueConverterForServerPort = new GeneralConverterReturningIntegerBetweenMinAndMax(
+			1024, Integer.MAX_VALUE);
 	private Integer serverPort = null;
 
 	public static final String itemIDForByteOrder = "common.byteorder";
+	private SetTypeConverterReturningByteOrder nativeValueConverterForByteOrder = new SetTypeConverterReturningByteOrder();
 	private ByteOrder byteOrder = null;
 
 	public static final String itemIDForCharset = "common.charset";
+	private GeneralConverterReturningCharset nativeValueConverterForCharset = new GeneralConverterReturningCharset();
 	private Charset charset = null;
 
 	public static final String itemIDForMessageProtocolType = "common.message_protocol_type";
+	private SetTypeConverterReturningMessageProtocolType nativeValueConverterForMessageProtocolType = new SetTypeConverterReturningMessageProtocolType();
 	private MessageProtocolType messageProtocolType = null;
 	/************* common 변수 종료 ******************/
 
 	/************* client 변수 시작 ******************/
 	/***** 모니터 환경 변수 시작 *****/
 	public static final String itemIDForClientMonitorTimeInterval = "client.monitor.time_interval";
+	private GeneralConverterReturningLongBetweenMinAndMax nativeValueConverterForClientMonitorTimeInterval = new GeneralConverterReturningLongBetweenMinAndMax(
+			1000L, (long) Integer.MAX_VALUE);
 	private Long clientMonitorTimeInterval = null;
 	/***** 모니터 환경 변수 종료 *****/
 
 	public static final String itemIDForWhetherClientWrapBufferIsDirect = "client.wrap_buffer.isdirect";
+	private SetTypeConverterReturningBoolean nativeValueConverterForWhetherClientWrapBufferIsDirect = new SetTypeConverterReturningBoolean();
 	private Boolean whetherClientWrapBufferIsDirect = null;
 
 	public static final String itemIDForClientWrapBufferMaxCntPerMessage = "client.wrap_buffer.max_cnt_per_message";
+	private GeneralConverterReturningIntegerBetweenMinAndMax nativeValueConverterForClientWrapBufferMaxCntPerMessage = new GeneralConverterReturningIntegerBetweenMinAndMax(
+			1, Integer.MAX_VALUE);
 	private Integer clientWrapBufferMaxCntPerMessage = null;
 
 	public static final String itemIDForClientWrapBufferSize = "client.wrap_buffer.size";
+	private GeneralConverterReturningIntegerBetweenMinAndMax nativeValueConverterForClientWrapBufferSize = new GeneralConverterReturningIntegerBetweenMinAndMax(
+			1024, Integer.MAX_VALUE);
 	private Integer clientWrapBufferSize = null;
 
 	public static final String itemIDForClientWrapBufferPoolSize = "client.wrap_buffer.pool_size";
+	private GeneralConverterReturningIntegerBetweenMinAndMax nativeValueConverterForClientWrapBufferPoolSize = new GeneralConverterReturningIntegerBetweenMinAndMax(
+			1, Integer.MAX_VALUE);
 	private Integer clientWrapBufferPoolSize = null;
 
 	/***** 연결 클래스 관련 환경 변수 시작 *****/
 	/** 연결 종류 */
 	public static final String itemIDForClientConnectionType = "client.connection.type";
+	private SetTypeConverterReturningConnectionType nativeValueConverterForClientConnectionType = new SetTypeConverterReturningConnectionType();
 	private ClientConnectionType clientConnectionType = null;
 
 	/** 연결 타임 아웃 시간 */
 	public static final String itemIDForClientConnectionTimeout = "client.connection.timeout";
+	private GeneralConverterReturningLongBetweenMinAndMax nativeValueConverterForClientConnectionTimeout = new GeneralConverterReturningLongBetweenMinAndMax(
+			1000L, (long) Integer.MAX_VALUE);
 	private Long clientConnectionTimeout = null;
 
 	/** 연결 갯수 */
 	public static final String itemIDForClientConnectionCount = "client.connection.count";
+	private GeneralConverterReturningIntegerBetweenMinAndMax nativeValueConverterForClientConnectionCount = new GeneralConverterReturningIntegerBetweenMinAndMax(
+			1, Integer.MAX_VALUE);
 	private Integer clientConnectionCount = null;
 
 	/** 연결 최대 갯수 */
 	public static final String itemIDForClientConnectionMaxCount = "client.connection.max_count";
+	private GeneralConverterReturningIntegerBetweenMinAndMax nativeValueConverterForClientConnectionMaxCount = new GeneralConverterReturningIntegerBetweenMinAndMax(
+			1, Integer.MAX_VALUE);
 	private Integer clientConnectionMaxCount = null;
 
 	/** 연결 폴 지원자 활동 주기 */
 	public static final String itemIDForClientConnectionPoolSupporterTimeInterval = "client.connection.pool.supportor.time_interval";
+	private GeneralConverterReturningLongBetweenMinAndMax nativeValueConverterForClientConnectionPoolSupporterTimeInterval = new GeneralConverterReturningLongBetweenMinAndMax(
+			1000L, (long) Integer.MAX_VALUE);
 	private Long clientConnectionPoolSupporterTimeInterval = null;
 
 	/** 연결 폴로무터 연결을 얻기 위한 재 시도 간격 */
 	public static final String itemIDForRetryIntervaTimeToGetConnection = "client.connection.pool.retry_interval_time_to_get_connection";
+	private GeneralConverterReturningLongBetweenMinAndMax nativeValueConverterForRetryIntervaTimeToGetConnection = new GeneralConverterReturningLongBetweenMinAndMax(
+			1000L, (long) Integer.MAX_VALUE);
 	private Long clientRetryIntervaTimeToGetConnection = null;
 
 	/***** 연결 클래스 관련 환경 변수 종료 *****/
 
 	/** 비동기에서 송신할 데이터가 담긴 랩 버퍼당 생존 시간 */
 	public static final String itemIDForAliveTimePerWrapBuffer = "client.asyn.alive_time_per_wrapbuffer";
+	private GeneralConverterReturningLongBetweenMinAndMax nativeValueConverterForAliveTimePerWrapBuffer = new GeneralConverterReturningLongBetweenMinAndMax(
+			100L, (long) Integer.MAX_VALUE);
 	private Long clientAsynAliveTimePerWrapBuffer = null;
 
 	/** 비동기에서 입력 메시지 스트림 큐에 입력 메시지 스트림을 다시 추가하는 간격 */
 	public static final String itemIDForRetryIntervaTimeToAddInputMessage = "client.asyn.retry_interval_time_to_add_input_message";
+	private GeneralConverterReturningLongBetweenMinAndMax nativeValueConverterForRetryIntervaTimeToAddInputMessage = new GeneralConverterReturningLongBetweenMinAndMax(
+			100L, (long) Integer.MAX_VALUE);
 	private Long clientAsynRetryIntervaTimeToAddInputMessage = null;
 
 	/** 비동기+공유 연결의 개인 메일함 갯수 */
 	public static final String itemIDForClientMailboxCountPerAsynShareConnection = "client.asyn.share_connection.mailbox_count";
+	private GeneralConverterReturningIntegerBetweenMinAndMax nativeValueConverterForClientMailboxCountPerAsynShareConnection = new GeneralConverterReturningIntegerBetweenMinAndMax(
+			1, Integer.MAX_VALUE);
 	private Integer clientMailboxCountPerAsynShareConnection = null;
 
 	/** 비동기 출력 메시지 처리자 쓰레드 갯수 */
@@ -120,14 +153,20 @@ public abstract class AbstractProjectPartConfiguration implements PartConfigurat
 
 	/** 비동기용 입력 메시지 큐가 최대 수용할 수 있는 크기 */
 	public static final String itemIDForClientAsynInputMessageQueueCapacity = "client.asyn.input_message_queue_capacity";
+	private GeneralConverterReturningIntegerBetweenMinAndMax nativeValueConverterForClientAsynInputMessageQueueCapacity = new GeneralConverterReturningIntegerBetweenMinAndMax(
+			1, Integer.MAX_VALUE);
 	private Integer clientAsynInputMessageQueueCapacity = null;
 
 	/** 비동기용 출력 메시지 큐가 최대 수용할 수 있는 크기 */
 	public static final String itemIDForClientAsynOutputMessageQueueCapacity = "client.asyn.output_message_queue_capacity";
+	private GeneralConverterReturningIntegerBetweenMinAndMax nativeValueConverterForClientAsynOutputMessageQueueCapacity = new GeneralConverterReturningIntegerBetweenMinAndMax(
+			1, Integer.MAX_VALUE);
 	private Integer clientAsynOutputMessageQueueCapacity = null;
 
 	/** 출력 메시지 소켓 읽기 담당 쓰레드에서 블락된 읽기 이벤트 전용 selector 를 깨우는 주기 */
 	public static final String itemIDForClientSelectorWakeupInterval = "client.asyn.selector.wakeup_interval";
+	private GeneralConverterReturningLongBetweenMinAndMax nativeValueConverterForClientSelectorWakeupInterval = new GeneralConverterReturningLongBetweenMinAndMax(
+			1L, (long) Integer.MAX_VALUE);
 	private Long clientSelectorWakeupInterval = null;
 
 	/************* client 변수 종료 ******************/
@@ -225,11 +264,9 @@ public abstract class AbstractProjectPartConfiguration implements PartConfigurat
 			throw new PartConfigurationException(itemKey, errorMessage);
 		}
 
-		GeneralConverterReturningNoTrimString nativeValueConverter = new GeneralConverterReturningNoTrimString();
-
 		try {
 
-			serverHost = nativeValueConverter.valueOf(itemValue);
+			serverHost = nativeValueConverterForServerHost.valueOf(itemValue);
 		} catch (Exception e) {
 			String errorMessage = new StringBuilder()
 					.append("fail to converter the parameter sequencedProperties's item[").append(itemKey)
@@ -270,11 +307,8 @@ public abstract class AbstractProjectPartConfiguration implements PartConfigurat
 			throw new PartConfigurationException(itemKey, errorMessage);
 		}
 
-		GeneralConverterReturningIntegerBetweenMinAndMax nativeValueConverter = new GeneralConverterReturningIntegerBetweenMinAndMax(
-				1024, Integer.MAX_VALUE);
-
 		try {
-			serverPort = nativeValueConverter.valueOf(itemValue);
+			serverPort = nativeValueConverterForServerPort.valueOf(itemValue);
 		} catch (Exception e) {
 			String errorMessage = new StringBuilder()
 					.append("fail to converter the parameter sequencedProperties's item[").append(itemKey)
@@ -291,7 +325,7 @@ public abstract class AbstractProjectPartConfiguration implements PartConfigurat
 	public void toPropertiesForServerPort(SequencedProperties targetSequencedProperties) {
 		String itemDescKey = RunningProjectConfiguration.buildKeyOfConfigFile(
 				getPrefixBeforeItemID(), itemIDForServerPort, KeyTypeOfConfieFile.DESC);
-		String itemDescValue = "포트 번호, default value[9090], min[1024], max[2147483647]";
+		String itemDescValue = "포트 번호, default value[9090], min[" + nativeValueConverterForServerPort.getMin()+"], max[" + nativeValueConverterForServerPort.getMax()+"]";
 		targetSequencedProperties.put(itemDescKey, itemDescValue);
 
 		String itemKey = RunningProjectConfiguration.buildKeyOfConfigFile(
@@ -314,11 +348,8 @@ public abstract class AbstractProjectPartConfiguration implements PartConfigurat
 			throw new PartConfigurationException(itemKey, errorMessage);
 		}
 
-		SetTypeConverterReturningByteOrder nativeValueConverter = new SetTypeConverterReturningByteOrder();
-
 		try {
-
-			byteOrder = nativeValueConverter.valueOf(itemValue);
+			byteOrder = nativeValueConverterForByteOrder.valueOf(itemValue);
 		} catch (Exception e) {
 			String errorMessage = new StringBuilder()
 					.append("fail to converter the parameter sequencedProperties's item[").append(itemKey)
@@ -333,15 +364,22 @@ public abstract class AbstractProjectPartConfiguration implements PartConfigurat
 	}
 
 	public void toPropertiesForByteOrder(SequencedProperties targetSequencedProperties) {
+		String byteOrderSetValue = RunningProjectConfiguration.toSetValue(nativeValueConverterForByteOrder.getItemValueSet());
+		
 		String itemDescKey = RunningProjectConfiguration.buildKeyOfConfigFile(
 				getPrefixBeforeItemID(), itemIDForByteOrder, KeyTypeOfConfieFile.DESC);
-		String itemDescValue = "바이트 오더, default value[LITTLE_ENDIAN], the byteorder set[BIG_ENDIAN, LITTLE_ENDIAN]";
+		String itemDescValue = "바이트 오더, default value[LITTLE_ENDIAN], the byteorder set[" + byteOrderSetValue + "]";
 		targetSequencedProperties.put(itemDescKey, itemDescValue);
 
 		String itemKey = RunningProjectConfiguration.buildKeyOfConfigFile(
 				getPrefixBeforeItemID(), itemIDForByteOrder, KeyTypeOfConfieFile.VALUE);
 		String itemValue = (null == byteOrder) ? ByteOrder.LITTLE_ENDIAN.toString() : byteOrder.toString();
 		targetSequencedProperties.put(itemKey, itemValue);
+		
+		String byteOrderSetKey = RunningProjectConfiguration.buildKeyOfConfigFile(
+				getPrefixBeforeItemID(), itemIDForByteOrder, KeyTypeOfConfieFile.SET);		
+				
+		targetSequencedProperties.put(byteOrderSetKey, byteOrderSetValue);
 	}
 
 	public void fromPropertiesForCharset(SequencedProperties sourceSequencedProperties)
@@ -358,11 +396,8 @@ public abstract class AbstractProjectPartConfiguration implements PartConfigurat
 			throw new PartConfigurationException(itemKey, errorMessage);
 		}
 
-		GeneralConverterReturningCharset nativeValueConverter = new GeneralConverterReturningCharset();
-
 		try {
-
-			charset = nativeValueConverter.valueOf(itemValue);
+			charset = nativeValueConverterForCharset.valueOf(itemValue);
 		} catch (Exception e) {
 			String errorMessage = new StringBuilder()
 					.append("fail to converter the parameter sequencedProperties's item[").append(itemKey)
@@ -403,11 +438,9 @@ public abstract class AbstractProjectPartConfiguration implements PartConfigurat
 			throw new PartConfigurationException(itemKey, errorMessage);
 		}
 
-		SetTypeConverterReturningMessageProtocolType nativeValueConverter = new SetTypeConverterReturningMessageProtocolType();
-
 		try {
 
-			messageProtocolType = nativeValueConverter.valueOf(itemValue);
+			messageProtocolType = nativeValueConverterForMessageProtocolType.valueOf(itemValue);
 		} catch (Exception e) {
 			String errorMessage = new StringBuilder()
 					.append("fail to converter the parameter sequencedProperties's item[").append(itemKey)
@@ -422,15 +455,21 @@ public abstract class AbstractProjectPartConfiguration implements PartConfigurat
 	}
 
 	public void toPropertiesForMessageProtocolType(SequencedProperties targetSequencedProperties) {
+		String messageProtocolTypeSetKey = RunningProjectConfiguration.buildKeyOfConfigFile(
+				getPrefixBeforeItemID(), itemIDForMessageProtocolType, KeyTypeOfConfieFile.SET);
+		String messageProtocolTypeSetValue = RunningProjectConfiguration.toSetValue(nativeValueConverterForMessageProtocolType.getItemValueSet());
+		
 		String itemDescKey = RunningProjectConfiguration.buildKeyOfConfigFile(
 				getPrefixBeforeItemID(), itemIDForMessageProtocolType, KeyTypeOfConfieFile.DESC);
-		String itemDescValue = "메시지 프로토콜, DHB:교차 md5 헤더+바디, DJSON:길이+존슨문자열, THB:길이+바디, default value[DHB], the message protocol set[DJSON, DHB, THB]";
+		String itemDescValue = "메시지 프로토콜, DHB:교차 md5 헤더+바디, DJSON:길이+존슨문자열, THB:길이+바디, default value[DHB], the message protocol set[" + messageProtocolTypeSetValue + "]";
 		targetSequencedProperties.put(itemDescKey, itemDescValue);
 
 		String itemKey = RunningProjectConfiguration.buildKeyOfConfigFile(
 				getPrefixBeforeItemID(), itemIDForMessageProtocolType, KeyTypeOfConfieFile.VALUE);
 		String itemValue = (null == messageProtocolType) ? MessageProtocolType.DHB.name() : messageProtocolType.name();
-		targetSequencedProperties.put(itemKey, itemValue);
+		targetSequencedProperties.put(itemKey, itemValue);		
+		
+		targetSequencedProperties.put(messageProtocolTypeSetKey, messageProtocolTypeSetValue);		
 	}
 
 	public void fromPropertiesForClientMonitorTimeInterval(SequencedProperties sourceSequencedProperties)
@@ -447,12 +486,8 @@ public abstract class AbstractProjectPartConfiguration implements PartConfigurat
 			throw new PartConfigurationException(itemKey, errorMessage);
 		}
 
-		GeneralConverterReturningLongBetweenMinAndMax nativeValueConverter = new GeneralConverterReturningLongBetweenMinAndMax(
-				1000L, (long) Integer.MAX_VALUE);
-
 		try {
-
-			clientMonitorTimeInterval = nativeValueConverter.valueOf(itemValue);
+			clientMonitorTimeInterval = nativeValueConverterForClientMonitorTimeInterval.valueOf(itemValue);
 		} catch (Exception e) {
 			String errorMessage = new StringBuilder()
 					.append("fail to converter the parameter sequencedProperties's item[").append(itemKey)
@@ -469,7 +504,7 @@ public abstract class AbstractProjectPartConfiguration implements PartConfigurat
 	public void toPropertiesForClientMonitorTimeInterval(SequencedProperties targetSequencedProperties) {
 		String itemDescKey = RunningProjectConfiguration.buildKeyOfConfigFile(
 				getPrefixBeforeItemID(), itemIDForClientMonitorTimeInterval, KeyTypeOfConfieFile.DESC);
-		String itemDescValue = "클라이언트 모니터링 주기, 단위 ms, default value[5000], min[1000], max[2147483647]";
+		String itemDescValue = "클라이언트 모니터링 주기, 단위 ms, default value[5000], min[" + nativeValueConverterForClientMonitorTimeInterval.getMin() + "], max[" + nativeValueConverterForClientMonitorTimeInterval.getMax() + "]";
 		targetSequencedProperties.put(itemDescKey, itemDescValue);
 
 		String itemKey = RunningProjectConfiguration.buildKeyOfConfigFile(
@@ -492,11 +527,8 @@ public abstract class AbstractProjectPartConfiguration implements PartConfigurat
 			throw new PartConfigurationException(itemKey, errorMessage);
 		}
 
-		SetTypeConverterReturningBoolean nativeValueConverter = new SetTypeConverterReturningBoolean();
-
 		try {
-
-			whetherClientWrapBufferIsDirect = nativeValueConverter.valueOf(itemValue);
+			whetherClientWrapBufferIsDirect = nativeValueConverterForWhetherClientWrapBufferIsDirect.valueOf(itemValue);
 		} catch (Exception e) {
 			String errorMessage = new StringBuilder()
 					.append("fail to converter the parameter sequencedProperties's item[").append(itemKey)
@@ -513,7 +545,6 @@ public abstract class AbstractProjectPartConfiguration implements PartConfigurat
 	public void toPropertiesForWhetherClientWrapBufferIsDirect(SequencedProperties targetSequencedProperties) {
 		String itemDescKey = RunningProjectConfiguration.buildKeyOfConfigFile(
 				getPrefixBeforeItemID(), itemIDForWhetherClientWrapBufferIsDirect, KeyTypeOfConfieFile.DESC);
-		
 		String itemDescValue = "whether client wrap buffer is direct, default value[true], the boolean set[false, true]";
 		targetSequencedProperties.put(itemDescKey, itemDescValue);
 
@@ -522,6 +553,16 @@ public abstract class AbstractProjectPartConfiguration implements PartConfigurat
 		String itemValue = (null == whetherClientWrapBufferIsDirect) ? Boolean.TRUE.toString()
 				: whetherClientWrapBufferIsDirect.toString();
 		targetSequencedProperties.put(itemKey, itemValue);
+		
+		String itemViewTypeKey = RunningProjectConfiguration.buildKeyOfConfigFile(
+				getPrefixBeforeItemID(), itemIDForWhetherClientWrapBufferIsDirect, KeyTypeOfConfieFile.ITEM_VIEW_TYPE);
+		String itemViewTypeValue = ItemViewType.SET.name().toLowerCase();
+		targetSequencedProperties.put(itemViewTypeKey, itemViewTypeValue);
+		
+		String whetherClientWrapBufferIsDirectSetValue = RunningProjectConfiguration.toSetValue(nativeValueConverterForWhetherClientWrapBufferIsDirect.getItemValueSet());
+		String whetherClientWrapBufferIsDirectSetKey = RunningProjectConfiguration.buildKeyOfConfigFile(
+				getPrefixBeforeItemID(), itemIDForWhetherClientWrapBufferIsDirect, KeyTypeOfConfieFile.SET);
+		targetSequencedProperties.put(whetherClientWrapBufferIsDirectSetValue, whetherClientWrapBufferIsDirectSetKey);
 	}
 
 	
@@ -539,12 +580,8 @@ public abstract class AbstractProjectPartConfiguration implements PartConfigurat
 			throw new PartConfigurationException(itemKey, errorMessage);
 		}
 
-		GeneralConverterReturningIntegerBetweenMinAndMax nativeValueConverter = new GeneralConverterReturningIntegerBetweenMinAndMax(
-				1, Integer.MAX_VALUE);
-
 		try {
-
-			clientWrapBufferMaxCntPerMessage = nativeValueConverter.valueOf(itemValue);
+			clientWrapBufferMaxCntPerMessage = nativeValueConverterForClientWrapBufferMaxCntPerMessage.valueOf(itemValue);
 		} catch (Exception e) {
 			String errorMessage = new StringBuilder()
 					.append("fail to converter the parameter sequencedProperties's item[").append(itemKey)
@@ -561,7 +598,7 @@ public abstract class AbstractProjectPartConfiguration implements PartConfigurat
 	public void toPropertiesForClientWrapBufferMaxCntPerMessage(SequencedProperties targetSequencedProperties) {
 		String itemDescKey = RunningProjectConfiguration.buildKeyOfConfigFile(
 				getPrefixBeforeItemID(), itemIDForClientWrapBufferMaxCntPerMessage, KeyTypeOfConfieFile.DESC);
-		String itemDescValue = "클라이언트에서 1개 메시지당 할당 받을 수 있는 랩 버퍼 최대 갯수, default value[1000], min[1], max[2147483647]";
+		String itemDescValue = "클라이언트에서 1개 메시지당 할당 받을 수 있는 랩 버퍼 최대 갯수, default value[1000], min[" + nativeValueConverterForClientWrapBufferMaxCntPerMessage.getMin() + "], max[" + nativeValueConverterForClientWrapBufferMaxCntPerMessage.getMax() + "]";
 		targetSequencedProperties.put(itemDescKey, itemDescValue);
 
 		String itemKey = RunningProjectConfiguration.buildKeyOfConfigFile(
@@ -585,12 +622,8 @@ public abstract class AbstractProjectPartConfiguration implements PartConfigurat
 			throw new PartConfigurationException(itemKey, errorMessage);
 		}
 
-		GeneralConverterReturningIntegerBetweenMinAndMax nativeValueConverter = new GeneralConverterReturningIntegerBetweenMinAndMax(
-				1024, Integer.MAX_VALUE);
-
 		try {
-
-			clientWrapBufferSize = nativeValueConverter.valueOf(itemValue);
+			clientWrapBufferSize = nativeValueConverterForClientWrapBufferSize.valueOf(itemValue);
 		} catch (Exception e) {
 			String errorMessage = new StringBuilder()
 					.append("fail to converter the parameter sequencedProperties's item[").append(itemKey)
@@ -607,7 +640,7 @@ public abstract class AbstractProjectPartConfiguration implements PartConfigurat
 	public void toPropertiesForClientWrapBufferSize(SequencedProperties targetSequencedProperties) {
 		String itemDescKey = RunningProjectConfiguration.buildKeyOfConfigFile(
 				getPrefixBeforeItemID(), itemIDForClientWrapBufferSize, KeyTypeOfConfieFile.DESC);
-		String itemDescValue = "클라이언트 랩 버퍼 크기, 단위 byte, default value[4096], min[1024], max[2147483647]";
+		String itemDescValue = "클라이언트 랩 버퍼 크기, 단위 byte, default value[4096], min[" + nativeValueConverterForClientWrapBufferSize.getMin() + "], max[" + nativeValueConverterForClientWrapBufferSize.getMax() + "]";
 		targetSequencedProperties.put(itemDescKey, itemDescValue);
 
 		String itemKey = RunningProjectConfiguration.buildKeyOfConfigFile(
@@ -630,12 +663,8 @@ public abstract class AbstractProjectPartConfiguration implements PartConfigurat
 			throw new PartConfigurationException(itemKey, errorMessage);
 		}
 
-		GeneralConverterReturningIntegerBetweenMinAndMax nativeValueConverter = new GeneralConverterReturningIntegerBetweenMinAndMax(
-				1, Integer.MAX_VALUE);
-
 		try {
-
-			clientWrapBufferPoolSize = nativeValueConverter.valueOf(itemValue);
+			clientWrapBufferPoolSize = nativeValueConverterForClientWrapBufferPoolSize.valueOf(itemValue);
 		} catch (Exception e) {
 			String errorMessage = new StringBuilder()
 					.append("fail to converter the parameter sequencedProperties's item[").append(itemKey)
@@ -652,7 +681,7 @@ public abstract class AbstractProjectPartConfiguration implements PartConfigurat
 	public void toPropertiesForClientWrapBufferPoolSize(SequencedProperties targetSequencedProperties) {
 		String itemDescKey = RunningProjectConfiguration.buildKeyOfConfigFile(
 				getPrefixBeforeItemID(), itemIDForClientWrapBufferPoolSize, KeyTypeOfConfieFile.DESC);
-		String itemDescValue = "클라이언트 랩 버퍼 폴 크기, default value[1000], min[1], max[2147483647]";
+		String itemDescValue = "클라이언트 랩 버퍼 폴 크기, default value[1000], min[" + nativeValueConverterForClientWrapBufferPoolSize.getMin() + "], max[" + nativeValueConverterForClientWrapBufferPoolSize.getMax() + "]";
 		targetSequencedProperties.put(itemDescKey, itemDescValue);
 
 		String itemKey = RunningProjectConfiguration.buildKeyOfConfigFile(
@@ -673,13 +702,10 @@ public abstract class AbstractProjectPartConfiguration implements PartConfigurat
 					.append("' does not exist in the parameter sourceSequencedProperties").toString();
 
 			throw new PartConfigurationException(itemKey, errorMessage);
-		}
-
-		SetTypeConverterReturningConnectionType nativeValueConverter = new SetTypeConverterReturningConnectionType();
+		}		
 
 		try {
-
-			clientConnectionType = nativeValueConverter.valueOf(itemValue);
+			clientConnectionType = nativeValueConverterForClientConnectionType.valueOf(itemValue);
 		} catch (Exception e) {
 			String errorMessage = new StringBuilder()
 					.append("fail to converter the parameter sequencedProperties's item[").append(itemKey)
@@ -694,6 +720,10 @@ public abstract class AbstractProjectPartConfiguration implements PartConfigurat
 	}
 
 	public void toPropertiesForClientConnectionType(SequencedProperties targetSequencedProperties) {
+		String clientConnectionTypeSetValue = RunningProjectConfiguration.toSetValue(nativeValueConverterForClientConnectionType.getItemValueSet());
+		String clientConnectionTypeSetKey = RunningProjectConfiguration.buildKeyOfConfigFile(
+				getPrefixBeforeItemID(), itemIDForClientConnectionType, KeyTypeOfConfieFile.SET);		
+		
 		String itemDescKey = RunningProjectConfiguration.buildKeyOfConfigFile(
 				getPrefixBeforeItemID(), itemIDForClientConnectionType, KeyTypeOfConfieFile.DESC);
 		String itemDescValue = "클라이언트 연결 종류, ASYN:비동기, SYNC:동기, default value[ASYN], the connection type set[ASYN, SYNC]";
@@ -703,7 +733,14 @@ public abstract class AbstractProjectPartConfiguration implements PartConfigurat
 				getPrefixBeforeItemID(), itemIDForClientConnectionType, KeyTypeOfConfieFile.VALUE);
 		String itemValue = (null == clientConnectionType) ? ClientConnectionType.ASYN.name()
 				: clientConnectionType.name();
-		targetSequencedProperties.put(itemKey, itemValue);
+		targetSequencedProperties.put(itemKey, itemValue);		
+		
+		String itemViewTypeKey = RunningProjectConfiguration.buildKeyOfConfigFile(
+				getPrefixBeforeItemID(), itemIDForClientConnectionType, KeyTypeOfConfieFile.ITEM_VIEW_TYPE);
+		String itemViewTypeValue = ItemViewType.SET.name().toLowerCase();
+		targetSequencedProperties.put(itemViewTypeKey, itemViewTypeValue);		
+		
+		targetSequencedProperties.put(clientConnectionTypeSetValue, clientConnectionTypeSetKey);
 	}
 
 	public void fromPropertiesForClientConnectionTimeout(SequencedProperties sourceSequencedProperties)
@@ -718,14 +755,10 @@ public abstract class AbstractProjectPartConfiguration implements PartConfigurat
 					.append("' does not exist in the parameter sourceSequencedProperties").toString();
 
 			throw new PartConfigurationException(itemKey, errorMessage);
-		}
-
-		GeneralConverterReturningLongBetweenMinAndMax nativeValueConverter = new GeneralConverterReturningLongBetweenMinAndMax(
-				1000L, (long) Integer.MAX_VALUE);
+		}	
 
 		try {
-
-			clientConnectionTimeout = nativeValueConverter.valueOf(itemValue);
+			clientConnectionTimeout = nativeValueConverterForClientConnectionTimeout.valueOf(itemValue);
 		} catch (Exception e) {
 			String errorMessage = new StringBuilder()
 					.append("fail to converter the parameter sequencedProperties's item[").append(itemKey)
@@ -742,7 +775,7 @@ public abstract class AbstractProjectPartConfiguration implements PartConfigurat
 	public void toPropertiesForClientConnectionTimeout(SequencedProperties targetSequencedProperties) {
 		String itemDescKey = RunningProjectConfiguration.buildKeyOfConfigFile(
 				getPrefixBeforeItemID(), itemIDForClientConnectionTimeout, KeyTypeOfConfieFile.DESC);
-		String itemDescValue = "연결 타임아웃, 단위 ms, default value[5000], min[1000], max[2147483647]";
+		String itemDescValue = "연결 타임아웃, 단위 ms, default value[5000], min[" + nativeValueConverterForClientConnectionTimeout.getMin() + "], max[" + nativeValueConverterForClientConnectionTimeout.getMax() + "]";
 		targetSequencedProperties.put(itemDescKey, itemDescValue);
 
 		String itemKey = RunningProjectConfiguration.buildKeyOfConfigFile(
@@ -763,14 +796,10 @@ public abstract class AbstractProjectPartConfiguration implements PartConfigurat
 					.append("' does not exist in the parameter sourceSequencedProperties").toString();
 
 			throw new PartConfigurationException(itemKey, errorMessage);
-		}
-
-		GeneralConverterReturningIntegerBetweenMinAndMax nativeValueConverter = new GeneralConverterReturningIntegerBetweenMinAndMax(
-				1, Integer.MAX_VALUE);
+		}		
 
 		try {
-
-			clientConnectionCount = nativeValueConverter.valueOf(itemValue);
+			clientConnectionCount = nativeValueConverterForClientConnectionCount.valueOf(itemValue);
 		} catch (Exception e) {
 			String errorMessage = new StringBuilder()
 					.append("fail to converter the parameter sequencedProperties's item[").append(itemKey)
@@ -787,7 +816,7 @@ public abstract class AbstractProjectPartConfiguration implements PartConfigurat
 	public void toPropertiesForClientConnectionCount(SequencedProperties targetSequencedProperties) {
 		String itemDescKey = RunningProjectConfiguration.buildKeyOfConfigFile(
 				getPrefixBeforeItemID(), itemIDForClientConnectionCount, KeyTypeOfConfieFile.DESC);
-		String itemDescValue = "연결 갯수, default value[5], min[1], max[2147483647]";
+		String itemDescValue = "연결 갯수, default value[5], min[" + nativeValueConverterForClientConnectionCount.getMin() + "], max[" + nativeValueConverterForClientConnectionCount.getMax() + "]";
 		targetSequencedProperties.put(itemDescKey, itemDescValue);
 
 		String itemKey = RunningProjectConfiguration.buildKeyOfConfigFile(
@@ -808,14 +837,10 @@ public abstract class AbstractProjectPartConfiguration implements PartConfigurat
 					.append("' does not exist in the parameter sourceSequencedProperties").toString();
 
 			throw new PartConfigurationException(itemKey, errorMessage);
-		}
-
-		GeneralConverterReturningIntegerBetweenMinAndMax nativeValueConverter = new GeneralConverterReturningIntegerBetweenMinAndMax(
-				1, Integer.MAX_VALUE);
+		}	
 
 		try {
-
-			clientConnectionMaxCount = nativeValueConverter.valueOf(itemValue);
+			clientConnectionMaxCount = nativeValueConverterForClientConnectionMaxCount.valueOf(itemValue);
 		} catch (Exception e) {
 			String errorMessage = new StringBuilder()
 					.append("fail to converter the parameter sequencedProperties's item[").append(itemKey)
@@ -832,7 +857,7 @@ public abstract class AbstractProjectPartConfiguration implements PartConfigurat
 	public void toPropertiesForClientConnectionMaxCount(SequencedProperties targetSequencedProperties) {
 		String itemDescKey = RunningProjectConfiguration.buildKeyOfConfigFile(
 				getPrefixBeforeItemID(), itemIDForClientConnectionMaxCount, KeyTypeOfConfieFile.DESC);
-		String itemDescValue = "최대 연결 갯수, default value[5], min[1], max[2147483647]";
+		String itemDescValue = "최대 연결 갯수, default value[5], min[" + nativeValueConverterForClientConnectionMaxCount.getMin() + "], max[" + nativeValueConverterForClientConnectionMaxCount.getMax() + "]";
 		targetSequencedProperties.put(itemDescKey, itemDescValue);
 
 		String itemKey = RunningProjectConfiguration.buildKeyOfConfigFile(
@@ -853,14 +878,10 @@ public abstract class AbstractProjectPartConfiguration implements PartConfigurat
 					.append("' does not exist in the parameter sourceSequencedProperties").toString();
 
 			throw new PartConfigurationException(itemKey, errorMessage);
-		}
-
-		GeneralConverterReturningLongBetweenMinAndMax nativeValueConverter = new GeneralConverterReturningLongBetweenMinAndMax(
-				1000L, (long) Integer.MAX_VALUE);
+		}	
 
 		try {
-
-			clientConnectionPoolSupporterTimeInterval = nativeValueConverter.valueOf(itemValue);
+			clientConnectionPoolSupporterTimeInterval = nativeValueConverterForClientConnectionPoolSupporterTimeInterval.valueOf(itemValue);
 		} catch (Exception e) {
 			String errorMessage = new StringBuilder()
 					.append("fail to converter the parameter sequencedProperties's item[").append(itemKey)
@@ -878,7 +899,7 @@ public abstract class AbstractProjectPartConfiguration implements PartConfigurat
 			SequencedProperties targetSequencedProperties) {
 		String itemDescKey = RunningProjectConfiguration.buildKeyOfConfigFile(
 				getPrefixBeforeItemID(), itemIDForClientConnectionPoolSupporterTimeInterval, KeyTypeOfConfieFile.DESC);
-		String itemDescValue = "클라이언트 연결 지원자 수행 주기, 단위 ms, 디폴트 600000, 최소 1000, 최대 Integer.MAX_VALUE";
+		String itemDescValue = "클라이언트 연결 지원자 수행 주기, 단위 ms, 디폴트 600000, min[" + nativeValueConverterForClientConnectionPoolSupporterTimeInterval.getMin() + "], max[" + nativeValueConverterForClientConnectionPoolSupporterTimeInterval.getMax() + "]";
 		targetSequencedProperties.put(itemDescKey, itemDescValue);
 
 		String itemKey = RunningProjectConfiguration.buildKeyOfConfigFile(
@@ -900,14 +921,10 @@ public abstract class AbstractProjectPartConfiguration implements PartConfigurat
 					.append("' does not exist in the parameter sourceSequencedProperties").toString();
 
 			throw new PartConfigurationException(itemKey, errorMessage);
-		}
-
-		GeneralConverterReturningLongBetweenMinAndMax nativeValueConverter = new GeneralConverterReturningLongBetweenMinAndMax(
-				1000L, (long) Integer.MAX_VALUE);
+		}	
 
 		try {
-
-			clientRetryIntervaTimeToGetConnection = nativeValueConverter.valueOf(itemValue);
+			clientRetryIntervaTimeToGetConnection = nativeValueConverterForRetryIntervaTimeToGetConnection.valueOf(itemValue);
 		} catch (Exception e) {
 			String errorMessage = new StringBuilder()
 					.append("fail to converter the parameter sequencedProperties's item[").append(itemKey)
@@ -924,7 +941,7 @@ public abstract class AbstractProjectPartConfiguration implements PartConfigurat
 	public void toPropertiesForRetryIntervaTimeToGetConnection(SequencedProperties targetSequencedProperties) {
 		String itemDescKey = RunningProjectConfiguration.buildKeyOfConfigFile(
 				getPrefixBeforeItemID(), itemIDForRetryIntervaTimeToGetConnection, KeyTypeOfConfieFile.DESC);
-		String itemDescValue = "연결 폴로부터 연결을 얻기 위한 재 시도 간격, 단위 nanoseconds, 디폴트 5000, 최소 1000, 최대 Integer.MAX_VALUE";
+		String itemDescValue = "연결 폴로부터 연결을 얻기 위한 재 시도 간격, 단위 nanoseconds, 디폴트 5000, min[" + nativeValueConverterForRetryIntervaTimeToGetConnection.getMin() + "], max["+ nativeValueConverterForRetryIntervaTimeToGetConnection.getMax() + "]";
 		targetSequencedProperties.put(itemDescKey, itemDescValue);
 
 		String itemKey = RunningProjectConfiguration.buildKeyOfConfigFile(
@@ -946,14 +963,10 @@ public abstract class AbstractProjectPartConfiguration implements PartConfigurat
 					.append("' does not exist in the parameter sourceSequencedProperties").toString();
 
 			throw new PartConfigurationException(itemKey, errorMessage);
-		}
-
-		GeneralConverterReturningLongBetweenMinAndMax nativeValueConverter = new GeneralConverterReturningLongBetweenMinAndMax(
-				100L, (long) Integer.MAX_VALUE);
+		}	
 
 		try {
-
-			clientAsynAliveTimePerWrapBuffer = nativeValueConverter.valueOf(itemValue);
+			clientAsynAliveTimePerWrapBuffer = nativeValueConverterForAliveTimePerWrapBuffer.valueOf(itemValue);
 		} catch (Exception e) {
 			String errorMessage = new StringBuilder()
 					.append("fail to converter the parameter sequencedProperties's item[").append(itemKey)
@@ -970,7 +983,7 @@ public abstract class AbstractProjectPartConfiguration implements PartConfigurat
 	public void toPropertiesForAliveTimePerWrapBuffer(SequencedProperties targetSequencedProperties) {
 		String itemDescKey = RunningProjectConfiguration.buildKeyOfConfigFile(
 				getPrefixBeforeItemID(), itemIDForAliveTimePerWrapBuffer, KeyTypeOfConfieFile.DESC);
-		String itemDescValue = "비동기에서 송신할 데이터가 담긴 랩 버퍼당 생존 시간, 단위 nanoseconds, 디폴트 400, 최소 100, 최대 Integer.MAX_VALUE";
+		String itemDescValue = "비동기에서 송신할 데이터가 담긴 랩 버퍼당 생존 시간, 단위 nanoseconds, 디폴트 400, min["+ nativeValueConverterForAliveTimePerWrapBuffer.getMin() + "], max["+ nativeValueConverterForAliveTimePerWrapBuffer.getMax() + "]";
 		targetSequencedProperties.put(itemDescKey, itemDescValue);
 
 		String itemKey = RunningProjectConfiguration.buildKeyOfConfigFile(
@@ -992,14 +1005,10 @@ public abstract class AbstractProjectPartConfiguration implements PartConfigurat
 					.append("' does not exist in the parameter sourceSequencedProperties").toString();
 
 			throw new PartConfigurationException(itemKey, errorMessage);
-		}
-
-		GeneralConverterReturningLongBetweenMinAndMax nativeValueConverter = new GeneralConverterReturningLongBetweenMinAndMax(
-				100L, (long) Integer.MAX_VALUE);
+		}	
 
 		try {
-
-			clientAsynRetryIntervaTimeToAddInputMessage = nativeValueConverter.valueOf(itemValue);
+			clientAsynRetryIntervaTimeToAddInputMessage = nativeValueConverterForRetryIntervaTimeToAddInputMessage.valueOf(itemValue);
 		} catch (Exception e) {
 			String errorMessage = new StringBuilder()
 					.append("fail to converter the parameter sequencedProperties's item[").append(itemKey)
@@ -1016,7 +1025,7 @@ public abstract class AbstractProjectPartConfiguration implements PartConfigurat
 	public void toPropertiesForRetryIntervaTimeToAddInputMessage(SequencedProperties targetSequencedProperties) {
 		String itemDescKey = RunningProjectConfiguration.buildKeyOfConfigFile(
 				getPrefixBeforeItemID(), itemIDForRetryIntervaTimeToAddInputMessage, KeyTypeOfConfieFile.DESC);
-		String itemDescValue = "비동기에서 입력 메시지 스트림 큐에 입력 메시지 스트림을 다시 추가하는 간격, 단위 nanoseconds, 디폴트 400, 최소 100, 최대 Integer.MAX_VALUE";
+		String itemDescValue = "비동기에서 입력 메시지 스트림 큐에 입력 메시지 스트림을 다시 추가하는 간격, 단위 nanoseconds, 디폴트 400, min["+ nativeValueConverterForRetryIntervaTimeToAddInputMessage.getMin() + ", max[" + nativeValueConverterForRetryIntervaTimeToAddInputMessage.getMax() + "]";
 		targetSequencedProperties.put(itemDescKey, itemDescValue);
 
 		String itemKey = RunningProjectConfiguration.buildKeyOfConfigFile(
@@ -1038,14 +1047,10 @@ public abstract class AbstractProjectPartConfiguration implements PartConfigurat
 					.append("' does not exist in the parameter sourceSequencedProperties").toString();
 
 			throw new PartConfigurationException(itemKey, errorMessage);
-		}
-
-		GeneralConverterReturningIntegerBetweenMinAndMax nativeValueConverter = new GeneralConverterReturningIntegerBetweenMinAndMax(
-				1, Integer.MAX_VALUE);
+		}	
 
 		try {
-
-			clientMailboxCountPerAsynShareConnection = nativeValueConverter.valueOf(itemValue);
+			clientMailboxCountPerAsynShareConnection = nativeValueConverterForClientMailboxCountPerAsynShareConnection.valueOf(itemValue);
 		} catch (Exception e) {
 			String errorMessage = new StringBuilder()
 					.append("fail to converter the parameter sequencedProperties's item[").append(itemKey)
@@ -1062,7 +1067,7 @@ public abstract class AbstractProjectPartConfiguration implements PartConfigurat
 	public void toPropertiesForClientMailboxCountPerAsynShareConnection(SequencedProperties targetSequencedProperties) {
 		String itemDescKey = RunningProjectConfiguration.buildKeyOfConfigFile(
 				getPrefixBeforeItemID(), itemIDForClientMailboxCountPerAsynShareConnection, KeyTypeOfConfieFile.DESC);
-		String itemDescValue = "비동기+공유 연결 1개당 메일함 갯수, default value[2], min[1], max[2147483647]";
+		String itemDescValue = "비동기+공유 연결 1개당 메일함 갯수, default value[2], min[" + nativeValueConverterForClientMailboxCountPerAsynShareConnection.getMin() + "], max[" + nativeValueConverterForClientMailboxCountPerAsynShareConnection.getMax() + "]";
 		targetSequencedProperties.put(itemDescKey, itemDescValue);
 
 		String itemKey = RunningProjectConfiguration.buildKeyOfConfigFile(
@@ -1084,14 +1089,10 @@ public abstract class AbstractProjectPartConfiguration implements PartConfigurat
 					.append("' does not exist in the parameter sourceSequencedProperties").toString();
 
 			throw new PartConfigurationException(itemKey, errorMessage);
-		}
-
-		GeneralConverterReturningIntegerBetweenMinAndMax nativeValueConverter = new GeneralConverterReturningIntegerBetweenMinAndMax(
-				1, Integer.MAX_VALUE);
+		}		
 
 		try {
-
-			clientAsynInputMessageQueueCapacity = nativeValueConverter.valueOf(itemValue);
+			clientAsynInputMessageQueueCapacity = nativeValueConverterForClientAsynInputMessageQueueCapacity.valueOf(itemValue);
 		} catch (Exception e) {
 			String errorMessage = new StringBuilder()
 					.append("fail to converter the parameter sequencedProperties's item[").append(itemKey)
@@ -1108,7 +1109,7 @@ public abstract class AbstractProjectPartConfiguration implements PartConfigurat
 	public void toPropertiesForClientAsynInputMessageQueueCapacity(SequencedProperties targetSequencedProperties) {
 		String itemDescKey = RunningProjectConfiguration.buildKeyOfConfigFile(
 				getPrefixBeforeItemID(), itemIDForClientAsynInputMessageQueueCapacity, KeyTypeOfConfieFile.DESC);
-		String itemDescValue = "클라이언트 비동기용 입력 메시지 큐가 최대 수용할 수 있는 크기, default value[10], min[1], max[2147483647]";
+		String itemDescValue = "클라이언트 비동기용 입력 메시지 큐가 최대 수용할 수 있는 크기, default value[10], min[" + nativeValueConverterForClientAsynInputMessageQueueCapacity.getMin() + "], max["+ nativeValueConverterForClientAsynInputMessageQueueCapacity.getMax() + "]";
 		targetSequencedProperties.put(itemDescKey, itemDescValue);
 
 		String itemKey = RunningProjectConfiguration.buildKeyOfConfigFile(
@@ -1130,14 +1131,10 @@ public abstract class AbstractProjectPartConfiguration implements PartConfigurat
 					.append("' does not exist in the parameter sourceSequencedProperties").toString();
 
 			throw new PartConfigurationException(itemKey, errorMessage);
-		}
-
-		GeneralConverterReturningIntegerBetweenMinAndMax nativeValueConverter = new GeneralConverterReturningIntegerBetweenMinAndMax(
-				1, Integer.MAX_VALUE);
+		}	
 
 		try {
-
-			clientAsynOutputMessageQueueCapacity = nativeValueConverter.valueOf(itemValue);
+			clientAsynOutputMessageQueueCapacity = nativeValueConverterForClientAsynOutputMessageQueueCapacity.valueOf(itemValue);
 		} catch (Exception e) {
 			String errorMessage = new StringBuilder()
 					.append("fail to converter the parameter sequencedProperties's item[").append(itemKey)
@@ -1154,7 +1151,7 @@ public abstract class AbstractProjectPartConfiguration implements PartConfigurat
 	public void toPropertiesForClientAsynOutputMessageQueueCapacity(SequencedProperties targetSequencedProperties) {
 		String itemDescKey = RunningProjectConfiguration.buildKeyOfConfigFile(
 				getPrefixBeforeItemID(), itemIDForClientAsynOutputMessageQueueCapacity, KeyTypeOfConfieFile.DESC);
-		String itemDescValue = "클라이언트 비동기용 출력 메시지 큐가 최대 수용할 수 있는 크기, default value[10], min[1], max[2147483647]";
+		String itemDescValue = "클라이언트 비동기용 출력 메시지 큐가 최대 수용할 수 있는 크기, default value[10], min[" + nativeValueConverterForClientAsynOutputMessageQueueCapacity.getMin() +"], max[" + nativeValueConverterForClientAsynOutputMessageQueueCapacity.getMax() + "]";
 		targetSequencedProperties.put(itemDescKey, itemDescValue);
 
 		String itemKey = RunningProjectConfiguration.buildKeyOfConfigFile(
@@ -1176,13 +1173,10 @@ public abstract class AbstractProjectPartConfiguration implements PartConfigurat
 					.append("' does not exist in the parameter sourceSequencedProperties").toString();
 
 			throw new PartConfigurationException(itemKey, errorMessage);
-		}
-
-		GeneralConverterReturningLongBetweenMinAndMax nativeValueConverter = new GeneralConverterReturningLongBetweenMinAndMax(
-				1L, (long) Integer.MAX_VALUE);
+		}	
 
 		try {
-			clientSelectorWakeupInterval = nativeValueConverter.valueOf(itemValue);
+			clientSelectorWakeupInterval = nativeValueConverterForClientSelectorWakeupInterval.valueOf(itemValue);
 		} catch (Exception e) {
 			String errorMessage = new StringBuilder()
 					.append("fail to converter the parameter sequencedProperties's item[").append(itemKey)
@@ -1199,7 +1193,7 @@ public abstract class AbstractProjectPartConfiguration implements PartConfigurat
 	public void toPropertiesForClientSelectorWakeupInterval(SequencedProperties targetSequencedProperties) {
 		String itemDescKey = RunningProjectConfiguration.buildKeyOfConfigFile(
 				getPrefixBeforeItemID(), itemIDForClientSelectorWakeupInterval, KeyTypeOfConfieFile.DESC);
-		String itemDescValue = "클라이언트 selector 를 깨우는 주기. 단위 ms, default value[10], min[1], max[2147483647]";
+		String itemDescValue = "클라이언트 selector 를 깨우는 주기. 단위 ms, default value[10], min[" + nativeValueConverterForClientSelectorWakeupInterval.getMin() + "], max[" + nativeValueConverterForClientSelectorWakeupInterval.getMax() + "]";
 		targetSequencedProperties.put(itemDescKey, itemDescValue);
 
 		String itemKey = RunningProjectConfiguration.buildKeyOfConfigFile(

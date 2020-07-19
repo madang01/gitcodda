@@ -1,6 +1,6 @@
 set OLDPWD=%CD%
 cd /D D:\gitcodda\codda2\project\sample_base\server_build
-java -server -Xmx2048m -Xms1024m ^
+java -server -Xmx256m -Xms256m ^
 -Dlogback.configurationFile=D:\gitcodda\codda2\project\sample_base\resources\logback.xml ^
 -Dcodda.logPath=D:\gitcodda\codda2\project\sample_base\log\server ^
 -Dcodda.installedPath=D:\gitcodda\codda2 ^
