@@ -17,7 +17,7 @@
 package kr.pe.codda.common.protocol;
 
 import kr.pe.codda.common.exception.BodyFormatException;
-import kr.pe.codda.common.type.SingleItemType;
+import kr.pe.codda.common.type.MessageSingleItemType;
 
 /**
  * 단일 항목 인코더 인터페이스. 프로토콜별로 구현된다.
@@ -37,7 +37,7 @@ public interface SingleItemEncoderIF {
 	 * @param middleObject 값을 저장할 중간 객체
 	 * @throws Exception 처리중 에러 발생시 던지는 예외
 	 */
-	public void putValue(String path, String itemName, SingleItemType singleItemType, 
+	public void putValue(String path, String itemName, MessageSingleItemType singleItemType, 
 			Object itemValue, int itemSize, String nativeItemCharset, Object middleObject)
 			throws Exception;
 	

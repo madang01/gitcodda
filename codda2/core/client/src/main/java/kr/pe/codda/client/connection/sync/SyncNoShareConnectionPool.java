@@ -52,7 +52,7 @@ public class SyncNoShareConnectionPool implements ConnectionPoolIF {
 	private final int serverPort;
 	private final long socketTimeout;
 	private final StreamCharsetFamily streamCharsetFamily;
-	private final int clientDataPacketBufferMaxCntPerMessage;
+	private final int clientWrapBufferMaxCntPerMessage;
 	private final long millisecondsOfRetryIntervaTimeToGetConnection;
 	private final int nanosecondsOfRetryIntervaTimeToGetConnection;
 	private final int clientConnectionCount; 
@@ -67,14 +67,15 @@ public class SyncNoShareConnectionPool implements ConnectionPoolIF {
 	
 	private ArrayDeque<SyncNoShareConnection> connectionQueue = null;
 	private int numberOfConnection = 0;
-	
+		
 	/**
 	 * 생성자
 	 * @param serverHost 서버 호스트 주소
 	 * @param serverPort 서버 포트 번호
 	 * @param socketTimeout 소켓 타임 아웃 시간
-	 * @param streamCharsetFamily 문자셋, 문자셋 디코더 그리고 문자셋 인코더 묶음
-	 * @param clientDataPacketBufferMaxCntPerMessage 메시지 1개당 랩 버퍼 최대 갯수
+	 * @param streamCharsetFamily 문자셋 관련 객체 묶음
+	 * @param clientWrapBufferMaxCntPerMessage 메시지 1개당 랩 버퍼 최대 갯수
+	 * @param retryIntervaTimeToGetConnection 연결을 얻기 위한 재 시도 간격, 단위 nanoseconds
 	 * @param clientConnectionCount 연결 갯수
 	 * @param messageProtocol 메시지 프로토콜
 	 * @param wrapBufferPool 랩 버퍼 폴
@@ -87,7 +88,7 @@ public class SyncNoShareConnectionPool implements ConnectionPoolIF {
 			int serverPort,
 			long socketTimeout,
 			StreamCharsetFamily streamCharsetFamily,
-			int clientDataPacketBufferMaxCntPerMessage,
+			int clientWrapBufferMaxCntPerMessage,
 			long retryIntervaTimeToGetConnection,
 			int clientConnectionCount,
 			MessageProtocolIF messageProtocol, 
@@ -114,7 +115,7 @@ public class SyncNoShareConnectionPool implements ConnectionPoolIF {
 		this.serverPort = serverPort;
 		this.socketTimeout = socketTimeout;
 		this.streamCharsetFamily = streamCharsetFamily;
-		this.clientDataPacketBufferMaxCntPerMessage = clientDataPacketBufferMaxCntPerMessage;
+		this.clientWrapBufferMaxCntPerMessage = clientWrapBufferMaxCntPerMessage;
 		this.millisecondsOfRetryIntervaTimeToGetConnection = retryIntervaTimeToGetConnection / CommonStaticFinalVars.ONE_MILLISECONDS_EXPRESSED_IN_NANOSECONDS;;
 		this.nanosecondsOfRetryIntervaTimeToGetConnection = (int)(retryIntervaTimeToGetConnection % CommonStaticFinalVars.ONE_MILLISECONDS_EXPRESSED_IN_NANOSECONDS);
 		this.clientConnectionCount = clientConnectionCount;		
@@ -352,7 +353,7 @@ public class SyncNoShareConnectionPool implements ConnectionPoolIF {
 							serverPort,
 							socketTimeout,
 							streamCharsetFamily, 
-							clientDataPacketBufferMaxCntPerMessage, 
+							clientWrapBufferMaxCntPerMessage, 
 							messageProtocol, wrapBufferPool);
 						
 				

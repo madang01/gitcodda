@@ -5,17 +5,17 @@ import java.util.List;
 import kr.pe.codda.common.etc.CommonStaticFinalVars;
 import kr.pe.codda.common.exception.BodyFormatException;
 import kr.pe.codda.common.message.AbstractMessage;
-import kr.pe.codda.common.message.builder.info.AbstractItemInfo;
-import kr.pe.codda.common.message.builder.info.ArrayInfo;
-import kr.pe.codda.common.message.builder.info.GroupInfo;
+import kr.pe.codda.common.message.builder.info.AbstractMessageItemInfo;
+import kr.pe.codda.common.message.builder.info.MessageArrayInfo;
+import kr.pe.codda.common.message.builder.info.MessageGroupInfo;
 import kr.pe.codda.common.message.builder.info.MessageInfo;
-import kr.pe.codda.common.message.builder.info.OrderedItemSet;
-import kr.pe.codda.common.message.builder.info.SingleItemInfo;
-import kr.pe.codda.common.message.builder.info.SingleItemTypeManger;
+import kr.pe.codda.common.message.builder.info.MessageSingleItemInfo;
+import kr.pe.codda.common.message.builder.info.MessageSingleItemTypeManger;
+import kr.pe.codda.common.message.builder.info.OrderedMessageItemSet;
 import kr.pe.codda.common.message.codec.AbstractMessageEncoder;
 import kr.pe.codda.common.protocol.SingleItemEncoderIF;
-import kr.pe.codda.common.type.ItemInfoType;
-import kr.pe.codda.common.type.SingleItemType;
+import kr.pe.codda.common.type.MessageItemInfoType;
+import kr.pe.codda.common.type.MessageSingleItemType;
 import kr.pe.codda.common.util.CommonStaticUtil;
 
 public class EncoderFileContensBuilder extends AbstractSourceFileBuildre {
@@ -96,7 +96,7 @@ public class EncoderFileContensBuilder extends AbstractSourceFileBuildre {
 	}
 
 	public void addSingleItemInfoPart(StringBuilder contentsStringBuilder, int depth, String path, String varNameOfSetOwner, String middleObjVarName,
-			SingleItemInfo singleItemInfo) {;
+			MessageSingleItemInfo singleItemInfo) {;
 		contentsStringBuilder.append(CommonStaticFinalVars.NEWLINE);
 		CommonStaticUtil.addPrefixWithTabCharacters(contentsStringBuilder, depth, 0);
 		contentsStringBuilder.append("singleItemEncoder.putValue(");
@@ -110,10 +110,10 @@ public class EncoderFileContensBuilder extends AbstractSourceFileBuildre {
 		contentsStringBuilder.append(CommonStaticFinalVars.NEWLINE);
 		CommonStaticUtil.addPrefixWithTabCharacters(contentsStringBuilder, depth, 1);
 		contentsStringBuilder.append(", ");
-		contentsStringBuilder.append(SingleItemType.class.getName());
+		contentsStringBuilder.append(MessageSingleItemType.class.getName());
 		contentsStringBuilder.append(".");
 		contentsStringBuilder
-				.append(SingleItemTypeManger.getInstance().getSingleItemType(singleItemInfo.getItemTypeID()).name());
+				.append(MessageSingleItemTypeManger.getInstance().getSingleItemType(singleItemInfo.getItemTypeID()).name());
 		contentsStringBuilder.append(" // itemType");
 
 		// the parameter itemValue
@@ -154,7 +154,7 @@ public class EncoderFileContensBuilder extends AbstractSourceFileBuildre {
 		contentsStringBuilder.append(");");
 	}
 	
-	public void addNullCaseArrayValidationPart(StringBuilder contentsStringBuilder, int depth, String varNameOfSetOwner, ArrayInfo arrayInfo) {
+	public void addNullCaseArrayValidationPart(StringBuilder contentsStringBuilder, int depth, String varNameOfSetOwner, MessageArrayInfo arrayInfo) {
 		contentsStringBuilder.append(CommonStaticFinalVars.NEWLINE);
 		CommonStaticUtil.addPrefixWithTabCharacters(contentsStringBuilder, depth, 1);
 		contentsStringBuilder.append("/** 배열 크기 지정 방식이 간접일 경우 참조하는 변수값이 0 일 경우만 배열 값으로 null 을 허용한다. */");
@@ -235,7 +235,7 @@ public class EncoderFileContensBuilder extends AbstractSourceFileBuildre {
 	}
 
 	/** 배열 크기가 메시지 정보에서 정의한 배열 크기와 같은지 검사 */
-	public void addPartCheckingListSizeIsValid(StringBuilder contentsStringBuilder, int depth, String varNameOfSetOwner, ArrayInfo arrayInfo) {
+	public void addPartCheckingListSizeIsValid(StringBuilder contentsStringBuilder, int depth, String varNameOfSetOwner, MessageArrayInfo arrayInfo) {
 
 		// if (memberListSize != allDataTypeInObj.getCnt()) {
 		contentsStringBuilder.append(CommonStaticFinalVars.NEWLINE);
@@ -291,7 +291,7 @@ public class EncoderFileContensBuilder extends AbstractSourceFileBuildre {
 	}
 
 	public void addNotNullCaseArrayValidationPart(StringBuilder contentsStringBuilder, int depth, String path, String nameOfSetOwner,
-			String middleObjVarName, ArrayInfo arrayInfo) {
+			String middleObjVarName, MessageArrayInfo arrayInfo) {
 		String newPath = new StringBuilder(path).append(".").append(arrayInfo.getFirstUpperItemName()).toString();
 
 		/** 배열 변수 선언및 정의 */
@@ -415,7 +415,7 @@ public class EncoderFileContensBuilder extends AbstractSourceFileBuildre {
 	}
 
 	public void addArrayInfoPart(StringBuilder contentsStringBuilder, int depth, String path, String varNameOfSetOwner, String middleObjVarName,
-			ArrayInfo arrayInfo) {		
+			MessageArrayInfo arrayInfo) {		
 		/** 배열 변수 선언및 정의 */
 		contentsStringBuilder.append(CommonStaticFinalVars.NEWLINE);
 		CommonStaticUtil.addPrefixWithTabCharacters(contentsStringBuilder, depth, 0);
@@ -464,7 +464,7 @@ public class EncoderFileContensBuilder extends AbstractSourceFileBuildre {
 	}
 	
 	public void addGroupInfoPart(StringBuilder contentsStringBuilder, int depth, String path, String varNameOfSetOwner, String middleObjVarName,
-			GroupInfo groupInfo) {
+			MessageGroupInfo groupInfo) {
 		String newPath = new StringBuilder(path).append(".").append(groupInfo.getFirstUpperItemName()).toString();	
 
 		/** 변수 선언 */
@@ -538,7 +538,7 @@ public class EncoderFileContensBuilder extends AbstractSourceFileBuildre {
 
 
 	public void addOrderedItemSetPart(StringBuilder contentsStringBuilder, int depth, String path, String varNameOfSetOwner,
-			String middleObjVarName, OrderedItemSet orderedItemSet) {
+			String middleObjVarName, OrderedMessageItemSet orderedItemSet) {
 		if (depth < 0) {
 			String errorMessage = String.format("the parameter depth[%d] is less than zero", depth);
 			throw new IllegalArgumentException(errorMessage);
@@ -563,24 +563,24 @@ public class EncoderFileContensBuilder extends AbstractSourceFileBuildre {
 			throw new IllegalArgumentException(errorMessage);
 		}
 
-		List<AbstractItemInfo> itemInfoList = orderedItemSet.getItemInfoList();
-		for (AbstractItemInfo itemInfo : itemInfoList) {
+		List<AbstractMessageItemInfo> itemInfoList = orderedItemSet.getItemInfoList();
+		for (AbstractMessageItemInfo itemInfo : itemInfoList) {
 			contentsStringBuilder.append(CommonStaticFinalVars.NEWLINE);
 
-			ItemInfoType itemInfoType = itemInfo.getItemInfoType();
+			MessageItemInfoType itemInfoType = itemInfo.getMessageItemInfoType();
 			switch (itemInfoType) {
 			case SINGLE: {
-				SingleItemInfo singleItemInfo = (SingleItemInfo) itemInfo;
+				MessageSingleItemInfo singleItemInfo = (MessageSingleItemInfo) itemInfo;
 				addSingleItemInfoPart(contentsStringBuilder, depth, path, varNameOfSetOwner, middleObjVarName, singleItemInfo);
 				break;
 			}
 			case ARRAY: {
-				ArrayInfo arrayInfo = (ArrayInfo) itemInfo;
+				MessageArrayInfo arrayInfo = (MessageArrayInfo) itemInfo;
 				addArrayInfoPart(contentsStringBuilder, depth, path, varNameOfSetOwner, middleObjVarName, arrayInfo);
 				break;
 			}
 			case GROUP: {
-				GroupInfo groupInfo = (GroupInfo) itemInfo;
+				MessageGroupInfo groupInfo = (MessageGroupInfo) itemInfo;
 				addGroupInfoPart(contentsStringBuilder, depth, path, varNameOfSetOwner, middleObjVarName, groupInfo);
 				break;
 			}

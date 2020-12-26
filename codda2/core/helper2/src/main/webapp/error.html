@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Codda Helper Web Service</title>
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="/bootstrap/3.3.7/css/bootstrap.css">
+<!-- jQuery library -->
+<script src="/jquery/3.3.1/jquery.min.js"></script>
+<!-- Latest compiled JavaScript -->
+<script src="/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+<script type="text/javascript">
+<!--
+	function clickHiddenFrameButton(thisObj) {		
+		var hiddenFrame = document.getElementById("hiddenFrame");
+		
+		if (hiddenFrame.style.display == 'none') {
+			thisObj.innerText = "Hide Hidden Frame";
+			hiddenFrame.style.display = "block";			
+		} else {
+			thisObj.innerText = "Show Hidden Frame";
+			hiddenFrame.style.display = "none";
+		}
+	}
+
+	function callbackForErrorPage(errorMessage) {
+		document.getElementById("errorMessage").innerText = errorMessage;
+	}
+	
+	function init() {
+		document.errorMessageGetterForm.submit();
+	}
+	
+	window.onload = init;
+//-->
+</script>
+</head>
+<body>
+	<div class="content">
+		<div class="container">
+			<div class="panel panel-default">
+				<div class="panel-heading">Codda Helper Error Page</div>
+				<div class="panel-body">
+					<form name="errorMessageGetterForm" method="get" action="/servlet/ErrorMessageGetter" target="hiddenFrame"></form>
+					<div class="btn-group">	
+						<button type="button" class="btn btn-primary btn-sm" onClick="clickHiddenFrameButton(this);">Show Hidden Frame</button>				
+					</div>
+					<div class="alert alert-danger" id="errorMessage"></div>
+					<iframe id="hiddenFrame" name="hiddenFrame" style="display:none;"></iframe>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

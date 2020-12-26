@@ -18,7 +18,7 @@
 package kr.pe.codda.common.protocol;
 
 import kr.pe.codda.common.exception.BodyFormatException;
-import kr.pe.codda.common.type.SingleItemType;
+import kr.pe.codda.common.type.MessageSingleItemType;
 
 /**
  * 단일 항목 디코더 인터페이스. 프로토콜별로 구현된다.
@@ -38,7 +38,7 @@ public interface SingleItemDecoderIF {
 	 * @return 지정한 중간 객체로 부터 값
 	 * @throws BodyFormatException 프로토콜 규약을 어겼을 경우 던지는 예외
 	 */
-	public Object getValue(String path, String itemName, SingleItemType singleItemType, 
+	public Object getValue(String path, String itemName, MessageSingleItemType singleItemType, 
 			int itemSize, String nativeItemCharset, Object middleObject)
 			throws BodyFormatException;
 	

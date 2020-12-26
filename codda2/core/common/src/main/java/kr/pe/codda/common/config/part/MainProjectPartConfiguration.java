@@ -23,7 +23,7 @@ import kr.pe.codda.common.config.nativevalueconverter.GeneralConverterReturningN
 import kr.pe.codda.common.config.nativevalueconverter.SetTypeConverterReturningBoolean;
 import kr.pe.codda.common.exception.PartConfigurationException;
 import kr.pe.codda.common.type.ItemViewType;
-import kr.pe.codda.common.type.KeyTypeOfConfieFile;
+import kr.pe.codda.common.type.KeyTypeOfConfieProperties;
 import kr.pe.codda.common.util.SequencedProperties;
 
 /**
@@ -31,9 +31,9 @@ import kr.pe.codda.common.util.SequencedProperties;
  *
  */
 public class MainProjectPartConfiguration extends AbstractProjectPartConfiguration {
-	private final String partName = "mainproject";
+	public static final String PART_NAME = "mainproject";
 	
-	private final String prefixBeforeItemID = new StringBuilder().append(partName).append(".").toString();
+	private final String prefixBeforeItemID = new StringBuilder().append(PART_NAME).append(".").toString();
 	
 	/************* server 변수 시작 ******************/
 	/***** 모니터 환경 변수 시작 *****/
@@ -81,7 +81,7 @@ public class MainProjectPartConfiguration extends AbstractProjectPartConfigurati
 	
 	@Override
 	public String getPartName() {
-		return partName;
+		return PART_NAME;
 	}
 	
 	@Override
@@ -120,10 +120,17 @@ public class MainProjectPartConfiguration extends AbstractProjectPartConfigurati
 	}
 	
 	
+	/**
+	 * 지정받은 '원천 시퀀스 프로퍼티' 로 부터 서버 모니터링 주기를 얻어와 저장한다.
+	 * 
+	 * @param sourceSequencedProperties  원천 시퀀스 프로퍼티
+	 * 
+	 * @throws PartConfigurationException 지정받은 '원천 시퀀스 프로퍼티' 로 부터 서버 모니터링 주기 값이 없을때 혹은 값이 잘못되어 있을때 던지는 예외
+	 */
 	public void fromPropertiesForServerMonitorTimeInterval(SequencedProperties sourceSequencedProperties)
 			throws PartConfigurationException {
 		String itemKey = RunningProjectConfiguration.buildKeyOfConfigFile(
-				prefixBeforeItemID, itemIDForServerMonitorTimeInterval, KeyTypeOfConfieFile.VALUE);
+				prefixBeforeItemID, itemIDForServerMonitorTimeInterval, KeyTypeOfConfieProperties.VALUE);
 
 		String itemValue = sourceSequencedProperties.getProperty(itemKey);
 
@@ -148,22 +155,35 @@ public class MainProjectPartConfiguration extends AbstractProjectPartConfigurati
 		}
 	}
 	
+	/**
+	 * 지정한 '목적지 시퀀스 프러퍼티' 에 서버 모니터링 주기 값을 저장한다.
+	 * 
+	 * @param targetSequencedProperties 서버 모니터링 주기 값이 저장될 시퀀스 프로퍼티
+	 */
 	public void toPropertiesForServerMonitorTimeInterval(SequencedProperties targetSequencedProperties) {
 		String itemDescKey = RunningProjectConfiguration.buildKeyOfConfigFile(
-				prefixBeforeItemID, itemIDForServerMonitorTimeInterval, KeyTypeOfConfieFile.DESC);
+				prefixBeforeItemID, itemIDForServerMonitorTimeInterval, KeyTypeOfConfieProperties.DESC);
 		String itemDescValue = "서버 모니터링 주기, 단위 ms, default value[5000], min[" + nativeValueConverterForServerMonitorTimeInterval.getMin() + "], max[" + nativeValueConverterForServerMonitorTimeInterval.getMax() + "]";
 		targetSequencedProperties.put(itemDescKey, itemDescValue);		
 		
 		String itemKey = RunningProjectConfiguration.buildKeyOfConfigFile(
-				prefixBeforeItemID, itemIDForServerMonitorTimeInterval, KeyTypeOfConfieFile.VALUE);
+				prefixBeforeItemID, itemIDForServerMonitorTimeInterval, KeyTypeOfConfieProperties.VALUE);
 		String itemValue = (null == serverMonitorTimeInterval) ? "5000" : String.valueOf(serverMonitorTimeInterval);
 		targetSequencedProperties.put(itemKey, itemValue);
 	}
 	
+	
+	/**
+	 * 지정받은 '원천 시퀀스 프로퍼티' 로 부터 서버 랩버퍼 다이렉트 여부를 얻어와 저장한다.
+	 * 
+	 * @param sourceSequencedProperties  원천 시퀀스 프로퍼티
+	 * 
+	 * @throws PartConfigurationException 지정받은 '원천 시퀀스 프로퍼티' 로 부터 서버 랩버퍼 다이렉트 여부 값이 없을때 혹은 값이 잘못되어 있을때 던지는 예외
+	 */
 	public void fromPropertiesForWhetherServerWrapBufferIsDirect(SequencedProperties sourceSequencedProperties)
 			throws PartConfigurationException {
 		String itemKey = RunningProjectConfiguration.buildKeyOfConfigFile(
-				prefixBeforeItemID, itemIDForWhetherServerWrapBufferIsDirect, KeyTypeOfConfieFile.VALUE);
+				prefixBeforeItemID, itemIDForWhetherServerWrapBufferIsDirect, KeyTypeOfConfieProperties.VALUE);
 
 		String itemValue = sourceSequencedProperties.getProperty(itemKey);
 
@@ -188,32 +208,44 @@ public class MainProjectPartConfiguration extends AbstractProjectPartConfigurati
 		}
 	}
 
+	/**
+	 * 지정한 '목적지 시퀀스 프러퍼티' 에 서버 랩버퍼 다이렉트 여부 값을 저장한다.
+	 * 
+	 * @param targetSequencedProperties 서버 랩버퍼 다이렉트 여부 값이 저장될 시퀀스 프로퍼티
+	 */
 	public void toPropertiesForWhetherServerWrapBufferIsDirect(SequencedProperties targetSequencedProperties) {
 		String itemDescKey = RunningProjectConfiguration.buildKeyOfConfigFile(
-				prefixBeforeItemID, itemIDForWhetherServerWrapBufferIsDirect, KeyTypeOfConfieFile.DESC);
+				prefixBeforeItemID, itemIDForWhetherServerWrapBufferIsDirect, KeyTypeOfConfieProperties.DESC);
 		String itemDescValue = "whether server wrap buffer is direct, default value[true], the boolean set[false, true]";
 		targetSequencedProperties.put(itemDescKey, itemDescValue);		
 		
 		String itemKey = RunningProjectConfiguration.buildKeyOfConfigFile(
-				prefixBeforeItemID, itemIDForWhetherServerWrapBufferIsDirect, KeyTypeOfConfieFile.VALUE);
+				prefixBeforeItemID, itemIDForWhetherServerWrapBufferIsDirect, KeyTypeOfConfieProperties.VALUE);
 		String itemValue = (null == whetherServerWrapBufferIsDirect) ? Boolean.TRUE.toString() : whetherServerWrapBufferIsDirect.toString();
 		targetSequencedProperties.put(itemKey, itemValue);
 		
 		String itemViewTypeKey = RunningProjectConfiguration.buildKeyOfConfigFile(
-				getPrefixBeforeItemID(), itemIDForWhetherServerWrapBufferIsDirect, KeyTypeOfConfieFile.ITEM_VIEW_TYPE);
+				getPrefixBeforeItemID(), itemIDForWhetherServerWrapBufferIsDirect, KeyTypeOfConfieProperties.ITEM_VIEW_TYPE);
 		String itemViewTypeValue = ItemViewType.SET.name().toLowerCase();
 		targetSequencedProperties.put(itemViewTypeKey, itemViewTypeValue);
 		
-		String whetherClientWrapBufferIsDirectSetValue = RunningProjectConfiguration.toSetValue(nativeValueConverterForWhetherServerWrapBufferIsDirect.getItemValueSet());
+		String whetherClientWrapBufferIsDirectSetValue = RunningProjectConfiguration.toSetTypeValue(nativeValueConverterForWhetherServerWrapBufferIsDirect.getItemValueSet());
 		String whetherClientWrapBufferIsDirectSetKey = RunningProjectConfiguration.buildKeyOfConfigFile(
-				getPrefixBeforeItemID(), itemIDForWhetherServerWrapBufferIsDirect, KeyTypeOfConfieFile.SET);
+				getPrefixBeforeItemID(), itemIDForWhetherServerWrapBufferIsDirect, KeyTypeOfConfieProperties.SET);
 		targetSequencedProperties.put(whetherClientWrapBufferIsDirectSetValue, whetherClientWrapBufferIsDirectSetKey);
 	}
 	
+	/**
+	 * 지정받은 '원천 시퀀스 프로퍼티' 로 부터 메시지당 서버 랩버퍼 최대 갯수를 얻어와 저장한다.
+	 * 
+	 * @param sourceSequencedProperties  원천 시퀀스 프로퍼티
+	 * 
+	 * @throws PartConfigurationException 지정받은 '원천 시퀀스 프로퍼티' 로 부터 메시지당 서버 랩버퍼 최대 갯수 값이 없을때 혹은 값이 잘못되어 있을때 던지는 예외
+	 */
 	public void fromPropertiesForServerWrapBufferMaxCntPerMessage(SequencedProperties sourceSequencedProperties)
 			throws PartConfigurationException {
 		String itemKey = RunningProjectConfiguration.buildKeyOfConfigFile(
-				prefixBeforeItemID, itemIDForServerWrapBufferMaxCntPerMessage, KeyTypeOfConfieFile.VALUE);
+				prefixBeforeItemID, itemIDForServerWrapBufferMaxCntPerMessage, KeyTypeOfConfieProperties.VALUE);
 
 		String itemValue = sourceSequencedProperties.getProperty(itemKey);
 
@@ -238,22 +270,34 @@ public class MainProjectPartConfiguration extends AbstractProjectPartConfigurati
 		}
 	}
 
+	/**
+	 * 지정한 '목적지 시퀀스 프러퍼티' 에 메시지당 서버 랩버퍼 최대 갯수 값을 저장한다.
+	 * 
+	 * @param targetSequencedProperties 메시지당 서버 랩버퍼 최대 갯수 값이 저장될 시퀀스 프로퍼티
+	 */
 	public void toPropertiesForServerWrapBufferMaxCntPerMessage(SequencedProperties targetSequencedProperties) {
 		String itemDescKey = RunningProjectConfiguration.buildKeyOfConfigFile(
-				prefixBeforeItemID, itemIDForServerWrapBufferMaxCntPerMessage, KeyTypeOfConfieFile.DESC);
+				prefixBeforeItemID, itemIDForServerWrapBufferMaxCntPerMessage, KeyTypeOfConfieProperties.DESC);
 		String itemDescValue = "서버에서 1개 메시지당 할당 받을 수 있는 랩 버퍼 최대 갯수, default value[1000], min[" + nativeValueConverterForServerWrapBufferMaxCntPerMessage.getMin() + "], max[" + nativeValueConverterForServerWrapBufferMaxCntPerMessage.getMax() + "]";
 		targetSequencedProperties.put(itemDescKey, itemDescValue);		
 		
 		String itemKey = RunningProjectConfiguration.buildKeyOfConfigFile(
-				prefixBeforeItemID, itemIDForServerWrapBufferMaxCntPerMessage, KeyTypeOfConfieFile.VALUE);
+				prefixBeforeItemID, itemIDForServerWrapBufferMaxCntPerMessage, KeyTypeOfConfieProperties.VALUE);
 		String itemValue = (null == serverWrapBufferMaxCntPerMessage) ? "1000" : String.valueOf(serverWrapBufferMaxCntPerMessage);
 		targetSequencedProperties.put(itemKey, itemValue);
 	}
 	
+	/**
+	 * 지정받은 '원천 시퀀스 프로퍼티' 로 부터 서버 랩 버퍼 크기를 얻어와 저장한다.
+	 * 
+	 * @param sourceSequencedProperties  원천 시퀀스 프로퍼티
+	 * 
+	 * @throws PartConfigurationException 지정받은 '원천 시퀀스 프로퍼티' 로 부터 서버 랩 버퍼 크기 값이 없을때 혹은 값이 잘못되어 있을때 던지는 예외
+	 */
 	public void fromPropertiesForServerWrapBufferSize(SequencedProperties sourceSequencedProperties)
 			throws PartConfigurationException {
 		String itemKey = RunningProjectConfiguration.buildKeyOfConfigFile(
-				prefixBeforeItemID, itemIDForServerWrapBufferSize, KeyTypeOfConfieFile.VALUE);
+				prefixBeforeItemID, itemIDForServerWrapBufferSize, KeyTypeOfConfieProperties.VALUE);
 
 		String itemValue = sourceSequencedProperties.getProperty(itemKey);
 
@@ -278,23 +322,34 @@ public class MainProjectPartConfiguration extends AbstractProjectPartConfigurati
 		}
 	}
 
+	/**
+	 * 지정한 '목적지 시퀀스 프러퍼티' 에 서버 랩 버퍼 크기 값을 저장한다.
+	 * 
+	 * @param targetSequencedProperties 서버 랩 버퍼 크기 값이 저장될 시퀀스 프로퍼티
+	 */
 	public void toPropertiesForServerWrapBufferSize(SequencedProperties targetSequencedProperties) {
 		String itemDescKey = RunningProjectConfiguration.buildKeyOfConfigFile(
-				prefixBeforeItemID, itemIDForServerWrapBufferSize, KeyTypeOfConfieFile.DESC);
+				prefixBeforeItemID, itemIDForServerWrapBufferSize, KeyTypeOfConfieProperties.DESC);
 		String itemDescValue = "서버 랩 버퍼 크기, 단위 byte, default value[4096], min[" + nativeValueConverterForServerWrapBufferSize.getMin()+"], max[" + nativeValueConverterForServerWrapBufferSize.getMax()+"]";
 		targetSequencedProperties.put(itemDescKey, itemDescValue);		
 		
 		String itemKey = RunningProjectConfiguration.buildKeyOfConfigFile(
-				prefixBeforeItemID, itemIDForServerWrapBufferSize, KeyTypeOfConfieFile.VALUE);
+				prefixBeforeItemID, itemIDForServerWrapBufferSize, KeyTypeOfConfieProperties.VALUE);
 		String itemValue = (null == serverWrapBufferSize) ? "4096" : String.valueOf(serverWrapBufferSize);
 		targetSequencedProperties.put(itemKey, itemValue);
 	}
 	
-	
+	/**
+	 * 지정받은 '원천 시퀀스 프로퍼티' 로 부터 서버 랩 버퍼 폴 크기를 얻어와 저장한다.
+	 * 
+	 * @param sourceSequencedProperties  원천 시퀀스 프로퍼티
+	 * 
+	 * @throws PartConfigurationException 지정받은 '원천 시퀀스 프로퍼티' 로 부터 서버 랩 버퍼 폴 크기 값이 없을때 혹은 값이 잘못되어 있을때 던지는 예외
+	 */
 	public void fromPropertiesForServerWrapBufferPoolSize(SequencedProperties sourceSequencedProperties)
 			throws PartConfigurationException {
 		String itemKey = RunningProjectConfiguration.buildKeyOfConfigFile(
-				prefixBeforeItemID, itemIDForServerWrapBufferPoolSize, KeyTypeOfConfieFile.VALUE);
+				prefixBeforeItemID, itemIDForServerWrapBufferPoolSize, KeyTypeOfConfieProperties.VALUE);
 
 		String itemValue = sourceSequencedProperties.getProperty(itemKey);
 
@@ -319,23 +374,34 @@ public class MainProjectPartConfiguration extends AbstractProjectPartConfigurati
 		}
 	}
 
+	/**
+	 * 지정한 '목적지 시퀀스 프러퍼티' 에 서버 랩 버퍼 폴 크기 값을 저장한다.
+	 * 
+	 * @param targetSequencedProperties 서버 랩 버퍼 폴 크기 값이 저장될 시퀀스 프로퍼티
+	 */
 	public void toPropertiesForServerWrapBufferPoolSize(SequencedProperties targetSequencedProperties) {
 		String itemDescKey = RunningProjectConfiguration.buildKeyOfConfigFile(
-				prefixBeforeItemID, itemIDForServerWrapBufferPoolSize, KeyTypeOfConfieFile.DESC);
+				prefixBeforeItemID, itemIDForServerWrapBufferPoolSize, KeyTypeOfConfieProperties.DESC);
 		String itemDescValue = "서버 랩 버퍼 폴 크기, default value[1000], min[" + nativeValueConverterForServerWrapBufferPoolSize.getMin() + "], max[" + nativeValueConverterForServerWrapBufferPoolSize.getMax() + "]";
 		targetSequencedProperties.put(itemDescKey, itemDescValue);		
 		
 		String itemKey = RunningProjectConfiguration.buildKeyOfConfigFile(
-				prefixBeforeItemID, itemIDForServerWrapBufferPoolSize, KeyTypeOfConfieFile.VALUE);
+				prefixBeforeItemID, itemIDForServerWrapBufferPoolSize, KeyTypeOfConfieProperties.VALUE);
 		String itemValue = (null == serverWrapBufferPoolSize) ? "1000" : String.valueOf(serverWrapBufferPoolSize);
 		targetSequencedProperties.put(itemKey, itemValue);
 	}
 	
-	
+	/**
+	 * 지정받은 '원천 시퀀스 프로퍼티' 로 부터 서버에 접속할 수 있는 최대 클라이언트 수를 얻어와 저장한다.
+	 * 
+	 * @param sourceSequencedProperties  원천 시퀀스 프로퍼티
+	 * 
+	 * @throws PartConfigurationException 지정받은 '원천 시퀀스 프로퍼티' 로 부터 서버에 접속할 수 있는 최대 클라이언트 수 값이 없을때 혹은 값이 잘못되어 있을때 던지는 예외
+	 */
 	public void fromPropertiesForServerMaxClients(SequencedProperties sourceSequencedProperties)
 			throws PartConfigurationException {
 		String itemKey = RunningProjectConfiguration.buildKeyOfConfigFile(
-				prefixBeforeItemID, itemIDForServerMaxClients, KeyTypeOfConfieFile.VALUE);
+				prefixBeforeItemID, itemIDForServerMaxClients, KeyTypeOfConfieProperties.VALUE);
 
 		String itemValue = sourceSequencedProperties.getProperty(itemKey);
 
@@ -360,23 +426,35 @@ public class MainProjectPartConfiguration extends AbstractProjectPartConfigurati
 		}
 	}
 
+	/**
+	 * 지정한 '목적지 시퀀스 프러퍼티' 에 서버에 접속할 수 있는 최대 클라이언트 수 값을 저장한다.
+	 * 
+	 * @param targetSequencedProperties 서버에 접속할 수 있는 최대 클라이언트 수 값이 저장될 시퀀스 프로퍼티
+	 */
 	public void toPropertiesForServerMaxClients(SequencedProperties targetSequencedProperties) {
 		String itemDescKey = RunningProjectConfiguration.buildKeyOfConfigFile(
-				prefixBeforeItemID, itemIDForServerMaxClients, KeyTypeOfConfieFile.DESC);
+				prefixBeforeItemID, itemIDForServerMaxClients, KeyTypeOfConfieProperties.DESC);
 		String itemDescValue = "서버에 접속할 수 있는 최대 클라이언트 수, default value[5], min[" + nativeValueConverterForServerMaxClients.getMin() + "], max[" + nativeValueConverterForServerMaxClients.getMax() + "]";
 		targetSequencedProperties.put(itemDescKey, itemDescValue);		
 		
 		String itemKey = RunningProjectConfiguration.buildKeyOfConfigFile(
-				prefixBeforeItemID, itemIDForServerMaxClients, KeyTypeOfConfieFile.VALUE);
+				prefixBeforeItemID, itemIDForServerMaxClients, KeyTypeOfConfieProperties.VALUE);
 		String itemValue = (null == serverMaxClients) ? "5" : String.valueOf(serverMaxClients);
 		targetSequencedProperties.put(itemKey, itemValue);
 	}
 	
 	
+	/**
+	 * 지정받은 '원천 시퀀스 프로퍼티' 로 부터 서버 입력 메시지 큐가 최대 수용할 수 있는 크기를 얻어와 저장한다.
+	 * 
+	 * @param sourceSequencedProperties  원천 시퀀스 프로퍼티
+	 * 
+	 * @throws PartConfigurationException 지정받은 '원천 시퀀스 프로퍼티' 로 부터 서버 입력 메시지 큐가 최대 수용할 수 있는 크기 값이 없을때 혹은 값이 잘못되어 있을때 던지는 예외
+	 */
 	public void fromPropertiesForServerInputMessageQueueCapacity(SequencedProperties sourceSequencedProperties)
 			throws PartConfigurationException {
 		String itemKey = RunningProjectConfiguration.buildKeyOfConfigFile(
-				prefixBeforeItemID, itemIDForServerInputMessageQueueCapacity, KeyTypeOfConfieFile.VALUE);
+				prefixBeforeItemID, itemIDForServerInputMessageQueueCapacity, KeyTypeOfConfieProperties.VALUE);
 
 		String itemValue = sourceSequencedProperties.getProperty(itemKey);
 
@@ -401,22 +479,35 @@ public class MainProjectPartConfiguration extends AbstractProjectPartConfigurati
 		}
 	}
 
+	/**
+	 * 지정한 '목적지 시퀀스 프러퍼티' 에 서버 입력 메시지 큐가 최대 수용할 수 있는 크기 값을 저장한다.
+	 * 
+	 * @param targetSequencedProperties 서버 입력 메시지 큐가 최대 수용할 수 있는 크기 값이 저장될 시퀀스 프로퍼티
+	 */
 	public void toPropertiesForServerInputMessageQueueCapacity(SequencedProperties targetSequencedProperties) {
 		String itemDescKey = RunningProjectConfiguration.buildKeyOfConfigFile(
-				prefixBeforeItemID, itemIDForServerInputMessageQueueCapacity, KeyTypeOfConfieFile.DESC);
+				prefixBeforeItemID, itemIDForServerInputMessageQueueCapacity, KeyTypeOfConfieProperties.DESC);
 		String itemDescValue = "서버 입력 메시지 큐가 최대 수용할 수 있는 크기, default value[10], min[" + nativeValueConverterForServerInputMessageQueueCapacity.getMin() + "], max[" + nativeValueConverterForServerInputMessageQueueCapacity.getMax() + "]";
 		targetSequencedProperties.put(itemDescKey, itemDescValue);		
 		
 		String itemKey = RunningProjectConfiguration.buildKeyOfConfigFile(
-				prefixBeforeItemID, itemIDForServerInputMessageQueueCapacity, KeyTypeOfConfieFile.VALUE);
+				prefixBeforeItemID, itemIDForServerInputMessageQueueCapacity, KeyTypeOfConfieProperties.VALUE);
 		String itemValue = (null == serverInputMessageQueueCapacity) ? "10" : String.valueOf(serverInputMessageQueueCapacity);
 		targetSequencedProperties.put(itemKey, itemValue);
 	}
 	
+	
+	/**
+	 * 지정받은 '원천 시퀀스 프로퍼티' 로 부터 서버 비동기용 출력 메시지 큐가 최대 수용할 수 있는 크기를 얻어와 저장한다.
+	 * 
+	 * @param sourceSequencedProperties  원천 시퀀스 프로퍼티
+	 * 
+	 * @throws PartConfigurationException 지정받은 '원천 시퀀스 프로퍼티' 로 부터 서버 비동기용 출력 메시지 큐가 최대 수용할 수 있는 크기 값이 없을때 혹은 값이 잘못되어 있을때 던지는 예외
+	 */
 	public void fromPropertiesForServerOutputMessageQueueCapacity(SequencedProperties sourceSequencedProperties)
 			throws PartConfigurationException {
 		String itemKey = RunningProjectConfiguration.buildKeyOfConfigFile(
-				prefixBeforeItemID, itemIDForServerOutputMessageQueueCapacity, KeyTypeOfConfieFile.VALUE);
+				prefixBeforeItemID, itemIDForServerOutputMessageQueueCapacity, KeyTypeOfConfieProperties.VALUE);
 
 		String itemValue = sourceSequencedProperties.getProperty(itemKey);
 
@@ -441,93 +532,151 @@ public class MainProjectPartConfiguration extends AbstractProjectPartConfigurati
 		}
 	}
 
+	/**
+	 * 지정한 '목적지 시퀀스 프러퍼티' 에 서버 비동기용 출력 메시지 큐가 최대 수용할 수 있는 크기 값을 저장한다.
+	 * 
+	 * @param targetSequencedProperties 서버 비동기용 출력 메시지 큐가 최대 수용할 수 있는 크기 값이 저장될 시퀀스 프로퍼티
+	 */
 	public void toPropertiesForServerOutputMessageQueueCapacity(SequencedProperties targetSequencedProperties) {
 		String itemDescKey = RunningProjectConfiguration.buildKeyOfConfigFile(
-				prefixBeforeItemID, itemIDForServerOutputMessageQueueCapacity, KeyTypeOfConfieFile.DESC);
-		String itemDescValue = "클라이언트 비동기용 출력 메시지 큐가 최대 수용할 수 있는 크기, default value[10], min[" + nativeValueConverterForServerOutputMessageQueueCapacity.getMin() + "], max[" + nativeValueConverterForServerOutputMessageQueueCapacity.getMax() + "]";
+				prefixBeforeItemID, itemIDForServerOutputMessageQueueCapacity, KeyTypeOfConfieProperties.DESC);
+		String itemDescValue = "서버 비동기용 출력 메시지 큐가 최대 수용할 수 있는 크기, default value[10], min[" + nativeValueConverterForServerOutputMessageQueueCapacity.getMin() + "], max[" + nativeValueConverterForServerOutputMessageQueueCapacity.getMax() + "]";
 		targetSequencedProperties.put(itemDescKey, itemDescValue);		
 		
 		String itemKey = RunningProjectConfiguration.buildKeyOfConfigFile(
-				prefixBeforeItemID, itemIDForServerOutputMessageQueueCapacity, KeyTypeOfConfieFile.VALUE);
+				prefixBeforeItemID, itemIDForServerOutputMessageQueueCapacity, KeyTypeOfConfieProperties.VALUE);
 		String itemValue = (null == serverOutputMessageQueueCapacity) ? "10" : String.valueOf(serverOutputMessageQueueCapacity);
 		targetSequencedProperties.put(itemKey, itemValue);
-	}	
-
+	}
+	
+	/**
+	 * @return 서버 모니터링 주기
+	 */
 	public Long getServerMonitorTimeInterval() {
 		return serverMonitorTimeInterval;
 	}
 
-
+	/**
+	 * 지정한 서버 모니터링 주기 값을 저장한다.
+	 * @param serverMonitorTimeInterval 서버 모니터링 주기
+	 */
 	public void setServerMonitorTimeInterval(Long serverMonitorTimeInterval) {
 		this.serverMonitorTimeInterval = serverMonitorTimeInterval;
 	}
 
 
+	/**
+	 * @return 서버 랩버퍼 다이렉트 여부
+	 */
 	public Boolean getWhetherServerWrapBufferIsDirect() {
 		return whetherServerWrapBufferIsDirect;
 	}
 
-
+	/**
+	 * 지정한 서버 랩버퍼 다이렉트 여부 값을 저장한다.
+	 * @param whetherServerWrapBufferIsDirect 서버 랩버퍼 다이렉트 여부
+	 */
 	public void setWhetherServerWrapBufferIsDirect(Boolean whetherServerWrapBufferIsDirect) {
 		this.whetherServerWrapBufferIsDirect = whetherServerWrapBufferIsDirect;
 	}
 
 
+	/**
+	 * @return 메시지당 서버 랩버퍼 최대 갯수
+	 */
 	public Integer getServerWrapBufferMaxCntPerMessage() {
 		return serverWrapBufferMaxCntPerMessage;
 	}
 
-
+	/**
+	 * 지정한 메시지당 서버 랩버퍼 최대 갯수 값을 저장한다.
+	 * @param serverWrapBufferMaxCntPerMessage 메시지당 서버 랩버퍼 최대 갯수
+	 */
 	public void setServerWrapBufferMaxCntPerMessage(Integer serverWrapBufferMaxCntPerMessage) {
 		this.serverWrapBufferMaxCntPerMessage = serverWrapBufferMaxCntPerMessage;
 	}
 
 
+	/**
+	 * @return 서버 랩버퍼 크기
+	 */
 	public Integer getServerWrapBufferSize() {
 		return serverWrapBufferSize;
 	}
 
 
+	/**
+	 * 지정한 서버 랩버퍼 크기 값을 저장한다.
+	 * @param serverWrapBufferSize 서버 랩버퍼 크기
+	 */
 	public void setServerWrapBufferSize(Integer serverWrapBufferSize) {
 		this.serverWrapBufferSize = serverWrapBufferSize;
 	}
 
 
+	/**
+	 * @return 서버 랩버퍼 폴 크기
+	 */
 	public Integer getServerWrapBufferPoolSize() {
 		return serverWrapBufferPoolSize;
 	}
 
 
+	/**
+	 * 지정한 서버 랩버퍼 폴 크기 값을 저장한다.
+	 * @param serverWrapBufferPoolSize 서버 랩버퍼 폴 크기
+	 */
 	public void setServerWrapBufferPoolSize(Integer serverWrapBufferPoolSize) {
 		this.serverWrapBufferPoolSize = serverWrapBufferPoolSize;
 	}
 
 
+	/**
+	 * @return 서버에 접속 가능한 최대 클라이언트 수
+	 */
 	public Integer getServerMaxClients() {
 		return serverMaxClients;
 	}
 
 
+	/**
+	 * 지정한 서버에 접속 가능한 최대 클라이언트 수 값을 저장한다.
+	 * @param serverMaxClients 서버에 접속 가능한 최대 클라이언트 수
+	 */
 	public void setServerMaxClients(Integer serverMaxClients) {
 		this.serverMaxClients = serverMaxClients;
 	}
 
 
+	/**
+	 * @return 서버 입력 메시지 큐가 최대 수용할 수 있는 크기
+	 */
 	public Integer getServerInputMessageQueueCapacity() {
 		return serverInputMessageQueueCapacity;
 	}
 
 
+	/**
+	 * 지정한 서버 입력 메시지 큐가 최대 수용할 수 있는 크기 값을 저장한다.
+	 * @param serverInputMessageQueueCapacity 서버 입력 메시지 큐가 최대 수용할 수 있는 크기
+	 */
 	public void setServerInputMessageQueueCapacity(Integer serverInputMessageQueueCapacity) {
 		this.serverInputMessageQueueCapacity = serverInputMessageQueueCapacity;
 	}
 
 
+	/**
+	 * @return 서버 출력 메시지 큐가 최대 수용할 수 있는 크기
+	 */
 	public Integer getServerOutputMessageQueueCapacity() {
 		return serverOutputMessageQueueCapacity;
 	}
 
 
+	/**
+	 * 지정한 서버 출력 메시지 큐가 최대 수용할 수 있는 크기 값을 저장한다.
+	 * @param serverOutputMessageQueueCapacity 서버 출력 메시지 큐가 최대 수용할 수 있는 크기
+	 */
 	public void setServerOutputMessageQueueCapacity(Integer serverOutputMessageQueueCapacity) {
 		this.serverOutputMessageQueueCapacity = serverOutputMessageQueueCapacity;
 	}

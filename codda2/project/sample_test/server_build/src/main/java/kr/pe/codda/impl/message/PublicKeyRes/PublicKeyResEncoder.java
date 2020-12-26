@@ -28,23 +28,23 @@ import kr.pe.codda.common.protocol.SingleItemEncoderIF;
  */
 public final class PublicKeyResEncoder extends AbstractMessageEncoder {
 	@Override
-	public void encode(AbstractMessage messageObj, SingleItemEncoderIF singleItemEncoder, Object writableMiddleObject) throws Exception {
+	public void encode(AbstractMessage messageObj, SingleItemEncoderIF singleItemEncoder, Object middleObjectToSend) throws Exception {
 		PublicKeyRes publicKeyRes = (PublicKeyRes)messageObj;
-		encodeBody(publicKeyRes, singleItemEncoder, writableMiddleObject);
+		encodeBody(publicKeyRes, singleItemEncoder, middleObjectToSend);
 	}
 
 
-	private void encodeBody(PublicKeyRes publicKeyRes, SingleItemEncoderIF singleItemEncoder, Object middleWritableObject) throws Exception {
+	private void encodeBody(PublicKeyRes publicKeyRes, SingleItemEncoderIF singleItemEncoder, Object middleObjectToSend) throws Exception {
 		java.util.LinkedList<String> pathStack = new java.util.LinkedList<String>();
 		pathStack.push("PublicKeyRes");
 
 
-		singleItemEncoder.putValueToWritableMiddleObject(pathStack.peek(), "publicKeyBytes"
+		singleItemEncoder.putValue(pathStack.peek(), "publicKeyBytes"
 			, kr.pe.codda.common.type.SingleItemType.SI_VARIABLE_LENGTH_BYTES // itemType
 			, publicKeyRes.getPublicKeyBytes() // itemValue
 			, -1 // itemSize
 			, null // nativeItemCharset
-			, middleWritableObject);
+			, middleObjectToSend);
 
 		pathStack.pop();
 	}

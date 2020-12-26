@@ -45,7 +45,7 @@ public class MessageInfo {
 	private String firstLowerMessageID = null;
 	private MessageTransferDirectionType messageTransferDirectionType = null;
 	
-	private OrderedItemSet messageOrderedItemSet = new OrderedItemSet();
+	private OrderedMessageItemSet messageOrderedItemSet = new OrderedMessageItemSet();
 	
 	private File messageInfoXMLFile = null;	
 
@@ -107,7 +107,7 @@ public class MessageInfo {
 	/**
 	 * @return 메시지 정보 파일로 부터 얻은 순서를 가지는 '항목 정보' 집합
 	 */
-	public OrderedItemSet getOrderedItemSet() {
+	public OrderedMessageItemSet getOrderedItemSet() {
 		return messageOrderedItemSet;
 	}	
 	

@@ -22,8 +22,8 @@ import kr.pe.codda.common.exception.BodyFormatException;
 import kr.pe.codda.common.exception.NoMoreWrapBufferException;
 import kr.pe.codda.common.exception.UnknownItemTypeException;
 import kr.pe.codda.common.io.StreamBuffer;
-import kr.pe.codda.common.message.builder.info.SingleItemTypeManger;
-import kr.pe.codda.common.type.SingleItemType;
+import kr.pe.codda.common.message.builder.info.MessageSingleItemTypeManger;
+import kr.pe.codda.common.type.MessageSingleItemType;
 
 /**
  * THB 프로토콜 단일 항목 타입의 디코더 추상화 클래스
@@ -62,13 +62,13 @@ public abstract class AbstractTHBSingleItemTypeDecoder {
 			
 			String itemTypeName = "unknown";
 			try {
-				itemTypeName = SingleItemTypeManger.getInstance().getItemTypeName(itemTypeID);
+				itemTypeName = MessageSingleItemTypeManger.getInstance().getItemTypeName(itemTypeID);
 			} catch (UnknownItemTypeException e) {
 			}
 			
 			String receivedItemTypeName = "unknown";
 			try {
-				receivedItemTypeName = SingleItemTypeManger.getInstance().getItemTypeName(receivedItemTypeID);
+				receivedItemTypeName = MessageSingleItemTypeManger.getInstance().getItemTypeName(receivedItemTypeID);
 			} catch (UnknownItemTypeException e) {
 			}
 			
@@ -91,5 +91,5 @@ public abstract class AbstractTHBSingleItemTypeDecoder {
 	/**
 	 * @return 단일 항목 타입
 	 */
-	abstract public SingleItemType getSingleItemType();
+	abstract public MessageSingleItemType getSingleItemType();
 }

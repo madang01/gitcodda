@@ -23,10 +23,11 @@ import kr.pe.codda.common.buildsystem.pathsupporter.ProjectBuildSytemPathSupport
 import kr.pe.codda.common.buildsystem.pathsupporter.ServerBuildSytemPathSupporter;
 import kr.pe.codda.common.buildsystem.pathsupporter.WebClientBuildSystemPathSupporter;
 import kr.pe.codda.common.config.CoddaConfiguration;
-import kr.pe.codda.common.config.itemidinfo.ItemIDDefiner;
+import kr.pe.codda.common.config.part.DBCPParConfiguration;
+import kr.pe.codda.common.config.part.RunningProjectConfiguration;
+import kr.pe.codda.common.config.part.SessionkeyPartConfiguration;
 import kr.pe.codda.common.etc.CommonStaticFinalVars;
 import kr.pe.codda.common.exception.BuildSystemException;
-import kr.pe.codda.common.exception.CoddaConfigurationException;
 import kr.pe.codda.common.util.SequencedProperties;
 import kr.pe.codda.common.util.SequencedPropertiesUtil;
 
@@ -644,8 +645,7 @@ public class ProjectBuilderTest extends AbstractJunitTest {
 								servletSystemLibraryPathString);
 
 						CoddaConfiguration configuration = new CoddaConfiguration(installedPathString, mainProjectName);
-						SequencedProperties modifiedConfigSequencedProperties = configuration
-								.getConfigurationSequencedPropties();
+						SequencedProperties modifiedConfigSequencedProperties = configuration.loadConfigFile();
 
 						for (int ii = 0; ii < isServerBooleanSet.length; ii++) {
 							for (int jj = 0; jj < isAppClientBooleanSet.length; jj++) {
@@ -719,7 +719,7 @@ public class ProjectBuilderTest extends AbstractJunitTest {
 		} catch (IOException e) {
 			log.warn(e.getMessage(), e);
 			fail(e.getMessage());
-		} catch (CoddaConfigurationException e) {
+		} catch (Exception e) {
 			log.warn(e.getMessage(), e);
 			fail(e.getMessage());
 		}
@@ -759,14 +759,18 @@ public class ProjectBuilderTest extends AbstractJunitTest {
 			SequencedProperties sequencedPropertiesForModify = projectBuilder.loadConfigPropertiesFile();
 
 			sequencedPropertiesForModify
-					.setProperty(ItemIDDefiner.CommonPartItemIDDefiner.SESSIONKEY_RSA_PRIVATEKEY_FILE_ITEMID, "aaaa");
+					.setProperty(SessionkeyPartConfiguration.itemIDForRSAPrivatekeyFile, "aaaa");
 			sequencedPropertiesForModify
-					.setProperty(ItemIDDefiner.CommonPartItemIDDefiner.SESSIONKEY_RSA_PUBLICKEY_FILE_ITEMID, "bbbb");
+					.setProperty(SessionkeyPartConfiguration.itemIDForRSAPublickeyFile, "bbbb");
+			
+			
+			String dbcpPartNameListKey = new StringBuilder().append("dbcp")
+					.append(RunningProjectConfiguration.SUB_PART_NAME_LIST_KEY_SUFFIX).toString();
 
-			sequencedPropertiesForModify.setProperty("dbcp.name_list.value", sampleBaseDBCPName);
+			sequencedPropertiesForModify.setProperty(dbcpPartNameListKey, sampleBaseDBCPName);
 			sequencedPropertiesForModify.setProperty(
 					new StringBuilder("dbcp.").append(sampleBaseDBCPName).append(".")
-							.append(ItemIDDefiner.DBCPPartItemIDDefiner.DBCP_CONFIGE_FILE_ITEMID).toString(),
+							.append(DBCPParConfiguration.itemIDOfDBCPConfigFile).toString(),
 					"fjfjieifjf");
 
 			// log.info("sequencedPropertiesForModify={}",
@@ -778,14 +782,12 @@ public class ProjectBuilderTest extends AbstractJunitTest {
 
 			SequencedProperties sequencedPropertiesForResult = projectBuilder.loadConfigPropertiesFile();
 
-			if (!ProjectBuildSytemPathSupporter
-					.getSessionKeyRSAPrivatekeyFilePathString(installedPathString, mainProjectName)
+			if (!ProjectBuildSytemPathSupporter.getSessionKeyRSAPrivateKeyFilePathString(installedPathString, mainProjectName)
 					.equals(sequencedPropertiesForResult
-							.getProperty(ItemIDDefiner.CommonPartItemIDDefiner.SESSIONKEY_RSA_PRIVATEKEY_FILE_ITEMID))
+							.getProperty(SessionkeyPartConfiguration.itemIDForRSAPrivatekeyFile))
 					|| !ProjectBuildSytemPathSupporter
-							.getSessionKeyRSAPublickeyFilePathString(installedPathString, mainProjectName)
-							.equals(sequencedPropertiesForResult.getProperty(
-									ItemIDDefiner.CommonPartItemIDDefiner.SESSIONKEY_RSA_PUBLICKEY_FILE_ITEMID))) {
+							.getSessionKeyRSAPublicKeyFilePathString(installedPathString, mainProjectName)
+							.equals(SessionkeyPartConfiguration.itemIDForRSAPublickeyFile)) {
 
 				fail(String.format(
 						"the backup seq properties is not same to the modified seq properties applying installed path"));

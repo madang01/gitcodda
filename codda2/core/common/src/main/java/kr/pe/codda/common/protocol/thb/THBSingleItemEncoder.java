@@ -25,7 +25,7 @@ import kr.pe.codda.common.exception.BodyFormatException;
 import kr.pe.codda.common.exception.NoMoreWrapBufferException;
 import kr.pe.codda.common.io.StreamBuffer;
 import kr.pe.codda.common.protocol.SingleItemEncoderIF;
-import kr.pe.codda.common.type.SingleItemType;
+import kr.pe.codda.common.type.MessageSingleItemType;
 
 /**
  * THB 단일 항목 인코더
@@ -52,7 +52,7 @@ public class THBSingleItemEncoder implements SingleItemEncoderIF {
 
 	@Override
 	public void putValue(String path, String itemName,
-			SingleItemType singleItemType, Object nativeItemValue,
+			MessageSingleItemType singleItemType, Object nativeItemValue,
 			int itemSize, String nativeItemCharset, Object writableMiddleObject) throws Exception {
 		if (null == path) {
 			throw new IllegalArgumentException("the parameter path is null");

@@ -21,7 +21,7 @@ import java.nio.BufferOverflowException;
 
 import kr.pe.codda.common.exception.NoMoreWrapBufferException;
 import kr.pe.codda.common.io.StreamBuffer;
-import kr.pe.codda.common.type.SingleItemType;
+import kr.pe.codda.common.type.MessageSingleItemType;
 
 /**
  * THB 프로토콜 단일 항목 타입의 인코더 추상화 클래스
@@ -60,5 +60,5 @@ public abstract class AbstractTHBSingleItemTypeEncoder {
 	/**
 	 * @return 단일 항목 타입
 	 */
-	abstract public SingleItemType getSingleItemType();
+	abstract public MessageSingleItemType getSingleItemType();
 }

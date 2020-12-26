@@ -38,7 +38,7 @@ public final class ExceptionDeliveryResDecoder extends AbstractMessageDecoder {
 		exceptionDeliveryRes.setErrorPlace((kr.pe.codda.common.type.ExceptionDelivery.ErrorPlace)
 		singleItemDecoder.getValue(pathStack.peek()
 			, "errorPlace" // itemName
-			, kr.pe.codda.common.type.SingleItemType.EXCEPTION_DELIVERY_ERROR_PLACE // itemType
+			, kr.pe.codda.common.type.MessageSingleItemType.EXCEPTION_DELIVERY_ERROR_PLACE // itemType
 			, -1 // itemSize
 			, null // nativeItemCharset
 			, receivedMiddleObject));
@@ -46,7 +46,7 @@ public final class ExceptionDeliveryResDecoder extends AbstractMessageDecoder {
 		exceptionDeliveryRes.setErrorType((kr.pe.codda.common.type.ExceptionDelivery.ErrorType)
 		singleItemDecoder.getValue(pathStack.peek()
 			, "errorType" // itemName
-			, kr.pe.codda.common.type.SingleItemType.EXCEPTION_DELIVERY_ERROR_TYPE // itemType
+			, kr.pe.codda.common.type.MessageSingleItemType.EXCEPTION_DELIVERY_ERROR_TYPE // itemType
 			, -1 // itemSize
 			, null // nativeItemCharset
 			, receivedMiddleObject));
@@ -54,7 +54,7 @@ public final class ExceptionDeliveryResDecoder extends AbstractMessageDecoder {
 		exceptionDeliveryRes.setErrorMessageID((String)
 		singleItemDecoder.getValue(pathStack.peek()
 			, "errorMessageID" // itemName
-			, kr.pe.codda.common.type.SingleItemType.UB_PASCAL_STRING // itemType
+			, kr.pe.codda.common.type.MessageSingleItemType.UB_PASCAL_STRING // itemType
 			, -1 // itemSize
 			, "ISO-8859-1" // nativeItemCharset
 			, receivedMiddleObject));
@@ -62,7 +62,7 @@ public final class ExceptionDeliveryResDecoder extends AbstractMessageDecoder {
 		exceptionDeliveryRes.setErrorReason((String)
 		singleItemDecoder.getValue(pathStack.peek()
 			, "errorReason" // itemName
-			, kr.pe.codda.common.type.SingleItemType.US_PASCAL_STRING // itemType
+			, kr.pe.codda.common.type.MessageSingleItemType.US_PASCAL_STRING // itemType
 			, -1 // itemSize
 			, "utf8" // nativeItemCharset
 			, receivedMiddleObject));

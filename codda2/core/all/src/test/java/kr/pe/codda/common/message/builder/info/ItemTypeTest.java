@@ -31,7 +31,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import kr.pe.codda.common.etc.CommonStaticFinalVars;
-import kr.pe.codda.common.type.SingleItemType;
+import kr.pe.codda.common.type.MessageSingleItemType;
 import kr.pe.codda.common.util.JDKLoggerCustomFormatter;
 
 public class ItemTypeTest {
@@ -71,7 +71,7 @@ private Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
 
 	@Test
 	public void test_ordinal와itemTypeID같은지검사() {
-		SingleItemType singleItemType = SingleItemType.UNSIGNED_SHORT;
+		MessageSingleItemType singleItemType = MessageSingleItemType.UNSIGNED_SHORT;
 		
 		assertEquals("ItemTypeID 를 순차적으로 잘 정의했는지  테스트", singleItemType.ordinal(), singleItemType.getItemTypeID());
 	}
@@ -79,9 +79,9 @@ private Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
 	
 	@Test
 	public void testGetItemTypeID_ItemTypeID를순차적으로잘정의했는지검사() {
-		SingleItemType[] singleItemTypes = SingleItemType.values();
+		MessageSingleItemType[] singleItemTypes = MessageSingleItemType.values();
 		for (int i=0; i < singleItemTypes.length; i++) {
-			SingleItemType singleItemType = singleItemTypes[i];
+			MessageSingleItemType singleItemType = singleItemTypes[i];
 			assertEquals("ItemTypeID 를 순차적으로 잘 정의했는지  테스트", i, singleItemType.getItemTypeID());
 		}
 	}
@@ -89,7 +89,7 @@ private Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
 	
 	@Test
 	public void test() {
-		SingleItemType singleItemType = SingleItemType.UNSIGNED_SHORT;
+		MessageSingleItemType singleItemType = MessageSingleItemType.UNSIGNED_SHORT;
 		
 		log.info("singleItemType.name=" + singleItemType.name());
 	}

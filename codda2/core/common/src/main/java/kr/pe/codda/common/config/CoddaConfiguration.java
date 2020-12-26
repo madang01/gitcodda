@@ -21,8 +21,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import kr.pe.codda.common.buildsystem.pathsupporter.ProjectBuildSytemPathSupporter;
-import kr.pe.codda.common.config.part.RunningProjectConfiguration;
 import kr.pe.codda.common.config.part.MainProjectPartConfiguration;
+import kr.pe.codda.common.config.part.RunningProjectConfiguration;
 import kr.pe.codda.common.etc.CommonStaticFinalVars;
 import kr.pe.codda.common.exception.PartConfigurationException;
 import kr.pe.codda.common.util.CommonStaticUtil;
@@ -149,7 +149,7 @@ public class CoddaConfiguration {
 
 	/**
 	 * 기동중인 프로젝트 설정을 파라미터 '새 기동중인 프로젝트 설정' 로 한다.
-	 * @param newRunningProjectConfiguration
+	 * @param newRunningProjectConfiguration 신규 기동중인 프로젝트 설정
 	 */
 	public void setRunningProjectConfiguration(RunningProjectConfiguration newRunningProjectConfiguration) {
 		if (null == newRunningProjectConfiguration) {
@@ -166,13 +166,14 @@ public class CoddaConfiguration {
 		return runningProjectConfiguration;
 	}	
 	
+
 	/**
-	 * 설정 파일 내용을 읽어와서 그 내용을 '기동중인 프로젝트 설정' 에 저장한후 의존성 검사를 수행한다.
-	 * 
-	 * @throws IllegalArgumentException
-	 * @throws PartConfigurationException
-	 * @throws FileNotFoundException
-	 * @throws IOException
+	 * 설정 파일 내용을 읽어와서 그 내용을 '기동중인 프로젝트 설정' 에 저장한후 의존성 검사를 수행후 읽어온 설정 파일 프로퍼티를 반환한다.
+	 * @return 읽어온 설정 파일 프로퍼티를 반환한다.
+	 * @throws IllegalArgumentException 내부 로직에서 파라미터 값이 잘못되었을 경우 던지는 예외
+	 * @throws PartConfigurationException 있어야 하는 설정 파일 항목이 없거나 값이 잘못된 경우 던지는 예외
+	 * @throws FileNotFoundException 설정 파일이 없는 경우 던지는 예외 
+	 * @throws IOException 입출력 에러 발생시 던지는 예외
 	 */
 	public SequencedProperties loadConfigFile() throws IllegalArgumentException, PartConfigurationException, FileNotFoundException, IOException {
 		SequencedProperties configSequencedProperties = SequencedPropertiesUtil
@@ -194,8 +195,17 @@ public class CoddaConfiguration {
 	public void saveConfigFile() throws FileNotFoundException, IOException {
 		SequencedProperties targetSequencedProperties = new SequencedProperties();
 		runningProjectConfiguration.toProperties(targetSequencedProperties);
+		
+		
+		File sourcePropertiesFile = new File(configFilePathString);
+		
+		if (sourcePropertiesFile.exists()) {
+			SequencedPropertiesUtil.overwriteSequencedPropertiesFile(targetSequencedProperties, titleOfConfigFile, configFilePathString, CommonStaticFinalVars.SOURCE_FILE_CHARSET);
+		} else {
+			SequencedPropertiesUtil.createNewSequencedPropertiesFile(targetSequencedProperties, titleOfConfigFile, configFilePathString, CommonStaticFinalVars.SOURCE_FILE_CHARSET);
+		}
 				
-		SequencedPropertiesUtil.overwriteSequencedPropertiesFile(targetSequencedProperties, titleOfConfigFile, configFilePathString, CommonStaticFinalVars.SOURCE_FILE_CHARSET);
+		
 	}
 	
 	public void loadDefault() throws IllegalArgumentException, PartConfigurationException {

@@ -50,13 +50,9 @@ import java.util.logging.Logger;
 
 /**
  * <pre>
- * 동적 클래스 파일 변경 감시자
+ * 동적 클래스 파일 변경 감시자 * 
  * 
- * 
- * 변경 내용 : (1) system.out => logger, (2) 
- *  
- * 
- * 출처 : https://docs.oracle.com/javase/tutorial/essential/io/examples/WatchDir.java
+ * 변경 내용 : (1) system.out 을 logger 로 변경, (2) 출처 : https://docs.oracle.com/javase/tutorial/essential/io/examples/WatchDir.java
  * </pre>
  * 
  * @author Won Jonghoon

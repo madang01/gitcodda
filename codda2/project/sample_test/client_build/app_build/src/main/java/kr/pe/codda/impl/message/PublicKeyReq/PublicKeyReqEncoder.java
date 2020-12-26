@@ -28,12 +28,12 @@ import kr.pe.codda.common.protocol.SingleItemEncoderIF;
  */
 public final class PublicKeyReqEncoder extends AbstractMessageEncoder {
 	@Override
-	public void encode(AbstractMessage messageObj, SingleItemEncoderIF singleItemEncoder, Object writableMiddleObject) throws Exception {
+	public void encode(AbstractMessage messageObj, SingleItemEncoderIF singleItemEncoder, Object middleObjectToSend) throws Exception {
 		PublicKeyReq publicKeyReq = (PublicKeyReq)messageObj;
-		encodeBody(publicKeyReq, singleItemEncoder, writableMiddleObject);
+		encodeBody(publicKeyReq, singleItemEncoder, middleObjectToSend);
 	}
 
 
-	private void encodeBody(PublicKeyReq publicKeyReq, SingleItemEncoderIF singleItemEncoder, Object middleWritableObject) throws Exception {
+	private void encodeBody(PublicKeyReq publicKeyReq, SingleItemEncoderIF singleItemEncoder, Object middleObjectToSend) throws Exception {
 	}
 }

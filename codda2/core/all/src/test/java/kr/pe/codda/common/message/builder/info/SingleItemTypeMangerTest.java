@@ -35,7 +35,7 @@ import org.junit.Test;
 import org.xml.sax.SAXException;
 
 import kr.pe.codda.common.etc.CommonStaticFinalVars;
-import kr.pe.codda.common.type.SingleItemType;
+import kr.pe.codda.common.type.MessageSingleItemType;
 import kr.pe.codda.common.util.CommonStaticUtil;
 import kr.pe.codda.common.util.JDKLoggerCustomFormatter;
 
@@ -76,8 +76,8 @@ public class SingleItemTypeMangerTest {
 	
 	@Test
 	public void testGetSingleItemType_sigleItemID를통해얻은SigleItemType맞는지검사() {
-		for (SingleItemType expectedSingleItemType : SingleItemType.values()) {
-			SingleItemType actualSingleItemType = SingleItemTypeManger.getInstance().getSingleItemType(expectedSingleItemType.getItemTypeID());
+		for (MessageSingleItemType expectedSingleItemType : MessageSingleItemType.values()) {
+			MessageSingleItemType actualSingleItemType = MessageSingleItemTypeManger.getInstance().getSingleItemType(expectedSingleItemType.getItemTypeID());
 			
 			assertEquals("sigleItemID 를 통해 얻은 SigleItemType 맞는지 검사", expectedSingleItemType, actualSingleItemType);
 		}
@@ -271,7 +271,7 @@ public class SingleItemTypeMangerTest {
 	
 	@Test
 	public void testGetMessageXSLStr() {
-		SingleItemTypeManger singleItemTypeManger = SingleItemTypeManger.getInstance();
+		MessageSingleItemTypeManger singleItemTypeManger = MessageSingleItemTypeManger.getInstance();
 		
 		log.info("the message information xsl file=" + singleItemTypeManger.getMessageXSLStr());
 	}

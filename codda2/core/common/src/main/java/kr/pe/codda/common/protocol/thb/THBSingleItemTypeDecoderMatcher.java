@@ -27,7 +27,7 @@ import kr.pe.codda.common.etc.StreamCharsetFamily;
 import kr.pe.codda.common.exception.BodyFormatException;
 import kr.pe.codda.common.io.StreamBuffer;
 import kr.pe.codda.common.type.ExceptionDelivery;
-import kr.pe.codda.common.type.SingleItemType;
+import kr.pe.codda.common.type.MessageSingleItemType;
 
 /**
  * THB 프로토콜 단일 항목 타입의 디코더 매칭자
@@ -76,7 +76,7 @@ public class THBSingleItemTypeDecoderMatcher implements THBSingleItemTypeDecoder
 	 * 변수 thbSingleItemDecoderList 의 유효성 검사
 	 */
 	private void checkValidTHBSingleItemDecoderList() {
-		SingleItemType[] singleItemTypes = SingleItemType.values();
+		MessageSingleItemType[] singleItemTypes = MessageSingleItemType.values();
 		
 		if (thbSingleItemDecoderList.length != singleItemTypes.length) {
 			String errorMessage = new StringBuilder()
@@ -91,8 +91,8 @@ public class THBSingleItemTypeDecoderMatcher implements THBSingleItemTypeDecoder
 		}
 		
 		for (int i=0; i < singleItemTypes.length; i++) {
-			SingleItemType expectedSingleItemType = singleItemTypes[i];
-			SingleItemType actualSingleItemType = thbSingleItemDecoderList[i].getSingleItemType();
+			MessageSingleItemType expectedSingleItemType = singleItemTypes[i];
+			MessageSingleItemType actualSingleItemType = thbSingleItemDecoderList[i].getSingleItemType();
 			if (! expectedSingleItemType.equals(actualSingleItemType)) {
 				String errorMessage = new StringBuilder()
 						.append("the var thbSingleItemDecoderList[")
@@ -126,8 +126,8 @@ public class THBSingleItemTypeDecoderMatcher implements THBSingleItemTypeDecoder
 		}
 		
 		@Override
-		public SingleItemType getSingleItemType() {
-			return SingleItemType.EXCEPTION_DELIVERY_ERROR_PLACE;
+		public MessageSingleItemType getSingleItemType() {
+			return MessageSingleItemType.EXCEPTION_DELIVERY_ERROR_PLACE;
 		}
 	}	
 	
@@ -148,8 +148,8 @@ public class THBSingleItemTypeDecoderMatcher implements THBSingleItemTypeDecoder
 		}
 		
 		@Override
-		public SingleItemType getSingleItemType() {
-			return SingleItemType.EXCEPTION_DELIVERY_ERROR_TYPE;
+		public MessageSingleItemType getSingleItemType() {
+			return MessageSingleItemType.EXCEPTION_DELIVERY_ERROR_TYPE;
 		}
 	}
 	
@@ -167,8 +167,8 @@ public class THBSingleItemTypeDecoderMatcher implements THBSingleItemTypeDecoder
 		}
 
 		@Override
-		public SingleItemType getSingleItemType() {
-			return SingleItemType.BYTE;
+		public MessageSingleItemType getSingleItemType() {
+			return MessageSingleItemType.BYTE;
 		}
 			
 	}
@@ -186,8 +186,8 @@ public class THBSingleItemTypeDecoderMatcher implements THBSingleItemTypeDecoder
 		}		
 		
 		@Override
-		public SingleItemType getSingleItemType() {
-			return SingleItemType.UNSIGNED_BYTE;
+		public MessageSingleItemType getSingleItemType() {
+			return MessageSingleItemType.UNSIGNED_BYTE;
 		}
 	}
 
@@ -203,8 +203,8 @@ public class THBSingleItemTypeDecoderMatcher implements THBSingleItemTypeDecoder
 		}
 		
 		@Override
-		public SingleItemType getSingleItemType() {
-			return SingleItemType.SHORT;
+		public MessageSingleItemType getSingleItemType() {
+			return MessageSingleItemType.SHORT;
 		}
 	}
 
@@ -222,8 +222,8 @@ public class THBSingleItemTypeDecoderMatcher implements THBSingleItemTypeDecoder
 		}		
 		
 		@Override
-		public SingleItemType getSingleItemType() {
-			return SingleItemType.UNSIGNED_SHORT;
+		public MessageSingleItemType getSingleItemType() {
+			return MessageSingleItemType.UNSIGNED_SHORT;
 		}
 	}
 
@@ -240,8 +240,8 @@ public class THBSingleItemTypeDecoderMatcher implements THBSingleItemTypeDecoder
 		}
 		
 		@Override
-		public SingleItemType getSingleItemType() {
-			return SingleItemType.INTEGER;
+		public MessageSingleItemType getSingleItemType() {
+			return MessageSingleItemType.INTEGER;
 		}
 	}
 
@@ -257,8 +257,8 @@ public class THBSingleItemTypeDecoderMatcher implements THBSingleItemTypeDecoder
 		}
 		
 		@Override		
-		public SingleItemType getSingleItemType() {
-			return SingleItemType.UNSIGNED_INTEGER;
+		public MessageSingleItemType getSingleItemType() {
+			return MessageSingleItemType.UNSIGNED_INTEGER;
 		}
 	}
 
@@ -273,8 +273,8 @@ public class THBSingleItemTypeDecoderMatcher implements THBSingleItemTypeDecoder
 		}		
 		
 		@Override
-		public SingleItemType getSingleItemType() {
-			return SingleItemType.LONG;
+		public MessageSingleItemType getSingleItemType() {
+			return MessageSingleItemType.LONG;
 		}
 	}
 
@@ -303,8 +303,8 @@ public class THBSingleItemTypeDecoderMatcher implements THBSingleItemTypeDecoder
 		}	
 		
 		@Override
-		public SingleItemType getSingleItemType() {
-			return SingleItemType.UB_PASCAL_STRING;
+		public MessageSingleItemType getSingleItemType() {
+			return MessageSingleItemType.UB_PASCAL_STRING;
 		}
 	}
 
@@ -332,8 +332,8 @@ public class THBSingleItemTypeDecoderMatcher implements THBSingleItemTypeDecoder
 		}
 		
 		@Override
-		public SingleItemType getSingleItemType() {
-			return SingleItemType.US_PASCAL_STRING;
+		public MessageSingleItemType getSingleItemType() {
+			return MessageSingleItemType.US_PASCAL_STRING;
 		}
 	}
 
@@ -361,8 +361,8 @@ public class THBSingleItemTypeDecoderMatcher implements THBSingleItemTypeDecoder
 		}		
 		
 		@Override
-		public SingleItemType getSingleItemType() {
-			return SingleItemType.SI_PASCAL_STRING;
+		public MessageSingleItemType getSingleItemType() {
+			return MessageSingleItemType.SI_PASCAL_STRING;
 		}
 	}
 
@@ -400,8 +400,8 @@ public class THBSingleItemTypeDecoderMatcher implements THBSingleItemTypeDecoder
 		}	
 		
 		@Override
-		public SingleItemType getSingleItemType() {
-			return SingleItemType.FIXED_LENGTH_STRING;
+		public MessageSingleItemType getSingleItemType() {
+			return MessageSingleItemType.FIXED_LENGTH_STRING;
 		}
 	}
 
@@ -420,8 +420,8 @@ public class THBSingleItemTypeDecoderMatcher implements THBSingleItemTypeDecoder
 		}
 		
 		@Override
-		public SingleItemType getSingleItemType() {
-			return SingleItemType.UB_VARIABLE_LENGTH_BYTES;
+		public MessageSingleItemType getSingleItemType() {
+			return MessageSingleItemType.UB_VARIABLE_LENGTH_BYTES;
 		}
 	}
 
@@ -438,8 +438,8 @@ public class THBSingleItemTypeDecoderMatcher implements THBSingleItemTypeDecoder
 		}	
 		
 		@Override
-		public SingleItemType getSingleItemType() {
-			return SingleItemType.US_VARIABLE_LENGTH_BYTES;
+		public MessageSingleItemType getSingleItemType() {
+			return MessageSingleItemType.US_VARIABLE_LENGTH_BYTES;
 		}
 	}
 	
@@ -455,8 +455,8 @@ public class THBSingleItemTypeDecoderMatcher implements THBSingleItemTypeDecoder
 		}		
 		
 		@Override
-		public SingleItemType getSingleItemType() {
-			return SingleItemType.SI_VARIABLE_LENGTH_BYTES;
+		public MessageSingleItemType getSingleItemType() {
+			return MessageSingleItemType.SI_VARIABLE_LENGTH_BYTES;
 		}
 	}
 	
@@ -478,8 +478,8 @@ public class THBSingleItemTypeDecoderMatcher implements THBSingleItemTypeDecoder
 		}		
 		
 		@Override
-		public SingleItemType getSingleItemType() {
-			return SingleItemType.FIXED_LENGTH_BYTES;
+		public MessageSingleItemType getSingleItemType() {
+			return MessageSingleItemType.FIXED_LENGTH_BYTES;
 		}
 	}
 	
@@ -495,8 +495,8 @@ public class THBSingleItemTypeDecoderMatcher implements THBSingleItemTypeDecoder
 		}
 		
 		@Override
-		public SingleItemType getSingleItemType() {
-			return SingleItemType.JAVA_SQL_DATE;
+		public MessageSingleItemType getSingleItemType() {
+			return MessageSingleItemType.JAVA_SQL_DATE;
 		}
 	}
 	
@@ -512,8 +512,8 @@ public class THBSingleItemTypeDecoderMatcher implements THBSingleItemTypeDecoder
 		}
 		
 		@Override
-		public SingleItemType getSingleItemType() {
-			return SingleItemType.JAVA_SQL_TIMESTAMP;
+		public MessageSingleItemType getSingleItemType() {
+			return MessageSingleItemType.JAVA_SQL_TIMESTAMP;
 		}
 	}
 	
@@ -540,8 +540,8 @@ public class THBSingleItemTypeDecoderMatcher implements THBSingleItemTypeDecoder
 		}
 		
 		@Override
-		public SingleItemType getSingleItemType() {
-			return SingleItemType.BOOLEAN;
+		public MessageSingleItemType getSingleItemType() {
+			return MessageSingleItemType.BOOLEAN;
 		}
 	}
 	

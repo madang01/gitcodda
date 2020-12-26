@@ -19,6 +19,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Handler;
 import java.util.logging.Level;
@@ -86,11 +87,23 @@ public class DBCPParConfigurationTest {
 	}
 
 	@Test
-	public void testToValueForJDFMemberLoginPage() {		
+	public void testToValueForJDFMemberLoginPage() {	
+		
+		File tmp01File = null;
+		
+		try {
+			tmp01File = File.createTempFile("temp", ".dat");
+			tmp01File.deleteOnExit();
+		} catch (IOException e) {
+			log.log(Level.WARNING, "fail to create a temp file", e);
+			
+			fail("fail to call 'toValue'");
+		}
+		
 		SequencedProperties sourceSequencedProperties = new SequencedProperties();
 		
 		DBCPParConfiguration actualDBCPParConfiguration = new DBCPParConfiguration("lt_sb_db");
-		actualDBCPParConfiguration.setDBCPConfigFile(new File("D:\\gitcodda\\codda2\\project\\sample_base\\resources\\dbcp\\dbcp.lt_sb_db.properties"));
+		actualDBCPParConfiguration.setDBCPConfigFile(tmp01File);
 		
 		actualDBCPParConfiguration.toPropertiesForDBCPConfigFile(sourceSequencedProperties);
 		
@@ -111,10 +124,20 @@ public class DBCPParConfigurationTest {
 	
 	@Test
 	public void testToPropertiesForJDFMemberLoginPage() {	
+		File tmp01File = null;
+		
+		try {
+			tmp01File = File.createTempFile("temp", ".dat");
+		} catch (IOException e) {
+			log.log(Level.WARNING, "fail to create a temp file", e);
+			
+			fail("fail to call 'toValue'");
+		}
+		
 		SequencedProperties sourceSequencedProperties = new SequencedProperties();
 		
 		DBCPParConfiguration actualDBCPParConfiguration = new DBCPParConfiguration("lt_sb_db");
-		actualDBCPParConfiguration.setDBCPConfigFile(new File("D:\\gitcodda\\codda2\\project\\sample_base\\resources\\dbcp\\dbcp.lt_sb_db.properties"));
+		actualDBCPParConfiguration.setDBCPConfigFile(tmp01File);
 		
 		actualDBCPParConfiguration.toPropertiesForDBCPConfigFile(sourceSequencedProperties);
 		

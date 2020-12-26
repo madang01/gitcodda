@@ -22,6 +22,5 @@ package kr.pe.codda.common.config.part;
  *
  */
 public interface PartConfigurationIF extends ConfigurationIF {
-	public String getPartName(); 
-	
+	public String getPartName();
 }

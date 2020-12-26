@@ -1492,13 +1492,13 @@ public class ProjectBuilder {
 			throw new BuildSystemException(errorMessage);
 		}
 		
-		String configFilePathString = ProjectBuildSytemPathSupporter
-				.getProejctConfigFilePathString(installedPathString, mainProjectName);
-		
 		try {
 			coddaConfiguration.saveConfigFile();
 		} catch (IOException e) {
-			String errorMessage = new StringBuilder("fail to create the main project's configuration file[").append(configFilePathString)
+			String configFilePathString = ProjectBuildSytemPathSupporter
+					.getProejctConfigFilePathString(installedPathString, mainProjectName);
+			
+			String errorMessage = new StringBuilder("fail to save the main project's configuration file[").append(configFilePathString)
 					.append("]").toString();
 
 			log.warn(errorMessage, e);

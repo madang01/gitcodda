@@ -37,11 +37,17 @@ public class ClientMessageCodecManger implements MessageCodecMangerIF {
 		static final ClientMessageCodecManger singleton = new ClientMessageCodecManger();
 	}
 
-	/** 동기화 쓰지 않는 싱글턴 구현 메소드 */
+	
+	/**
+	 * @return 동기화 쓰지 않는 싱글턴 객체
+	 */
 	public static ClientMessageCodecManger getInstance() {
 		return MessageCodecMangerHolder.singleton;
 	}
 	
+	/**
+	 * 생성자
+	 */
 	private ClientMessageCodecManger() {		
 	}
 

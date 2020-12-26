@@ -192,16 +192,18 @@ public final class SyncMessageMailbox {
 			monitor.notify();
 		}
 	}
-
+	
 	/**
-	 * @param messageCodecManger 메시지 코덱 관리자 
-	 * @return 스트림에서 추출한 중간 객체로 부터 변환된 메시지
+	 * 수신 받은 출력 메시지를 반환한다.
+	 * 
+	 * @param messageCodecManger 수신 받은 출력 메시지의 스트림을 메시지로 변환하기 위한 메시지 코덱 관리자 
+	 * @return 수신 받은 출력 메시지
 	 * @throws IOException 소켓 타임 아웃 포함하여 입출력 에러 발생시 던지는 예외
 	 * @throws InterruptedException 인터럽트 발생시 던지는 예외
-	 * @throws BodyFormatException 
-	 * @throws ServerTaskException 
-	 * @throws NoMoreWrapBufferException 
-	 * @throws DynamicClassCallException 
+	 * @throws DynamicClassCallException 동적 클래스를 다룰때 에러 발생시 던지는 예외
+	 * @throws NoMoreWrapBufferException 랩버퍼가 더 이상 없을때 던지는 예외
+	 * @throws ServerTaskException 서버 비지니스 로직 에러 발생시 던지는 예외
+	 * @throws BodyFormatException 메시지 내용이 담긴 스트림이 정해진 형식이 아닌 경우 던지는 예외
 	 */
 	public AbstractMessage getSyncOutputMessage(MessageCodecMangerIF messageCodecManger) throws IOException, InterruptedException, DynamicClassCallException, NoMoreWrapBufferException, ServerTaskException, BodyFormatException {
 		AbstractMessage returnedObject = null;

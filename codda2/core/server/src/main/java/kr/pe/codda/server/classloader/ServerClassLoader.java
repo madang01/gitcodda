@@ -47,7 +47,7 @@ public class ServerClassLoader extends ClassLoader implements MessageEncoderMana
 	// private final Object monitor = new Object();
 
 	private final ServerClassLoaderFactory serverClassLoaderFactory;
-	private final String classloaderReousrcesPathString;
+	private final String classLoaderResourcesPathString;
 	private final SystemClassVerifierIF systemClassVerifier;
 	
 	private final static ClassLoader systemClassLoader = ClassLoader.getSystemClassLoader();
@@ -57,19 +57,19 @@ public class ServerClassLoader extends ClassLoader implements MessageEncoderMana
 	
 	private final HashMap<String, AbstractServerTask> messageID2SeverTaskHash = new  HashMap<String, AbstractServerTask>();
 	
-	
+		
 	/**
 	 * 생성자
-	 * @param classloaderClassPathString 동적 클래스 경로 문자열
-	 * @param classloaderReousrcesPathString 동적 클래스 자원 경로 문자열
+	 * @param serverClassLoaderFactory 서버 클래스 로더 팩토리
+	 * @param classLoaderResourcesPathString 동적 클래스 로더의 자원 경로 문자열
 	 * @param systemClassVerifier 내장중인 시스템 클래스 검증기
 	 */
-	public ServerClassLoader(ServerClassLoaderFactory serverClassLoaderFactory, String classloaderReousrcesPathString,
+	public ServerClassLoader(ServerClassLoaderFactory serverClassLoaderFactory, String classLoaderResourcesPathString,
 			SystemClassVerifierIF systemClassVerifier) {
 		super(systemClassLoader);
 		
 		this.serverClassLoaderFactory = serverClassLoaderFactory;
-		this.classloaderReousrcesPathString = classloaderReousrcesPathString;
+		this.classLoaderResourcesPathString = classLoaderResourcesPathString;
 		this.systemClassVerifier = systemClassVerifier;		
 
 		log.log(Level.INFO, "ServerClassLoader hashCode=[" + this.hashCode() + "] create");
@@ -202,7 +202,7 @@ public class ServerClassLoader extends ClassLoader implements MessageEncoderMana
 		InputStream is = null;
 
 		String realResourceFilePathString = CommonStaticUtil
-				.buildFilePathStringFromResourcePathAndRelativePathOfFile(classloaderReousrcesPathString, name);
+				.buildFilePathStringFromResourcePathAndRelativePathOfFile(classLoaderResourcesPathString, name);
 		
 		// log.info("realResourceFilePathString=[{}]", realResourceFilePathString);
 		

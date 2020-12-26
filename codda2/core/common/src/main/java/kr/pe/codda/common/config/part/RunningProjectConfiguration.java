@@ -26,7 +26,7 @@ import kr.pe.codda.common.buildsystem.pathsupporter.ProjectBuildSytemPathSupport
 import kr.pe.codda.common.etc.CommonStaticFinalVars;
 import kr.pe.codda.common.exception.PartConfigurationException;
 import kr.pe.codda.common.type.ItemViewType;
-import kr.pe.codda.common.type.KeyTypeOfConfieFile;
+import kr.pe.codda.common.type.KeyTypeOfConfieProperties;
 import kr.pe.codda.common.util.CommonStaticUtil;
 import kr.pe.codda.common.util.SequencedProperties;
 
@@ -39,6 +39,15 @@ import kr.pe.codda.common.util.SequencedProperties;
  */
 public class RunningProjectConfiguration implements ConfigurationIF {
 	
+	public final static String DESC_KEY_SUFFIX = ".desc";
+	public final static String VALUE_KEY_SUFFIX = ".value";
+	public final static String ITEM_VIEW_TYPE_KEY_SUFFIX = ".item_view_type";
+	public final static String SET_KEY_SUFFIX = ".set";
+	public final static String FILE_KEY_SUFFIX = ".file";
+	public final static String PATH_KEY_SUFFIX = ".path";
+	public final static String SUB_PART_NAME_LIST_KEY_SUFFIX = ".sub_part_name_list.value";
+	
+	
 	private SessionkeyPartConfiguration sessionkeyPartConfiguration = new SessionkeyPartConfiguration();
 	
 	public ListTypePartConfiguration<DBCPParConfiguration> DBCP = new ListTypePartConfiguration<DBCPParConfiguration>("dbcp", DBCPParConfiguration.class);
@@ -47,26 +56,40 @@ public class RunningProjectConfiguration implements ConfigurationIF {
 
 	public ListTypePartConfiguration<SubProjectPartConfiguration> SUBPROJECT = new ListTypePartConfiguration<SubProjectPartConfiguration>("subject", SubProjectPartConfiguration.class);
 
-	public static String toSetValue(Set<String> valueSet) {
+	
+	
+	
+	
+	/**
+	 * 파라미터 '이름 집합' 의 원소를 토큰으로 그리고 콤마를 구별자로 하여 구성한 문자열로 반환한다.  
+	 * @param nameSet 이름 집합
+	 * @return  파라미터 '이름 집합' 의 원소를 토큰으로 그리고 콤마를 구별자로 하여 구성한 문자열
+	 */
+	public static String toSetTypeValue(Set<String> nameSet) {
 		StringBuilder valueStringBuilder = new StringBuilder();
 		boolean isFirst = true;
-		for(String value : valueSet) {
+		for(String name : nameSet) {
 			if (isFirst) {				
 				isFirst = false;
 			} else {
 				valueStringBuilder.append(", ");
 			}
 			
-			valueStringBuilder.append(value);
+			valueStringBuilder.append(name);
 		}
 		
 		return valueStringBuilder.toString();
 	}
 	
-	public static Set<String> fromSetValue(String setValue) {
+	/**
+	 * 콤마를 구별자로 하는 파라미터 '집합 유형 값' 을 입력 받아 파싱한 토큰들을 원소들로 구성한 '이름 집합'을 반환한다.
+	 * @param setTypeValue 콤마를 구별자로 하는 '집합 유형 값'
+	 * @return 콤마를 구별자로 하는 파라미터 '집합 유형 값' 을 입력 받아 파싱한 토큰들을 원소들로 구성한 '이름 집합'
+	 */	
+	public static Set<String> fromSetTypeValue(String setTypeValue) {
 		Set<String> valueSet = new HashSet<String>();
 		
-		StringTokenizer tokens = new StringTokenizer(setValue, ",");	
+		StringTokenizer tokens = new StringTokenizer(setTypeValue, ",");	
 
 		int inx=0;
 		while (tokens.hasMoreTokens()) {
@@ -104,24 +127,48 @@ public class RunningProjectConfiguration implements ConfigurationIF {
 		return valueSet;
 	}
 	
-	public static String buildKeyOfConfigFile(String prefixBeforeItemID, String itemID, KeyTypeOfConfieFile keyTypeOfConfieFile) {
+	
+	/**
+	 * 파라미터 '키를 이루는 항목 식별자 이전까지의 접두어'와 '항목 식별자' 그리고 '설정 파일의 키 유형' 에 해당하는 키를 반환한다. 
+	 *     
+	 * @param prefixBeforeItemID 키를 이루는 항목 식별자 이전까지의 접두어
+	 * @param itemID 항목 식별자
+	 * @param keyTypeOfConfieFile 설정 파일의 키 유형, (1) 설병(desc), (2) 값(value), (3) 항목 뷰 유형(item_view_type), (4) 집합(set), (5) 파일(file), (6) 경로(path), 
+	 * @return 파라미터 '키를 이루는 항목 식별자 이전까지의 접두어'와 '항목 식별자' 그리고 '설정 파일의 키 유형' 에 해당하는 키
+	 * @throws IllegalArgumentException 각 파라미터 값이 널인 경우 혹은 '설정 파일의 키 유형' 이 알 수 없는 값인 경우 던지는 예외
+	 */
+	public static String buildKeyOfConfigFile(String prefixBeforeItemID, String itemID, KeyTypeOfConfieProperties keyTypeOfConfieFile) throws  IllegalArgumentException {
+		if (null == prefixBeforeItemID) {
+			throw new IllegalArgumentException("the parameter prefixBeforeItemID is null");
+		}
+		
+		if (null == itemID) {
+			throw new IllegalArgumentException("the parameter itemID is null");
+		}
+		
+		if (null == keyTypeOfConfieFile) {
+			throw new IllegalArgumentException("the parameter keyTypeOfConfieFile is null");
+		}
+		
 		StringBuilder firstStringBuilder = new StringBuilder().append(prefixBeforeItemID)
 				.append(itemID);
 		
-		String key = "unknown key type of config file";
-		
-		if (KeyTypeOfConfieFile.DESC.equals(keyTypeOfConfieFile)) {
-			key = firstStringBuilder.append(".desc").toString();
-		} else if (KeyTypeOfConfieFile.VALUE.equals(keyTypeOfConfieFile)) {
-			key = firstStringBuilder.append(".value").toString();
-		} else if (KeyTypeOfConfieFile.SET.equals(keyTypeOfConfieFile)) {
-			key = firstStringBuilder.append(".set").toString();
-		} else if (KeyTypeOfConfieFile.ITEM_VIEW_TYPE.equals(keyTypeOfConfieFile)) {
-			key = firstStringBuilder.append(".item_view_type").toString();
-		} else if (KeyTypeOfConfieFile.FILE.equals(keyTypeOfConfieFile)) {
-			key = firstStringBuilder.append(".file").toString();
-		} else if (KeyTypeOfConfieFile.PATH.equals(keyTypeOfConfieFile)) {
-			key = firstStringBuilder.append(".path").toString();
+		final String key;
+				
+		if (KeyTypeOfConfieProperties.DESC.equals(keyTypeOfConfieFile)) {
+			key = firstStringBuilder.append(DESC_KEY_SUFFIX).toString();
+		} else if (KeyTypeOfConfieProperties.VALUE.equals(keyTypeOfConfieFile)) {
+			key = firstStringBuilder.append(VALUE_KEY_SUFFIX).toString();		
+		} else if (KeyTypeOfConfieProperties.ITEM_VIEW_TYPE.equals(keyTypeOfConfieFile)) {
+			key = firstStringBuilder.append(ITEM_VIEW_TYPE_KEY_SUFFIX).toString();
+		} else if (KeyTypeOfConfieProperties.SET.equals(keyTypeOfConfieFile)) {
+			key = firstStringBuilder.append(SET_KEY_SUFFIX).toString();
+		} else if (KeyTypeOfConfieProperties.FILE.equals(keyTypeOfConfieFile)) {
+			key = firstStringBuilder.append(FILE_KEY_SUFFIX).toString();
+		} else if (KeyTypeOfConfieProperties.PATH.equals(keyTypeOfConfieFile)) {
+			key = firstStringBuilder.append(PATH_KEY_SUFFIX).toString();
+		} else {
+			throw new IllegalArgumentException("unknown key type of config file");
 		}
 		
 		return key;
@@ -159,7 +206,7 @@ public class RunningProjectConfiguration implements ConfigurationIF {
 		while (keys.hasMoreElements()) {
 			String key = keys.nextElement();
 
-			if (key.endsWith(".item_view_type")) {
+			if (key.endsWith(ITEM_VIEW_TYPE_KEY_SUFFIX)) {
 				String value = sourceSequencedProperties.getProperty(key);
 
 				final ItemViewType itemViewType;
@@ -173,7 +220,7 @@ public class RunningProjectConfiguration implements ConfigurationIF {
 				}
 
 				if (ItemViewType.FILE.equals(itemViewType) || ItemViewType.PATH.equals(itemViewType)) {
-					String subkey = key.substring(0, key.length() - ".item_view_type".length());
+					String subkey = key.substring(0, key.length() - ITEM_VIEW_TYPE_KEY_SUFFIX.length());
 
 					String guiProjectHomeBaseRelativePathKey = new StringBuilder().append(subkey).append(".")
 							.append(itemViewType.name().toLowerCase()).toString();
@@ -224,6 +271,9 @@ public class RunningProjectConfiguration implements ConfigurationIF {
 	}
 	
 	
+	/**
+	 * @return 세션키 파트 설정
+	 */
 	public SessionkeyPartConfiguration getSessionkeyPartConfiguration() {
 		return sessionkeyPartConfiguration;
 	}
@@ -274,7 +324,13 @@ public class RunningProjectConfiguration implements ConfigurationIF {
 		SUBPROJECT.toProperties(targetSequencedProperties);
 	}
 	
-	public void checkVadlidation() throws IllegalStateException {
+	/**
+	 *  
+	 * 모든 파트 설정의 값들중 null 이 존재하면 상태 이상 예외를 던진다.
+	 * 
+	 * @throws IllegalStateException 모든 파트 설정의 값들중 null 이 존재하면 던지는 예외
+	 */
+	public void checkNull() throws IllegalStateException {
 		boolean isValid;
 		for (String dbcpName : DBCP.getNameList()) {
 			DBCPParConfiguration dbcpParConfiguration = DBCP.getProjectPartConfiguration(dbcpName);
@@ -318,5 +374,58 @@ public class RunningProjectConfiguration implements ConfigurationIF {
 		}
 	}
 	
+	/**
+	 * <pre>
+	 * 주어진 파트 이름에 해당하는 신규 파트 설정을 반환한다, 단 주어진 파트 이름에 해당하는 파트가 없다면 null 을 반환한다.
+	 * WARNING! 상속 받을 경우 반듯이 추가된 파트에 대해서 처리를 해주어야 한다.
+	 * </pre>
+	 * 
+	 * @param partName 반환을 원하는 파트 이름 
+	 * @return 주어진 파트 이름에 해당하는 신규 파트 설정, 단 주어진 파트 이름에 해당하는 파트가 없다면 null 을 반환한다.
+	 */
+	public PartConfigurationIF createNewPartConfiguration(String partName) {		
+		if (null == partName) {
+			throw new IllegalArgumentException("the parameter partName is null");
+		}
+		
+		if (SessionkeyPartConfiguration.PART_NAME.equals(partName)) {
+			return new SessionkeyPartConfiguration();
+		}
+		
+		if (MainProjectPartConfiguration.PART_NAME.equals(partName)) {
+			return new MainProjectPartConfiguration();
+		}
+		
+		return null;
+	}
 	
+	/**
+	 * <pre>
+	 * 주어진 목록형 파트 이름과 서브 파트이름에 해당하는 신규 파트 설정을 반환한다, 단 주어진 목록형 파트 이름 혹은 서브 파트이름이 없다면 null 을 반환한다.
+	 * WARNING! 상속 받을 경우 반듯이 추가된 목록형 파트에 대해서 처리를 해주어야 한다.
+	 * </pre>
+	 * 
+	 * @param partName 목록형 파트 이름
+	 * @param subPartName 서브 파트이름
+	 * @return 주어진 목록형 파트 이름과 서브 파트이름에 해당하는 신규 파트 설정, 단 주어진 목록형 파트 이름 혹은 서브 파트이름이 없다면 null 을 반환한다.
+	 */
+	public PartConfigurationIF createNewPartConfiguration(String partName, String subPartName) {
+		if (null == partName) {
+			throw new IllegalArgumentException("the parameter partName is null");
+		}
+		
+		if (null == subPartName) {
+			throw new IllegalArgumentException("the parameter subPartName is null");
+		}
+		
+		if (DBCPParConfiguration.PART_NAME.equals(partName)) {
+			return new DBCPParConfiguration(subPartName);
+		}
+		
+		if (SubProjectPartConfiguration.PART_NAME.equals(partName)) {
+			return new SubProjectPartConfiguration(subPartName);
+		}
+		
+		return null;
+	}
 }

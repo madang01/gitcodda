@@ -57,11 +57,11 @@ public abstract class ClientMessageUtility {
 	 * @param messageID 메시지 식별자
 	 * @param receviedMiddleObject 입력 스트림에서 메시지 변환용으로 추출된 '수신한 중간 객체'    
 	 * @return 지정한 '수신한 중간 객체'로 부터 변환된 지정한 메일 박스 식별자와 메일 식별자 그리고 메시지 식별자를 갖는 출력 메시지
-	 * @throws IOException 
-	 * @throws BodyFormatException 
-	 * @throws ServerTaskException 
-	 * @throws NoMoreWrapBufferException 
-	 * @throws DynamicClassCallException 
+	 * @throws IOException 입출력 에러 발생시 던지는 예외
+	 * @throws BodyFormatException 메시지 내용이 담기는 바디 부분에 잘못된 값이 있을때 던지는 예외
+	 * @throws ServerTaskException  서버 비지니스 로직 에러 발생시 던지는 예외
+	 * @throws NoMoreWrapBufferException  랩버퍼 부족시 던지는 예외
+	 * @throws DynamicClassCallException  동적 클래스 호출 실패시 던지는 예외
 	 */
 	public static AbstractMessage buildOutputMessage(String title,
 			MessageDecoderManagerIF messageCodecManger, 

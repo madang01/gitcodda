@@ -57,7 +57,7 @@ public class AsynNoShareConnectionPool implements ConnectionPoolIF, AsynConnecte
 	private final int serverPort;
 	private final long socketTimeout;
 	private final StreamCharsetFamily streamCharsetFamily;
-	private final int maxNumberOfWrapBufferPerMessage;
+	private final int clientWrapBufferMaxCntPerMessage;
 	private final int clientAsynInputMessageQueueCapacity;
 	private final long aliveTimePerWrapBuffer;
 	private final long retryIntervaTimeToAddInputMessage;
@@ -78,19 +78,19 @@ public class AsynNoShareConnectionPool implements ConnectionPoolIF, AsynConnecte
 	private transient int numberOfUnregisteredConnections = 0;
 
 	private ClientIOEventControllerIF asynClientIOEventController = null;
-
+	
 	/**
 	 * 생성자
-	 * 
 	 * @param projectName 프로젝트 이름
 	 * @param serverHost 서버 호스트 주소
 	 * @param serverPort 서버 포트 번호
 	 * @param socketTimeout  소켓 타임 아웃 시간, 단위 : milliseconds
-	 * @param streamCharsetFamily 문자셋, 문자셋 디코더 그리고 문자셋 인코더 묶음
-	 * @param clientDataPacketBufferMaxCntPerMessage 메시지 1개당 랩 버퍼 최대 갯수
-	 * @param clientAsynInputMessageQueueCapacity 출력 메시지 큐 크기
+	 * @param streamCharsetFamily 스트림을 다룰때 자주 사용하는 문자셋 관련 객체들 묶음
+	 * @param clientWrapBufferMaxCntPerMessage 메시지 1개당 랩 버퍼 최대 갯수
+	 * @param clientAsynInputMessageQueueCapacity 비동기 입력 메시지 큐 최대 수용 능력
 	 * @param aliveTimePerWrapBuffer 랩버퍼 1개당 생존 시간, 단위 : nanoseconds
-	 * @param retryIntervaTimeToAddInputMessage 입력 메시지 스트림 큐에 입력 메시지 스트림을 다시 추가하는 간격, 단위 nanoseconds, 참고) '송신이 끝난 입력 메시지 스트림 큐'가 비어 있고 '송신중인 입력 메시지 스트림 큐'가 가득 찬 경우에 타임 아웃 시간안에 일정 시간 대기후 '입력 메시지 스트림'을 '송신중인 입력 메시지 스트림 큐' 에  다시 넣기를 시도한다.
+	 * @param retryIntervaTimeToAddInputMessage '송신중인 입력 메시지 스트림 큐' 에  메시지 스트림을 다시 추가하는 간격, 단위 nanoseconds
+	 * @param retryIntervaTimeToGetConnection 연결을 얻기 위한 재 시도 간격, 단위 nanoseconds
 	 * @param clientConnectionCount 클라이언트 연결 갯수
 	 * @param messageProtocol 메시지 프로토콜
 	 * @param clientTaskManger 클라이언트 타스크 관리자
@@ -102,7 +102,7 @@ public class AsynNoShareConnectionPool implements ConnectionPoolIF, AsynConnecte
 	 */
 	public AsynNoShareConnectionPool(String projectName, String serverHost, int serverPort, long socketTimeout,
 			StreamCharsetFamily streamCharsetFamily,
-			int clientDataPacketBufferMaxCntPerMessage,
+			int clientWrapBufferMaxCntPerMessage,
 			int clientAsynInputMessageQueueCapacity,
 			long aliveTimePerWrapBuffer, 
 			long retryIntervaTimeToAddInputMessage,
@@ -137,7 +137,7 @@ public class AsynNoShareConnectionPool implements ConnectionPoolIF, AsynConnecte
 		this.serverPort = serverPort;
 		this.socketTimeout = socketTimeout;
 		this.streamCharsetFamily = streamCharsetFamily;
-		this.maxNumberOfWrapBufferPerMessage = clientDataPacketBufferMaxCntPerMessage;
+		this.clientWrapBufferMaxCntPerMessage = clientWrapBufferMaxCntPerMessage;
 		this.clientAsynInputMessageQueueCapacity = clientAsynInputMessageQueueCapacity;
 		this.aliveTimePerWrapBuffer = aliveTimePerWrapBuffer;
 		this.retryIntervaTimeToAddInputMessage = retryIntervaTimeToAddInputMessage;
@@ -372,7 +372,7 @@ public class AsynNoShareConnectionPool implements ConnectionPoolIF, AsynConnecte
 				serverPort,
 				socketTimeout,
 				streamCharsetFamily,				
-				maxNumberOfWrapBufferPerMessage,
+				clientWrapBufferMaxCntPerMessage,
 				clientAsynInputMessageQueueCapacity,
 				aliveTimePerWrapBuffer, 
 				retryIntervaTimeToAddInputMessage, 

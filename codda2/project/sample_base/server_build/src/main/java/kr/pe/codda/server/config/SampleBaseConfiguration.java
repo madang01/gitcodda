@@ -1,6 +1,7 @@
 package kr.pe.codda.server.config;
 
 
+import kr.pe.codda.common.config.part.PartConfigurationIF;
 import kr.pe.codda.common.config.part.RunningProjectConfiguration;
 import kr.pe.codda.common.exception.PartConfigurationException;
 import kr.pe.codda.common.util.SequencedProperties;
@@ -31,5 +32,14 @@ public class SampleBaseConfiguration extends RunningProjectConfiguration {
 			throws IllegalArgumentException, IllegalStateException {
 		jdfPartConfiguration.toProperties(targetSequencedProperties);
 		super.toProperties(targetSequencedProperties);
+	}
+	
+	@Override
+	public PartConfigurationIF createNewPartConfiguration(String partName) {	
+		if (JDFPartConfiguration.partName.equals(partName)) {
+			return new JDFPartConfiguration();
+		} else {
+			return super.createNewPartConfiguration(partName);
+		}
 	}
 }

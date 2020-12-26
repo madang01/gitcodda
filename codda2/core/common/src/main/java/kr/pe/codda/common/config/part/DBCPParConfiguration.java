@@ -22,7 +22,7 @@ import java.util.logging.Logger;
 import kr.pe.codda.common.config.nativevalueconverter.GeneralConverterReturningRegularFile;
 import kr.pe.codda.common.exception.PartConfigurationException;
 import kr.pe.codda.common.type.ItemViewType;
-import kr.pe.codda.common.type.KeyTypeOfConfieFile;
+import kr.pe.codda.common.type.KeyTypeOfConfieProperties;
 import kr.pe.codda.common.util.SequencedProperties;
 
 /**
@@ -33,14 +33,14 @@ public class DBCPParConfiguration implements PartConfigurationIF {
 	private Logger log = Logger.getLogger(DBCPParConfiguration.class.getName());
 	
 
-	public static final String partName = "dbcp";
+	public static final String PART_NAME = "dbcp";
 	
 	
 	private final String dbcpName;
 	private final String prefixBeforeItemID;
 	
 	
-	private final static String itemIDOfDBCPConfigFile = "dbcp_confige_file";
+	public final static String itemIDOfDBCPConfigFile = "dbcp_confige_file";
 	private File dbcpConfigFile = null;
 	
 	
@@ -53,14 +53,14 @@ public class DBCPParConfiguration implements PartConfigurationIF {
 		this.dbcpName = dbcpName;
 		
 		prefixBeforeItemID = new StringBuilder()
-				.append(partName)
+				.append(PART_NAME)
 				.append(".").append(dbcpName)
 				.append(".").toString();
 	}	
 	
 	@Override
 	public String getPartName() {
-		return partName;
+		return PART_NAME;
 	}
 	
 	@Override
@@ -79,7 +79,7 @@ public class DBCPParConfiguration implements PartConfigurationIF {
 	
 	public void fromPropertiesForDBCPConfigFile(SequencedProperties sourceSequencedProperties) throws PartConfigurationException {
 		String itemKey = RunningProjectConfiguration
-				.buildKeyOfConfigFile(prefixBeforeItemID, itemIDOfDBCPConfigFile, KeyTypeOfConfieFile.VALUE);
+				.buildKeyOfConfigFile(prefixBeforeItemID, itemIDOfDBCPConfigFile, KeyTypeOfConfieProperties.VALUE);
 				
 		String itemValue = sourceSequencedProperties.getProperty(itemKey);
 		
@@ -123,23 +123,23 @@ public class DBCPParConfiguration implements PartConfigurationIF {
 	
 	public void toPropertiesForDBCPConfigFile(SequencedProperties targetSequencedProperties) {		
 		String itemDescKey = RunningProjectConfiguration
-				.buildKeyOfConfigFile(prefixBeforeItemID, itemIDOfDBCPConfigFile, KeyTypeOfConfieFile.DESC);
+				.buildKeyOfConfigFile(prefixBeforeItemID, itemIDOfDBCPConfigFile, KeyTypeOfConfieProperties.DESC);
 				
 		String itemDescValue = "dbcp 설정 파일 경로를 입력해 주세요";		
 		targetSequencedProperties.put(itemDescKey, itemDescValue);
 		
 		String itemKey = RunningProjectConfiguration
-				.buildKeyOfConfigFile(prefixBeforeItemID, itemIDOfDBCPConfigFile, KeyTypeOfConfieFile.VALUE);
+				.buildKeyOfConfigFile(prefixBeforeItemID, itemIDOfDBCPConfigFile, KeyTypeOfConfieProperties.VALUE);
 		String itemValue = (null == dbcpConfigFile) ? "" : dbcpConfigFile.getAbsolutePath();		
 		targetSequencedProperties.put(itemKey, itemValue);
 		
 		String itemViewTypeKey = RunningProjectConfiguration
-				.buildKeyOfConfigFile(prefixBeforeItemID, itemIDOfDBCPConfigFile, KeyTypeOfConfieFile.ITEM_VIEW_TYPE);
+				.buildKeyOfConfigFile(prefixBeforeItemID, itemIDOfDBCPConfigFile, KeyTypeOfConfieProperties.ITEM_VIEW_TYPE);
 		String itemViewTypeValue = ItemViewType.FILE.name().toLowerCase();
 		targetSequencedProperties.put(itemViewTypeKey, itemViewTypeValue);		
 		
 		String dbcpConfigFileKey = RunningProjectConfiguration
-				.buildKeyOfConfigFile(prefixBeforeItemID, itemIDOfDBCPConfigFile, KeyTypeOfConfieFile.FILE);
+				.buildKeyOfConfigFile(prefixBeforeItemID, itemIDOfDBCPConfigFile, KeyTypeOfConfieProperties.FILE);
 		String dbcpConfigFileValue = "resources/dbcp/dbcp."+dbcpName+".properties";
 		targetSequencedProperties.put(dbcpConfigFileKey, dbcpConfigFileValue);
 	}

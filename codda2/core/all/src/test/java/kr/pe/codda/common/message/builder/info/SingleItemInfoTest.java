@@ -84,10 +84,10 @@ public class SingleItemInfoTest {
 		String itemCharset = null;
 		
 		
-		SingleItemInfo singleItemInfo = null;
+		MessageSingleItemInfo singleItemInfo = null;
 		
 		try {
-			singleItemInfo = new SingleItemInfo(itemName, itemTypeName,
+			singleItemInfo = new MessageSingleItemInfo(itemName, itemTypeName,
 					itemDefaultValue, itemSize, itemCharset);
 			
 			log.info(singleItemInfo.toString());
@@ -115,9 +115,9 @@ public class SingleItemInfoTest {
 		String itemCharset = null;
 		
 		
-		SingleItemInfo singleItemInfo = null;
+		MessageSingleItemInfo singleItemInfo = null;
 		try {
-			singleItemInfo = new SingleItemInfo(itemName, itemTypeName,
+			singleItemInfo = new MessageSingleItemInfo(itemName, itemTypeName,
 					itemDefaultValue, itemSize, itemCharset);
 			
 			singleItemInfo.hashCode();
@@ -145,10 +145,10 @@ public class SingleItemInfoTest {
 		String itemCharset = null;
 		
 		
-		SingleItemInfo singleItemInfo = null;
+		MessageSingleItemInfo singleItemInfo = null;
 		
 		try {
-			singleItemInfo = new SingleItemInfo(itemName, itemTypeName,
+			singleItemInfo = new MessageSingleItemInfo(itemName, itemTypeName,
 					itemDefaultValue, itemSize, itemCharset);
 			
 			singleItemInfo.hashCode();
@@ -179,10 +179,10 @@ public class SingleItemInfoTest {
 		String itemCharset = null;
 		
 		
-		SingleItemInfo singleItemInfo = null;
+		MessageSingleItemInfo singleItemInfo = null;
 		
 		try {
-			singleItemInfo = new SingleItemInfo(itemName, itemTypeName,
+			singleItemInfo = new MessageSingleItemInfo(itemName, itemTypeName,
 					itemDefaultValue, itemSize, itemCharset);
 			
 			singleItemInfo.hashCode();
@@ -231,10 +231,10 @@ public class SingleItemInfoTest {
 			String itemCharset = null;
 			
 		
-			SingleItemInfo singleItemInfo = null;
+			MessageSingleItemInfo singleItemInfo = null;
 			
 			try {
-				singleItemInfo = new SingleItemInfo(itemName, itemTypeName,
+				singleItemInfo = new MessageSingleItemInfo(itemName, itemTypeName,
 						itemDefaultValue, itemSize, itemCharset);
 				
 				singleItemInfo.hashCode();
@@ -272,10 +272,10 @@ public class SingleItemInfoTest {
 			String itemCharset = null;
 			
 			
-			SingleItemInfo singleItemInfo = null;
+			MessageSingleItemInfo singleItemInfo = null;
 			
 			try {
-				singleItemInfo = new SingleItemInfo(itemName, itemTypeName,
+				singleItemInfo = new MessageSingleItemInfo(itemName, itemTypeName,
 						itemDefaultValue, itemSize, itemCharset);
 				
 				singleItemInfo.hashCode();
@@ -314,10 +314,10 @@ public class SingleItemInfoTest {
 				String itemCharset = null;
 				
 				
-				SingleItemInfo singleItemInfo = null;
+				MessageSingleItemInfo singleItemInfo = null;
 				
 				try {
-					singleItemInfo = new SingleItemInfo(itemName, itemTypeName,
+					singleItemInfo = new MessageSingleItemInfo(itemName, itemTypeName,
 							itemDefaultValue, itemSize, itemCharset);
 					
 					singleItemInfo.hashCode();
@@ -371,10 +371,10 @@ public class SingleItemInfoTest {
 			String itemCharset = null;			
 			
 			
-			SingleItemInfo singleItemInfo = null;
+			MessageSingleItemInfo singleItemInfo = null;
 			
 			try {
-				singleItemInfo = new SingleItemInfo(itemName, itemTypeName,
+				singleItemInfo = new MessageSingleItemInfo(itemName, itemTypeName,
 						itemDefaultValue, itemSize, itemCharset);
 				
 				singleItemInfo.hashCode();
@@ -409,10 +409,10 @@ public class SingleItemInfoTest {
 			String itemSize = null;
 			String itemCharset = null;
 			
-			SingleItemInfo singleItemInfo = null;
+			MessageSingleItemInfo singleItemInfo = null;
 			
 			try {
-				singleItemInfo = new SingleItemInfo(itemName, itemTypeName,
+				singleItemInfo = new MessageSingleItemInfo(itemName, itemTypeName,
 						itemDefaultValue, itemSize, itemCharset);
 				
 				singleItemInfo.hashCode();
@@ -446,10 +446,10 @@ public class SingleItemInfoTest {
 			String itemSize = "-1";
 			String itemCharset = null;
 			
-			SingleItemInfo singleItemInfo = null;
+			MessageSingleItemInfo singleItemInfo = null;
 			
 			try {
-				singleItemInfo = new SingleItemInfo(itemName, itemTypeName,
+				singleItemInfo = new MessageSingleItemInfo(itemName, itemTypeName,
 						itemDefaultValue, itemSize, itemCharset);
 				
 				singleItemInfo.hashCode();
@@ -488,10 +488,10 @@ public class SingleItemInfoTest {
 			String itemSize = "king";
 			String itemCharset = null;
 			
-			SingleItemInfo singleItemInfo = null;
+			MessageSingleItemInfo singleItemInfo = null;
 			
 			try {
-				singleItemInfo = new SingleItemInfo(itemName, itemTypeName,
+				singleItemInfo = new MessageSingleItemInfo(itemName, itemTypeName,
 						itemDefaultValue, itemSize, itemCharset);
 				
 				singleItemInfo.hashCode();
@@ -536,10 +536,10 @@ public class SingleItemInfoTest {
 				itemSize = "10";						
 			}
 			
-			SingleItemInfo singleItemInfo = null;
+			MessageSingleItemInfo singleItemInfo = null;
 			
 			try {
-				singleItemInfo = new SingleItemInfo(itemName, itemTypeName,
+				singleItemInfo = new MessageSingleItemInfo(itemName, itemTypeName,
 						itemDefaultValue, itemSize, itemCharset);
 				
 				singleItemInfo.hashCode();
@@ -587,10 +587,10 @@ public class SingleItemInfoTest {
 			}
 			
 			
-			SingleItemInfo singleItemInfo = null;
+			MessageSingleItemInfo singleItemInfo = null;
 			
 			try {
-				singleItemInfo = new SingleItemInfo(itemName, itemTypeName,
+				singleItemInfo = new MessageSingleItemInfo(itemName, itemTypeName,
 						itemDefaultValue, itemSize, itemCharset);
 				singleItemInfo.hashCode();
 				fail("no IllegalArgumentException");
@@ -636,10 +636,10 @@ public class SingleItemInfoTest {
 			String itemSize = "10";
 			String itemCharset = null;
 			
-			SingleItemInfo singleItemInfo = null;
+			MessageSingleItemInfo singleItemInfo = null;
 			
 			try {
-				singleItemInfo = new SingleItemInfo(itemName, itemTypeName,
+				singleItemInfo = new MessageSingleItemInfo(itemName, itemTypeName,
 						itemDefaultValue, itemSize, itemCharset);
 				
 				singleItemInfo.hashCode();
@@ -689,10 +689,10 @@ public class SingleItemInfoTest {
 				itemSize = "10";
 			}
 			
-			SingleItemInfo singleItemInfo = null;
+			MessageSingleItemInfo singleItemInfo = null;
 			
 			try {
-				singleItemInfo = new SingleItemInfo(itemName, itemTypeName,
+				singleItemInfo = new MessageSingleItemInfo(itemName, itemTypeName,
 						itemDefaultValue, itemSize, itemCharset);
 				
 				singleItemInfo.hashCode();

@@ -344,11 +344,11 @@ public class ServerTaskManger implements ServerTaskMangerIF, AppInfClassFileModi
 	/**
 	 * 참조 :
 	 * https://stackoverflow.com/questions/50019075/get-bytecode-dependency-information-from-class-files-through-java
-	 * ===> answered Apr 26 '18 at 10:11 Holger
+	 * 답변 작성 일자및 작성자 : answered Apr 26 '18 at 10:11 Holger
 	 * 
-	 * @param is
-	 * @return
-	 * @throws IOException
+	 * @param dis 클래스 파일의 내용이 담긴 데이터 입력 스트림
+	 * @return 동적 클래스 대상 클래스 전체 이름 집합
+	 * @throws IOException 입출력 에러 발생시 던지는 예외
 	 */
 	public Set<String> getDependentDynamicClassSet(DataInputStream dis) throws IOException {
 		ClassFile cf = new ClassFile(dis);

@@ -13,7 +13,7 @@ public class ListTypePartConfiguration<T extends PartConfigurationIF> implements
 	private final String partName;
 	private final Class<T> clazz;
 	
-	private final String nameListKey;
+	private final String subPartNameListKey;
 	
 	private final ArrayList<String> nameList = new ArrayList<String>();
 	private final HashMap<String, T> partConfigurationHash = new HashMap<String, T>();
@@ -39,8 +39,8 @@ public class ListTypePartConfiguration<T extends PartConfigurationIF> implements
 		this.clazz = clazz;
 		
 		
-		nameListKey = new StringBuilder().append(partName)
-				.append(".name_list.value").toString();
+		subPartNameListKey = new StringBuilder().append(partName)
+				.append(RunningProjectConfiguration.SUB_PART_NAME_LIST_KEY_SUFFIX).toString();
 	}
 	
 
@@ -48,22 +48,22 @@ public class ListTypePartConfiguration<T extends PartConfigurationIF> implements
 	public void fromProperties(SequencedProperties sourceSequencedProperties)
 			throws IllegalArgumentException, PartConfigurationException {
 		
-		String nameListValue = sourceSequencedProperties.getProperty(nameListKey);
+		String subPartNameListValue = sourceSequencedProperties.getProperty(subPartNameListKey);
 
-		if (null == nameListValue) {
+		if (null == subPartNameListValue) {
 			String errorMessage = new StringBuilder()
 					.append("the ")
 					.append(partName)
-					.append(" list key(=").append(nameListKey)
+					.append(" list key(=").append(subPartNameListKey)
 					.append(") was not found in the parameter sourceSequencedProperties").toString();
-			throw new PartConfigurationException(nameListKey, errorMessage);
+			throw new PartConfigurationException(subPartNameListKey, errorMessage);
 		}
 
-		nameListValue = nameListValue.trim();
+		subPartNameListValue = subPartNameListValue.trim();
 		nameList.clear();
 		partConfigurationHash.clear();
 		
-		StringTokenizer tokens = new StringTokenizer(nameListValue, ",");
+		StringTokenizer tokens = new StringTokenizer(subPartNameListValue, ",");
 
 		int inx=0;
 		while (tokens.hasMoreTokens()) {
@@ -75,7 +75,7 @@ public class ListTypePartConfiguration<T extends PartConfigurationIF> implements
 						.append("the ").append(partName).append(" list[")
 						.append(inx)
 						.append("]'s element is empty").toString();
-				throw new PartConfigurationException(nameListKey, errorMessage);
+				throw new PartConfigurationException(subPartNameListKey, errorMessage);
 			}
 			
 			if (CommonStaticUtil.hasLeadingOrTailingWhiteSpace(name)) {
@@ -83,7 +83,7 @@ public class ListTypePartConfiguration<T extends PartConfigurationIF> implements
 						.append("the ").append(partName).append(" list[")
 						.append(inx)
 						.append("]'s element has a leading or tailing white space").toString();
-				throw new PartConfigurationException(nameListKey, errorMessage);
+				throw new PartConfigurationException(subPartNameListKey, errorMessage);
 			}
 						
 			if (nameList.contains(name)) {
@@ -92,7 +92,7 @@ public class ListTypePartConfiguration<T extends PartConfigurationIF> implements
 						.append(inx)
 						.append("]'s element[").append(name)
 						.append("] already was registered").toString();
-				throw new PartConfigurationException(nameListKey, errorMessage);
+				throw new PartConfigurationException(subPartNameListKey, errorMessage);
 			}
 			
 			final T partConfiguration;
@@ -107,7 +107,7 @@ public class ListTypePartConfiguration<T extends PartConfigurationIF> implements
 						.append(inx)
 						.append("]'s element[").append(name)
 						.append("]").toString();
-				throw new PartConfigurationException(nameListKey, errorMessage);
+				throw new PartConfigurationException(subPartNameListKey, errorMessage);
 			}
 			
 			partConfiguration.fromProperties(sourceSequencedProperties);
@@ -132,26 +132,26 @@ public class ListTypePartConfiguration<T extends PartConfigurationIF> implements
 		}
 	}
 	
-	private String convertNameListToNameListValue() {
-		StringBuilder nameListValueBuilder = new StringBuilder();
+	private String convertSubPartNameListToSubPartNameListValue() {
+		StringBuilder subPartNameListValueBuilder = new StringBuilder();
 		boolean isFirst = true;
 		for (String name : nameList) {
 			if (isFirst) {
 				isFirst = false;
 			} else {
-				nameListValueBuilder.append(", ");
+				subPartNameListValueBuilder.append(", ");
 			}
 
-			nameListValueBuilder.append(name);
+			subPartNameListValueBuilder.append(name);
 		}
 
-		return nameListValueBuilder.toString();
+		return subPartNameListValueBuilder.toString();
 	}
 
 	@Override
 	public void toProperties(SequencedProperties targetSequencedProperties) throws IllegalArgumentException {
 		
-		targetSequencedProperties.put(nameListKey, convertNameListToNameListValue());
+		targetSequencedProperties.put(subPartNameListKey, convertSubPartNameListToSubPartNameListValue());
 		
 		for (String name : nameList) {
 			PartConfigurationIF partConfiguration = partConfigurationHash.get(name);

@@ -17,7 +17,7 @@ public interface ConfigurationIF {
 	/**
 	 * 항목 값을 바탕으로 의존성 검사를 수행한다. WARNING! {@link #fromProperties(SequencedProperties)} 가 먼저 수행됨을 전제 조건으로 한다 
 	 * 
-	 * @throws PartConfigurationException
+	 * @throws PartConfigurationException 있어야할 설정 파일의 항목이 없을때 혹은 값이 잘못되었을때 던지는 예외
 	 */
 	public void checkForDependencies() throws PartConfigurationException;
 	

@@ -56,6 +56,8 @@ public class ItemValuePanel extends JPanel {
 		this.itemSet = itemSet;
 		this.mainFrame = mainFrame;
 		this.itemViewType = itemViewType;
+		
+		// this.getComponentCount();
 						
 		if (itemViewType == GUIItemType.FILE) {
 			valueTextField = new JTextField();

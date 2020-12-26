@@ -66,6 +66,7 @@ public class AnyProjectServer {
 	
 	/**
 	 * 생성자
+	 * @param projectName 프로젝트 이름
 	 * @param serverAPPINFClassPathString 서버 클래스로더의 동적 클래스 경로 문자열
 	 * @param projectResourcesPathString 서버 클래스로더의 리소스 경로 문자열
 	 * @param mainProjectPartConfiguration 프로젝트 설정

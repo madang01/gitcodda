@@ -16,6 +16,8 @@ limitations under the License.
 package kr.pe.codda.common.type;
 
 /**
+ * 항목 뷰 유형, 참고) 도우미 GUI 프로그램에서 설정 파일 항목을 보여주고 처리하는 방식을 말한다. DATA 는 문자열, SET 은 콤보박스, PATH 는 경로, FILE 은 파일 로 보여주며 처리된다.
+ * 
  * @author Won Jonghoon
  *
  */

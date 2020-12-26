@@ -120,7 +120,7 @@ public class AbstractJunitTest {
 			fail("the installed path isn't a directory");
 		}
 		
-		wasLibPath = new File("D:\\apache-tomcat-8.5.32\\lib");
+		wasLibPath = new File("D:\\apache-tomcat-8.5.50\\lib");
 		// wasLibPath = new File("/usr/share/tomcat8/lib");
 		if (! wasLibPath.exists()) {
 			fail("the was libaray path doesn't exist");

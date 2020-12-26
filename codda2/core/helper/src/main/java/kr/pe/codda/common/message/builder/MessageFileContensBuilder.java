@@ -4,13 +4,13 @@ import java.util.List;
 
 import kr.pe.codda.common.etc.CommonStaticFinalVars;
 import kr.pe.codda.common.message.AbstractMessage;
-import kr.pe.codda.common.message.builder.info.AbstractItemInfo;
-import kr.pe.codda.common.message.builder.info.ArrayInfo;
-import kr.pe.codda.common.message.builder.info.GroupInfo;
+import kr.pe.codda.common.message.builder.info.AbstractMessageItemInfo;
+import kr.pe.codda.common.message.builder.info.MessageArrayInfo;
+import kr.pe.codda.common.message.builder.info.MessageGroupInfo;
 import kr.pe.codda.common.message.builder.info.MessageInfo;
-import kr.pe.codda.common.message.builder.info.OrderedItemSet;
-import kr.pe.codda.common.message.builder.info.SingleItemInfo;
-import kr.pe.codda.common.type.ItemInfoType;
+import kr.pe.codda.common.message.builder.info.MessageSingleItemInfo;
+import kr.pe.codda.common.message.builder.info.OrderedMessageItemSet;
+import kr.pe.codda.common.type.MessageItemInfoType;
 import kr.pe.codda.common.util.CommonStaticUtil;
 import kr.pe.codda.common.util.HexUtil;
 
@@ -23,7 +23,7 @@ public class MessageFileContensBuilder extends AbstractSourceFileBuildre {
 	 * @param itemSet 배열 정보
 	 * @return 배열 정보를 바탕으로만들어진 내부 클래스
 	 */
-	public void addClassDefinePart(StringBuilder contentsStringBuilder, int depth, String firstUpperItemName, OrderedItemSet itemSet) {
+	public void addClassDefinePart(StringBuilder contentsStringBuilder, int depth, String firstUpperItemName, OrderedMessageItemSet itemSet) {
 		contentsStringBuilder.append(CommonStaticFinalVars.NEWLINE);
 		CommonStaticUtil.addPrefixWithTabCharacters(contentsStringBuilder, depth, 0);		
 		contentsStringBuilder.append("public static class ");
@@ -40,7 +40,7 @@ public class MessageFileContensBuilder extends AbstractSourceFileBuildre {
 	}
 	
 	
-	public void addVariableDeclarationPartForSingleItemInfo(StringBuilder contentsStringBuilder, int depth, SingleItemInfo singleItemInfo) {
+	public void addVariableDeclarationPartForSingleItemInfo(StringBuilder contentsStringBuilder, int depth, MessageSingleItemInfo singleItemInfo) {
 		contentsStringBuilder.append(CommonStaticFinalVars.NEWLINE);
 		CommonStaticUtil.addPrefixWithTabCharacters(contentsStringBuilder, depth, 0);
 		contentsStringBuilder.append("private ");
@@ -57,7 +57,7 @@ public class MessageFileContensBuilder extends AbstractSourceFileBuildre {
 		contentsStringBuilder.append(";");
 	}
 	
-	public void addVariableDeclarationPartForArrayInfo(StringBuilder contentsStringBuilder, int depth, ArrayInfo arrayInfo) {
+	public void addVariableDeclarationPartForArrayInfo(StringBuilder contentsStringBuilder, int depth, MessageArrayInfo arrayInfo) {
 		addClassDefinePart(contentsStringBuilder, depth, arrayInfo.getFirstUpperItemName(), arrayInfo.getOrderedItemSet());
 		contentsStringBuilder.append(CommonStaticFinalVars.NEWLINE);
 		contentsStringBuilder.append(CommonStaticFinalVars.NEWLINE);
@@ -70,7 +70,7 @@ public class MessageFileContensBuilder extends AbstractSourceFileBuildre {
 	}
 	
 	
-	public void addVariableDeclarationPartForGroupInfo(StringBuilder contentsStringBuilder, int depth, GroupInfo groupInfo) {
+	public void addVariableDeclarationPartForGroupInfo(StringBuilder contentsStringBuilder, int depth, MessageGroupInfo groupInfo) {
 		contentsStringBuilder.append(CommonStaticFinalVars.NEWLINE);
 		addClassDefinePart(contentsStringBuilder, depth+1, groupInfo.getFirstUpperItemName(), groupInfo.getOrderedItemSet());
 		contentsStringBuilder.append(CommonStaticFinalVars.NEWLINE);
@@ -83,26 +83,26 @@ public class MessageFileContensBuilder extends AbstractSourceFileBuildre {
 	}
 	
 	
-	public void addVariableDeclarationPart(StringBuilder contentsStringBuilder, int depth, OrderedItemSet itemSet) {
-		List<AbstractItemInfo> itemInfoList = itemSet.getItemInfoList();
-		for (AbstractItemInfo itemInfo: itemInfoList) {
-			ItemInfoType itemInfoType = itemInfo.getItemInfoType();
+	public void addVariableDeclarationPart(StringBuilder contentsStringBuilder, int depth, OrderedMessageItemSet itemSet) {
+		List<AbstractMessageItemInfo> itemInfoList = itemSet.getItemInfoList();
+		for (AbstractMessageItemInfo itemInfo: itemInfoList) {
+			MessageItemInfoType itemInfoType = itemInfo.getMessageItemInfoType();
 			switch (itemInfoType) {	
 				case SINGLE :  {
-					SingleItemInfo singleItemInfo = (SingleItemInfo)itemInfo;
+					MessageSingleItemInfo singleItemInfo = (MessageSingleItemInfo)itemInfo;
 					addVariableDeclarationPartForSingleItemInfo(contentsStringBuilder, depth, singleItemInfo);					
 					break;
 				}
 				case ARRAY :  {
 					contentsStringBuilder.append(CommonStaticFinalVars.NEWLINE);
-					ArrayInfo arrayInfo = (ArrayInfo)itemInfo;
+					MessageArrayInfo arrayInfo = (MessageArrayInfo)itemInfo;
 					addVariableDeclarationPartForArrayInfo(contentsStringBuilder, depth, arrayInfo);
 					
 					break;
 				}
 				case GROUP :  {
 					contentsStringBuilder.append(CommonStaticFinalVars.NEWLINE);
-					GroupInfo groupInfo = (GroupInfo)itemInfo;
+					MessageGroupInfo groupInfo = (MessageGroupInfo)itemInfo;
 					addVariableDeclarationPartForGroupInfo(contentsStringBuilder, depth, groupInfo);					
 					break;
 				}
@@ -116,7 +116,7 @@ public class MessageFileContensBuilder extends AbstractSourceFileBuildre {
 	}
 	
 	
-	public void addGetMethodDefinePartForSingleItemInfo(StringBuilder contentsStringBuilder, int depth, SingleItemInfo singleItemInfo) {
+	public void addGetMethodDefinePartForSingleItemInfo(StringBuilder contentsStringBuilder, int depth, MessageSingleItemInfo singleItemInfo) {
 		contentsStringBuilder.append(CommonStaticFinalVars.NEWLINE);
 		CommonStaticUtil.addPrefixWithTabCharacters(contentsStringBuilder, depth, 0);
 		contentsStringBuilder.append("public ");
@@ -135,7 +135,7 @@ public class MessageFileContensBuilder extends AbstractSourceFileBuildre {
 		contentsStringBuilder.append("}");
 	}
 	
-	public void addSetMethodDefinePartForSingleItemInfo(StringBuilder contentsStringBuilder, int depth, SingleItemInfo singleItemInfo) {
+	public void addSetMethodDefinePartForSingleItemInfo(StringBuilder contentsStringBuilder, int depth, MessageSingleItemInfo singleItemInfo) {
 		contentsStringBuilder.append(CommonStaticFinalVars.NEWLINE);
 		CommonStaticUtil.addPrefixWithTabCharacters(contentsStringBuilder, depth, 0);
 		contentsStringBuilder.append("public void set");
@@ -157,7 +157,7 @@ public class MessageFileContensBuilder extends AbstractSourceFileBuildre {
 		contentsStringBuilder.append("}");
 	}
 	
-	public void addGetMethodDefinePartForArrayInfo(StringBuilder contentsStringBuilder, int depth, ArrayInfo arrayInfo) {
+	public void addGetMethodDefinePartForArrayInfo(StringBuilder contentsStringBuilder, int depth, MessageArrayInfo arrayInfo) {
 		contentsStringBuilder.append(CommonStaticFinalVars.NEWLINE);
 		CommonStaticUtil.addPrefixWithTabCharacters(contentsStringBuilder, depth, 0);
 		contentsStringBuilder.append("public java.util.List<");
@@ -175,7 +175,7 @@ public class MessageFileContensBuilder extends AbstractSourceFileBuildre {
 		contentsStringBuilder.append("}");
 	}
 	
-	public void addSetMethodDefinePartForArrayInfo(StringBuilder contentsStringBuilder, int depth, ArrayInfo arrayInfo) {
+	public void addSetMethodDefinePartForArrayInfo(StringBuilder contentsStringBuilder, int depth, MessageArrayInfo arrayInfo) {
 		contentsStringBuilder.append(CommonStaticFinalVars.NEWLINE);
 		CommonStaticUtil.addPrefixWithTabCharacters(contentsStringBuilder, depth, 0);
 		contentsStringBuilder.append("public void set");
@@ -197,7 +197,7 @@ public class MessageFileContensBuilder extends AbstractSourceFileBuildre {
 		contentsStringBuilder.append("}");
 	}
 	
-	public void addGetMethodDefinePartForGroupInfo(StringBuilder contentsStringBuilder, int depth, GroupInfo groupInfo) {
+	public void addGetMethodDefinePartForGroupInfo(StringBuilder contentsStringBuilder, int depth, MessageGroupInfo groupInfo) {
 		
 		contentsStringBuilder.append(CommonStaticFinalVars.NEWLINE);
 		CommonStaticUtil.addPrefixWithTabCharacters(contentsStringBuilder, depth, 0);
@@ -216,7 +216,7 @@ public class MessageFileContensBuilder extends AbstractSourceFileBuildre {
 		contentsStringBuilder.append("}");
 	}
 	
-	public void addSetMethodDefinePartForGroupInfo(StringBuilder contentsStringBuilder, int depth, GroupInfo groupInfo) {		
+	public void addSetMethodDefinePartForGroupInfo(StringBuilder contentsStringBuilder, int depth, MessageGroupInfo groupInfo) {		
 		contentsStringBuilder.append(CommonStaticFinalVars.NEWLINE);
 		CommonStaticUtil.addPrefixWithTabCharacters(contentsStringBuilder, depth, 0);
 		contentsStringBuilder.append("public void set");
@@ -244,28 +244,28 @@ public class MessageFileContensBuilder extends AbstractSourceFileBuildre {
 	 * @param itemSet
 	 * @return
 	 */
-	public void addMethodDefinePart(StringBuilder contentsStringBuilder, int depth, OrderedItemSet itemSet) {
-		List<AbstractItemInfo> itemInfoList = itemSet.getItemInfoList();
-		for (AbstractItemInfo itemInfo:itemInfoList) {
+	public void addMethodDefinePart(StringBuilder contentsStringBuilder, int depth, OrderedMessageItemSet itemSet) {
+		List<AbstractMessageItemInfo> itemInfoList = itemSet.getItemInfoList();
+		for (AbstractMessageItemInfo itemInfo:itemInfoList) {
 			
-			ItemInfoType itemInfoType = itemInfo.getItemInfoType();			
+			MessageItemInfoType itemInfoType = itemInfo.getMessageItemInfoType();			
 			switch (itemInfoType) {	
 				case SINGLE :  {
-					SingleItemInfo singleItemInfo = (SingleItemInfo)itemInfo;
+					MessageSingleItemInfo singleItemInfo = (MessageSingleItemInfo)itemInfo;
 					addGetMethodDefinePartForSingleItemInfo(contentsStringBuilder, depth, singleItemInfo);
 					contentsStringBuilder.append(CommonStaticFinalVars.NEWLINE);
 					addSetMethodDefinePartForSingleItemInfo(contentsStringBuilder, depth, singleItemInfo);
 					break;
 				}
 				case ARRAY :  {
-					ArrayInfo arrayInfo = (ArrayInfo)itemInfo;
+					MessageArrayInfo arrayInfo = (MessageArrayInfo)itemInfo;
 					addGetMethodDefinePartForArrayInfo(contentsStringBuilder, depth, arrayInfo);
 					contentsStringBuilder.append(CommonStaticFinalVars.NEWLINE);
 					addSetMethodDefinePartForArrayInfo(contentsStringBuilder, depth, arrayInfo);
 					break;
 				}
 				case GROUP :  {					
-					GroupInfo groupInfo = (GroupInfo)itemInfo;					
+					MessageGroupInfo groupInfo = (MessageGroupInfo)itemInfo;					
 					addGetMethodDefinePartForGroupInfo(contentsStringBuilder, depth, groupInfo);
 					contentsStringBuilder.append(CommonStaticFinalVars.NEWLINE);
 					addSetMethodDefinePartForGroupInfo(contentsStringBuilder, depth, groupInfo);
@@ -282,7 +282,7 @@ public class MessageFileContensBuilder extends AbstractSourceFileBuildre {
 	}
 	
 	
-	public void addToStringPartForSingleItemInfo(StringBuilder contentsStringBuilder, int depth, boolean isFirstElement, SingleItemInfo singleItemInfo) {		
+	public void addToStringPartForSingleItemInfo(StringBuilder contentsStringBuilder, int depth, boolean isFirstElement, MessageSingleItemInfo singleItemInfo) {		
 		CommonStaticUtil.addPrefixWithTabCharacters(contentsStringBuilder, depth, 0);
 		
 		if (isFirstElement) {
@@ -312,7 +312,7 @@ public class MessageFileContensBuilder extends AbstractSourceFileBuildre {
 		contentsStringBuilder.append(");");		
 	}
 	
-	public void addToStringPartForArrayInfo(StringBuilder contentsStringBuilder, int depth, boolean isFirstElement, ArrayInfo arrayInfo) {		
+	public void addToStringPartForArrayInfo(StringBuilder contentsStringBuilder, int depth, boolean isFirstElement, MessageArrayInfo arrayInfo) {		
 		contentsStringBuilder.append(CommonStaticFinalVars.NEWLINE);
 		CommonStaticUtil.addPrefixWithTabCharacters(contentsStringBuilder, depth, 0);
 		
@@ -435,7 +435,7 @@ public class MessageFileContensBuilder extends AbstractSourceFileBuildre {
 		contentsStringBuilder.append("}");		
 	}
 	
-	public void addToStringPartForGroupInfo(StringBuilder contentsStringBuilder, int depth, boolean isFirstElement, GroupInfo groupInfo) {
+	public void addToStringPartForGroupInfo(StringBuilder contentsStringBuilder, int depth, boolean isFirstElement, MessageGroupInfo groupInfo) {
 		contentsStringBuilder.append(CommonStaticFinalVars.NEWLINE);
 		CommonStaticUtil.addPrefixWithTabCharacters(contentsStringBuilder, depth, 0);		
 		if (isFirstElement) {
@@ -453,7 +453,7 @@ public class MessageFileContensBuilder extends AbstractSourceFileBuildre {
 		contentsStringBuilder.append(".toString());");
 	}
 	
-	public void addToStringPart(StringBuilder contentsStringBuilder, int depth, String firstUpperItemName, OrderedItemSet itemSet) {		
+	public void addToStringPart(StringBuilder contentsStringBuilder, int depth, String firstUpperItemName, OrderedMessageItemSet itemSet) {		
 		contentsStringBuilder.append(CommonStaticFinalVars.NEWLINE);
 		CommonStaticUtil.addPrefixWithTabCharacters(contentsStringBuilder, depth, 0);
 		contentsStringBuilder.append("@Override");
@@ -473,31 +473,31 @@ public class MessageFileContensBuilder extends AbstractSourceFileBuildre {
 		contentsStringBuilder.append(firstUpperItemName);
 		contentsStringBuilder.append("[\");");
 		
-		List<AbstractItemInfo> itemInfoList = itemSet.getItemInfoList();
+		List<AbstractMessageItemInfo> itemInfoList = itemSet.getItemInfoList();
 		for (int j=0; j < itemInfoList.size(); j++) {
 			contentsStringBuilder.append(CommonStaticFinalVars.NEWLINE);
 			
 			boolean isFirstElement = (0 == j);
 			
-			AbstractItemInfo itemInfo = itemInfoList.get(j);
+			AbstractMessageItemInfo itemInfo = itemInfoList.get(j);
 			
-			ItemInfoType itemInfoType = itemInfo.getItemInfoType();
+			MessageItemInfoType itemInfoType = itemInfo.getMessageItemInfoType();
 			
 			switch (itemInfoType) {	
 				case SINGLE :  {
-					SingleItemInfo singleItemInfo = (SingleItemInfo)itemInfo;
+					MessageSingleItemInfo singleItemInfo = (MessageSingleItemInfo)itemInfo;
 					
 					addToStringPartForSingleItemInfo(contentsStringBuilder, depth+1, isFirstElement, singleItemInfo);
 					break;
 				}
 				case ARRAY :  {
-					ArrayInfo arrayInfo = (ArrayInfo)itemInfo;					
+					MessageArrayInfo arrayInfo = (MessageArrayInfo)itemInfo;					
 					
 					addToStringPartForArrayInfo(contentsStringBuilder, depth+1, isFirstElement, arrayInfo);					
 					break;
 				}
 				case GROUP :  {
-					GroupInfo groupInfo = (GroupInfo)itemInfo;
+					MessageGroupInfo groupInfo = (MessageGroupInfo)itemInfo;
 					
 					addToStringPartForGroupInfo(contentsStringBuilder, depth+1, isFirstElement, groupInfo);
 					break;

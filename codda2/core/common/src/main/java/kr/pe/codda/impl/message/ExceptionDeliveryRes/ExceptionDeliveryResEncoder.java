@@ -40,28 +40,28 @@ public final class ExceptionDeliveryResEncoder extends AbstractMessageEncoder {
 
 
 		singleItemEncoder.putValue(pathStack.peek(), "errorPlace"
-			, kr.pe.codda.common.type.SingleItemType.EXCEPTION_DELIVERY_ERROR_PLACE // itemType
+			, kr.pe.codda.common.type.MessageSingleItemType.EXCEPTION_DELIVERY_ERROR_PLACE // itemType
 			, exceptionDeliveryRes.getErrorPlace() // itemValue
 			, -1 // itemSize
 			, null // nativeItemCharset
 			, middleObjectToSend);
 
 		singleItemEncoder.putValue(pathStack.peek(), "errorType"
-			, kr.pe.codda.common.type.SingleItemType.EXCEPTION_DELIVERY_ERROR_TYPE // itemType
+			, kr.pe.codda.common.type.MessageSingleItemType.EXCEPTION_DELIVERY_ERROR_TYPE // itemType
 			, exceptionDeliveryRes.getErrorType() // itemValue
 			, -1 // itemSize
 			, null // nativeItemCharset
 			, middleObjectToSend);
 
 		singleItemEncoder.putValue(pathStack.peek(), "errorMessageID"
-			, kr.pe.codda.common.type.SingleItemType.UB_PASCAL_STRING // itemType
+			, kr.pe.codda.common.type.MessageSingleItemType.UB_PASCAL_STRING // itemType
 			, exceptionDeliveryRes.getErrorMessageID() // itemValue
 			, -1 // itemSize
 			, "ISO-8859-1" // nativeItemCharset
 			, middleObjectToSend);
 
 		singleItemEncoder.putValue(pathStack.peek(), "errorReason"
-			, kr.pe.codda.common.type.SingleItemType.US_PASCAL_STRING // itemType
+			, kr.pe.codda.common.type.MessageSingleItemType.US_PASCAL_STRING // itemType
 			, exceptionDeliveryRes.getErrorReason() // itemValue
 			, -1 // itemSize
 			, "utf8" // nativeItemCharset

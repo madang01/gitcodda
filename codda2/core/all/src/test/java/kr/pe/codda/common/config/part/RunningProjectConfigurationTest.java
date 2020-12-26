@@ -3,6 +3,7 @@ package kr.pe.codda.common.config.part;
 import static org.junit.Assert.fail;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Enumeration;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Handler;
@@ -13,10 +14,8 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 
-import kr.pe.codda.common.buildsystem.pathsupporter.ProjectBuildSytemPathSupporter;
 import kr.pe.codda.common.etc.CommonStaticFinalVars;
 import kr.pe.codda.common.type.SessionKey;
 import kr.pe.codda.common.util.JDKLoggerCustomFormatter;
@@ -70,19 +69,32 @@ public class RunningProjectConfigurationTest {
 
 	@Test
 	public void testToProperties_모든항목() {
-		String installedPathString = "D:\\gitcodda\\codda2";
-		String mainProjectName = "sample_base";
+		File tmp01File = null;
+		
+		try {
+			tmp01File = File.createTempFile("temp", ".dat");
+			tmp01File.deleteOnExit();
+		} catch (IOException e) {
+			log.log(Level.WARNING, "fail to create a temp file", e);
+			
+			fail("fail to call 'toValue'");
+		}
+		
+		/*
+		 * String installedPathString = "D:\\gitcodda\\codda2"; String mainProjectName =
+		 * "sample_base";
+		 */
 		
 		RunningProjectConfiguration runningProjectConfiguration = new RunningProjectConfiguration();
 		
 		DBCPParConfiguration newDBCPParConfigurationForSampleBase = new DBCPParConfiguration("sb_db");
-		//newDBCPParConfigurationForSampleBase.setDBCPConfigFile(new File(ProjectBuildSytemPathSupporter.getProjectDBCPConfigFilePathString(installedPathString, mainProjectName, "sb_db")));
+		newDBCPParConfigurationForSampleBase.setDBCPConfigFile(tmp01File);
 		
 		DBCPParConfiguration newDBCPParConfigurationForGeneralTestOfSampleBase = new DBCPParConfiguration("gt_sb_db");
-		//newDBCPParConfigurationForGeneralTestOfSampleBase.setDBCPConfigFile(new File(ProjectBuildSytemPathSupporter.getProjectDBCPConfigFilePathString(installedPathString, mainProjectName, "gt_sb_db")));
+		newDBCPParConfigurationForGeneralTestOfSampleBase.setDBCPConfigFile(tmp01File);
 		
 		DBCPParConfiguration newDBCPParConfigurationForLoadTestOfSampleBase = new DBCPParConfiguration("lt_sb_db");
-		//newDBCPParConfigurationForLoadTestOfSampleBase.setDBCPConfigFile(new File(ProjectBuildSytemPathSupporter.getProjectDBCPConfigFilePathString(installedPathString, mainProjectName, "lt_sb_db")));
+		newDBCPParConfigurationForLoadTestOfSampleBase.setDBCPConfigFile(tmp01File);
 		
 		runningProjectConfiguration.DBCP.addProjectPartConfiguration(newDBCPParConfigurationForSampleBase.getDBCPName(), newDBCPParConfigurationForSampleBase);
 		runningProjectConfiguration.DBCP.addProjectPartConfiguration(newDBCPParConfigurationForGeneralTestOfSampleBase.getDBCPName(), newDBCPParConfigurationForGeneralTestOfSampleBase);
@@ -94,8 +106,8 @@ public class RunningProjectConfigurationTest {
 		/** 'RSA 키쌍 출처' 값의 디폴트는 서버로 공개키와 비밀키 파일 2개 항목이 null 이 되기때문에 'RSA 키쌍 출처' 를 외부 파일로 바꾸어 공개키와 비밀키 파일 2개 항목이 null 되는것을 방지함 */
 		SessionkeyPartConfiguration sessionkeyPartConfiguration = runningProjectConfiguration.getSessionkeyPartConfiguration();
 		sessionkeyPartConfiguration.setRSAKeypairSource(SessionKey.RSAKeypairSourceType.FILE);
-		//sessionkeyPartConfiguration.setRSAPrivatekeyFile(new File(ProjectBuildSytemPathSupporter.getSessionKeyRSAPrivateKeyFilePathString(installedPathString, mainProjectName)));
-		//sessionkeyPartConfiguration.setRSAPublickeyFile(new File(ProjectBuildSytemPathSupporter.getSessionKeyRSAPublicKeyFilePathString(installedPathString, mainProjectName)));
+		sessionkeyPartConfiguration.setRSAPrivatekeyFile(tmp01File);
+		sessionkeyPartConfiguration.setRSAPublickeyFile(tmp01File);
 				
 		SequencedProperties configFileSequencedProperties = new SequencedProperties();
 		
@@ -116,11 +128,11 @@ public class RunningProjectConfigurationTest {
 			
 		}
 		
-		RunningProjectConfiguration.applyIntalledPath(installedPathString, mainProjectName, configFileSequencedProperties);
+		// RunningProjectConfiguration.applyIntalledPath(installedPathString, mainProjectName, configFileSequencedProperties);
 		
 		try {
 			runningProjectConfiguration.fromProperties(configFileSequencedProperties);			
-			runningProjectConfiguration.checkVadlidation();
+			runningProjectConfiguration.checkNull();
 		} catch (Exception e) {
 			log.log(Level.WARNING, "error", e);
 			

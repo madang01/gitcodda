@@ -40,7 +40,7 @@ import org.xml.sax.helpers.DefaultHandler;
 
 import kr.pe.codda.common.etc.CommonStaticFinalVars;
 import kr.pe.codda.common.message.AbstractMessage;
-import kr.pe.codda.common.type.ItemInfoType;
+import kr.pe.codda.common.type.MessageItemInfoType;
 import kr.pe.codda.common.type.MessageTransferDirectionType;
 
 /**
@@ -74,7 +74,7 @@ public class MessageInfoSAXParser extends DefaultHandler {
 	private String rootTag = null;
 	private Stack<String> startTagStack = new Stack<String>();
 	private Stack<String> tagValueStack = new Stack<String>();
-	private Stack<OrderedItemSet> itemSetStack = new Stack<OrderedItemSet>();
+	private Stack<OrderedMessageItemSet> itemSetStack = new Stack<OrderedMessageItemSet>();
 	/** this member variables is initialized in parse(File) end */
 
 	/**
@@ -129,7 +129,7 @@ public class MessageInfoSAXParser extends DefaultHandler {
 			return;
 
 		if (startTag.equals("singleitem")) {
-			OrderedItemSet workingItemSet = itemSetStack.peek();
+			OrderedMessageItemSet workingItemSet = itemSetStack.peek();
 
 			String itemName = attributes.getValue("name");
 			if (null == itemName) {
@@ -165,10 +165,10 @@ public class MessageInfoSAXParser extends DefaultHandler {
 			String itemSize = attributes.getValue("size");
 			String itemCharset = attributes.getValue("charset");			
 
-			SingleItemInfo singleItemInfo = null;
+			MessageSingleItemInfo singleItemInfo = null;
 			
 			try {
-				singleItemInfo = new SingleItemInfo(itemName, itemTypeName,
+				singleItemInfo = new MessageSingleItemInfo(itemName, itemTypeName,
 						itemDefaultValue, itemSize, itemCharset);
 			} catch (IllegalArgumentException e) {
 				String errorMessage = "fail to create instance of SingleItemInfo class";
@@ -180,7 +180,7 @@ public class MessageInfoSAXParser extends DefaultHandler {
 			
 			workingItemSet.addItemInfo(singleItemInfo);
 		} else if (startTag.equals("array")) {
-			OrderedItemSet workingItemSet = itemSetStack.peek();
+			OrderedMessageItemSet workingItemSet = itemSetStack.peek();
 			
 			
 
@@ -233,7 +233,7 @@ public class MessageInfoSAXParser extends DefaultHandler {
 			}
 			
 			if (arrayCntType.equals("reference")) {
-				AbstractItemInfo itemInfoForArraySizeReferenceVariable = workingItemSet
+				AbstractMessageItemInfo itemInfoForArraySizeReferenceVariable = workingItemSet
 						.getItemInfo(arrayCntValue);
 
 				if (null == itemInfoForArraySizeReferenceVariable) {					
@@ -242,15 +242,15 @@ public class MessageInfoSAXParser extends DefaultHandler {
 					throw new SAXException(errorMessage);
 				}
 
-				ItemInfoType messageItemTypeOfArraySizeReferenceVariable = itemInfoForArraySizeReferenceVariable
-						.getItemInfoType();
-				if (messageItemTypeOfArraySizeReferenceVariable.equals(ItemInfoType.ARRAY)) {					
+				MessageItemInfoType messageItemTypeOfArraySizeReferenceVariable = itemInfoForArraySizeReferenceVariable
+						.getMessageItemInfoType();
+				if (messageItemTypeOfArraySizeReferenceVariable.equals(MessageItemInfoType.ARRAY)) {					
 					String errorMessage = new StringBuilder("the logical gubun of item that specifies this array item[")
 					.append(arrayName).append("]'s size must be only single").toString();
 					throw new SAXException(errorMessage);
 				}
 
-				SingleItemInfo singleItemInfoForArraySizeReferenceVariable = (SingleItemInfo) itemInfoForArraySizeReferenceVariable;
+				MessageSingleItemInfo singleItemInfoForArraySizeReferenceVariable = (MessageSingleItemInfo) itemInfoForArraySizeReferenceVariable;
 				String itemTypeNameOfArraySizeReferenceVariable = singleItemInfoForArraySizeReferenceVariable.getItemTypeName();				
 				
 				if (!possibleItemTypeNameSetForArraySizeReferenceVariable.contains(itemTypeNameOfArraySizeReferenceVariable)) {
@@ -262,9 +262,9 @@ public class MessageInfoSAXParser extends DefaultHandler {
 				}
 			}
 
-			ArrayInfo arrayInfo = null;
+			MessageArrayInfo arrayInfo = null;
 			try {
-				arrayInfo = new ArrayInfo(arrayName, arrayCntType,
+				arrayInfo = new MessageArrayInfo(arrayName, arrayCntType,
 					arrayCntValue);
 			} catch (IllegalArgumentException e) {
 				String errorMessage = "fail to create instance of ArrayInfo class";
@@ -501,7 +501,7 @@ public class MessageInfoSAXParser extends DefaultHandler {
 					.newInstance("http://www.w3.org/2001/XMLSchema");	
 			
 			saxParserFactory.setSchema(schemaFactory
-					.newSchema(new Source[] { new StreamSource(SingleItemTypeManger.getInstance().getMesgXSLInputSream()) }));
+					.newSchema(new Source[] { new StreamSource(MessageSingleItemTypeManger.getInstance().getMesgXSLInputSream()) }));
 			
 			saxParser = saxParserFactory.newSAXParser();
 		} catch (Exception | Error e) {

@@ -81,9 +81,9 @@ private Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
 		.append("]) as a signed decimal integer").toString();
 		
 		
-		ArrayInfo arrayInfo = null;
+		MessageArrayInfo arrayInfo = null;
 		try {
-			arrayInfo = new ArrayInfo(arrayName, arrayCntType,
+			arrayInfo = new MessageArrayInfo(arrayName, arrayCntType,
 				arrayCntValue);
 			
 			log.info(arrayInfo.toString());
@@ -113,9 +113,9 @@ private Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
 		.append(arrayCntValue)
 		.append("] is less than or equals to zero").toString();
 				
-		ArrayInfo arrayInfo = null;
+		MessageArrayInfo arrayInfo = null;
 		try {
-			arrayInfo = new ArrayInfo(arrayName, arrayCntType,
+			arrayInfo = new MessageArrayInfo(arrayName, arrayCntType,
 				arrayCntValue);
 			
 			log.info(arrayInfo.toString());
@@ -146,9 +146,9 @@ private Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
 		.append("] is not an element of direction set[direct, reference]").toString();
 		
 		
-		ArrayInfo arrayInfo = null;
+		MessageArrayInfo arrayInfo = null;
 		try {
-			arrayInfo = new ArrayInfo(arrayName, arrayCntType,
+			arrayInfo = new MessageArrayInfo(arrayName, arrayCntType,
 				arrayCntValue);
 			
 			log.info(arrayInfo.toString());

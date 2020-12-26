@@ -23,7 +23,7 @@ import kr.pe.codda.common.etc.CommonStaticFinalVars;
 import kr.pe.codda.common.exception.BodyFormatException;
 import kr.pe.codda.common.io.StreamBuffer;
 import kr.pe.codda.common.protocol.SingleItemDecoderIF;
-import kr.pe.codda.common.type.SingleItemType;
+import kr.pe.codda.common.type.MessageSingleItemType;
 
 /**
  * THB 단일 항목 디코더
@@ -50,7 +50,7 @@ public class THBSingleItemDecoder implements SingleItemDecoderIF {
 
 	@Override
 	public Object getValue(String path, String itemName,
-			SingleItemType singleItemType, int itemSize,
+			MessageSingleItemType singleItemType, int itemSize,
 			String nativeItemCharset, Object receivedMiddleObject) throws BodyFormatException {
 		if (null == path) {
 			throw new IllegalArgumentException("the parameter path is null");

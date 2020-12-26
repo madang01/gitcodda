@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Codda Helper Web Service</title>
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="/bootstrap/3.3.7/css/bootstrap.css">
+<!-- jQuery library -->
+<script src="/jquery/3.3.1/jquery.min.js"></script>
+<!-- Latest compiled JavaScript -->
+<script src="/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+<script type="text/javascript">
+<!--
+	function goHome() {
+		document.location.href = "/";
+	}
+	
+	function callbackForCurrentWokingPathInformationGetter(currentWorkPathInformationJson) {		
+		var currentWorkingPathObj = document.getElementById("currentWorkingPath");
+		currentWorkingPathObj.innerText = currentWorkPathInformationJson.currentWorkingPathString;
+		
+		
+		var directoryListPartObj = document.getElementById("directoryListPart");
+		while (directoryListPartObj.hasChildNodes()) {
+			directoryListPartObj.removeChild(directoryListPartObj.firstChild);
+		}
+			
+		
+		var i=0;
+		
+		while (true) {
+			if (i >= currentWorkPathInformationJson.chiledPathStringList.length) {
+				break;
+			}
+			
+			var rowDiv = document.createElement("div");
+			rowDiv.setAttribute("class", "row");
+			
+			
+			for (var j=0; j < 4; j++) {		
+				var chiledPathString = currentWorkPathInformationJson.chiledPathStringList[i];
+				
+				var colDiv = document.createElement("div");
+				colDiv.setAttribute("class", "col-sm-3");
+				colDiv.innerHTML = "<a href=\"/servlet/CurrentWokingPathChanger?shortPathNameToMove="+encodeURI(chiledPathString)+"\" \" target=\"hiddenFrame\"><img src=\"/image/iconmonstr-folder-open-thin.svg\" width=\"80px\" height=\"80px\"></a><br>" + chiledPathString;
+				
+				rowDiv.appendChild(colDiv);
+				
+				i++;
+				
+				if (i >= currentWorkPathInformationJson.chiledPathStringList.length) {
+					break;
+				}
+			}
+			
+			directoryListPartObj.appendChild(rowDiv);			
+		}
+	}
+	
+	function callbackForErrorMessageGetter(errorMessage) {
+		var errorMessageObj = document.getElementById("errorMessage");
+		errorMessageObj.setAttribute("class", "alert alert-danger");
+		errorMessageObj.innerText = errorMessage;
+		
+		alert(errorMessage)
+	}
+	
+	function getCurrentWorkingPath() {
+		document.hiddenFrame.location.href = "/servlet/CurrentWokingPathInformationGetter";
+	}
+	
+	function goParent() {
+		document.hiddenFrame.location.href = "/servlet/CurrentWokingPathChanger?shortPathNameToMove=..";
+	}
+	
+	function selectCurrentWorkingDirectory() {
+		var currentWorkingPathObj = document.getElementById("currentWorkingPath");
+		var f = document.frm;
+		f.installedPath.value = currentWorkingPathObj.innerText;
+	}
+	
+	function clickHiddenFrameButton(thisObj) {		
+		var hiddenFrameObj = document.getElementById("hiddenFrame");
+		
+		if (hiddenFrameObj.style.display == 'none') {
+			thisObj.innerText = "Hide Hidden Frame";
+			hiddenFrameObj.style.display = "block";			
+		} else {
+			thisObj.innerText = "Show Hidden Frame";
+			hiddenFrameObj.style.display = "none";
+		}
+	}
+	
+	function init() {
+		if (typeof (sessionStorage) == "undefined") {
+			alert("Sorry! No HTML5 sessionStorage support..");
+			document.location.href = "/html5_no_support.html";
+			return;
+		}
+		
+		getCurrentWorkingPath();
+	}
+
+	window.onload = init;
+//-->
+</script>
+</head>
+<body>
+	<div class="content">
+		<div class="container">
+			<div class="panel panel-default">
+				<div class="panel-heading">프로젝트 관리자::코다 설치 경로 지정 화면</div>
+				<div class="panel-body">
+					<div class="row">
+						<div class="col-sm-12">
+							<div class="btn-group">
+								<button type="button" class="btn btn-primary btn-sm" onClick="goHome();">HOME</button>
+								<button type="button" class="btn btn-primary btn-sm" onClick="clickHiddenFrameButton(this);">Show Hidden Frame</button>
+							</div>
+						</div>
+					</div>					
+					<div class="row">
+						<div class="col-sm-12">
+							<div id="errorMessage"></div>
+						</div>
+					</div>
+					<div class="row"><div class="col-sm-12">&nbsp;</div></div>	
+					<div class="row">
+						<div class="form-group">
+							<form name="frm" method="post" action="/servlet/InstalledPathProcess">
+								<div class="col-sm-2"><label for="installedPath">코다 설치 경로</label></div>
+								<div class="col-sm-8"><input type="text" class="form-control" name="installedPath" id="installedPath"></div>
+								<div class="col-sm-2"><button type="submit" class="btn btn-default" onClick="goInstalledPathProcess();">확인</button></div>
+							</form>
+						</div>
+					</div>				
+					<div class="row"><div class="col-sm-12">&nbsp;</div></div>
+					<div class="row">
+						<div class="col-sm-12"><label>현재 작업 경로</label></div>
+					</div>
+					<div class="row">
+						<div class="col-sm-9" id="currentWorkingPath">D:&#92;gitcodda</div>
+						<div class="col-sm-3">
+							<div class="btn-group">
+								<button type="button" class="btn btn-primary btn-sm" onClick="selectCurrentWorkingDirectory();">선택</button>
+								<button type="button" class="btn btn-primary btn-sm" onClick="getCurrentWorkingPath();">새로고침</button>
+								<button type="button" class="btn btn-primary btn-sm" onClick="goParent();">이전경로</button>
+							</div>
+						</div>
+					</div>	
+					<div id="directoryListPart"><div class="row">
+	<div class="col-sm-3"><a href="/servlet/CurrentWokingPathChanger?shortPathNameToMove=1번_자식폴더" target="hiddenFrame"><img src="/image/iconmonstr-folder-open-thin.svg" width="80px" height="80px"></a><br>1번_자식폴더</div>
+	<div class="col-sm-3"><a href="/servlet/CurrentWokingPathChanger?shortPathNameToMove=2번_자식폴더" target="hiddenFrame"><img src="/image/iconmonstr-folder-open-thin.svg" width="80px" height="80px"></a><br>2번_자식폴더</div>
+	<div class="col-sm-3"><a href="/servlet/CurrentWokingPathChanger?shortPathNameToMove=3번_자식폴더" target="hiddenFrame"><img src="/image/iconmonstr-folder-open-thin.svg" width="80px" height="80px"></a><br>3번_자식폴더</div>
+	<div class="col-sm-3"><a href="/servlet/CurrentWokingPathChanger?shortPathNameToMove=4번_자식폴더" target="hiddenFrame"><img src="/image/iconmonstr-folder-open-thin.svg" width="80px" height="80px"></a><br>4번_자식폴더22222434343434343434343</div>
+</div><div class="row">
+	<div class="col-sm-3"><a href="/servlet/CurrentWokingPathChanger?shortPathNameToMove=5번_자식폴더" target="hiddenFrame"><img src="/image/iconmonstr-folder-open-thin.svg" width="80px" height="80px"></a><br>5번_자식폴더</div>
+	<div class="col-sm-3"><a href="/servlet/CurrentWokingPathChanger?shortPathNameToMove=6번_자식폴더" target="hiddenFrame"><img src="/image/iconmonstr-folder-open-thin.svg" width="80px" height="80px"></a><br>6번_자식폴더</div>
+</div></div>					
+					<iframe id="hiddenFrame" name="hiddenFrame" style="display:none;"></iframe>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

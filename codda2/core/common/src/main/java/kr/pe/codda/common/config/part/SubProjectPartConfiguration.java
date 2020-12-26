@@ -20,7 +20,7 @@ package kr.pe.codda.common.config.part;
  *
  */
 public class SubProjectPartConfiguration extends AbstractProjectPartConfiguration {
-	private final String partName = "subproject";
+	public static final String PART_NAME = "subproject";
 	private final String subProjectName;
 	private final String prefixBeforeItemID;
 	
@@ -33,20 +33,23 @@ public class SubProjectPartConfiguration extends AbstractProjectPartConfiguratio
 		this.subProjectName = subProjectName;
 
 		prefixBeforeItemID = new StringBuilder()
-				.append(partName)
+				.append(PART_NAME)
 				.append(".").append(subProjectName)
 				.append(".").toString();
 		
 	}
 	
 	public String getPartName() {
-		return partName;
+		return PART_NAME;
 	}
 	
 	public String getPrefixBeforeItemID() {
 		return prefixBeforeItemID;
 	}
 	
+	/**
+	 * @return 서브 프로젝트 이름
+	 */
 	public String getSubProjectName() {
 		return subProjectName;
 	}

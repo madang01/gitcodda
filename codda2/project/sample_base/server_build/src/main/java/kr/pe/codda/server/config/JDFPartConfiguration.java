@@ -34,7 +34,7 @@ import kr.pe.codda.common.util.SequencedProperties;
 public class JDFPartConfiguration implements PartConfigurationIF {
 	private final Logger log = Logger.getLogger(JDFPartConfiguration.class.getName());
 	
-	private final String partName = "jdf";
+	public static final String partName = "jdf";
 	
 	private final String prefixBeforeItemID = new StringBuilder().append(partName).append(".").toString();
 
@@ -309,7 +309,7 @@ public class JDFPartConfiguration implements PartConfigurationIF {
 		
 		String servletTraceSetKey = RunningProjectConfiguration.buildKeyOfConfigFile(
 				prefixBeforeItemID, itemIDForServletTrace, KeyTypeOfConfieFile.SET);
-		String servletTraceSetValue = RunningProjectConfiguration.toSetValue(nativeValueConverterForServletTrace.getItemValueSet());
+		String servletTraceSetValue = RunningProjectConfiguration.toSetTypeValue(nativeValueConverterForServletTrace.getItemValueSet());
 				
 		targetSequencedProperties.put(servletTraceSetKey, servletTraceSetValue);
 	}

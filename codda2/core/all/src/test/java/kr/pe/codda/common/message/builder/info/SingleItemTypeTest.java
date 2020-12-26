@@ -23,16 +23,16 @@ import java.util.Arrays;
 
 import org.junit.Test;
 
-import kr.pe.codda.common.type.SingleItemType;
+import kr.pe.codda.common.type.MessageSingleItemType;
 
 public class SingleItemTypeTest {
 	
 	@Test
 	public void test_ItemTypeID가정말로키가맞는지그리고0부터순차적으로할당되었는지에대한테스트() {
-		SingleItemType[] singleItemTypes = SingleItemType.values();
+		MessageSingleItemType[] singleItemTypes = MessageSingleItemType.values();
 		int[] arrayOfSingleItemTypeID = new int[singleItemTypes.length];
 		Arrays.fill(arrayOfSingleItemTypeID, -1);
-		for (SingleItemType singleItemType : singleItemTypes) {
+		for (MessageSingleItemType singleItemType : singleItemTypes) {
 			int singleItemTypeID = singleItemType.getItemTypeID();
 			try {
 				arrayOfSingleItemTypeID[singleItemTypeID]=singleItemTypeID;
