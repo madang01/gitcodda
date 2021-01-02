@@ -58,8 +58,6 @@ public class HtmlContentsBuilder {
 	}
 	
 	public static String buildHtmlContentsOfCurrentWorkingPathInformationGetterPage(String currentWokingPathInformationJsonString) {
-		
-		
 		String htmlCotents = new StringBuilder()
 				.append("<!DOCTYPE html>").append(NEWLINE)
 				.append("<html lang=\"ko\">").append(NEWLINE)
@@ -84,5 +82,29 @@ public class HtmlContentsBuilder {
 	}
 	
 	
-
+	public static String buildHtmlContentsOfInstalledPathChangerPage(String installedPathString) {
+		String htmlCotents = new StringBuilder()
+				.append("<!DOCTYPE html>").append(NEWLINE)
+				.append("<html lang=\"ko\">").append(NEWLINE)
+				.append("<head>").append(NEWLINE)
+				.append("<meta charset=\"UTF-8\">").append(NEWLINE)
+				.append("<title>").append(TITLE_OF_HTML).append("</title>").append(NEWLINE)
+				.append("<script type=\"text/javascript\">").append(NEWLINE)
+				.append("<!--").append(NEWLINE)
+				.append("	function init() {").append(NEWLINE)
+				.append("		parent.callbackForInstalledPathChanger(document.getElementById(\"installedPath\").innerText);").append(NEWLINE)
+				.append("	}").append(NEWLINE)
+				.append(NEWLINE)
+				.append("	window.onload = init;").append(NEWLINE)
+				.append("//-->").append(NEWLINE)
+				.append("</script>").append(NEWLINE)
+				.append("</head>").append(NEWLINE)
+				.append("<body>")
+				.append("	<div id=\"installedPath\">")
+				.append(StringEscapeUtils.escapeHtml4(installedPathString))
+				.append("</div>").append(NEWLINE).append("</body>").append(NEWLINE)
+				.append("</html>").append(NEWLINE).toString();
+		return htmlCotents;
+	}
+	
 }

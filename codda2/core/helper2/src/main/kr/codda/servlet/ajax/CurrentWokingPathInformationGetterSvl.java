@@ -13,7 +13,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-package kr.codda.servlet;
+package kr.codda.servlet.ajax;
 
 import java.io.File;
 import java.io.IOException;
@@ -28,7 +28,7 @@ import com.google.gson.Gson;
 import kr.codda.model.CoddaHelperSite;
 import kr.codda.model.CoddaHelperSiteManager;
 import kr.codda.model.CurrentWokingPathInformation;
-import kr.codda.util.HtmlContentsBuilder;
+import kr.codda.util.CommonStaticUtil;
 
 /**
  * @author Won Jonghoon
@@ -55,24 +55,18 @@ public class CurrentWokingPathInformationGetterSvl extends HttpServlet {
 				
 				Logger.getGlobal().warning(errorMessage);
 				
-				res.getWriter().println(HtmlContentsBuilder.buildHtmlContentsOfErrorMessageGetter(errorMessage));
+				// res.getWriter().println(HtmlContentsBuilder.buildHtmlContentsOfErrorMessageGetter(errorMessage));
+				res.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+				res.setContentType("text/html");
+				res.setCharacterEncoding("utf-8");
+				res.getWriter().print(errorMessage);
 				return;
 			}
 			
 			coddaHelperSite.setCurrentWorkingPathString(currentWorkingPathString);
 		}
 		
-		CurrentWokingPathInformation currentWokingPathInformation = new CurrentWokingPathInformation();
-		
-		currentWokingPathInformation.setCurrentWorkingPathString(currentWorkingPathString);
-		
-		File currentWorkingPath = new File(currentWorkingPathString);
-		
-		for (File childFile : currentWorkingPath.listFiles()) {
-			if (childFile.isDirectory()) {
-				currentWokingPathInformation.addChildPathString(childFile.getName());
-			}
-		}
+		CurrentWokingPathInformation currentWokingPathInformation = CommonStaticUtil.buildCurrentWokingPathInformation(currentWorkingPathString);
 		
 		String currentWokingPathInformationJsonString = new Gson().toJson(currentWokingPathInformation);
 		
@@ -80,7 +74,8 @@ public class CurrentWokingPathInformationGetterSvl extends HttpServlet {
 		res.setStatus(HttpServletResponse.SC_OK);
 		res.setContentType("text/html");
 		res.setCharacterEncoding("utf-8");
-		res.getWriter().println(HtmlContentsBuilder.buildHtmlContentsOfCurrentWorkingPathInformationGetterPage(currentWokingPathInformationJsonString));
+		// res.getWriter().println(HtmlContentsBuilder.buildHtmlContentsOfCurrentWorkingPathInformationGetterPage(currentWokingPathInformationJsonString));
+		res.getWriter().print(currentWokingPathInformationJsonString);
 	}
 
 }

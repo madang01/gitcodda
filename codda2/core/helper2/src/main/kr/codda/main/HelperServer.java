@@ -25,11 +25,12 @@ import org.eclipse.jetty.servlet.ServletHandler;
 import org.eclipse.jetty.util.resource.EmptyResource;
 import org.eclipse.jetty.util.resource.Resource;
 
-import kr.codda.servlet.CurrentWokingPathChangerSvl;
-import kr.codda.servlet.CurrentWokingPathInformationGetterSvl;
-import kr.codda.servlet.ErrorMessageGetterSvl;
-import kr.codda.servlet.HelloServlet;
-import kr.codda.servlet.ProjectManagerSvl;
+import kr.codda.servlet.ajax.CurrentWokingPathInformationGetterSvl;
+import kr.codda.servlet.ajax.CurrentWokingPathSetterSvl;
+import kr.codda.servlet.ajax.InstalledMainProjectInformationGetterSvl;
+import kr.codda.servlet.ajax.InstalledPathSetterSvl;
+import kr.codda.servlet.ajax.MainProjectCreatorSvl;
+import kr.codda.servlet.ajax.MainProjectRemoverSvl;
 
 /**
  * @author Won Jonghoon
@@ -42,12 +43,20 @@ public class HelperServer {
 
 		ServletHandler servletHandler = new ServletHandler();
 
+		/*
 		servletHandler.addServletWithMapping(HelloServlet.class, "/servlet/Hello");
-
 		servletHandler.addServletWithMapping(ProjectManagerSvl.class, "/servlet/ProjectManager");
 		servletHandler.addServletWithMapping(ErrorMessageGetterSvl.class, "/servlet/ErrorMessageGetter");
+		*/
+		
 		servletHandler.addServletWithMapping(CurrentWokingPathInformationGetterSvl.class, "/servlet/CurrentWokingPathInformationGetter");
-		servletHandler.addServletWithMapping(CurrentWokingPathChangerSvl.class, "/servlet/CurrentWokingPathChanger");
+		servletHandler.addServletWithMapping(CurrentWokingPathSetterSvl.class, "/servlet/CurrentWokingPathSetter");
+		servletHandler.addServletWithMapping(InstalledPathSetterSvl.class, "/servlet/InstalledPathSetter");
+		
+		
+		servletHandler.addServletWithMapping(InstalledMainProjectInformationGetterSvl.class, "/servlet/InstalledMainProjectInformationGetter");
+		servletHandler.addServletWithMapping(MainProjectCreatorSvl.class, "/servlet/MainProjectCreator");
+		servletHandler.addServletWithMapping(MainProjectRemoverSvl.class, "/servlet/MainProjectRemover");
 
 		ResourceHandler resourceHandler = new ResourceHandler();
 		resourceHandler.setBaseResource(Resource.newClassPathResource("webapp"));

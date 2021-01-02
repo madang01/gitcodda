@@ -13,7 +13,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-package kr.codda.servlet;
+package kr.codda.servlet.ajax;
 
 import java.io.File;
 import java.io.IOException;
@@ -28,13 +28,13 @@ import com.google.gson.Gson;
 import kr.codda.model.CoddaHelperSite;
 import kr.codda.model.CoddaHelperSiteManager;
 import kr.codda.model.CurrentWokingPathInformation;
-import kr.codda.util.HtmlContentsBuilder;
+import kr.codda.util.CommonStaticUtil;
 
 /**
  * @author Won Jonghoon
  *
  */
-public class CurrentWokingPathChangerSvl extends HttpServlet {
+public class CurrentWokingPathSetterSvl extends HttpServlet {
 
 	/**
 	 * 
@@ -50,7 +50,11 @@ public class CurrentWokingPathChangerSvl extends HttpServlet {
 			
 			Logger.getGlobal().warning(errorMessage);
 			
-			res.getWriter().println(HtmlContentsBuilder.buildHtmlContentsOfErrorMessageGetter(errorMessage));
+			// res.getWriter().println(HtmlContentsBuilder.buildHtmlContentsOfErrorMessageGetter(errorMessage));
+			res.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+			res.setContentType("text/html");
+			res.setCharacterEncoding("utf-8");
+			res.getWriter().print(errorMessage);
 			return;
 		}
 		
@@ -63,7 +67,11 @@ public class CurrentWokingPathChangerSvl extends HttpServlet {
 			
 			Logger.getGlobal().warning(errorMessage);
 			
-			res.getWriter().println(HtmlContentsBuilder.buildHtmlContentsOfErrorMessageGetter(errorMessage));
+			// res.getWriter().println(HtmlContentsBuilder.buildHtmlContentsOfErrorMessageGetter(errorMessage));
+			res.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			res.setContentType("text/html");
+			res.setCharacterEncoding("utf-8");
+			res.getWriter().print(errorMessage);
 			return;
 		}
 		
@@ -78,7 +86,11 @@ public class CurrentWokingPathChangerSvl extends HttpServlet {
 				
 				Logger.getGlobal().warning(errorMessage);
 				
-				res.getWriter().println(HtmlContentsBuilder.buildHtmlContentsOfErrorMessageGetter(errorMessage));
+				// res.getWriter().println(HtmlContentsBuilder.buildHtmlContentsOfErrorMessageGetter(errorMessage));
+				res.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+				res.setContentType("text/html");
+				res.setCharacterEncoding("utf-8");
+				res.getWriter().print(errorMessage);
 				return;
 			}
 		} else {
@@ -87,7 +99,11 @@ public class CurrentWokingPathChangerSvl extends HttpServlet {
 				
 				Logger.getGlobal().warning(errorMessage);
 				
-				res.getWriter().println(HtmlContentsBuilder.buildHtmlContentsOfErrorMessageGetter(errorMessage));
+				// res.getWriter().println(HtmlContentsBuilder.buildHtmlContentsOfErrorMessageGetter(errorMessage));
+				res.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+				res.setContentType("text/html");
+				res.setCharacterEncoding("utf-8");
+				res.getWriter().print(errorMessage);
 				return;
 			}
 			
@@ -107,7 +123,11 @@ public class CurrentWokingPathChangerSvl extends HttpServlet {
 				
 				Logger.getGlobal().warning(errorMessage);
 				
-				res.getWriter().println(HtmlContentsBuilder.buildHtmlContentsOfErrorMessageGetter(errorMessage));
+				// res.getWriter().println(HtmlContentsBuilder.buildHtmlContentsOfErrorMessageGetter(errorMessage));
+				res.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+				res.setContentType("text/html");
+				res.setCharacterEncoding("utf-8");
+				res.getWriter().print(errorMessage);
 				return;
 			}
 			
@@ -118,31 +138,26 @@ public class CurrentWokingPathChangerSvl extends HttpServlet {
 				
 				Logger.getGlobal().warning(errorMessage);
 				
-				res.getWriter().println(HtmlContentsBuilder.buildHtmlContentsOfErrorMessageGetter(errorMessage));
+				// res.getWriter().println(HtmlContentsBuilder.buildHtmlContentsOfErrorMessageGetter(errorMessage));
+				res.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+				res.setContentType("text/html");
+				res.setCharacterEncoding("utf-8");
+				res.getWriter().print(errorMessage);
 				return;
 			}
 		}
 		
 		coddaHelperSite.setCurrentWorkingPathString(newCurrentWorkingPathString);
 		
-		CurrentWokingPathInformation newCurrentWokingPathInformation = new CurrentWokingPathInformation();
-		
-		newCurrentWokingPathInformation.setCurrentWorkingPathString(newCurrentWorkingPathString);
-		
-		File newCurrentWorkingPath = new File(newCurrentWorkingPathString);
-		
-		for (File childFile : newCurrentWorkingPath.listFiles()) {
-			if (childFile.isDirectory()) {
-				newCurrentWokingPathInformation.addChildPathString(childFile.getName());
-			}
-		}
+		CurrentWokingPathInformation newCurrentWokingPathInformation = CommonStaticUtil.buildCurrentWokingPathInformation(newCurrentWorkingPathString);
 		
 		String newCurrentWokingPathInformationJsonString = new Gson().toJson(newCurrentWokingPathInformation);
 		
 		res.setStatus(HttpServletResponse.SC_OK);
 		res.setContentType("text/html");
 		res.setCharacterEncoding("utf-8");
-		res.getWriter().println(HtmlContentsBuilder.buildHtmlContentsOfCurrentWorkingPathInformationGetterPage(newCurrentWokingPathInformationJsonString));
+		// res.getWriter().print(HtmlContentsBuilder.buildHtmlContentsOfCurrentWorkingPathInformationGetterPage(newCurrentWokingPathInformationJsonString));
+		res.getWriter().print(newCurrentWokingPathInformationJsonString);
 		
 	}
 }

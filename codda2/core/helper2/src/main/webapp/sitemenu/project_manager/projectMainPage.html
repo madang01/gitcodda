@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Codda Helper Web Service</title>
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="/bootstrap/3.3.7/css/bootstrap.css">
+<!-- jQuery library -->
+<script src="/jquery/3.3.1/jquery.min.js"></script>
+<!-- Latest compiled JavaScript -->
+<script src="/bootstrap/3.3.7/js/bootstrap.min.js"></script> 
+
+<style>
+.btn-space {
+    margin-right: 5px;
+}
+</style>
+
+<script type="text/javascript">
+<!--
+	function goHome() {
+		document.location.href = "/index.html";
+	}
+
+	function goPrevPage() {
+		document.location.href = "/sitemenu/project_manager/installedPathInputPage.html";
+	}
+	
+	function reloadMainProjectInformation() {
+		var xhttp = new XMLHttpRequest();
+		
+		xhttp.onreadystatechange = function() {
+			if (this.readyState != 4 || this.status != 200) {
+				if (this.status != 0 && this.status != 200) {
+					callbackForErrorMessageGetter("에러코드="+this.status+", 에러 내용="+this.responseText);
+				}
+				return;
+			}
+			
+			
+			callbackForInstalledMainProjectInformationGetter(JSON.parse(this.responseText));
+		};
+		xhttp.open("GET", "/servlet/InstalledMainProjectInformationGetter", true);
+		xhttp.send();
+	}
+	
+	function callbackForInstalledMainProjectInformationGetter(installedMainProjectInformationJson) {
+		var installedPathObj = document.getElementById("installedPath");		
+		installedPathObj.innerText = installedMainProjectInformationJson.installedPathString;
+		
+		var mainProjectNameListObj = document.getElementById("mainProjectNameList");
+		
+		while (mainProjectNameListObj.hasChildNodes()) {
+			mainProjectNameListObj.removeChild(mainProjectNameListObj.firstChild);
+		}
+		
+		var firstOptionOfMainProjectNameList = document.createElement("option");
+		firstOptionOfMainProjectNameList.innerText = "- 선 택 -";
+		
+		mainProjectNameListObj.appendChild(firstOptionOfMainProjectNameList);
+		
+		for (var i=0; i < installedMainProjectInformationJson.mainProjectNameList.length; i++) {
+			var mainProjectName = installedMainProjectInformationJson.mainProjectNameList[i];
+			
+			var nextOptionOfMainProjectNameList = document.createElement("option");
+			nextOptionOfMainProjectNameList.setAttribute("value", mainProjectName);
+			nextOptionOfMainProjectNameList.innerText = mainProjectName;
+			
+			mainProjectNameListObj.appendChild(nextOptionOfMainProjectNameList);
+		}
+	}
+	
+
+	function createNewMainProject() {
+		var newMainProjectNameObj = document.getElementById("newMainProjectName");
+		if (newMainProjectNameObj.value == '') {
+			alert("신규 메인 프로젝트 이름을 넣어 주세요");
+			newMainProjectNameObj.focus();
+		}
+		
+		
+		var xhttp = new XMLHttpRequest();
+		var params = "newMainProjectName="+encodeURI(newMainProjectNameObj.value);
+		
+		xhttp.onreadystatechange = function() {
+			if (this.readyState != 4 || this.status != 200) {
+				if (this.status != 0 && this.status != 200) {
+					callbackForErrorMessageGetter("에러코드="+this.status+", 에러 내용="+this.responseText);
+				}
+				return;
+			}
+			
+			
+			callbackForMainProjectCreator(JSON.parse(this.responseText));
+		};
+
+		xhttp.open("GET", "/servlet/MainProjectCreator?"+params, true);
+		xhttp.send();
+	}
+	
+	function callbackForMainProjectCreator(mainProjectCreatorResponseJson) {
+		alert("설치 경로[" + mainProjectCreatorResponseJson.installedPathString + "]를 갖는 신규 메인 프로젝트 '" + mainProjectCreatorResponseJson.newMainProjectName + "' 를 생성하는데 성공하였습니다");
+		
+		reloadMainProjectInformation();
+	}
+	
+	function deleteMainProject() {
+		var mainProjectNameListObj = document.getElementById("mainProjectNameList");
+		if (mainProjectNameListObj.selectedIndex == 0) {
+			alert("삭제할 메인 프로젝트를 선택 하세요");
+			mainProjectNameListObj.focus();
+			return;
+		}
+		
+		var isConfirmed = confirm("메인 프로젝트 '"+ mainProjectNameListObj.value + "' 를 삭제 하시겠습니까?'");
+		
+		if (! isConfirmed) {
+			return;
+		} 
+		
+		var xhttp = new XMLHttpRequest();
+		var params = "mainProjectNameToDelete="+encodeURI(mainProjectNameListObj.value);
+		
+		xhttp.onreadystatechange = function() {
+			if (this.readyState != 4 || this.status != 200) {
+				if (this.status != 0 && this.status != 200) {
+					callbackForErrorMessageGetter("에러코드="+this.status+", 에러 내용="+this.responseText);
+				}
+				return;
+			}
+			
+			
+			callbackForMainProjectRemover(JSON.parse(this.responseText));
+		};
+
+		xhttp.open("GET", "/servlet/MainProjectRemover?"+params, true);
+		xhttp.send();
+	}
+
+	function callbackForMainProjectRemover(mainProjectRemoverResponseJson) {
+		alert("설치 경로[" + mainProjectRemoverResponseJson.installedPathString + "]를 갖는 메인 프로젝트 '" + mainProjectRemoverResponseJson.mainProjectNameToDelete + "' 를 삭제하는데 성공하였습니다");
+		
+		reloadMainProjectInformation();
+	}
+	
+	
+	function callbackForErrorMessageGetter(errorMessage) {
+		var errorMessageObj = document.getElementById("errorMessage");
+		errorMessageObj.setAttribute("class", "alert alert-danger");
+		errorMessageObj.innerText = errorMessage;
+	}
+	
+
+	function init() {
+		if(typeof(sessionStorage) == "undefined") {
+		    alert("Sorry! No HTML5 sessionStorage support..");
+		    document.location.href = "/";
+		    return;
+		}
+		
+		
+		reloadMainProjectInformation();
+	}
+	
+	window.onload = init;
+//-->
+</script>
+</head>
+<body>
+	<div class="content">
+		<div class="container">
+			<div class="panel panel-default">
+				<div class="panel-heading">프로젝트 관리자::주 화면</div>
+				<div class="panel-body">
+					<div class="row">
+						<div class="col-sm-12">
+							<div class="btn-group">
+								<button type="button" class="btn btn-primary btn-sm btn-space" onClick="goHome();">HOME</button>
+								<button type="button" class="btn btn-primary btn-sm btn-space" onClick="goPrevPage();">이전</button>
+							</div>
+						</div>
+					</div>
+					<div class="row"><div class="col-sm-12">&nbsp;</div></div>					
+					<div class="row">
+						<div class="col-sm-12">
+							<div id="errorMessage"></div>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-sm-12"><label>코다 설치 경로 :&nbsp;</label><label id="installedPath"></label></div>
+					</div>
+					<div class="row"><div class="col-sm-12">&nbsp;</div></div>
+					<div class="row">
+						<div class="col-sm-12">
+							<label for="newMainProjectName">신규 프로젝트 :&nbsp;</label>
+							<input type="text" size="30" maxlength="50" name="newMainProjectName" id="newMainProjectName">
+							<label style="width: 30px;">&nbsp;</label>
+							<div class="btn-group">
+								<button type="button" class="btn btn-primary btn-sm btn-space" onClick="createNewMainProject();">생성</button>
+							</div>
+						</div>
+					</div>
+					
+					<div class="row"><div class="col-sm-12">&nbsp;</div></div>
+					<div class="row">
+						<div class="col-sm-12">
+							<label>메인 프로젝트 목록 : </label>
+							<select id="mainProjectNameList">
+								<option>- 선 택 -</option>
+								<option value="sample_base">sample_base222</option>
+								<option value="sample_test">sample_test22</option>
+							</select>
+							<label style="width: 30px;">&nbsp;</label>
+							<div class="btn-group">
+								<button type="button" class="btn btn-primary btn-sm btn-space" onClick="reloadMainProjectInformation();">새로고침</button>								
+								<button type="button" class="btn btn-primary btn-sm btn-space" onClick="deleteMainProject();">삭제</button>
+								<button type="button" class="btn btn-primary btn-sm btn-space" onClick="goProjectConfigFileManagerPage();">설정 파일 관리</button>
+								<button type="button" class="btn btn-primary btn-sm btn-space" onClick="goProjectIOFileManagerPage();">입출력 메시지 관리</button>
+							</div>
+						</div>
+					</div>	
+				</div>
+			</div>
+			
+		</div>
+	</div>
+</body>
+</html>
