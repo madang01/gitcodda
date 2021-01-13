@@ -16,6 +16,7 @@ limitations under the License.
 package kr.codda.servlet.ajax;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServlet;
@@ -26,38 +27,24 @@ import com.google.gson.Gson;
 
 import kr.codda.model.CoddaHelperSite;
 import kr.codda.model.CoddaHelperSiteManager;
-import kr.codda.model.MainProjectRemoverResponse;
-import kr.pe.codda.common.buildsystem.ProjectBuilder;
+import kr.codda.model.AllInstalledMainProjectInformation;
+import kr.codda.util.CommonStaticUtil;
 import kr.pe.codda.common.exception.BuildSystemException;
 
 /**
- * 메인 프로젝트 삭제 서블릿
+ * 메인 프로젝트 정보 얻기 서블릿
  * @author Won Jonghoon
  *
  */
-public class MainProjectRemoverSvl extends HttpServlet {
+public class AllInstalledMainProjectInformationReaderSvl extends HttpServlet {
 
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 4852133133604510525L;
+	private static final long serialVersionUID = 5115247696721680489L;
 	
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse res) throws IOException {
-		String mainProjectNameToDelete = req.getParameter("mainProjectNameToDelete");
-		if (null == mainProjectNameToDelete) {
-			String errorMessage = "the paramter mainProjectNameToDelete is null";
-			
-			Logger.getGlobal().warning(errorMessage);
-			
-			res.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-			res.setContentType("text/html");
-			res.setCharacterEncoding("utf-8");
-			res.getWriter().print(errorMessage);
-			return;
-		}
-		
-		
 		CoddaHelperSite coddaHelperSite = CoddaHelperSiteManager.getInstance(); 
 		String installedPathString = coddaHelperSite.getInstalledPathString();
 		
@@ -73,12 +60,12 @@ public class MainProjectRemoverSvl extends HttpServlet {
 			return;
 		}
 		
-		ProjectBuilder projectBuilder = null;
+		ArrayList<String> mainProjectNameList = null;
+		
 		try {
-			projectBuilder = new ProjectBuilder(installedPathString, mainProjectNameToDelete);
+			mainProjectNameList = CommonStaticUtil.getMainProjectNameList(installedPathString);
 		} catch (BuildSystemException e) {
 			String errorMessage = e.getMessage();
-			
 			Logger.getGlobal().warning(errorMessage);
 			
 			res.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
@@ -88,33 +75,19 @@ public class MainProjectRemoverSvl extends HttpServlet {
 			return;
 		}
 		
-		
-		try {
-			projectBuilder.dropProject();
-		} catch (BuildSystemException e) {
-			String errorMessage = e.getMessage();
-			
-			Logger.getGlobal().warning(errorMessage);
-			
-			res.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-			res.setContentType("text/html");
-			res.setCharacterEncoding("utf-8");
-			res.getWriter().print(errorMessage);
-			return;
-		}
+		coddaHelperSite.setMainProjectNameList(mainProjectNameList);
 		
 		
-		MainProjectRemoverResponse mainProjectRemoverResponse = new MainProjectRemoverResponse();
-		mainProjectRemoverResponse.setInstalledPathString(installedPathString);
-		mainProjectRemoverResponse.setMainProjectNameToDelete(mainProjectNameToDelete);
+		AllInstalledMainProjectInformation installedMainProjectInformation = new AllInstalledMainProjectInformation();
+		installedMainProjectInformation.setInstalledPathString(installedPathString);
+		installedMainProjectInformation.setMainProjectNameList(mainProjectNameList);		
 		
-		String mainProjectRemoverResponseJsonString = new Gson().toJson(mainProjectRemoverResponse);
+		String installedMainProjectInformationJsonString = new Gson().toJson(installedMainProjectInformation);
 		
 		res.setStatus(HttpServletResponse.SC_OK);
 		res.setContentType("text/html");
 		res.setCharacterEncoding("utf-8");
-		res.getWriter().print(mainProjectRemoverResponseJsonString);
+		res.getWriter().print(installedMainProjectInformationJsonString);
 		
 	}
-
 }

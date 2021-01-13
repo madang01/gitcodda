@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Codda Helper Web Service</title>
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="/bootstrap/3.3.7/css/bootstrap.css">
+<!-- jQuery library -->
+<script src="/jquery/3.3.1/jquery.min.js"></script>
+<!-- Latest compiled JavaScript -->
+<script src="/bootstrap/3.3.7/js/bootstrap.min.js"></script> 
+
+<style>
+.btn-space {
+    margin-right: 5px;
+}
+</style>
+
+<script type="text/javascript">
+<!--
+function init() {
+		if(typeof(sessionStorage) == "undefined") {
+		    alert("Sorry! No HTML5 sessionStorage support..");
+		    document.location.href = "/";
+		    return;
+		}
+	}
+	
+	window.onload = init;
+//-->
+</script>
+</head>
+<body>
+	<div class="content">
+		<div class="container">
+			<div class="panel panel-default">
+				<div class="panel-heading">프로젝트 관리자::설정 파일 관리자 화면</div>
+				<div class="panel-body">
+					<div class="row">
+						<div class="col-sm-12">
+							<div class="btn-group">
+								<button type="button" class="btn btn-primary btn-sm btn-space" onClick="goHome();">HOME</button>
+								<button type="button" class="btn btn-primary btn-sm btn-space" onClick="goPrevPage();">이전</button>
+							</div>
+						</div>
+					</div>
+					<div class="row"><div class="col-sm-12">&nbsp;</div></div>					
+					<div class="row">
+						<div class="col-sm-12">
+							<div id="errorMessage"></div>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-sm-12"><label>코다 설치 경로 :&nbsp;</label><label id="installedPath"></label></div>
+					</div>
+					<div class="row"><div class="col-sm-12">&nbsp;</div></div>
+					<div class="row">
+						<div class="col-sm-12"><label>메인 프로젝트 이름 :&nbsp;</label><label id="mainProjectName"></label></div>
+					</div>
+					<div class="row"><div class="col-sm-12">&nbsp;</div></div>
+					<div class="row">
+						<div class="col-sm-12"><label>설정 파일</label></div>
+					</div>
+					
+				</div>
+			</div>
+			
+		</div>
+	</div>
+</body>
+</html>

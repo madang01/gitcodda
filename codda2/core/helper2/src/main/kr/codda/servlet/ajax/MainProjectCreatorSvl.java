@@ -63,7 +63,7 @@ public class MainProjectCreatorSvl extends HttpServlet {
 		String installedPathString = coddaHelperSite.getInstalledPathString();
 		
 		if (null == installedPathString) {
-			String errorMessage = "failed to get a installed directory";
+			String errorMessage = "failed to get a installed directory of CoddaHelperSite";
 			
 			Logger.getGlobal().warning(errorMessage);
 			

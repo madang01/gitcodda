@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Codda Helper Web Service</title>
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="/bootstrap/3.3.7/css/bootstrap.css">
+<!-- jQuery library -->
+<script src="/jquery/3.3.1/jquery.min.js"></script>
+<!-- Latest compiled JavaScript -->
+<script src="/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+<style>
+.btn-space {
+	margin-right: 5px;
+}
+</style>
+
+<script type="text/javascript">
+<!--
+	var messageInformationListJson;
+	
+	function goHome() {
+		document.location.href = "/index.html";
+	}
+	
+	function goPrevPage() {
+		document.location.href = "/sitemenu/project_manager/projectMainPage.html";
+	}
+	
+	function callAllMessageInformationBuilder() {
+		var xhttp = new XMLHttpRequest();
+		
+		xhttp.onreadystatechange = function() {
+			if (this.readyState != 4 || this.status != 200) {
+				if (this.status != 0 && this.status != 200) {
+					callbackForErrorMessageGetter("에러코드="+this.status+", 에러 내용="+this.responseText);
+				}
+				return;
+			}
+			
+			
+			callbackForAllMessageInformationBuilder(JSON.parse(this.responseText));
+		};
+
+		xhttp.open("GET", "/servlet/AllMessageInformationBuilder", true);
+		xhttp.send();
+	}
+	
+	function callbackForAllMessageInformationBuilder(allMessageInformationJson) {
+		var installedPathObj = document.getElementById('installedPath');
+		installedPathObj.innerText = allMessageInformationJson.installedPathString;
+		
+		var sourceMainProjectNameObj = document.getElementById('sourceMainProjectName');
+		sourceMainProjectNameObj.innerText = allMessageInformationJson.selectedMainProjectName;
+		
+		var selectedMainProjectMessageInfoPathObj = document.getElementById('selectedMainProjectMessageInfoPath');
+		selectedMainProjectMessageInfoPathObj.innerText = allMessageInformationJson.selectedMainProjectMessageInfoPathString;
+		
+		var targetMainProjectNameListObj = document.getElementById('targetMainProjectNameList');
+		while (targetMainProjectNameListObj.hasChildNodes()) {
+			targetMainProjectNameListObj.removeChild(targetMainProjectNameListObj.firstChild);
+		}
+		
+		var firstOptionOfTargetMainProjectNameList = document.createElement("option");
+		firstOptionOfTargetMainProjectNameList.innerText = "- 선 택 -";
+		targetMainProjectNameListObj.appendChild(firstOptionOfTargetMainProjectNameList);
+		
+		for (var i=0; i < allMessageInformationJson.mainProjectNameList.length; i++) {
+			var mainProjectName = allMessageInformationJson.mainProjectNameList[i];
+			
+			var nextOptionOfTargetMainProjectNameList = document.createElement("option");
+			nextOptionOfTargetMainProjectNameList.setAttribute("value", mainProjectName);
+			nextOptionOfTargetMainProjectNameList.innerText = mainProjectName;
+			
+			if (mainProjectName == allMessageInformationJson.selectedMainProjectName) {
+				nextOptionOfTargetMainProjectNameList.selected = true;
+			}
+			
+			targetMainProjectNameListObj.appendChild(nextOptionOfTargetMainProjectNameList);
+		}
+		
+		messageInformationListJson = allMessageInformationJson.messageInformationList;
+		
+		searchForMessageID();
+	}
+	
+	function searchForMessageID() {
+		var messageInformationListPartObj = document.getElementById('messageInformationListPart');
+		while (messageInformationListPartObj.hasChildNodes()) {
+			messageInformationListPartObj.removeChild(messageInformationListPartObj.firstChild);
+		}		
+		
+		var searchWordForMessageIDObj = document.getElementById('searchWordForMessageID');
+		
+		for (var i=0; i < messageInformationListJson.length; i++) {
+			var messageInformation = messageInformationListJson[i];
+			
+			if (messageInformation.messageID.indexOf(searchWordForMessageIDObj.value) < 0) {
+				continue;
+			}
+			
+			var rowHavingMessageInfomation = document.createElement("div");
+			rowHavingMessageInfomation.setAttribute("class", "row");
+			rowHavingMessageInfomation.setAttribute("id", "rowFor" + messageInformation.messageID);
+			if (0 == (i % 2)) {
+				rowHavingMessageInfomation.setAttribute("style", "background-color:lavender;");
+			} else {
+				rowHavingMessageInfomation.setAttribute("style", "background-color:lavenderblush;");
+			}			
+			
+			var hiddenColHavingMessageFileContents = document.createElement("div");
+			hiddenColHavingMessageFileContents.setAttribute("style", "display:none");
+			hiddenColHavingMessageFileContents.setAttribute("id", "messageFileContentsFor" + messageInformation.messageID);
+			hiddenColHavingMessageFileContents.innerText = messageInformation.contents;
+			
+			var hiddenColHavingIndex = document.createElement("div");
+			hiddenColHavingIndex.setAttribute("style", "display:none");
+			hiddenColHavingIndex.setAttribute("id", "indexFor" + messageInformation.messageID);
+			hiddenColHavingIndex.innerText = i;
+			
+			var colHavingMessageID = document.createElement("div");
+			colHavingMessageID.setAttribute("class", "col-sm-2");
+			colHavingMessageID.innerText = messageInformation.messageID;
+			
+			var colHavingLastModifiedDate = document.createElement("div");
+			colHavingLastModifiedDate.setAttribute("class", "col-sm-2");
+			colHavingLastModifiedDate.setAttribute("id", "lastModifiedDateFor" + messageInformation.messageID);
+			colHavingLastModifiedDate.innerText = messageInformation.lastModifiedDate;
+			
+			var colHavingCommunicationDirection = document.createElement("div");
+			colHavingCommunicationDirection.setAttribute("class", "col-sm-2");
+			colHavingCommunicationDirection.setAttribute("id", "communicationDirectionFor" + messageInformation.messageID);
+			colHavingCommunicationDirection.innerText = messageInformation.communicationDirection;
+			
+			var buttonViewingMessageInfoFile = document.createElement("button");
+			buttonViewingMessageInfoFile.setAttribute("type", "button");
+			buttonViewingMessageInfoFile.setAttribute("class", "btn btn-default btn-sm btn-space");
+			buttonViewingMessageInfoFile.setAttribute("onClick", "viewMessageInfoFile('" + messageInformation.messageID +"');");
+			buttonViewingMessageInfoFile.innerText = "파일 내용 보기";
+			
+			var buttonReloadingMessageInfoFile = document.createElement("button");
+			buttonReloadingMessageInfoFile.setAttribute("type", "button");
+			buttonReloadingMessageInfoFile.setAttribute("class", "btn btn-default btn-sm btn-space");
+			buttonReloadingMessageInfoFile.setAttribute("onClick", "callOneMessageInformationBuilder('" + messageInformation.messageID +"');");
+			buttonReloadingMessageInfoFile.innerText = "다시 읽기";
+			
+			var buttonCopyingMessageInfoFile = document.createElement("button");
+			buttonCopyingMessageInfoFile.setAttribute("type", "button");
+			buttonCopyingMessageInfoFile.setAttribute("class", "btn btn-default btn-sm btn-space");
+			buttonCopyingMessageInfoFile.setAttribute("onClick", "callOneMessageInfoXMLFileCopier('" + messageInformation.messageID +"');");
+			buttonCopyingMessageInfoFile.innerText = "복사";
+			
+			var colHavingMessageInformationFileFunction = document.createElement("div");
+			colHavingMessageInformationFileFunction.setAttribute("class", "col-sm-3");
+			
+			colHavingMessageInformationFileFunction.appendChild(buttonViewingMessageInfoFile);
+			colHavingMessageInformationFileFunction.appendChild(buttonReloadingMessageInfoFile);
+			colHavingMessageInformationFileFunction.appendChild(buttonCopyingMessageInfoFile);
+			
+			
+			var checkboxForIsSelectedIO = document.createElement("input");
+			checkboxForIsSelectedIO.setAttribute("type", "checkbox");
+			checkboxForIsSelectedIO.setAttribute("id", "isSelectedIOFor" + messageInformation.messageID);
+			checkboxForIsSelectedIO.checked = true;
+			
+			var textNodeForIsSelectedIO = document.createTextNode("입출력");
+			
+			var labelForIsSelectedIO = document.createElement("label");
+			labelForIsSelectedIO.setAttribute("class", "checkbox-inline");
+			labelForIsSelectedIO.appendChild(checkboxForIsSelectedIO);
+			labelForIsSelectedIO.appendChild(textNodeForIsSelectedIO);			
+			
+			var checkboxForIsSelectedDirection = document.createElement("input");
+			checkboxForIsSelectedDirection.setAttribute("type", "checkbox");
+			checkboxForIsSelectedDirection.setAttribute("id", "isSelectedDirectionFor" + messageInformation.messageID);
+			checkboxForIsSelectedDirection.checked = true;
+			
+			var textNodeForIsSelectedDirection = document.createTextNode("방향성");
+			
+			var labelForIsSelectedDirection = document.createElement("label");
+			labelForIsSelectedDirection.setAttribute("class", "checkbox-inline");
+			labelForIsSelectedDirection.appendChild(checkboxForIsSelectedDirection);
+			labelForIsSelectedDirection.appendChild(textNodeForIsSelectedDirection);
+			
+			var labelForEmpty = document.createElement("label");
+			labelForEmpty.setAttribute("style", "width: 10px;");
+			labelForEmpty.innerText = " ";
+			
+			
+			var buttonBuildingIOSourceFile = document.createElement("button");
+			buttonBuildingIOSourceFile.setAttribute("type", "button");
+			buttonBuildingIOSourceFile.setAttribute("class", "btn btn-default btn-sm btn-space");
+			buttonBuildingIOSourceFile.setAttribute("onClick", "callOneMessageIOSourceFilesBuilder('" + messageInformation.messageID + "')");
+			buttonBuildingIOSourceFile.innerText = "개별 생성";
+			
+			var colHavingIOSourceFileFunction = document.createElement("div");
+			colHavingIOSourceFileFunction.setAttribute("class", "col-sm-3");
+			colHavingIOSourceFileFunction.appendChild(labelForIsSelectedIO);
+			colHavingIOSourceFileFunction.appendChild(labelForIsSelectedDirection);
+			colHavingIOSourceFileFunction.appendChild(labelForEmpty);
+			colHavingIOSourceFileFunction.appendChild(buttonBuildingIOSourceFile);
+			
+			rowHavingMessageInfomation.appendChild(hiddenColHavingMessageFileContents);			
+			rowHavingMessageInfomation.appendChild(hiddenColHavingIndex);
+			rowHavingMessageInfomation.appendChild(colHavingMessageID);
+			rowHavingMessageInfomation.appendChild(colHavingLastModifiedDate);
+			rowHavingMessageInfomation.appendChild(colHavingCommunicationDirection);
+			rowHavingMessageInfomation.appendChild(colHavingMessageInformationFileFunction);
+			rowHavingMessageInfomation.appendChild(colHavingIOSourceFileFunction);
+			
+			messageInformationListPartObj.appendChild(rowHavingMessageInfomation);
+			
+		}
+	}
+	
+	function copyAllMessageInfoXMLFiles() {
+		var targetMainProjectNameListObj = document.getElementById("targetMainProjectNameList");
+		if (targetMainProjectNameListObj.selectedIndex == 0) {
+			alert("입출력 소스 파일들을 생성할 대상 프로젝트를 선택하세요");
+			return;
+		}
+		
+		var sourceMainProjectNameObj = document.getElementById("sourceMainProjectName");
+		
+		if (sourceMainProjectNameObj.innerText == targetMainProjectNameListObj.value) {
+			alert("선택한 메인 프로젝트가 아닌 다른 프로젝트를 선택하세요. 메시지 정보 파일 복사는 오직 선택하지 않은 다른 프로젝트만 가능 합니다");
+			targetMainProjectNameListObj.focus();
+			return;
+		}
+		
+		for (var i=0; i < messageInformationListJson.length; i++) {
+			var messageInformation = messageInformationListJson[i];
+			var messageID = messageInformation.messageID;
+			
+			var xhttp = new XMLHttpRequest();
+			var params = "sourceMessageID="+ messageID + "&targetMainProjectName="+targetMainProjectNameListObj.value;
+			
+			var isError = true;
+			
+			xhttp.onreadystatechange = function() {
+				if (this.readyState != 4 || this.status != 200) {
+					if (this.status != 0 && this.status != 200) {
+						var errmsg = "에러코드="+this.status+", 에러 내용="+this.responseText;
+						var hiddenParams = "installedPath="+document.getElementById("installedPath").innerText+"&sourceMainProjectName=" + document.getElementById("sourceMainProjectName").innerText;
+						var newParams = params + "&" + hiddenParams;
+						console.log("개별 메시지 정보 파일 복사 실패::" + errmsg + "::" + newParams);
+						callbackForErrorMessageGetter("개별 입출력 소스 파일들 생성 실패::" + errmsg + "::" + newParams);
+					}
+					return;
+				}
+				
+				var hiddenParams = "installedPath="+document.getElementById("installedPath").innerText+"&sourceMainProjectName=" + document.getElementById("sourceMainProjectName").innerText;
+				var newParams = params + "&" + hiddenParams;
+				console.log("개별 메시지 정보 파일 복사 성공::" + newParams);
+				isError = false;
+				
+			};
+
+			xhttp.open("GET", "/servlet/OneMessageInfoXMLFileCopier?"+params, false);
+			xhttp.send();
+			
+			if (isError) {
+				var whetherToContinue = confirm("메시지 '" + messageID + "' 에 대한 에러를 무시하고 메시지 정보 파일 복사를 계속 진행하시겠습니까?");
+				if (! whetherToContinue) {
+					break;
+				}
+			}
+		}
+		
+		alert("목적지 메인 프로젝트[" + targetMainProjectNameListObj.value + "]로의 모든 메시지 정보 파일들을 복사하는 작업이 종료되었습니다");
+	}
+
+	function buildAllMessageIOSourceFiles() {		
+		var targetMainProjectNameListObj = document.getElementById("targetMainProjectNameList");
+		if (targetMainProjectNameListObj.selectedIndex == 0) {
+			alert("입출력 소스 파일들을 생성할 대상 프로젝트를 선택하세요");
+			return;
+		}
+		
+		var ioSourceFileAuthorObj = document.getElementById("ioSourceFileAuthor");
+		
+		if (ioSourceFileAuthorObj.value == '') {
+			alert("입출력 소스 파일의 작성자를 입력하세요");
+			ioSourceFileAuthorObj.focus();
+			return;
+		}
+		
+		for (var i=0; i < messageInformationListJson.length; i++) {
+			var messageInformation = messageInformationListJson[i];
+			var messageID = messageInformation.messageID;
+			
+			var isSelectedIOObj = document.getElementById("isSelectedIOFor" + messageID);
+			var isSelectedDirectionObj = document.getElementById("isSelectedDirectionFor" + messageID);
+			
+			var isSelectedIO = isSelectedIOObj.checked;
+			var isSelectedDirection = isSelectedDirectionObj.checked;
+			
+			var xhttp = new XMLHttpRequest();
+			var params = "sourceMessageID="+messageID + "&targetMainProjectName="+targetMainProjectNameListObj.value 
+			+ "&ioSourceFileAuthor=" + ioSourceFileAuthorObj.value 
+			+ "&isSelectedIO=" + isSelectedIO
+			+ "&isSelectedCommunicationDirection=" + isSelectedDirection;
+			
+			var isError = true;
+			
+			xhttp.onreadystatechange = function() {
+				
+				if (this.readyState != 4 || this.status != 200) {
+					if (this.status != 0 && this.status != 200) {
+						var errmsg = "에러코드="+this.status+", 에러 내용="+this.responseText;
+						var hiddenParams = "installedPath="+document.getElementById("installedPath").innerText+"&sourceMainProjectName=" + document.getElementById("sourceMainProjectName").innerText;
+						var newParams = params + "&" + hiddenParams;
+						console.log("개별 입출력 소스 파일들 생성 실패::" + errmsg + "::" + newParams);						
+						callbackForErrorMessageGetter("개별 입출력 소스 파일들 생성 실패::" + errmsg + "::" + newParams);
+					}
+					return;
+				}
+				var hiddenParams = "installedPath="+document.getElementById("installedPath").innerText+"&sourceMainProjectName=" + document.getElementById("sourceMainProjectName").innerText;
+				var newParams = params + "&" + hiddenParams;
+				console.log("개별 입출력 소스 파일들 생성 성공::" + newParams);
+				
+				isError = false;
+			};
+
+			// WARNING! 비동기로 호출시 소켓이 너무 많이 열리게 되는 문제 발생하기때문에 반듯이 에러 제어가 쉬운 동기 방식으로 할것
+			xhttp.open("GET", "/servlet/OneMessageIOSourceFilesBuilder?"+params, false);
+			xhttp.send();
+			
+			if (isError) {
+				var whetherToContinue = confirm("메시지 '" + messageID + "' 에 대한 에러를 무시하고 입출력 소스 파일 생성을 계속 진행하시겠습니까?");
+				if (! whetherToContinue) {
+					break;
+				}
+			}
+		}
+		
+		alert("목적지 메인 프로젝트[" + targetMainProjectNameListObj.value + "]에 모든 메시지에 대하여 입출력 소스 파일들을 생성하는 작업이 종료되었습니다");
+	}	
+	
+	
+	
+	function viewMessageInfoFile(messageID) {
+		var messageInfoFileContentsObj = document.getElementById("messageFileContentsFor" + messageID);
+		
+		var bodyOfMessageInfoFileViewModal = document.getElementById('bodyOfMessageInfoFileViewModal');
+		bodyOfMessageInfoFileViewModal.innerHTML =  messageInfoFileContentsObj.innerHTML.replace(/(?:\r\n|\r|\n)/g, '<br>');
+		
+		$("#messageInfoFileViewModal").modal('show');
+	}
+	
+	function callOneMessageInformationBuilder(messageID) {
+		var xhttp = new XMLHttpRequest();
+		var params = "targetMessageID="+messageID;
+		
+		xhttp.onreadystatechange = function() {
+			if (this.readyState != 4 || this.status != 200) {
+				if (this.status != 0 && this.status != 200) {
+					callbackForErrorMessageGetter("에러코드="+this.status+", 에러 내용="+this.responseText);
+				}
+				return;
+			}
+			
+			
+			callbackForOneMessageInformationBuilder(JSON.parse(this.responseText));
+		};
+
+		xhttp.open("GET", "/servlet/OneMessageInformationBuilder?"+params, true);
+		xhttp.send();
+	}
+	
+	function callbackForOneMessageInformationBuilder(targetMessageInformationJson) {
+		var targetMessageID = targetMessageInformationJson.messageID;
+		var indexObj = document.getElementById("indexFor" + targetMessageID);
+		var indexOfMessageInformationListJosn = parseInt(indexObj.innerText, 10);
+		
+		
+		var sourceMessageInformation = messageInformationListJson[indexOfMessageInformationListJosn];
+		var sourceMessageID = sourceMessageInformation.messageID;
+		
+		if (targetMessageID != sourceMessageID) {
+			var errmsg = "목적지 메시지 식별자[" + targetMessageID + "와 원본 메시지 식별자["+sourceMessageID + "] 가 일치 하지 않습니다";
+			alert(errmsg);
+			callbackForErrorMessageGetter(errmsg);
+			return;
+		}
+		
+		messageInformationListJson[indexOfMessageInformationListJosn] = targetMessageInformationJson;		
+		
+		var messageInfoFileContentsObj = document.getElementById("messageFileContentsFor" + targetMessageID);
+		var lastModifiedDateObj = document.getElementById("lastModifiedDateFor" + targetMessageID);
+		var communicationDirectionObj = document.getElementById("communicationDirectionFor" + targetMessageID);
+		
+		messageInfoFileContentsObj.innerText = targetMessageInformationJson.contents;
+		lastModifiedDateObj.innerText = targetMessageInformationJson.lastModifiedDate;
+		
+		communicationDirectionObj.innerText = targetMessageInformationJson.communicationDirection;
+		
+		alert(targetMessageID + " 메시지 정보 파일 읽기 성공");
+	}
+	
+	function callOneMessageIOSourceFilesBuilder(messageID) {
+		var targetMainProjectNameListObj = document.getElementById("targetMainProjectNameList");
+		if (targetMainProjectNameListObj.selectedIndex == 0) {
+			alert("입출력 소스 파일들을 생성할 대상 프로젝트를 선택하세요");
+			return;
+		}
+		
+		var ioSourceFileAuthorObj = document.getElementById("ioSourceFileAuthor");
+		
+		if (ioSourceFileAuthorObj.value == '') {
+			alert("입출력 소스 파일의 작성자를 입력하세요");
+			ioSourceFileAuthorObj.focus();
+			return;
+		}
+		
+		var isSelectedIOObj = document.getElementById("isSelectedIOFor" + messageID);
+		var isSelectedDirectionObj = document.getElementById("isSelectedDirectionFor" + messageID);
+		
+		var isSelectedIO = isSelectedIOObj.checked;
+		var isSelectedDirection = isSelectedDirectionObj.checked;
+		
+		var xhttp = new XMLHttpRequest();
+		var params = "sourceMessageID="+messageID + "&targetMainProjectName="+targetMainProjectNameListObj.value 
+		+ "&ioSourceFileAuthor=" + ioSourceFileAuthorObj.value 
+		+ "&isSelectedIO=" + isSelectedIO
+		+ "&isSelectedCommunicationDirection=" + isSelectedDirection;
+		
+		xhttp.onreadystatechange = function() {
+			if (this.readyState != 4 || this.status != 200) {
+				if (this.status != 0 && this.status != 200) {
+					callbackForErrorMessageGetter("에러코드="+this.status+", 에러 내용="+this.responseText);
+				}
+				return;
+			}
+			
+			var sourceMainProjectNameObj = document.getElementById("sourceMainProjectName");
+			
+			alert("메시지 식별자 '"+ messageID + "'를 갖는 선택한 메인 프로젝트 '" + sourceMainProjectNameObj.innerText + "' 의 메시지 정보 XML 파일로 부터 생성된 IO 파일들을  목적지 메인 프로젝트 '" + targetMainProjectNameListObj.value + "' 에 성공적으로 저장하였습니다");
+		};
+
+		xhttp.open("GET", "/servlet/OneMessageIOSourceFilesBuilder?"+params, true);
+		xhttp.send();
+	}
+	
+	function callOneMessageInfoXMLFileCopier(messageID) {
+		var targetMainProjectNameListObj = document.getElementById("targetMainProjectNameList");
+		if (targetMainProjectNameListObj.selectedIndex == 0) {
+			alert("입출력 소스 파일들을 생성할 대상 프로젝트를 선택하세요");
+			return;
+		}
+		
+		var sourceMainProjectNameObj = document.getElementById("sourceMainProjectName");
+		
+		if (sourceMainProjectNameObj.innerText == targetMainProjectNameListObj.value) {
+			alert("선택한 메인 프로젝트가 아닌 다른 프로젝트를 선택하세요. 메시지 정보 파일 복사는 오직 선택하지 않은 다른 프로젝트만 가능 합니다");
+			targetMainProjectNameListObj.focus();
+			return;
+		}
+		
+		var xhttp = new XMLHttpRequest();
+		var params = "sourceMessageID="+messageID + "&targetMainProjectName="+targetMainProjectNameListObj.value;
+		
+		xhttp.onreadystatechange = function() {
+			if (this.readyState != 4 || this.status != 200) {
+				if (this.status != 0 && this.status != 200) {
+					callbackForErrorMessageGetter("에러코드="+this.status+", 에러 내용="+this.responseText);
+				}
+				return;
+			}
+			
+			alert("메시지 식별자 '"+ messageID + "'를 갖는 선택한 메인 프로젝트 '" + sourceMainProjectNameObj.innerText + "' 의 메시지 정보 XML 파일을 목적지 메인 프로젝트 '" + targetMainProjectNameListObj.value + "' 로 성공적으로 복사하였습니다");
+		};
+
+		xhttp.open("GET", "/servlet/OneMessageInfoXMLFileCopier?"+params, true);
+		xhttp.send();
+	}
+	
+	
+	
+	function callbackForErrorMessageGetter(errorMessage) {
+		var errorMessageObj = document.getElementById("errorMessage");
+		errorMessageObj.setAttribute("class", "alert alert-danger");
+		errorMessageObj.innerText = errorMessage;
+	}	
+	
+	function init() {
+		if (typeof (sessionStorage) == "undefined") {
+			alert("Sorry! No HTML5 sessionStorage support..");
+			document.location.href = "/";
+			return;
+		}
+		
+		
+		callAllMessageInformationBuilder();
+	}
+
+	window.onload = init;
+//-->
+</script>
+</head>
+<body>
+	<div class="content">
+		<div class="container">
+			<div class="panel panel-default">
+				<div class="panel-heading">프로젝트 관리자::입출력 파일 생성자 화면</div>
+				<div class="panel-body">
+					<div class="row">
+						<div class="col-sm-12">
+							<div class="btn-group">
+								<button type="button" class="btn btn-primary btn-sm btn-space" onClick="goHome();">HOME</button>
+								<button type="button" class="btn btn-primary btn-sm btn-space" onClick="goPrevPage();">이전</button>
+								<button type="button" class="btn btn-primary btn-sm btn-space" onClick="callAllMessageInformationBuilder();">전체 메시지 정보 파일 다시 읽기</button>
+								<button type="button" class="btn btn-primary btn-sm btn-space" onClick="copyAllMessageInfoXMLFiles();">전체 메시지 정보 파일 복사</button>
+								<button type="button" class="btn btn-primary btn-sm btn-space" onClick="buildAllMessageIOSourceFiles();">전체 메시지의 입출력 소스 파일 생성</button>
+							</div>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-sm-12">&nbsp;</div>
+					</div>
+					<div class="row">
+						<div class="col-sm-12">
+							<div id="errorMessage"></div>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-sm-12">
+							<label>코다 설치 경로 :&nbsp;</label><label id="installedPath"></label>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-sm-12">&nbsp;</div>
+					</div>
+					<div class="row">
+						<div class="col-sm-12">
+							<label>메인 프로젝트 이름 :&nbsp;</label><label id="sourceMainProjectName">sample_base222</label>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-sm-12">&nbsp;</div>
+					</div>
+					<div class="row">
+						<div class="col-sm-12">
+							<label>입출력 정보 파일 경로 :&nbsp;</label><label id="selectedMainProjectMessageInfoPath"></label>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-sm-12">&nbsp;</div>
+					</div>
+					<div class="row">
+						<div class="col-sm-12">
+							<label>입출력 파일 저장 대상 프로젝트 :&nbsp;</label><select id="targetMainProjectNameList">
+								<option>- 선 택 -</option>
+								<option value="sample_base" selected>sample_base222</option>
+								<option value="sample_test">sample_test3443</option>
+							</select>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-sm-12">&nbsp;</div>
+					</div>
+					<div class="row">
+						<div class="col-sm-12">
+							<label>작성자 :&nbsp;</label><input type="text" id="ioSourceFileAuthor">
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-sm-12">&nbsp;</div>
+					</div>
+					<div class="row">
+						<div class="col-sm-12">
+							<label>메시지 식별자 검색 :&nbsp;</label><input type="text" id="searchWordForMessageID" size="28" maxlength="100"><label style="width: 15px;">&nbsp;</label><button type="button" class="btn btn-primary btn-sm btn-space" onClick="searchForMessageID();">검색</button>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-sm-12">&nbsp;</div>
+					</div>
+					<div class="row">
+						<div class="col-sm-2">
+							<label>메시지 식별자</label>
+						</div>
+						<div class="col-sm-2">
+							<label>최근 수정일</label>
+						</div>
+						<div class="col-sm-2">
+							<label>통신방향</label>
+						</div>
+						<div class="col-sm-3">
+							<label>메시지 정보 파일 기능</label>
+						</div>
+						<div class="col-sm-3">
+							<label>입출력 파일 생성자관련 기능</label>
+						</div>
+					</div>
+					<div id="messageInformationListPart" style="overflow-x:hidden; overflow-y: auto; height:480px;">
+						<div class="row" id="rowForEcho2" style="background-color:lavender;">
+							<div style="display:none" id="messageFileContentsForEcho2">한글테스트</div>
+							<div style="display:none" id="indexForEcho2">0</div>
+							<div class="col-sm-2">Echo2</div>
+							<div class="col-sm-2">2021.01.05 12:20:30</div>
+							<div class="col-sm-2">client &lt;-&gt; server</div>
+							<div class="col-sm-3">
+								<button type="button" class="btn btn-default btn-sm" onClick="viewMessageInfoFile('Echo2');">파일 내용 보기</button>
+								<button type="button" class="btn btn-default btn-sm" onClick="callOneMessageInformationBuilder('Echo2');">다시 읽기</button>
+								<button type="button" class="btn btn-default btn-sm" onClick="callOneMessageInfoXMLFileCopier('Echo2');">복사</button>
+							</div>
+							<div class="col-sm-3">
+								<label class="checkbox-inline"><input type="checkbox" id="isSelectedIOForEcho2">입출력</label> <label class="checkbox-inline"><input type="checkbox" id="isSelectedDirectionForEcho2">방향성</label>
+								<button type="button" class="btn btn-default btn-sm" onClick="callOneMessageIOSourceFilesBuilder('Echo2');">개별 생성</button>
+							</div>
+						</div>
+						<div class="row" id="rowForEcho2" style="background-color:lavenderblush;">
+							<div style="display:none" id="messageFileContentsForEcho2">한글테스트</div>
+							<div style="display:none" id="indexForEcho2">1</div>
+							<div class="col-sm-2">Echo2</div>
+							<div class="col-sm-2">2021.01.05 12:20:30</div>
+							<div class="col-sm-2">client &lt;-&gt; server</div>
+							<div class="col-sm-3">
+								<button type="button" class="btn btn-default btn-sm btn-space" onClick="viewMessageInfoFile('Echo2');">파일 내용 보기</button>
+								<button type="button" class="btn btn-default btn-sm btn-space" onClick="callOneMessageInformationBuilder('Echo2');">다시 읽기</button>
+							</div>
+							<div class="col-sm-3">
+								<label class="checkbox-inline"><input type="checkbox" id="isSelectedIOForEcho2">입출력</label> <label class="checkbox-inline"><input type="checkbox" id="isSelectedDirectionForEcho2">방향성</label>
+								<button type="button" class="btn btn-default btn-sm btn-space" onClick="callOneMessageIOSourceFilesBuilder('Echo2');">개별 생성</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<!-- Modal -->
+<div id="messageInfoFileViewModal" class="modal fade" role="dialog">
+	<div class="modal-dialog">
+		<!-- Modal content-->
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+				<h4 class="modal-title">메시지 정보 파일</h4>
+			</div>
+			<div class="modal-body" id="bodyOfMessageInfoFileViewModal"><p>Some text in the modal.</p></div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+			</div>
+		</div>
+	</div>
+</div>
+</body>
+</html>

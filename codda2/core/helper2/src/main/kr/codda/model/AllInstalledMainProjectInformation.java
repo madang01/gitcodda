@@ -21,48 +21,24 @@ import java.util.ArrayList;
  * @author Won Jonghoon
  *
  */
-public class CoddaHelperSite {
+public class AllInstalledMainProjectInformation {
 	private String installedPathString;
-	private String currentWorkingPathString;
-	private String selectedMainProjectName;
-	private ArrayList<String> mainProjectNameList;
+	private ArrayList<String> mainProjectNameList = new ArrayList<String>();
 	
-	private String errorMessage;	
 	
 	public String getInstalledPathString() {
 		return installedPathString;
 	}
-	
 	public void setInstalledPathString(String installedPathString) {
 		this.installedPathString = installedPathString;
 	}
-	public String getCurrentWorkingPathString() {
-		return currentWorkingPathString;
-	}
-	public void setCurrentWorkingPathString(String currentWorkingPathString) {
-		this.currentWorkingPathString = currentWorkingPathString;
-	}
-	
-	public String getSelectedMainProjectName() {
-		return selectedMainProjectName;
-	}
-	public void setSelectedMainProjectName(String selectedMainProjectName) {
-		this.selectedMainProjectName = selectedMainProjectName;
-	}
-	
-	
 	public ArrayList<String> getMainProjectNameList() {
 		return mainProjectNameList;
 	}
-
 	public void setMainProjectNameList(ArrayList<String> mainProjectNameList) {
 		this.mainProjectNameList = mainProjectNameList;
 	}
+	
+	
 
-	public String getErrorMessage() {
-		return errorMessage;
-	}
-	public void setErrorMessage(String errorMessage) {
-		this.errorMessage = errorMessage;
-	}
 }

@@ -226,7 +226,7 @@ public abstract class CommonStaticUtil {
 	 * @throws IllegalArgumentException 파라미터 'sourcePathString' 가 null 인 경우 혹은 유효하지 않는 경로인 경우 던지는 예외.  
 	 * 
 	 */
-	public static File createValidPath(String sourcePathString, ReadWriteMode readWriteMode) throws IllegalArgumentException {
+	public static File toValidPath(String sourcePathString, ReadWriteMode readWriteMode) throws IllegalArgumentException {
 		if (null == sourcePathString) {
 			throw new IllegalArgumentException("the parameter 'sourcePathString' is null");
 		}

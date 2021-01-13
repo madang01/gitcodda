@@ -27,29 +27,28 @@ import com.google.gson.Gson;
 
 import kr.codda.model.CoddaHelperSite;
 import kr.codda.model.CoddaHelperSiteManager;
-import kr.codda.model.InstalledMainProjectInformation;
-import kr.codda.util.CommonStaticUtil;
+import kr.pe.codda.common.buildsystem.ProjectBuilder;
 import kr.pe.codda.common.exception.BuildSystemException;
 
 /**
- * 메인 프로젝트 정보 얻기 서블릿
  * @author Won Jonghoon
  *
  */
-public class InstalledMainProjectInformationGetterSvl extends HttpServlet {
+public class AllProjectPathRenewalSvl extends HttpServlet {
 
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 5115247696721680489L;
+	private static final long serialVersionUID = 6117200637136330020L;
 	
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse res) throws IOException {
+	
 		CoddaHelperSite coddaHelperSite = CoddaHelperSiteManager.getInstance(); 
 		String installedPathString = coddaHelperSite.getInstalledPathString();
 		
 		if (null == installedPathString) {
-			String errorMessage = "failed to get a installed directory";
+			String errorMessage = "failed to get a installed directory of CoddaHelperSite";
 			
 			Logger.getGlobal().warning(errorMessage);
 			
@@ -60,32 +59,43 @@ public class InstalledMainProjectInformationGetterSvl extends HttpServlet {
 			return;
 		}
 		
-		ArrayList<String> mainProjectNameList = null;
 		
-		try {
-			mainProjectNameList = CommonStaticUtil.getMainProjectNameList(installedPathString);
-		} catch (BuildSystemException e) {
-			String errorMessage = e.getMessage();
-			Logger.getGlobal().warning(errorMessage);
-			
-			res.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-			res.setContentType("text/html");
-			res.setCharacterEncoding("utf-8");
-			res.getWriter().print(errorMessage);
-			return;
+		ArrayList<String> mainProjectNameList = coddaHelperSite.getMainProjectNameList();
+		
+		
+		for (String mainProjectName : mainProjectNameList) {
+			ProjectBuilder projectBuilder = null;
+			try {
+				projectBuilder = new ProjectBuilder(installedPathString, mainProjectName);
+				
+				projectBuilder.applyInstalledPath();
+			} catch (BuildSystemException e) {
+				String errorMessage = e.getMessage();
+				
+				Logger.getGlobal().warning(errorMessage);
+				
+				res.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+				res.setContentType("text/html");
+				res.setCharacterEncoding("utf-8");
+				res.getWriter().print("메인프로젝트[" + mainProjectName + "] 에서 에러 발생, 사유:" + errorMessage);
+				return;
+			}
 		}
 		
-		
-		InstalledMainProjectInformation installedMainProjectInformation = new InstalledMainProjectInformation();
+		/*
+		AllInstalledMainProjectInformation installedMainProjectInformation = new AllInstalledMainProjectInformation();
 		installedMainProjectInformation.setInstalledPathString(installedPathString);
-		installedMainProjectInformation.setMainProjectNameList(mainProjectNameList);		
+		installedMainProjectInformation.setMainProjectNameList(mainProjectNameList);
+		
 		
 		String installedMainProjectInformationJsonString = new Gson().toJson(installedMainProjectInformation);
+		*/
+		// mainProjectNameListAppliedAsInstalledPathJsonString
+		String mainProjectNameListAppliedInstalledPathJsonString = new Gson().toJson(mainProjectNameList);
 		
 		res.setStatus(HttpServletResponse.SC_OK);
 		res.setContentType("text/html");
 		res.setCharacterEncoding("utf-8");
-		res.getWriter().print(installedMainProjectInformationJsonString);
-		
+		res.getWriter().print(mainProjectNameListAppliedInstalledPathJsonString);
 	}
 }

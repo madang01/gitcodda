@@ -25,12 +25,18 @@ import org.eclipse.jetty.servlet.ServletHandler;
 import org.eclipse.jetty.util.resource.EmptyResource;
 import org.eclipse.jetty.util.resource.Resource;
 
+import kr.codda.servlet.ajax.AllInstalledMainProjectInformationReaderSvl;
+import kr.codda.servlet.ajax.AllMessageInformationBuilderSvl;
+import kr.codda.servlet.ajax.AllProjectPathRenewalSvl;
 import kr.codda.servlet.ajax.CurrentWokingPathInformationGetterSvl;
 import kr.codda.servlet.ajax.CurrentWokingPathSetterSvl;
-import kr.codda.servlet.ajax.InstalledMainProjectInformationGetterSvl;
+import kr.codda.servlet.ajax.OneMessageIOSourceFilesBuilderSvl;
 import kr.codda.servlet.ajax.InstalledPathSetterSvl;
 import kr.codda.servlet.ajax.MainProjectCreatorSvl;
 import kr.codda.servlet.ajax.MainProjectRemoverSvl;
+import kr.codda.servlet.ajax.OneMessageInfoXMLFileCopierSvl;
+import kr.codda.servlet.ajax.SelectedMainProjectNameSetterSvl;
+import kr.codda.servlet.ajax.OneMessageInformationBuilderSvl;
 
 /**
  * @author Won Jonghoon
@@ -54,9 +60,16 @@ public class HelperServer {
 		servletHandler.addServletWithMapping(InstalledPathSetterSvl.class, "/servlet/InstalledPathSetter");
 		
 		
-		servletHandler.addServletWithMapping(InstalledMainProjectInformationGetterSvl.class, "/servlet/InstalledMainProjectInformationGetter");
+		servletHandler.addServletWithMapping(AllInstalledMainProjectInformationReaderSvl.class, "/servlet/AllInstalledMainProjectInformationReader");
 		servletHandler.addServletWithMapping(MainProjectCreatorSvl.class, "/servlet/MainProjectCreator");
 		servletHandler.addServletWithMapping(MainProjectRemoverSvl.class, "/servlet/MainProjectRemover");
+		servletHandler.addServletWithMapping(AllProjectPathRenewalSvl.class, "/servlet/AllProjectPathRenewal");
+		servletHandler.addServletWithMapping(SelectedMainProjectNameSetterSvl.class, "/servlet/SelectedMainProjectNameSetter");
+		servletHandler.addServletWithMapping(AllMessageInformationBuilderSvl.class, "/servlet/AllMessageInformationBuilder");
+		servletHandler.addServletWithMapping(OneMessageInformationBuilderSvl.class, "/servlet/OneMessageInformationBuilder");
+		servletHandler.addServletWithMapping(OneMessageInfoXMLFileCopierSvl.class, "/servlet/OneMessageInfoXMLFileCopier");
+		servletHandler.addServletWithMapping(OneMessageIOSourceFilesBuilderSvl.class, "/servlet/OneMessageIOSourceFilesBuilder");
+		
 
 		ResourceHandler resourceHandler = new ResourceHandler();
 		resourceHandler.setBaseResource(Resource.newClassPathResource("webapp"));

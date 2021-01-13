@@ -28,7 +28,7 @@
 		document.location.href = "/sitemenu/project_manager/installedPathInputPage.html";
 	}
 	
-	function reloadMainProjectInformation() {
+	function reloadAllInstalledMainProjectName() {
 		var xhttp = new XMLHttpRequest();
 		
 		xhttp.onreadystatechange = function() {
@@ -40,15 +40,15 @@
 			}
 			
 			
-			callbackForInstalledMainProjectInformationGetter(JSON.parse(this.responseText));
+			callbackForAllInstalledMainProjectInformationReader(JSON.parse(this.responseText));
 		};
-		xhttp.open("GET", "/servlet/InstalledMainProjectInformationGetter", true);
+		xhttp.open("GET", "/servlet/AllInstalledMainProjectInformationReader", true);
 		xhttp.send();
 	}
 	
-	function callbackForInstalledMainProjectInformationGetter(installedMainProjectInformationJson) {
+	function callbackForAllInstalledMainProjectInformationReader(allInstalledMainProjectInformationJson) {
 		var installedPathObj = document.getElementById("installedPath");		
-		installedPathObj.innerText = installedMainProjectInformationJson.installedPathString;
+		installedPathObj.innerText = allInstalledMainProjectInformationJson.installedPathString;
 		
 		var mainProjectNameListObj = document.getElementById("mainProjectNameList");
 		
@@ -61,8 +61,8 @@
 		
 		mainProjectNameListObj.appendChild(firstOptionOfMainProjectNameList);
 		
-		for (var i=0; i < installedMainProjectInformationJson.mainProjectNameList.length; i++) {
-			var mainProjectName = installedMainProjectInformationJson.mainProjectNameList[i];
+		for (var i=0; i < allInstalledMainProjectInformationJson.mainProjectNameList.length; i++) {
+			var mainProjectName = allInstalledMainProjectInformationJson.mainProjectNameList[i];
 			
 			var nextOptionOfMainProjectNameList = document.createElement("option");
 			nextOptionOfMainProjectNameList.setAttribute("value", mainProjectName);
@@ -103,7 +103,7 @@
 	function callbackForMainProjectCreator(mainProjectCreatorResponseJson) {
 		alert("설치 경로[" + mainProjectCreatorResponseJson.installedPathString + "]를 갖는 신규 메인 프로젝트 '" + mainProjectCreatorResponseJson.newMainProjectName + "' 를 생성하는데 성공하였습니다");
 		
-		reloadMainProjectInformation();
+		reloadAllInstalledMainProjectName();
 	}
 	
 	function deleteMainProject() {
@@ -142,11 +142,115 @@
 	function callbackForMainProjectRemover(mainProjectRemoverResponseJson) {
 		alert("설치 경로[" + mainProjectRemoverResponseJson.installedPathString + "]를 갖는 메인 프로젝트 '" + mainProjectRemoverResponseJson.mainProjectNameToDelete + "' 를 삭제하는데 성공하였습니다");
 		
-		reloadMainProjectInformation();
+		reloadAllInstalledMainProjectName();
 	}
 	
 	function applyInstalledPathToAllProject() {
-		alert("FIXME!");
+		var xhttp = new XMLHttpRequest();
+		
+		xhttp.onreadystatechange = function() {
+			if (this.readyState != 4 || this.status != 200) {
+				if (this.status != 0 && this.status != 200) {
+					callbackForErrorMessageGetter("에러코드="+this.status+", 에러 내용="+this.responseText);
+				}
+				return;
+			}
+			
+			
+			callbackForAllProjectPathRenewalr(JSON.parse(this.responseText));
+		};
+
+		xhttp.open("GET", "/servlet/AllProjectPathRenewal", true);
+		xhttp.send();
+	}
+	
+	function callbackForAllProjectPathRenewal(mainProjectNameListAppliedInstalledPathJsonString) {
+		var projectNameListString = "";
+		
+		for (var i=0; i < mainProjectNameListAppliedInstalledPathJsonString.length; i++) {
+			if (projectNameListString > 0) {
+				projectNameListString += ", ";
+			}
+			
+			var mainProjectName = mainProjectNameListAppliedInstalledPathJsonString[i];
+			
+			projectNameListString += mainProjectName;
+		}
+		
+		alert("모든 프로젝트[" + projectNameListString + "] 에 설치 경로를 적용하였습니다");
+	}
+	
+	function goProjectIOSourceFileCreatorPage() {
+		var mainProjectNameListObj = document.getElementById("mainProjectNameList");
+		
+		if (mainProjectNameListObj.selectedIndex == 0) {
+			alert("메인 프로젝트를 선택 하세요");
+			mainProjectNameListObj.focus();
+			return;
+		}
+		
+		var selectedMainProjectName = mainProjectNameListObj.value;
+		
+		var xhttp = new XMLHttpRequest();
+		var params = "selectedMainProjectName="+encodeURI(selectedMainProjectName);
+		
+		xhttp.onreadystatechange = function() {
+			if (this.readyState != 4 || this.status != 200) {
+				if (this.status != 0 && this.status != 200) {
+					callbackForErrorMessageGetter("에러코드="+this.status+", 에러 내용="+this.responseText);
+				}
+				return;
+			}
+			
+			
+			doGoProjectIOSourceFileCreatorPage(this.responseText);
+		};
+
+		xhttp.open("GET", "/servlet/SelectedMainProjectNameSetter?"+params, true);
+		xhttp.send();
+	}
+	
+	function doGoProjectIOSourceFileCreatorPage(selectedMainProjectName) {
+		alert("선택한 메인 프로젝트 '" + "' 입출력 파일 생성자 페이지로 이동 합니다");
+		
+		document.location.href = "/sitemenu/project_manager/projectIOSourceFileCreatorPage.html";
+	}
+	
+	
+	function goProjectConfigFileManagerPage() {
+		var mainProjectNameListObj = document.getElementById("mainProjectNameList");
+		
+		if (mainProjectNameListObj.selectedIndex == 0) {
+			alert("메인 프로젝트를 선택 하세요");
+			mainProjectNameListObj.focus();
+			return;
+		}
+		
+		var selectedMainProjectName = mainProjectNameListObj.value;
+		
+		var xhttp = new XMLHttpRequest();
+		var params = "selectedMainProjectName="+encodeURI(selectedMainProjectName);
+		
+		xhttp.onreadystatechange = function() {
+			if (this.readyState != 4 || this.status != 200) {
+				if (this.status != 0 && this.status != 200) {
+					callbackForErrorMessageGetter("에러코드="+this.status+", 에러 내용="+this.responseText);
+				}
+				return;
+			}
+			
+			
+			doGoProjectConfigFileManagerPage(this.responseText);
+		};
+
+		xhttp.open("GET", "/servlet/SelectedMainProjectNameSetter?"+params, true);
+		xhttp.send();
+	}
+	
+	function doGoProjectConfigFileManagerPage() {
+		alert("선택한 메인 프로젝트 '" + "' 설정 파일 관리자 페이지로 이동 합니다");
+		
+		document.location.href = "/sitemenu/project_manager/projectConfigFileManagerPage.html";
 	}
 	
 	
@@ -165,7 +269,7 @@
 		}
 		
 		
-		reloadMainProjectInformation();
+		reloadAllInstalledMainProjectName();
 	}
 	
 	window.onload = init;
@@ -219,10 +323,10 @@
 							</select>
 							<label style="width: 30px;">&nbsp;</label>
 							<div class="btn-group">
-								<button type="button" class="btn btn-primary btn-sm btn-space" onClick="reloadMainProjectInformation();">새로고침</button>								
+								<button type="button" class="btn btn-primary btn-sm btn-space" onClick="reloadAllInstalledMainProjectName();">새로고침</button>								
 								<button type="button" class="btn btn-primary btn-sm btn-space" onClick="deleteMainProject();">삭제</button>
 								<button type="button" class="btn btn-primary btn-sm btn-space" onClick="goProjectConfigFileManagerPage();">설정 파일 관리</button>
-								<button type="button" class="btn btn-primary btn-sm btn-space" onClick="goProjectIOFileManagerPage();">입출력 메시지 관리</button>
+								<button type="button" class="btn btn-primary btn-sm btn-space" onClick="goProjectIOSourceFileCreatorPage();">입출력 소스 파일 생성자</button>
 							</div>
 						</div>
 					</div>	

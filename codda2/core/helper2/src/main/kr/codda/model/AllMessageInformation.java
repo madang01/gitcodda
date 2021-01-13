@@ -21,24 +21,55 @@ import java.util.ArrayList;
  * @author Won Jonghoon
  *
  */
-public class InstalledMainProjectInformation {
+public class AllMessageInformation {
 	private String installedPathString;
-	private ArrayList<String> mainProjectNameList = new ArrayList<String>();
-	
-	
+	private ArrayList<String> mainProjectNameList;
+	private String selectedMainProjectName;
+	private String selectedMainProjectMessageInfoPathString;
+
+	private ArrayList<MessageInformation> messageInformationList = new ArrayList<MessageInformation>();
+
 	public String getInstalledPathString() {
 		return installedPathString;
 	}
+
 	public void setInstalledPathString(String installedPathString) {
 		this.installedPathString = installedPathString;
 	}
+
 	public ArrayList<String> getMainProjectNameList() {
 		return mainProjectNameList;
 	}
+
 	public void setMainProjectNameList(ArrayList<String> mainProjectNameList) {
 		this.mainProjectNameList = mainProjectNameList;
 	}
-	
-	
 
+	public String getSelectedMainProjectName() {
+		return selectedMainProjectName;
+	}
+
+	public void setSelectedMainProjectName(String selectedMainProjectName) {
+		this.selectedMainProjectName = selectedMainProjectName;
+	}
+
+	public ArrayList<MessageInformation> getMessageInformationList() {
+		return messageInformationList;
+	}
+	
+	
+	public void addMessageInformation(MessageInformation newMessageInformation) {
+		messageInformationList.add(newMessageInformation);
+	}
+
+	public String getSelectedMainProjectMessageInfoPathString() {
+		return selectedMainProjectMessageInfoPathString;
+	}
+
+	public void setSelectedMainProjectMessageInfoPathString(String selectedMainProjectMessageInfoPathString) {
+		this.selectedMainProjectMessageInfoPathString = selectedMainProjectMessageInfoPathString;
+	}
+	
+	
+	
 }
