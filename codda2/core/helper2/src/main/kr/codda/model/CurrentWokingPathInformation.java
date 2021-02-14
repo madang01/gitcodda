@@ -23,10 +23,23 @@ import java.util.ArrayList;
  *
  */
 public class CurrentWokingPathInformation {
-	private final String fileSeperator = File.separator;
-	private String currentWorkingPathString;
-	private ArrayList<String> chiledPathStringList = new ArrayList<String>();
+	private String fileChooserType;
 	
+	private final String fileSeperator = File.separator;
+	
+	private String currentWorkingPathString;
+	
+	private ArrayList<String> directoryPathStringList = new ArrayList<String>();
+	private ArrayList<String> filePathStringList = new ArrayList<String>();
+	
+
+	public String getFileChooserType() {
+		return fileChooserType;
+	}
+	
+	public void setFileChooserType(String fileChooserType) {
+		this.fileChooserType = fileChooserType;
+	}
 	
 	public String getFileSeperator() {
 		return fileSeperator;
@@ -35,15 +48,28 @@ public class CurrentWokingPathInformation {
 	public String getCurrentWorkingPathString() {
 		return currentWorkingPathString;
 	}
+	
 	public void setCurrentWorkingPathString(String currentWorkingPathString) {
 		this.currentWorkingPathString = currentWorkingPathString;
+	}
+	
+
+	public ArrayList<String> getDirectoryPathStringList() {
+		return directoryPathStringList;
+	}
+
+	public void addDirectoryPathString(String newDrectoryPathString) {
+		directoryPathStringList.add(newDrectoryPathString);
+	}
+
+	public ArrayList<String> getFilePathStringList() {
+		return filePathStringList;
+	}
+
+	public void addFilePathString(String newFilePathString) {
+		filePathStringList.add(newFilePathString);
 	}	
 	
-	public ArrayList<String> getChiledPathStringList() {
-		return chiledPathStringList;
-	}
 	
-	public void addChildPathString(String childPathString) {
-		chiledPathStringList.add(childPathString);
-	}
+	
 }

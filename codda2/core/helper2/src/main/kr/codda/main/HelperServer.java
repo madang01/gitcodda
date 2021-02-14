@@ -28,15 +28,19 @@ import org.eclipse.jetty.util.resource.Resource;
 import kr.codda.servlet.ajax.AllInstalledMainProjectInformationReaderSvl;
 import kr.codda.servlet.ajax.AllMessageInformationBuilderSvl;
 import kr.codda.servlet.ajax.AllProjectPathRenewalSvl;
+import kr.codda.servlet.ajax.ChildDirectoryMovementProcessSvl;
 import kr.codda.servlet.ajax.CurrentWokingPathInformationGetterSvl;
-import kr.codda.servlet.ajax.CurrentWokingPathSetterSvl;
-import kr.codda.servlet.ajax.OneMessageIOSourceFilesBuilderSvl;
+import kr.codda.servlet.ajax.DriveLetterChangerSvl;
+import kr.codda.servlet.ajax.DriveLetterInformationGetterSvl;
+import kr.codda.servlet.ajax.DriveLetterListRebulderSvl;
 import kr.codda.servlet.ajax.InstalledPathSetterSvl;
 import kr.codda.servlet.ajax.MainProjectCreatorSvl;
 import kr.codda.servlet.ajax.MainProjectRemoverSvl;
+import kr.codda.servlet.ajax.OneMessageIOSourceFilesBuilderForProjectSvl;
 import kr.codda.servlet.ajax.OneMessageInfoXMLFileCopierSvl;
-import kr.codda.servlet.ajax.SelectedMainProjectNameSetterSvl;
 import kr.codda.servlet.ajax.OneMessageInformationBuilderSvl;
+import kr.codda.servlet.ajax.ParentDirectoryMovementProcessSvl;
+import kr.codda.servlet.ajax.SelectedMainProjectNameSetterSvl;
 
 /**
  * @author Won Jonghoon
@@ -56,9 +60,13 @@ public class HelperServer {
 		*/
 		
 		servletHandler.addServletWithMapping(CurrentWokingPathInformationGetterSvl.class, "/servlet/CurrentWokingPathInformationGetter");
-		servletHandler.addServletWithMapping(CurrentWokingPathSetterSvl.class, "/servlet/CurrentWokingPathSetter");
-		servletHandler.addServletWithMapping(InstalledPathSetterSvl.class, "/servlet/InstalledPathSetter");
+		servletHandler.addServletWithMapping(ParentDirectoryMovementProcessSvl.class, "/servlet/ParentDirectoryMovementProcess");
+		servletHandler.addServletWithMapping(ChildDirectoryMovementProcessSvl.class, "/servlet/ChildDirectoryMovemnetProcess");
+		servletHandler.addServletWithMapping(DriveLetterInformationGetterSvl.class, "/servlet/DriveLetterInformationGetter");
+		servletHandler.addServletWithMapping(DriveLetterChangerSvl.class, "/servlet/DriveLetterChanger");
+		servletHandler.addServletWithMapping(DriveLetterListRebulderSvl.class, "/servlet/DriveLetterListRebulder");
 		
+		servletHandler.addServletWithMapping(InstalledPathSetterSvl.class, "/servlet/InstalledPathSetter");		
 		
 		servletHandler.addServletWithMapping(AllInstalledMainProjectInformationReaderSvl.class, "/servlet/AllInstalledMainProjectInformationReader");
 		servletHandler.addServletWithMapping(MainProjectCreatorSvl.class, "/servlet/MainProjectCreator");
@@ -68,7 +76,7 @@ public class HelperServer {
 		servletHandler.addServletWithMapping(AllMessageInformationBuilderSvl.class, "/servlet/AllMessageInformationBuilder");
 		servletHandler.addServletWithMapping(OneMessageInformationBuilderSvl.class, "/servlet/OneMessageInformationBuilder");
 		servletHandler.addServletWithMapping(OneMessageInfoXMLFileCopierSvl.class, "/servlet/OneMessageInfoXMLFileCopier");
-		servletHandler.addServletWithMapping(OneMessageIOSourceFilesBuilderSvl.class, "/servlet/OneMessageIOSourceFilesBuilder");
+		servletHandler.addServletWithMapping(OneMessageIOSourceFilesBuilderForProjectSvl.class, "/servlet/OneMessageIOSourceFilesBuilderForProject");
 		
 
 		ResourceHandler resourceHandler = new ResourceHandler();

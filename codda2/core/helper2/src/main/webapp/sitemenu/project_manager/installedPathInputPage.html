@@ -14,203 +14,290 @@
 
 <style>
 .btn-space {
-    margin-right: 5px;
+	margin-right: 5px;
 }
 </style>
 
 <script type="text/javascript">
 <!--
-	var isFirst = true;
-
 	function goHome() {
 		document.location.href = "/index.html";
-	}
-	
-	function changeInstalledPath() {
-		var f = document.installedPathFrm;
-		
-		if (f.installedPath.value == '') {
-			alert("설치 경로를 넣어 주세요");
-			f.installedPath.focus();
-			return;
-		}
-		
-		var xhttp = new XMLHttpRequest();
-		var params = "installedPath="+encodeURI(f.installedPath.value);
-		
-		xhttp.onreadystatechange = function() {
-			if (this.readyState != 4 || this.status != 200) {
-				if (this.status != 0 && this.status != 200) {
-					callbackForErrorMessageGetter("에러코드="+this.status+", 에러 내용="+this.responseText);
-				}
-				return;
-			}
-			
-			
-			callbackForInstalledPathSetter(this.responseText);
-		};
-		xhttp.open("GET", "/servlet/InstalledPathSetter?"+params, true);
-		xhttp.send();
-	}
-	
-	function callbackForInstalledPathSetter(installedPath) {
-		alert("설치 경로["+installedPath+"] 를 변경 완료하였습니다, 프로젝트 주 화면으로 이동합니다.");
-		// console.log("설치 경로["+installedPath+"] 를 변경 완료하였습니다, 프로젝트 주 화면으로 이동합니다.");
-		document.location.href = "/sitemenu/project_manager/projectMainPage.html";
-	}
-	
-	function getCurrentWorkingPath() {
-		// document.hiddenFrame.location.href = "/servlet/CurrentWokingPathInformationGetter";
-		
-		var xhttp = new XMLHttpRequest();
-		
-		xhttp.onreadystatechange = function() {
-			if (this.readyState != 4 || this.status != 200) {
-				if (this.status != 0 && this.status != 200) {
-					callbackForErrorMessageGetter("에러코드="+this.status+", 에러 내용="+this.responseText);
-				}
-				
-				return;
-			}
-			
-			callbackForCurrentWokingPathInformationGetter(JSON.parse(this.responseText));
-		};
-		xhttp.open("GET", "/servlet/CurrentWokingPathInformationGetter", true);
-		xhttp.send();
-	}
-
-	function callbackForCurrentWokingPathInformationGetter(currentWorkPathInformationJson) {		
-		var currentWorkingPathObj = document.getElementById("currentWorkingPath");
-		currentWorkingPathObj.innerText = currentWorkPathInformationJson.currentWorkingPathString;
-		
-		
-		var directoryListPartObj = document.getElementById("directoryListPart");
-		while (directoryListPartObj.hasChildNodes()) {
-			directoryListPartObj.removeChild(directoryListPartObj.firstChild);
-		}
-			
-		
-		var i=0;
-		
-		while (true) {
-			if (i >= currentWorkPathInformationJson.chiledPathStringList.length) {
-				break;
-			}
-			
-			var rowDiv = document.createElement("div");
-			rowDiv.setAttribute("class", "row");
-			
-			
-			for (var j=0; j < 4; j++) {		
-				var chiledPathString = currentWorkPathInformationJson.chiledPathStringList[i];
-				
-				console.log("chiledPathString="+chiledPathString);
-				
-				
-				
-				var aTagOfCol = document.createElement("a");
-				aTagOfCol.setAttribute("href", "javascript:moveChildDirectory(\"" + chiledPathString + "\");");				
-				
-				var imgTagOfATag = document.createElement("img");
-				imgTagOfATag.setAttribute("src", "/image/iconmonstr-folder-open-thin.svg");
-				imgTagOfATag.setAttribute("width", "80px");
-				imgTagOfATag.setAttribute("height", "80px");
-				
-				aTagOfCol.appendChild(imgTagOfATag);
-				
-				var brTagOfCol = document.createElement("br");
-				var textTagOfCol = document.createTextNode(chiledPathString);
-				
-				
-				var colDiv = document.createElement("div");
-				colDiv.setAttribute("class", "col-sm-3");
-				// colDiv.innerHTML = "<a href='javascript:moveChildDirectory(\"" + chiledPathString + "\");' onclick='return false;'><img src=\"/image/iconmonstr-folder-open-thin.svg\" width=\"80px\" height=\"80px\"></a><br>" + chiledPathString;
-				colDiv.appendChild(aTagOfCol);
-				colDiv.appendChild(brTagOfCol);
-				colDiv.appendChild(textTagOfCol);				
-				
-				rowDiv.appendChild(colDiv);
-				
-				i++;
-				
-				if (i >= currentWorkPathInformationJson.chiledPathStringList.length) {
-					break;
-				}
-			}
-			
-			directoryListPartObj.appendChild(rowDiv);			
-		}
-		
-		if (isFirst) {
-			copyCurrentWorkingDirectoryToInstalledPath();
-			isFirst = false;
-		}
-	}
-	
-	function copyCurrentWorkingDirectoryToInstalledPath() {
-		var currentWorkingPathObj = document.getElementById("currentWorkingPath");
-		var f = document.installedPathFrm;
-		f.installedPath.value = currentWorkingPathObj.innerText;
-	}
-	
-	
-	function moveChildDirectory(childShortDirectoryName) {
-		var xhttp = new XMLHttpRequest();
-		var params = "shortPathNameToMove="+encodeURI(childShortDirectoryName);
-		
-		xhttp.onreadystatechange = function() {
-			if (this.readyState != 4 || this.status != 200) {
-				if (this.status != 0 && this.status != 200) {
-					callbackForErrorMessageGetter("에러코드="+this.status+", 에러 내용="+this.responseText);
-				}
-				return;
-			}
-			
-			
-			callbackForCurrentWokingPathInformationGetter(JSON.parse(this.responseText));
-		};
-		xhttp.open("GET", "/servlet/CurrentWokingPathSetter?"+params, true);
-		xhttp.send();
-	}
-	
-	function moveParentDirectory() {
-		// document.hiddenFrame.location.href = "/servlet/CurrentWokingPathSetter?shortPathNameToMove=..";
-		
-		var xhttp = new XMLHttpRequest();
-		var params = "shortPathNameToMove=..";
-		
-		xhttp.onreadystatechange = function() {
-			if (this.readyState != 4 || this.status != 200) {
-				if (this.status != 0 && this.status != 200) {
-					callbackForErrorMessageGetter("에러코드="+this.status+", 에러 내용="+this.responseText);
-				}
-				return;
-			}
-			
-			
-			callbackForCurrentWokingPathInformationGetter(JSON.parse(this.responseText));
-		};
-		xhttp.open("GET", "/servlet/CurrentWokingPathSetter?" + params, true);
-		xhttp.send();
 	}
 	
 	function callbackForErrorMessageGetter(errorMessage) {
 		var errorMessageObj = document.getElementById("errorMessage");
 		errorMessageObj.setAttribute("class", "alert alert-danger");
 		errorMessageObj.innerText = errorMessage;
-		
-		// alert(errorMessage)
+	}	
+
+	function changeInstalledPath() {
+		var installedPathObj = document.getElementById("installedPath");
+
+		if (installedPathObj.value == '') {
+			alert("설치 경로를 넣어 주세요");
+			installedPathObj.focus();
+			return;
+		}
+
+		var xhttp = new XMLHttpRequest();
+		var params = "installedPath=" + encodeURI(f.installedPath.value);
+
+		xhttp.onreadystatechange = function() {
+			if (this.readyState != 4 || this.status != 200) {
+				if (this.status != 0 && this.status != 200) {
+					callbackForErrorMessageGetter("에러코드=" + this.status
+							+ ", 에러 내용=" + this.responseText);
+				}
+				return;
+			}
+
+			callbackForInstalledPathSetter(this.responseText);
+		};
+		xhttp.open("GET", "/servlet/InstalledPathSetter?" + params, true);
+		xhttp.send();
+	}
+
+	function callbackForInstalledPathSetter(installedPath) {
+		alert("설치 경로[" + installedPath + "] 를 변경 완료하였습니다, 프로젝트 주 화면으로 이동합니다.");
+		// console.log("설치 경로["+installedPath+"] 를 변경 완료하였습니다, 프로젝트 주 화면으로 이동합니다.");
+		document.location.href = "/sitemenu/project_manager/projectMainPage.html";
+	}	
+	
+	function callChildDirectoryProcess(fileChooserType, targetTextInputID, childDirecotryShortName) {
+		var xhttp = new XMLHttpRequest();
+		var params = "childDirecotryShortNameToMove="
+				+ encodeURI(childDirecotryShortName);
+
+		xhttp.onreadystatechange = function() {
+			if (this.readyState != 4 || this.status != 200) {
+				if (this.status != 0 && this.status != 200) {
+					callbackForErrorMessageGetter("에러코드=" + this.status
+							+ ", 에러 내용=" + this.responseText);
+				}
+				return;
+			}
+
+			callCurrentWokingPathInformationGetter(fileChooserType, targetTextInputID);
+		};
+		xhttp.open("GET", "/servlet/ChildDirectoryMovemnetProcess?" + params,
+				true);
+		xhttp.send();
+	}
+
+	function callParentDirectoryProcess(fileChooserType, targetTextInputID) {
+		var xhttp = new XMLHttpRequest();
+
+		xhttp.onreadystatechange = function() {
+			if (this.readyState != 4 || this.status != 200) {
+				if (this.status != 0 && this.status != 200) {
+					callbackForErrorMessageGetter("에러코드=" + this.status
+							+ ", 에러 내용=" + this.responseText);
+				}
+				return;
+			}
+
+			callCurrentWokingPathInformationGetter(fileChooserType, targetTextInputID);
+		};
+		xhttp.open("GET", "/servlet/ParentDirectoryMovementProcess", true);
+		xhttp.send();
 	}
 	
 	
+	function copySelectedFileToTargetInputText(targetTextInputID, childFileShortName) {
+		var fileSeperatorObj = document.getElementById("fileChooserModal.fileSeperator");
+		var currentWorkingPathObj = document.getElementById("fileChooserModal.currentWorkingPath");
+		
+		var selectedFileFullPathString = currentWorkingPathObj.innerText + fileSeperatorObj.innerText + childFileShortName;
+				
+		document.getElementById(targetTextInputID).value = selectedFileFullPathString;
+		
+		$("#fileChooserModal").modal('hide');
+	}
+	
+	function callCurrentWokingPathInformationGetter(fileChooserType, targetTextInputID) {
+		var xhttp = new XMLHttpRequest();
+		var params = "fileChooserType=" + fileChooserType;
+
+		xhttp.onreadystatechange = function() {
+			if (this.readyState != 4 || this.status != 200) {
+				if (this.status != 0 && this.status != 200) {
+					callbackForErrorMessageGetter("에러코드=" + this.status
+							+ ", 에러 내용=" + this.responseText);
+				}
+
+				return;
+			}
+
+			callbackForCurrentWokingPathInformationGetter(fileChooserType, targetTextInputID, JSON.parse(this.responseText));
+		};
+		xhttp.open("GET", "/servlet/CurrentWokingPathInformationGetter?"
+				+ params, true);
+		xhttp.send();
+	}
+
+	function callbackForCurrentWokingPathInformationGetter(fileChooserType, targetTextInputID, currentWorkPathInformationJson) {
+		var fileSeperatorObj = document.getElementById("fileChooserModal.fileSeperator");
+		fileSeperatorObj.innerText = currentWorkPathInformationJson.fileSeperator;
+		
+		var currentWorkingPathObj = document.getElementById("fileChooserModal.currentWorkingPath");
+		currentWorkingPathObj.innerText = currentWorkPathInformationJson.currentWorkingPathString;
+		
+		
+
+		var fileViewPartObj = document.getElementById("fileChooserModal.fileViewPart");
+		while (fileViewPartObj.hasChildNodes()) {
+			fileViewPartObj.removeChild(fileViewPartObj.firstChild);
+		}
+
+		var i = 0;
+		var maxRow = 4;
+		var rowDiv;
+
+		for (var j = 0; j < currentWorkPathInformationJson.directoryPathStringList.length; j++, i++) {
+			if (0 == (i % maxRow)) {
+				rowDiv = document.createElement("div");
+				rowDiv.setAttribute("class", "row");
+				fileViewPartObj.append(rowDiv);
+			}
+
+			var childDirecotryShortName = currentWorkPathInformationJson.directoryPathStringList[j];
+			console.log("childDirecotryShortName=" + childDirecotryShortName);
+
+			var aTagOfCol = document.createElement("a");
+			aTagOfCol.setAttribute("href",
+					"javascript:callChildDirectoryProcess('" + fileChooserType
+							+ "', '" + targetTextInputID + "', \"" + childDirecotryShortName + "\");");
+
+			var imgTagOfATag = document.createElement("img");
+			imgTagOfATag.setAttribute("src",
+					"/image/iconmonstr-folder-open-thin.svg");
+			imgTagOfATag.setAttribute("width", "80px");
+			imgTagOfATag.setAttribute("height", "80px");
+
+			aTagOfCol.appendChild(imgTagOfATag);
+
+			var brTagOfCol = document.createElement("br");
+			var textTagOfCol = document.createTextNode(childDirecotryShortName);
+
+			var colDiv = document.createElement("div");
+			colDiv.setAttribute("class", "col-sm-3");
+			colDiv.appendChild(aTagOfCol);
+			colDiv.appendChild(brTagOfCol);
+			colDiv.appendChild(textTagOfCol);
+
+			rowDiv.appendChild(colDiv);
+		}
+		
+		if ('FILE' == fileChooserType) {
+			for (var j = 0; j < currentWorkPathInformationJson.filePathStringList.length; j++, i++) {
+				if (0 == (i % maxRow)) {
+					rowDiv = document.createElement("div");
+					rowDiv.setAttribute("class", "row");
+					fileViewPartObj.append(rowDiv);
+				}
+
+				var childFileShortName = currentWorkPathInformationJson.filePathStringList[j];
+				console.log("childFileShortName=" + childFileShortName);
+
+				var aTagOfCol = document.createElement("a");
+				aTagOfCol.setAttribute("href", "javascript:copySelectedFileToTargetInputText('" + targetTextInputID + "', '" + encodeURIComponent(childFileShortName) + "');");
+
+				var imgTagOfATag = document.createElement("img");
+				imgTagOfATag.setAttribute("src",
+						"/image/iconmonstr-folder-thin.svg");
+				imgTagOfATag.setAttribute("width", "80px");
+				imgTagOfATag.setAttribute("height", "80px");
+
+				aTagOfCol.appendChild(imgTagOfATag);
+
+				var brTagOfCol = document.createElement("br");
+				var textTagOfCol = document.createTextNode(childFileShortName);
+
+				var colDiv = document.createElement("div");
+				colDiv.setAttribute("class", "col-sm-3");
+				colDiv.appendChild(aTagOfCol);
+				colDiv.appendChild(brTagOfCol);
+				colDiv.appendChild(textTagOfCol);
+
+				rowDiv.appendChild(colDiv);
+			}
+		}
+	}
+	
+	function copyCurrentWorkingDirectoryToTargetInputText(targetTextInputID) {		
+		var currentWorkingPathObj = document.getElementById("fileChooserModal.currentWorkingPath");
+		document.getElementById(targetTextInputID).value = currentWorkingPathObj.innerText;
+		
+		$("#fileChooserModal").modal('hide');
+	}
+	
+	function openDirectoryModal(fileChooserType, targetTextInputID) {
+		var functionPartObj = document.getElementById('fileChooserModal.functionPart');
+		while (functionPartObj.hasChildNodes()) {
+			functionPartObj.removeChild(functionPartObj.firstChild);
+		}
+		
+		if ('PATH' != fileChooserType && 'FILE' != fileChooserType) {
+			alert("알수 없는 파일 선택기 유형[" + fileChooserType + "]입니다. 파일 선택기 유형은 'PATH', 'FILE' 만 가능합니다.");
+			return;
+		}
+		
+		if ('PATH' == fileChooserType) {			
+			var pathConfirmButtonTag = document.createElement("button");
+			var refreshButtonTag = document.createElement("button");
+			var parentDirectoryButtonTag = document.createElement("button");
+			
+			pathConfirmButtonTag.setAttribute("type", "button");
+			pathConfirmButtonTag.setAttribute("class", "btn btn-primary btn-sm btn-space");
+			pathConfirmButtonTag.setAttribute("onClick", "copyCurrentWorkingDirectoryToTargetInputText('" + targetTextInputID + "')");
+			pathConfirmButtonTag.append(document.createTextNode("선택"));
+			
+			
+			refreshButtonTag.setAttribute("type", "button");
+			refreshButtonTag.setAttribute("class", "btn btn-primary btn-sm btn-space");
+			refreshButtonTag.setAttribute("onClick", "callCurrentWokingPathInformationGetter('" + fileChooserType + "', '" + targetTextInputID + "')");
+			refreshButtonTag.append(document.createTextNode("새로고침"));
+			
+			parentDirectoryButtonTag.setAttribute("type", "button");
+			parentDirectoryButtonTag.setAttribute("class", "btn btn-primary btn-sm btn-space");
+			parentDirectoryButtonTag.setAttribute("onClick", "callParentDirectoryProcess('" + fileChooserType + "', '" + targetTextInputID + "')");
+			parentDirectoryButtonTag.append(document.createTextNode("이전경로"));
+			
+			functionPartObj.appendChild(pathConfirmButtonTag);
+			functionPartObj.appendChild(refreshButtonTag);
+			functionPartObj.appendChild(parentDirectoryButtonTag);
+			
+		} else { 
+			var refreshButtonTag = document.createElement("button");
+			var parentDirectoryButtonTag = document.createElement("button");			
+			
+			refreshButtonTag.setAttribute("type", "button");
+			refreshButtonTag.setAttribute("class", "btn btn-primary btn-sm btn-space");
+			refreshButtonTag.setAttribute("onClick", "callCurrentWokingPathInformationGetter('" + fileChooserType + "', '" + targetTextInputID + "')");
+			refreshButtonTag.append(document.createTextNode("새로고침"));
+			
+			parentDirectoryButtonTag.setAttribute("type", "button");
+			parentDirectoryButtonTag.setAttribute("class", "btn btn-primary btn-sm btn-space");
+			parentDirectoryButtonTag.setAttribute("onClick", "callParentDirectoryProcess('" + fileChooserType + "', '" + targetTextInputID + "')");
+			parentDirectoryButtonTag.append(document.createTextNode("이전경로"));
+			
+			functionPartObj.appendChild(refreshButtonTag);
+			functionPartObj.appendChild(parentDirectoryButtonTag);
+		}
+		
+		$("#fileChooserModal").modal();
+		
+		callCurrentWokingPathInformationGetter(fileChooserType, targetTextInputID);
+	}
+	
+	
+
 	function init() {
 		if (typeof (sessionStorage) == "undefined") {
 			alert("Sorry! No HTML5 sessionStorage support..");
 			document.location.href = "/html5_no_support.html";
 			return;
 		}
-		
-		getCurrentWorkingPath();
 	}
 
 	window.onload = init;
@@ -226,51 +313,118 @@
 					<div class="row">
 						<div class="col-sm-12">
 							<div class="btn-group">
-								<button type="button" class="btn btn-primary btn-sm btn-space" onClick="goHome();">HOME</button>
+								<button type="button" class="btn btn-primary btn-sm btn-space"
+									onClick="goHome();">HOME</button>
 							</div>
 						</div>
 					</div>
-					<div class="row"><div class="col-sm-12">&nbsp;</div></div>					
+					<div class="row">
+						<div class="col-sm-12">&nbsp;</div>
+					</div>
 					<div class="row">
 						<div class="col-sm-12">
 							<div id="errorMessage"></div>
 						</div>
-					</div>						
+					</div>
 					<div class="row">
 						<div class="form-group">
 							<form name="installedPathFrm" method="post">
-								<div class="col-sm-2"><label for="installedPath">코다 설치 경로</label></div>
-								<div class="col-sm-8"><input type="text" class="form-control" name="installedPath" id="installedPath"></div>
-								<div class="col-sm-2"><button type="button" class="btn btn-default" onClick="changeInstalledPath();">확인</button></div>
+								<div class="col-sm-2">
+									<label for="installedPath">코다 설치 경로</label>
+								</div>
+								<div class="col-sm-6">
+									<input type="text" class="form-control" name="installedPath" id="installedPath">
+								</div>
+								<div class="col-sm-2">
+									<button type="button" class="btn btn-default" onClick="openDirectoryModal('PATH', 'installedPath');">경로선택</button>
+										&nbsp;
+									<button type="button" class="btn btn-default" onClick="changeInstalledPath();">확인</button>
+								</div>
 							</form>
 						</div>
-					</div>				
-					<div class="row"><div class="col-sm-12">&nbsp;</div></div>
+					</div>
 					<div class="row">
-						<div class="col-sm-12"><label>현재 작업 경로</label></div>
+						<div class="col-sm-12">&nbsp;</div>
+					</div>
+
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Modal -->
+	<div id="fileChooserModal" class="modal fade" role="dialog">
+		<div class="modal-dialog modal-lg">
+
+			<!-- Modal content-->
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal">&times;</button>
+					<h4 class="modal-title">파일 선택기</h4>
+				</div>
+				<div class="modal-body">
+					<div style="display:none" id="fileChooserModal.fileSeperator"></div>
+					<div class="row">
+						<div class="col-sm-12">
+							<label>현재 작업 경로</label>
+						</div>
 					</div>
 					<div class="row">
 						<div class="col-sm-12">
-							<label id="currentWorkingPath">D:&#92;gitcodda</label><label style="width: 30px;">&nbsp;</label>
-							<div class="btn-group">
-								<button type="button" class="btn btn-primary btn-sm btn-space" onClick="copyCurrentWorkingDirectoryToInstalledPath();">선택</button>
-								<button type="button" class="btn btn-primary btn-sm btn-space" onClick="getCurrentWorkingPath();">새로고침</button>
-								<button type="button" class="btn btn-primary btn-sm btn-space" onClick="moveParentDirectory();">이전경로</button>
+							<label id="fileChooserModal.currentWorkingPath">D:&#92;gitcodda</label><label
+								style="width: 30px;">&nbsp;</label>
+							<div class="btn-group" id="fileChooserModal.functionPart">
+								<button type="button" class="btn btn-primary btn-sm btn-space" onClick="copyCurrentWorkingDirectoryToTargetInputText('installedPath');">선택</button>
+								<button type="button" class="btn btn-primary btn-sm btn-space" onClick="callCurrentWokingPathInformationGetter('PATH', 'installedPath');">새로고침</button>
+								<button type="button" class="btn btn-primary btn-sm btn-space" onClick="callParentDirectoryProcess('PATH', 'installedPath');">이전경로</button>
 							</div>
 						</div>
-					</div>	
-					<div class="row"><div class="col-sm-12">&nbsp;</div></div>
-					<div id="directoryListPart"><div class="row">
-	<div class="col-sm-3"><a href='javascript:moveChildDirectory(\"1번_자식폴더\");'><img src="/image/iconmonstr-folder-open-thin.svg" width="80px" height="80px"></a><br>1번_자식폴더</div>
-	<div class="col-sm-3"><a href='javascript:moveChildDirectory(\"2번_자식폴더\");'><img src="/image/iconmonstr-folder-open-thin.svg" width="80px" height="80px"></a><br>2번_자식폴더</div>
-	<div class="col-sm-3"><a href='javascript:moveChildDirectory(\"3번_자식폴더\");'><img src="/image/iconmonstr-folder-open-thin.svg" width="80px" height="80px"></a><br>3번_자식폴더</div>
-	<div class="col-sm-3"><a href='javascript:moveChildDirectory(\"4번_자식폴더\");'><img src="/image/iconmonstr-folder-open-thin.svg" width="80px" height="80px"></a><br>4번_자식폴더22222434343434343434343</div>
-</div><div class="row">
-	<div class="col-sm-3"><a href='javascript:moveChildDirectory(\"5번_자식폴더\");'><img src="/image/iconmonstr-folder-open-thin.svg" width="80px" height="80px"></a><br>5번_자식폴더</div>
-	<div class="col-sm-3"><a href='javascript:moveChildDirectory(\"6번_자식폴더\");'><img src="/image/iconmonstr-folder-open-thin.svg" width="80px" height="80px"></a><br>6번_자식폴더</div>
-</div></div>
+					</div>
+					<div class="row">
+						<div class="col-sm-12">&nbsp;</div>
+					</div>
+					<div id="fileChooserModal.fileViewPart">
+						<div class="row">
+							<div class="col-sm-3">
+								<a href='javascript:callChildDirectoryProcess(\"PATH\", \"installedPath\", \"1번_자식폴더\");'><img
+									src="/image/iconmonstr-folder-open-thin.svg" width="80px"
+									height="80px"></a><br>1번_자식폴더
+							</div>
+							<div class="col-sm-3">
+								<a href='javascript:callChildDirectoryProcess(\"PATH\", \"installedPath\", \"2번_자식폴더\");'><img
+									src="/image/iconmonstr-folder-open-thin.svg" width="80px"
+									height="80px"></a><br>2번_자식폴더
+							</div>
+							<div class="col-sm-3">
+								<a href='javascript:callChildDirectoryProcess(\"PATH\", \"installedPath\", \"3번_자식폴더\");'><img
+									src="/image/iconmonstr-folder-open-thin.svg" width="80px"
+									height="80px"></a><br>3번_자식폴더
+							</div>
+							<div class="col-sm-3">
+								<a href='javascript:callChildDirectoryProcess(\"PATH\", \"installedPath\", \"4번_자식폴더\");'><img
+									src="/image/iconmonstr-folder-open-thin.svg" width="80px"
+									height="80px"></a><br>4번_자식폴더22222434343434343434343
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-sm-3">
+								<a href='javascript:callChildDirectoryProcess(\"PATH\", \"installedPath\", \"5번_자식폴더\");'><img
+									src="/image/iconmonstr-folder-open-thin.svg" width="80px"
+									height="80px"></a><br>5번_자식폴더
+							</div>
+							<div class="col-sm-3">
+								<a href='javascript:callChildDirectoryProcess(\"PATH\", \"installedPath\", \"6번_자식폴더\");'><img
+									src="/image/iconmonstr-folder-open-thin.svg" width="80px"
+									height="80px"></a><br>6번_자식폴더
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
 				</div>
 			</div>
+
 		</div>
 	</div>
 </body>

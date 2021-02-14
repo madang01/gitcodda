@@ -17,11 +17,15 @@ package kr.codda.util;
 
 import static org.junit.jupiter.api.Assertions.fail;
 
+import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import javax.swing.filechooser.FileSystemView;
 
 import org.junit.Ignore;
 import org.junit.jupiter.api.AfterAll;
@@ -108,8 +112,43 @@ class CommonStaticUtilTest {
 	}
 	
 	@Test
+	void testGetValidPathListToSaveIOSourceFiles() {
+		Logger log = Logger.getGlobal();
+		
+		final String installedPathString = "D:\\gitcodda\\codda2";
+		final String mainProjectName = "sample_test";
+		final String messageID = "Echo";
+		
+		try {
+			ArrayList<File> validPathListToSaveIOSourceFiles =  CommonStaticUtil.getValidPathListToSaveIOSourceFiles(installedPathString, mainProjectName, messageID);
+			
+			
+			for (File validPathToSaveIOSourceFiles : validPathListToSaveIOSourceFiles) {
+				log.info(validPathToSaveIOSourceFiles.getAbsolutePath());
+			}
+			
+		} catch (BuildSystemException e) {
+			log.log(Level.WARNING, e.getMessage(), e);
+			fail("not yet");
+		}
+		
+	}
+	
+	@Test
 	void test() {
-		fail("not yet");
+		Logger log = Logger.getGlobal();
+		
+		FileSystemView fsv = FileSystemView.getFileSystemView();
+		
+		File[] drives = File.listRoots();
+		if (drives != null && drives.length > 0) {
+		    for (File aDrive : drives) {
+		    	log.info("Drive Letter: " + aDrive);
+		    	log.info("\tType: " + fsv.getSystemTypeDescription(aDrive));
+		    	log.info("\tTotal space: " + aDrive.getTotalSpace());
+		    	log.info("\tFree space: " + aDrive.getFreeSpace());
+		    }
+		}
 	}
 
 }
