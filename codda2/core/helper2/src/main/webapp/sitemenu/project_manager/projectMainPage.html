@@ -28,6 +28,12 @@
 		document.location.href = "/sitemenu/project_manager/installedPathInputPage.html";
 	}
 	
+	function callbackForErrorMessageGetter(errorMessage) {
+		var errorMessageObj = document.getElementById("errorMessage");
+		errorMessageObj.setAttribute("class", "alert alert-danger");
+		errorMessageObj.innerText = errorMessage;
+	}
+	
 	function reloadAllInstalledMainProjectName() {
 		var xhttp = new XMLHttpRequest();
 		
@@ -254,10 +260,45 @@
 	}
 	
 	
-	function callbackForErrorMessageGetter(errorMessage) {
-		var errorMessageObj = document.getElementById("errorMessage");
-		errorMessageObj.setAttribute("class", "alert alert-danger");
-		errorMessageObj.innerText = errorMessage;
+	
+	
+	function callWebClientBuildPathChecker() {
+		var mainProjectNameListObj = document.getElementById("mainProjectNameList");
+		
+		if (mainProjectNameListObj.selectedIndex == 0) {
+			alert("메인 프로젝트를 선택 하세요");
+			mainProjectNameListObj.focus();
+			return;
+		}
+		
+		var selectedMainProjectName = mainProjectNameListObj.value;
+		
+		var xhttp = new XMLHttpRequest();
+		var params = "selectedMainProjectName="+encodeURI(selectedMainProjectName);
+		
+		xhttp.onreadystatechange = function() {
+			if (this.readyState != 4 || this.status != 200) {
+				if (this.status != 0 && this.status != 200) {
+					callbackForErrorMessageGetter("에러코드="+this.status+", 에러 내용="+this.responseText);
+				}
+				return;
+			}
+						
+			callbackWebClientBuildPathChecker(JSON.parse(this.responseText));
+		};
+
+		xhttp.open("GET", "/servlet/WebClientBuildPathChecker?"+params, true);
+		xhttp.send();
+	}
+	
+	function callbackWebClientBuildPathChecker(processResultResponseJson) {		
+		
+		if (! processResultResponseJson.isSuccess) {
+			callbackForErrorMessageGetter(processResultResponseJson.message);
+			return;
+		}
+		
+		document.location.href = "/sitemenu/project_manager/projectWebAntPropertiesEditorPage.html";
 	}
 	
 
@@ -327,6 +368,7 @@
 								<button type="button" class="btn btn-primary btn-sm btn-space" onClick="deleteMainProject();">삭제</button>
 								<button type="button" class="btn btn-primary btn-sm btn-space" onClick="goProjectConfigFileManagerPage();">설정 파일 관리</button>
 								<button type="button" class="btn btn-primary btn-sm btn-space" onClick="goProjectIOSourceFileCreatorPage();">입출력 소스 파일 생성자</button>
+								<button type="button" class="btn btn-primary btn-sm btn-space" onClick="callWebClientBuildPathChecker();">서블릿 시스템 라이브러리 경로 편집</button>
 							</div>
 						</div>
 					</div>	

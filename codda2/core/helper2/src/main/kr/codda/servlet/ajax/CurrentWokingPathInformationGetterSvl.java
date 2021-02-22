@@ -18,6 +18,7 @@ package kr.codda.servlet.ajax;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServlet;
@@ -80,27 +81,76 @@ public class CurrentWokingPathInformationGetterSvl extends HttpServlet {
 			res.setCharacterEncoding("utf-8");
 			res.getWriter().print(errorMessage);
 			return;
+		}		
+		
+		CoddaHelperSite coddaHelperSite = CoddaHelperSiteManager.getInstance();
+		
+		final CurrentWokingPathInformation currentWokingPathInformation;
+		
+		try {
+			currentWokingPathInformation = doWork(fileChooserType, coddaHelperSite);
+		} catch(IllegalStateException e) {
+			String errorMessage = e.getMessage();
+			res.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			res.setContentType("text/html");
+			res.setCharacterEncoding("utf-8");
+			res.getWriter().print(errorMessage);
+			return;
+		} catch(Exception e) {
+			String errorMessage = new StringBuilder().append("unknonw error, errmsg=").append(e.getMessage()).toString();
+			
+			Logger.getGlobal().log(Level.WARNING, errorMessage, e);
+			
+			res.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			res.setContentType("text/html");
+			res.setCharacterEncoding("utf-8");
+			res.getWriter().print(errorMessage);
+			return;
 		}
 		
+		String currentWokingPathInformationJsonString = new Gson().toJson(currentWokingPathInformation);
 		
-		CoddaHelperSite coddaHelperSite = CoddaHelperSiteManager.getInstance(); 
+
+		res.setStatus(HttpServletResponse.SC_OK);
+		res.setContentType("text/html");
+		res.setCharacterEncoding("utf-8");
+		// res.getWriter().println(HtmlContentsBuilder.buildHtmlContentsOfCurrentWorkingPathInformationGetterPage(currentWokingPathInformationJsonString));
+		res.getWriter().print(currentWokingPathInformationJsonString);
+	}
+	
+	public CurrentWokingPathInformation doWork(FileChooserType fileChooserType, CoddaHelperSite coddaHelperSite) throws Exception {
+		
 		String currentWorkingPathString = coddaHelperSite.getCurrentWorkingPathString();
+		if (null == currentWorkingPathString) {
+			Logger.getGlobal().severe("the var currentWorkingPathString is null");
+			System.exit(1);
+		}
 		
 		File currentWorkingPath = new File(currentWorkingPathString);
 		
 		if (! currentWorkingPath.exists()) {
-			String newCurrentWorkingPathString = File.separator; 
+			String newCurrentWorkingPathString = null;
+			
+			if (File.separator.equals("\\")) {
+				newCurrentWorkingPathString = new StringBuilder().append(coddaHelperSite.getSelectedDriveLetter()).append("\\").toString();
+			} else {
+				newCurrentWorkingPathString = "/";
+			}
+			
 			currentWorkingPath = new File(newCurrentWorkingPathString);
 			
 			Logger.getGlobal().info(new StringBuilder().append("change the virtual current working path[")
 					.append(currentWorkingPathString)
 					.append("] to root path because it does not exist").toString());
 			
+			
+			
 			if (! currentWorkingPath.exists()) {
-				currentWorkingPath = new File(".");
-				
+
 				try {
-					newCurrentWorkingPathString = currentWorkingPath.getCanonicalPath();
+					currentWorkingPath = new File(".").getCanonicalFile();
+					
+					newCurrentWorkingPathString = currentWorkingPath.getAbsolutePath();
 				} catch(Exception e) {
 					String errorMessage = "failed to get a real current working directory's canonical Path";
 					
@@ -119,13 +169,9 @@ public class CurrentWokingPathInformationGetterSvl extends HttpServlet {
 							.append("]'s driver letter is not a element of the drive letter list")
 							.append(driveLetterList.toString()).toString();
 					
-					Logger.getGlobal().severe(errorMessage);
+					Logger.getGlobal().warning(errorMessage);
 					
-					res.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-					res.setContentType("text/html");
-					res.setCharacterEncoding("utf-8");
-					res.getWriter().print(errorMessage);
-					return;
+					throw new IllegalStateException(errorMessage);
 				}
 				
 				
@@ -137,22 +183,33 @@ public class CurrentWokingPathInformationGetterSvl extends HttpServlet {
 						.append("] because its root file system does not exist").toString());
 			}
 			
+			
 			coddaHelperSite.setCurrentWorkingPathString(newCurrentWorkingPathString);
 			coddaHelperSite.getDriveLetterToCurrentWorkingDirectoryHash().put(coddaHelperSite.getSelectedDriveLetter(), newCurrentWorkingPathString);
 			
 		} else if (! currentWorkingPath.isDirectory()) {
-			String newCurrentWorkingPathString = File.separator; 
+			String newCurrentWorkingPathString = null;
+			if (File.separator.equals("\\")) {
+				newCurrentWorkingPathString = new StringBuilder().append(coddaHelperSite.getSelectedDriveLetter()).append("\\").toString();
+			} else {
+				newCurrentWorkingPathString = "/";
+			}
+
 			currentWorkingPath = new File(newCurrentWorkingPathString);
 			
 			Logger.getGlobal().info(new StringBuilder().append("change the virtual current working path[")
 					.append(currentWorkingPathString)
 					.append("] to root path because it is not a direcotry").toString());
 			
+			
+			
 			if (! currentWorkingPath.exists()) {
-				currentWorkingPath = new File(".");
+				
 				
 				try {
-					newCurrentWorkingPathString = currentWorkingPath.getCanonicalPath();
+					currentWorkingPath = new File(".").getCanonicalFile();
+					
+					newCurrentWorkingPathString = currentWorkingPath.getAbsolutePath();
 				} catch(Exception e) {
 					String errorMessage = "failed to get a real current working directory's canonical Path";
 					
@@ -171,13 +228,9 @@ public class CurrentWokingPathInformationGetterSvl extends HttpServlet {
 							.append("]'s driver letter is not a element of the drive letter list")
 							.append(driveLetterList.toString()).toString();
 					
-					Logger.getGlobal().severe(errorMessage);
+					Logger.getGlobal().warning(errorMessage);
 					
-					res.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-					res.setContentType("text/html");
-					res.setCharacterEncoding("utf-8");
-					res.getWriter().print(errorMessage);
-					return;
+					throw new IllegalStateException(errorMessage);
 				}
 				
 				
@@ -196,15 +249,7 @@ public class CurrentWokingPathInformationGetterSvl extends HttpServlet {
 		
 		
 		CurrentWokingPathInformation currentWokingPathInformation = CommonStaticUtil.buildCurrentWokingPathInformation(fileChooserType, currentWorkingPath);
-		
-		String currentWokingPathInformationJsonString = new Gson().toJson(currentWokingPathInformation);
-		
-
-		res.setStatus(HttpServletResponse.SC_OK);
-		res.setContentType("text/html");
-		res.setCharacterEncoding("utf-8");
-		// res.getWriter().println(HtmlContentsBuilder.buildHtmlContentsOfCurrentWorkingPathInformationGetterPage(currentWokingPathInformationJsonString));
-		res.getWriter().print(currentWokingPathInformationJsonString);
+		return currentWokingPathInformation;
 	}
 
 }

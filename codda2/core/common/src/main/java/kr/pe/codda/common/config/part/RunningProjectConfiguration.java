@@ -45,7 +45,8 @@ public class RunningProjectConfiguration implements ConfigurationIF {
 	public final static String SET_KEY_SUFFIX = ".set";
 	public final static String FILE_KEY_SUFFIX = ".file";
 	public final static String PATH_KEY_SUFFIX = ".path";
-	public final static String SUB_PART_NAME_LIST_KEY_SUFFIX = ".sub_part_name_list.value";
+	// public final static String LIST_KEY_SUFFIX = ".list";
+	public final static String SUB_PART_NAME_LIST_KEY_SECOND_PREFIX = ".sub_part_name_list.value";
 	
 	
 	private SessionkeyPartConfiguration sessionkeyPartConfiguration = new SessionkeyPartConfiguration();
@@ -55,9 +56,6 @@ public class RunningProjectConfiguration implements ConfigurationIF {
 	private MainProjectPartConfiguration mainProjectPartConfiguration = new MainProjectPartConfiguration();
 
 	public ListTypePartConfiguration<SubProjectPartConfiguration> SUBPROJECT = new ListTypePartConfiguration<SubProjectPartConfiguration>("subject", SubProjectPartConfiguration.class);
-
-	
-	
 	
 	
 	/**
@@ -166,7 +164,7 @@ public class RunningProjectConfiguration implements ConfigurationIF {
 		} else if (KeyTypeOfConfieProperties.FILE.equals(keyTypeOfConfieFile)) {
 			key = firstStringBuilder.append(FILE_KEY_SUFFIX).toString();
 		} else if (KeyTypeOfConfieProperties.PATH.equals(keyTypeOfConfieFile)) {
-			key = firstStringBuilder.append(PATH_KEY_SUFFIX).toString();
+			key = firstStringBuilder.append(PATH_KEY_SUFFIX).toString();			
 		} else {
 			throw new IllegalArgumentException("unknown key type of config file");
 		}

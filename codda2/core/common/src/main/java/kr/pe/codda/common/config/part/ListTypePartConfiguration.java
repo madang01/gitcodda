@@ -14,6 +14,7 @@ public class ListTypePartConfiguration<T extends PartConfigurationIF> implements
 	private final Class<T> clazz;
 	
 	private final String subPartNameListKey;
+	// private final String subPartNameListItemViewTypeKey;
 	
 	private final ArrayList<String> nameList = new ArrayList<String>();
 	private final HashMap<String, T> partConfigurationHash = new HashMap<String, T>();
@@ -40,7 +41,10 @@ public class ListTypePartConfiguration<T extends PartConfigurationIF> implements
 		
 		
 		subPartNameListKey = new StringBuilder().append(partName)
-				.append(RunningProjectConfiguration.SUB_PART_NAME_LIST_KEY_SUFFIX).toString();
+				.append(RunningProjectConfiguration.SUB_PART_NAME_LIST_KEY_SECOND_PREFIX)
+				.append(".value").toString();
+		
+		
 	}
 	
 
@@ -152,6 +156,13 @@ public class ListTypePartConfiguration<T extends PartConfigurationIF> implements
 	public void toProperties(SequencedProperties targetSequencedProperties) throws IllegalArgumentException {
 		
 		targetSequencedProperties.put(subPartNameListKey, convertSubPartNameListToSubPartNameListValue());
+		
+		String subPartNameListItemViewTypeKey = new StringBuilder().append(partName)
+				.append(RunningProjectConfiguration.SUB_PART_NAME_LIST_KEY_SECOND_PREFIX)
+				.append(".item_view_type").toString();
+		
+		targetSequencedProperties.put(subPartNameListItemViewTypeKey, "list");
+		
 		
 		for (String name : nameList) {
 			PartConfigurationIF partConfiguration = partConfigurationHash.get(name);

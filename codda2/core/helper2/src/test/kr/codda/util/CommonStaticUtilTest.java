@@ -150,5 +150,13 @@ class CommonStaticUtilTest {
 		    }
 		}
 	}
+	
+	@Test
+	void testCDROM() {
+		File f = new File("e:\\");
+		
+		Logger.getGlobal().info("CDROM e:\\ exist="+f.exists());
+		Logger.getGlobal().info("CDROM e:\\ isDirectory="+f.isDirectory());
+	}
 
 }

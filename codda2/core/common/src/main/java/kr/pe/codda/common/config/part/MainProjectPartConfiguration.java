@@ -229,10 +229,11 @@ public class MainProjectPartConfiguration extends AbstractProjectPartConfigurati
 		String itemViewTypeValue = ItemViewType.SET.name().toLowerCase();
 		targetSequencedProperties.put(itemViewTypeKey, itemViewTypeValue);
 		
-		String whetherClientWrapBufferIsDirectSetValue = RunningProjectConfiguration.toSetTypeValue(nativeValueConverterForWhetherServerWrapBufferIsDirect.getItemValueSet());
 		String whetherClientWrapBufferIsDirectSetKey = RunningProjectConfiguration.buildKeyOfConfigFile(
 				getPrefixBeforeItemID(), itemIDForWhetherServerWrapBufferIsDirect, KeyTypeOfConfieProperties.SET);
-		targetSequencedProperties.put(whetherClientWrapBufferIsDirectSetValue, whetherClientWrapBufferIsDirectSetKey);
+		String whetherClientWrapBufferIsDirectSetValue = RunningProjectConfiguration.toSetTypeValue(nativeValueConverterForWhetherServerWrapBufferIsDirect.getItemValueSet());
+		
+		targetSequencedProperties.put(whetherClientWrapBufferIsDirectSetKey, whetherClientWrapBufferIsDirectSetValue);
 	}
 	
 	/**

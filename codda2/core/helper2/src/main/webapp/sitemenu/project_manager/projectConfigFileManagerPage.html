@@ -20,7 +20,15 @@
 
 <script type="text/javascript">
 <!--
-function init() {
+	function goHome() {
+		document.location.href = "/index.html";
+	}
+	
+	function goPrevPage() {
+		document.location.href = "/sitemenu/project_manager/projectMainPage.html";
+	}
+
+	function init() {
 		if(typeof(sessionStorage) == "undefined") {
 		    alert("Sorry! No HTML5 sessionStorage support..");
 		    document.location.href = "/";

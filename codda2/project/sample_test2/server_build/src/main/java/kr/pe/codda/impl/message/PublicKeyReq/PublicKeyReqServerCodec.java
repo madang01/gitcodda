@@ -30,6 +30,7 @@ import kr.pe.codda.common.protocol.MessageCodecIF;
 public final class PublicKeyReqServerCodec implements MessageCodecIF {
 
 	private AbstractMessageDecoder messageDecoder = new PublicKeyReqDecoder();
+	private AbstractMessageEncoder messageEncoder = new PublicKeyReqEncoder();
 
 	@Override
 	public AbstractMessageDecoder getMessageDecoder() throws DynamicClassCallException {
@@ -38,6 +39,6 @@ public final class PublicKeyReqServerCodec implements MessageCodecIF {
 
 	@Override
 	public AbstractMessageEncoder getMessageEncoder() throws DynamicClassCallException {
-		throw new DynamicClassCallException("the server don't need a message encoder because it is a message[PublicKeyReq] that is not sent from server to client");
+		return messageEncoder;
 	}
 }

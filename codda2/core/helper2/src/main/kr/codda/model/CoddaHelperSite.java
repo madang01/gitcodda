@@ -17,7 +17,9 @@ package kr.codda.model;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.logging.Logger;
 
 import kr.codda.util.CommonStaticUtil;
@@ -67,7 +69,7 @@ public class CoddaHelperSite {
 			
 			driveLetterToCurrentWorkingDirectoryHash.clear(); 		
 			for (String driveLetter  : driveLetterList) {
-				driveLetterToCurrentWorkingDirectoryHash.put(driveLetter, File.separator);
+				driveLetterToCurrentWorkingDirectoryHash.put(driveLetter, driveLetter + File.separator);
 			}
 			
 			driveLetterToCurrentWorkingDirectoryHash.put(selectedDriveLetter, File.separator);
@@ -162,7 +164,45 @@ public class CoddaHelperSite {
 
 	public HashMap<String, String> getDriveLetterToCurrentWorkingDirectoryHash() {
 		return driveLetterToCurrentWorkingDirectoryHash;
-	}	
-	
+	}
+
+	@Override
+	public String toString() {
+		final int maxLen = 30;
+		StringBuilder builder = new StringBuilder();
+		builder.append("CoddaHelperSite [installedPathString=");
+		builder.append(installedPathString);
+		builder.append(", currentWorkingPathString=");
+		builder.append(currentWorkingPathString);
+		builder.append(", selectedMainProjectName=");
+		builder.append(selectedMainProjectName);
+		builder.append(", mainProjectNameList=");
+		builder.append(mainProjectNameList != null ? toString(mainProjectNameList, maxLen) : null);
+		builder.append(", errorMessage=");
+		builder.append(errorMessage);
+		builder.append(", selectedDriveLetter=");
+		builder.append(selectedDriveLetter);
+		builder.append(", driveLetterToCurrentWorkingDirectoryHash=");
+		builder.append(driveLetterToCurrentWorkingDirectoryHash != null
+				? toString(driveLetterToCurrentWorkingDirectoryHash.entrySet(), maxLen)
+				: null);
+		builder.append(", driveLetterList=");
+		builder.append(driveLetterList != null ? toString(driveLetterList, maxLen) : null);
+		builder.append("]");
+		return builder.toString();
+	}
+
+	private String toString(Collection<?> collection, int maxLen) {
+		StringBuilder builder = new StringBuilder();
+		builder.append("[");
+		int i = 0;
+		for (Iterator<?> iterator = collection.iterator(); iterator.hasNext() && i < maxLen; i++) {
+			if (i > 0)
+				builder.append(", ");
+			builder.append(iterator.next());
+		}
+		builder.append("]");
+		return builder.toString();
+	}
 	
 }

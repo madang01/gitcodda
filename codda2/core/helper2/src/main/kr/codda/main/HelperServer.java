@@ -41,6 +41,8 @@ import kr.codda.servlet.ajax.OneMessageInfoXMLFileCopierSvl;
 import kr.codda.servlet.ajax.OneMessageInformationBuilderSvl;
 import kr.codda.servlet.ajax.ParentDirectoryMovementProcessSvl;
 import kr.codda.servlet.ajax.SelectedMainProjectNameSetterSvl;
+import kr.codda.servlet.ajax.ServletSystemLibPathSaverSvl;
+import kr.codda.servlet.ajax.WebClientBuildPathCheckerSvl;
 
 /**
  * @author Won Jonghoon
@@ -73,6 +75,12 @@ public class HelperServer {
 		servletHandler.addServletWithMapping(MainProjectRemoverSvl.class, "/servlet/MainProjectRemover");
 		servletHandler.addServletWithMapping(AllProjectPathRenewalSvl.class, "/servlet/AllProjectPathRenewal");
 		servletHandler.addServletWithMapping(SelectedMainProjectNameSetterSvl.class, "/servlet/SelectedMainProjectNameSetter");
+		
+		
+		servletHandler.addServletWithMapping(WebClientBuildPathCheckerSvl.class, "/servlet/WebClientBuildPathChecker");
+		servletHandler.addServletWithMapping(ServletSystemLibPathSaverSvl.class, "/servlet/ServletSystemLibPathSaver");
+		
+		
 		servletHandler.addServletWithMapping(AllMessageInformationBuilderSvl.class, "/servlet/AllMessageInformationBuilder");
 		servletHandler.addServletWithMapping(OneMessageInformationBuilderSvl.class, "/servlet/OneMessageInformationBuilder");
 		servletHandler.addServletWithMapping(OneMessageInfoXMLFileCopierSvl.class, "/servlet/OneMessageInfoXMLFileCopier");

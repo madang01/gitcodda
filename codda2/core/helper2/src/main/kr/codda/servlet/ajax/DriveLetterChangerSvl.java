@@ -54,8 +54,10 @@ public class DriveLetterChangerSvl extends HttpServlet {
 		}
 		
 		CoddaHelperSite coddaHelperSite = CoddaHelperSiteManager.getInstance();
+		
 		coddaHelperSite.setSelectedDriveLetter(newSelectedDriveLetter);
 		coddaHelperSite.setCurrentWorkingPathString(coddaHelperSite.getDriveLetterToCurrentWorkingDirectoryHash().get(newSelectedDriveLetter));
+		
 		
 		res.setStatus(HttpServletResponse.SC_OK);
 		res.setContentType("text/html");

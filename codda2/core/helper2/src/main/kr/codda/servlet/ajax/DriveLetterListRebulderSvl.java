@@ -115,7 +115,11 @@ public class DriveLetterListRebulderSvl extends HttpServlet {
 			if (newDriveLetter.equals(selectedDriveLetter)) {
 				driveLetterToCurrentWorkingDirectoryHash.put(newDriveLetter, currentWorkingPathString);
 			} else {
-				driveLetterToCurrentWorkingDirectoryHash.put(newDriveLetter, File.separator);
+				if ("\\".equals(File.separator)) {
+					driveLetterToCurrentWorkingDirectoryHash.put(newDriveLetter, newDriveLetter + File.separator);
+				} else {
+					driveLetterToCurrentWorkingDirectoryHash.put(newDriveLetter, File.separator);
+				}
 			}
 		}
 

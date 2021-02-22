@@ -648,12 +648,12 @@ public abstract class AbstractProjectPartConfiguration implements PartConfigurat
 		String itemViewTypeKey = RunningProjectConfiguration.buildKeyOfConfigFile(
 				getPrefixBeforeItemID(), itemIDForWhetherClientWrapBufferIsDirect, KeyTypeOfConfieProperties.ITEM_VIEW_TYPE);
 		String itemViewTypeValue = ItemViewType.SET.name().toLowerCase();
-		targetSequencedProperties.put(itemViewTypeKey, itemViewTypeValue);
+		targetSequencedProperties.put(itemViewTypeKey, itemViewTypeValue);		
 		
-		String whetherClientWrapBufferIsDirectSetValue = RunningProjectConfiguration.toSetTypeValue(nativeValueConverterForWhetherClientWrapBufferIsDirect.getItemValueSet());
 		String whetherClientWrapBufferIsDirectSetKey = RunningProjectConfiguration.buildKeyOfConfigFile(
 				getPrefixBeforeItemID(), itemIDForWhetherClientWrapBufferIsDirect, KeyTypeOfConfieProperties.SET);
-		targetSequencedProperties.put(whetherClientWrapBufferIsDirectSetValue, whetherClientWrapBufferIsDirectSetKey);
+		String whetherClientWrapBufferIsDirectSetValue = RunningProjectConfiguration.toSetTypeValue(nativeValueConverterForWhetherClientWrapBufferIsDirect.getItemValueSet());		
+		targetSequencedProperties.put(whetherClientWrapBufferIsDirectSetKey, whetherClientWrapBufferIsDirectSetValue);
 	}
 
 	/**
@@ -859,9 +859,9 @@ public abstract class AbstractProjectPartConfiguration implements PartConfigurat
 	 * @param targetSequencedProperties 클라이언트 연결 유형 값이 저장될 시퀀스 프로퍼티
 	 */
 	public void toPropertiesForClientConnectionType(SequencedProperties targetSequencedProperties) {
-		String clientConnectionTypeSetValue = RunningProjectConfiguration.toSetTypeValue(nativeValueConverterForClientConnectionType.getItemValueSet());
 		String clientConnectionTypeSetKey = RunningProjectConfiguration.buildKeyOfConfigFile(
-				getPrefixBeforeItemID(), itemIDForClientConnectionType, KeyTypeOfConfieProperties.SET);		
+				getPrefixBeforeItemID(), itemIDForClientConnectionType, KeyTypeOfConfieProperties.SET);
+		String clientConnectionTypeSetValue = RunningProjectConfiguration.toSetTypeValue(nativeValueConverterForClientConnectionType.getItemValueSet());
 		
 		String itemDescKey = RunningProjectConfiguration.buildKeyOfConfigFile(
 				getPrefixBeforeItemID(), itemIDForClientConnectionType, KeyTypeOfConfieProperties.DESC);
@@ -879,7 +879,7 @@ public abstract class AbstractProjectPartConfiguration implements PartConfigurat
 		String itemViewTypeValue = ItemViewType.SET.name().toLowerCase();
 		targetSequencedProperties.put(itemViewTypeKey, itemViewTypeValue);		
 		
-		targetSequencedProperties.put(clientConnectionTypeSetValue, clientConnectionTypeSetKey);
+		targetSequencedProperties.put(clientConnectionTypeSetKey, clientConnectionTypeSetValue);
 	}
 
 	/**
