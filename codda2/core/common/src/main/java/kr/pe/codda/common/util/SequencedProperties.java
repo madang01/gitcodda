@@ -31,6 +31,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import com.google.gson.JsonObject;
+
 @SuppressWarnings("serial")
 public class SequencedProperties extends Properties {
 
@@ -90,5 +92,16 @@ public class SequencedProperties extends Properties {
     	}
     	
     	writer.close();
+    }
+    
+    public String toJSONString() {
+    	 JsonObject jsonObject = new JsonObject();
+    	 for (Object key : keyList) {
+    		 String value = getProperty((String)key);
+    		 
+    		 jsonObject.addProperty((String)key, value); 
+    	 }
+    	 
+    	return jsonObject.toString();
     }
 }

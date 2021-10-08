@@ -10,11 +10,11 @@
 <!-- jQuery library -->
 <script src="/jquery/3.3.1/jquery.min.js"></script>
 <!-- Latest compiled JavaScript -->
-<script src="/bootstrap/3.3.7/js/bootstrap.min.js"></script> 
+<script src="/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 
 <style>
 .btn-space {
-    margin-right: 5px;
+	margin-right: 5px;
 }
 </style>
 
@@ -23,19 +23,96 @@
 	function goHome() {
 		document.location.href = "/index.html";
 	}
-	
+
 	function goPrevPage() {
 		document.location.href = "/sitemenu/project_manager/projectMainPage.html";
 	}
 
-	function init() {
-		if(typeof(sessionStorage) == "undefined") {
-		    alert("Sorry! No HTML5 sessionStorage support..");
-		    document.location.href = "/";
-		    return;
-		}
+	function callConfigFileInformationGetter() {
+		var xhttp = new XMLHttpRequest();
+
+		xhttp.onreadystatechange = function() {
+			if (this.readyState != 4 || this.status != 200) {
+				if (this.status != 0 && this.status != 200) {
+					callbackForErrorMessageGetter("에러코드=" + this.status
+							+ ", 에러 내용=" + this.responseText);
+				}
+				return;
+			}
+
+			callbackForConfigFileInformationGetter(JSON
+					.parse(this.responseText));
+		};
+
+		xhttp.open("GET", "/servlet/ConfigFileInformationGetter", true);
+		xhttp.send();
 	}
-	
+
+	var listOfConfigGroups = new Array();
+	var configGroup2ListOfItemsJson = new Object();
+
+	function callbackForConfigFileInformationGetter(configFileInformationJson) {
+		var installedPathObj = document.getElementById('installedPath');
+		installedPathObj.innerText = configFileInformationJson.installedPathString;
+
+		var mainProjectNameObj = document.getElementById('mainProjectName');
+		mainProjectNameObj.innerText = configFileInformationJson.selectedMainProjectName;
+
+		var configFilePathObj = document.getElementById('configFilePath');
+		configFilePathObj.innerText = configFileInformationJson.configFilePathString;
+
+		var configFileJson = JSON
+				.parse(configFileInformationJson.configFileJsonString);
+
+		for ( const itemKey in configFileJson) {
+
+			var itemValue = configFileJson[itemKey];
+
+			console.log(itemKey + "=" + itemValue);
+
+			if (itemKey.indexOf(".value") >= 0) {
+
+				var tokens = itemKey.split(".");
+
+				if (tokens.length < 3) {
+					var errmsg = "WARNING! this config file's item key["
+							+ itemKey
+							+ "] is not valid because its token length is less than 3";
+					console.log(errmsg);
+
+					alert(errmsg);
+					return;
+				}
+
+				var configGroup = tokens[0];
+
+				if (configGroup2ListOfItemsJson[configGroup] == undefined) {
+					listOfConfigGroups.push(configGroup);
+
+					configGroup2ListOfItemsJson[configGroup] = new Array();
+				}
+
+				var itemJson = new Object();
+				itemJson[itemKey] = itemValue;
+
+				configGroup2ListOfItemsJson[configGroup].push(itemJson);
+			}
+		}
+
+		// FIXME!
+		alert(configGroup2ListOfItemsJson["jdf"].length);
+	}
+
+	function init() {
+		if (typeof (sessionStorage) == "undefined") {
+			alert("Sorry! No HTML5 sessionStorage support..");
+			document.location.href = "/";
+			return;
+		}
+
+		callConfigFileInformationGetter();
+	}
+
 	window.onload = init;
 //-->
 </script>
@@ -49,32 +126,107 @@
 					<div class="row">
 						<div class="col-sm-12">
 							<div class="btn-group">
-								<button type="button" class="btn btn-primary btn-sm btn-space" onClick="goHome();">HOME</button>
-								<button type="button" class="btn btn-primary btn-sm btn-space" onClick="goPrevPage();">이전</button>
+								<button type="button" class="btn btn-primary btn-sm btn-space"
+									onClick="goHome();">HOME</button>
+								<button type="button" class="btn btn-primary btn-sm btn-space"
+									onClick="goPrevPage();">이전</button>
 							</div>
 						</div>
 					</div>
-					<div class="row"><div class="col-sm-12">&nbsp;</div></div>					
+					<div class="row">
+						<div class="col-sm-12">&nbsp;</div>
+					</div>
 					<div class="row">
 						<div class="col-sm-12">
 							<div id="errorMessage"></div>
 						</div>
 					</div>
 					<div class="row">
-						<div class="col-sm-12"><label>코다 설치 경로 :&nbsp;</label><label id="installedPath"></label></div>
+						<div class="col-sm-12">
+							<label>코다 설치 경로 :&nbsp;</label><label id="installedPath"></label>
+						</div>
 					</div>
-					<div class="row"><div class="col-sm-12">&nbsp;</div></div>
 					<div class="row">
-						<div class="col-sm-12"><label>메인 프로젝트 이름 :&nbsp;</label><label id="mainProjectName"></label></div>
+						<div class="col-sm-12">&nbsp;</div>
 					</div>
-					<div class="row"><div class="col-sm-12">&nbsp;</div></div>
 					<div class="row">
-						<div class="col-sm-12"><label>설정 파일</label></div>
+						<div class="col-sm-12">
+							<label>메인 프로젝트 이름 :&nbsp;</label><label id="mainProjectName"></label>
+						</div>
 					</div>
-					
+					<div class="row">
+						<div class="col-sm-12">&nbsp;</div>
+					</div>
+					<div class="row">
+						<div class="col-sm-12">
+							<label>설정 파일 :&nbsp;</label><label id="configFilePath"></label>
+						</div>
+					</div>
+
+					<div class="row">
+						<div class="col-sm-12">&nbsp;</div>
+					</div>
+
+					<div class="row">
+						<div class="col-sm-2">
+							<label>그룹 순서 :</label>
+						</div>
+						<div class="col-sm-10">
+							<div id="listOfGroup">
+								<div class="btn-group">
+									<div class="btn-group">
+										<button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">JDF<span class="caret"></span></button>
+										<ul class="dropdown-menu" role="menu">
+											<li><a href="#">sessionkey</a></li>
+											<li><a href="#">dbcp</a></li>
+											<li><a href="#">mainproject</a></li>
+											<li><a href="#">subproject</a></li>
+										</ul>
+									</div>
+									<div class="btn-group">
+										<button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">sessionkey<span class="caret"></span></button>
+										<ul class="dropdown-menu" role="menu">
+											<li><a href="#">JDF</a></li>
+											<li><a href="#">dbcp</a></li>
+											<li><a href="#">mainproject</a></li>
+											<li><a href="#">subproject</a></li>
+										</ul>
+									</div>
+									<div class="btn-group">
+										<button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">dbcp<span class="caret"></span></button>
+										<ul class="dropdown-menu" role="menu">
+											<li><a href="#">JDF</a></li>
+											<li><a href="#">sessionkey</a></li>
+											<li><a href="#">mainproject</a></li>
+											<li><a href="#">subproject</a></li>
+										</ul>
+									</div>
+									<div class="btn-group">
+										<button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">mainproject<span class="caret"></span></button>
+										<ul class="dropdown-menu" role="menu">
+											<li><a href="#">JDF</a></li>
+											<li><a href="#">sessionkey</a></li>
+											<li><a href="#">dbcp</a></li>
+											<li><a href="#">subproject</a></li>
+										</ul>
+									</div>
+									<div class="btn-group">
+										<button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">subproject<span class="caret"></span></button>
+										<ul class="dropdown-menu" role="menu">
+											<li><a href="#">JDF</a></li>
+											<li><a href="#">sessionkey</a></li>
+											<li><a href="#">dbcp</a></li>
+											<li><a href="#">mainproject</a></li>
+										</ul>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+
 				</div>
 			</div>
-			
+
 		</div>
 	</div>
 </body>

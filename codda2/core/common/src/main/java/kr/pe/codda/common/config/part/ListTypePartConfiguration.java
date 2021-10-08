@@ -13,7 +13,7 @@ public class ListTypePartConfiguration<T extends PartConfigurationIF> implements
 	private final String partName;
 	private final Class<T> clazz;
 	
-	private final String subPartNameListKey;
+	private final String subPartNameListItemKey;
 	// private final String subPartNameListItemViewTypeKey;
 	
 	private final ArrayList<String> nameList = new ArrayList<String>();
@@ -40,8 +40,9 @@ public class ListTypePartConfiguration<T extends PartConfigurationIF> implements
 		this.clazz = clazz;
 		
 		
-		subPartNameListKey = new StringBuilder().append(partName)
-				.append(RunningProjectConfiguration.SUB_PART_NAME_LIST_KEY_SECOND_PREFIX)
+		subPartNameListItemKey = new StringBuilder().append(partName)
+				.append(".")
+				.append(RunningProjectConfiguration.SUBKEY_OF_SUB_PART_NAME_LIST_ITEMKEY)
 				.append(".value").toString();
 		
 		
@@ -52,22 +53,22 @@ public class ListTypePartConfiguration<T extends PartConfigurationIF> implements
 	public void fromProperties(SequencedProperties sourceSequencedProperties)
 			throws IllegalArgumentException, PartConfigurationException {
 		
-		String subPartNameListValue = sourceSequencedProperties.getProperty(subPartNameListKey);
+		String subPartNameListItemValue = sourceSequencedProperties.getProperty(subPartNameListItemKey);
 
-		if (null == subPartNameListValue) {
+		if (null == subPartNameListItemValue) {
 			String errorMessage = new StringBuilder()
 					.append("the ")
 					.append(partName)
-					.append(" list key(=").append(subPartNameListKey)
+					.append(" list key(=").append(subPartNameListItemKey)
 					.append(") was not found in the parameter sourceSequencedProperties").toString();
-			throw new PartConfigurationException(subPartNameListKey, errorMessage);
+			throw new PartConfigurationException(subPartNameListItemKey, errorMessage);
 		}
 
-		subPartNameListValue = subPartNameListValue.trim();
+		subPartNameListItemValue = subPartNameListItemValue.trim();
 		nameList.clear();
 		partConfigurationHash.clear();
 		
-		StringTokenizer tokens = new StringTokenizer(subPartNameListValue, ",");
+		StringTokenizer tokens = new StringTokenizer(subPartNameListItemValue, ",");
 
 		int inx=0;
 		while (tokens.hasMoreTokens()) {
@@ -79,7 +80,7 @@ public class ListTypePartConfiguration<T extends PartConfigurationIF> implements
 						.append("the ").append(partName).append(" list[")
 						.append(inx)
 						.append("]'s element is empty").toString();
-				throw new PartConfigurationException(subPartNameListKey, errorMessage);
+				throw new PartConfigurationException(subPartNameListItemKey, errorMessage);
 			}
 			
 			if (CommonStaticUtil.hasLeadingOrTailingWhiteSpace(name)) {
@@ -87,7 +88,7 @@ public class ListTypePartConfiguration<T extends PartConfigurationIF> implements
 						.append("the ").append(partName).append(" list[")
 						.append(inx)
 						.append("]'s element has a leading or tailing white space").toString();
-				throw new PartConfigurationException(subPartNameListKey, errorMessage);
+				throw new PartConfigurationException(subPartNameListItemKey, errorMessage);
 			}
 						
 			if (nameList.contains(name)) {
@@ -96,7 +97,7 @@ public class ListTypePartConfiguration<T extends PartConfigurationIF> implements
 						.append(inx)
 						.append("]'s element[").append(name)
 						.append("] already was registered").toString();
-				throw new PartConfigurationException(subPartNameListKey, errorMessage);
+				throw new PartConfigurationException(subPartNameListItemKey, errorMessage);
 			}
 			
 			final T partConfiguration;
@@ -111,7 +112,7 @@ public class ListTypePartConfiguration<T extends PartConfigurationIF> implements
 						.append(inx)
 						.append("]'s element[").append(name)
 						.append("]").toString();
-				throw new PartConfigurationException(subPartNameListKey, errorMessage);
+				throw new PartConfigurationException(subPartNameListItemKey, errorMessage);
 			}
 			
 			partConfiguration.fromProperties(sourceSequencedProperties);
@@ -155,13 +156,16 @@ public class ListTypePartConfiguration<T extends PartConfigurationIF> implements
 	@Override
 	public void toProperties(SequencedProperties targetSequencedProperties) throws IllegalArgumentException {
 		
-		targetSequencedProperties.put(subPartNameListKey, convertSubPartNameListToSubPartNameListValue());
+		targetSequencedProperties.put(subPartNameListItemKey, convertSubPartNameListToSubPartNameListValue());
 		
+		/*
 		String subPartNameListItemViewTypeKey = new StringBuilder().append(partName)
-				.append(RunningProjectConfiguration.SUB_PART_NAME_LIST_KEY_SECOND_PREFIX)
+				.append(".")
+				.append(RunningProjectConfiguration.SUBKEY_OF_SUB_PART_NAME_LIST_ITEMKEY)
 				.append(".item_view_type").toString();
 		
 		targetSequencedProperties.put(subPartNameListItemViewTypeKey, "list");
+		*/
 		
 		
 		for (String name : nameList) {

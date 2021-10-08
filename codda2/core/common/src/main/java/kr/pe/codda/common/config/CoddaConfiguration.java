@@ -242,5 +242,11 @@ public class CoddaConfiguration {
 	public String getTitleOfConfigFile() {		
 		return titleOfConfigFile;
 	}
-
+	
+	/**
+	 * @return 설정 파일 경로
+	 */
+	public String getConfigFilePathString() {
+		return configFilePathString;
+	}
 }

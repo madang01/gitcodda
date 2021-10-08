@@ -71,7 +71,7 @@ public class SequencedPropertiesTest {
 	}
 
 	@Test
-	public void test() {
+	public void testStoreAndLoad() {
 		SequencedProperties oldSequencedProperties = new SequencedProperties();
 		
 		String prefix="temp";
@@ -125,6 +125,21 @@ public class SequencedPropertiesTest {
 			log.log(Level.WARNING, "unknown error", e);
 			fail("알수 없는 에러 발생");
 		}
+	}
+	
+	@Test
+	public void testToJSONString() {
+		SequencedProperties testSequencedProperties = new SequencedProperties();
+		String key, value;
+		
+		key = "test.king";
+		value = "한글테스트";		
+		testSequencedProperties.put(key, value);
+		
+		String configInformationJsonString = testSequencedProperties.toJSONString();
+		
+		log.info(configInformationJsonString);
+		
 	}
 
 }

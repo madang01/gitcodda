@@ -46,7 +46,7 @@ public class RunningProjectConfiguration implements ConfigurationIF {
 	public final static String FILE_KEY_SUFFIX = ".file";
 	public final static String PATH_KEY_SUFFIX = ".path";
 	// public final static String LIST_KEY_SUFFIX = ".list";
-	public final static String SUB_PART_NAME_LIST_KEY_SECOND_PREFIX = ".sub_part_name_list.value";
+	public final static String SUBKEY_OF_SUB_PART_NAME_LIST_ITEMKEY = "sub_part_name_list";
 	
 	
 	private SessionkeyPartConfiguration sessionkeyPartConfiguration = new SessionkeyPartConfiguration();
@@ -55,7 +55,7 @@ public class RunningProjectConfiguration implements ConfigurationIF {
 
 	private MainProjectPartConfiguration mainProjectPartConfiguration = new MainProjectPartConfiguration();
 
-	public ListTypePartConfiguration<SubProjectPartConfiguration> SUBPROJECT = new ListTypePartConfiguration<SubProjectPartConfiguration>("subject", SubProjectPartConfiguration.class);
+	public ListTypePartConfiguration<SubProjectPartConfiguration> SUBPROJECT = new ListTypePartConfiguration<SubProjectPartConfiguration>("subproject", SubProjectPartConfiguration.class);
 	
 	
 	/**

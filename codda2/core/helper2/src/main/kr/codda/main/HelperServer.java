@@ -29,6 +29,7 @@ import kr.codda.servlet.ajax.AllInstalledMainProjectInformationReaderSvl;
 import kr.codda.servlet.ajax.AllMessageInformationBuilderSvl;
 import kr.codda.servlet.ajax.AllProjectPathRenewalSvl;
 import kr.codda.servlet.ajax.ChildDirectoryMovementProcessSvl;
+import kr.codda.servlet.ajax.ConfigFileInformationGetterSvl;
 import kr.codda.servlet.ajax.CurrentWokingPathInformationGetterSvl;
 import kr.codda.servlet.ajax.DriveLetterChangerSvl;
 import kr.codda.servlet.ajax.DriveLetterInformationGetterSvl;
@@ -85,6 +86,10 @@ public class HelperServer {
 		servletHandler.addServletWithMapping(OneMessageInformationBuilderSvl.class, "/servlet/OneMessageInformationBuilder");
 		servletHandler.addServletWithMapping(OneMessageInfoXMLFileCopierSvl.class, "/servlet/OneMessageInfoXMLFileCopier");
 		servletHandler.addServletWithMapping(OneMessageIOSourceFilesBuilderForProjectSvl.class, "/servlet/OneMessageIOSourceFilesBuilderForProject");
+		
+		
+		
+		servletHandler.addServletWithMapping(ConfigFileInformationGetterSvl.class, "/servlet/ConfigFileInformationGetter");
 		
 
 		ResourceHandler resourceHandler = new ResourceHandler();
