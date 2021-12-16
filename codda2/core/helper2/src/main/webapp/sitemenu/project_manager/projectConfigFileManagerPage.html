@@ -16,6 +16,7 @@
 .btn-space {
 	margin-right: 5px;
 }
+
 </style>
 
 <script type="text/javascript">
@@ -48,8 +49,22 @@
 		xhttp.send();
 	}
 
-	var listOfConfigGroups = new Array();
-	var configGroup2ListOfItemsJson = new Object();
+	var mainGroupList = new Array();
+	var mainGroupID2ListOfItemsJson = new Object();
+	var subGroupID2ListOfItemsJson = new Object();
+	var configFileJson;
+	
+	function isSubGroupItem(subGroupListItemValue, secondToken) {
+		var subGroupList = subGroupListItemValue.split(",");
+		for (var k=0; k < subGroupList.length; k++) {
+			subGroupList[k] = subGroupList[k].trim();
+			
+			if (secondToken === subGroupList[k]) {
+				return true;
+			}
+		}
+		return false;
+	}
 
 	function callbackForConfigFileInformationGetter(configFileInformationJson) {
 		var installedPathObj = document.getElementById('installedPath');
@@ -61,46 +76,331 @@
 		var configFilePathObj = document.getElementById('configFilePath');
 		configFilePathObj.innerText = configFileInformationJson.configFilePathString;
 
-		var configFileJson = JSON
+		configFileJson = JSON
 				.parse(configFileInformationJson.configFileJsonString);
 
 		for ( const itemKey in configFileJson) {
 
 			var itemValue = configFileJson[itemKey];
 
+			// FIXME!
 			console.log(itemKey + "=" + itemValue);
 
-			if (itemKey.indexOf(".value") >= 0) {
+			var tokens = itemKey.split(".");
 
-				var tokens = itemKey.split(".");
+			if (tokens.length < 3) {
+				var errmsg = "WARNING! this mainproject item key["
+						+ itemKey
+						+ "] is not valid because its token length is less than 3";
+				console.log(errmsg);
 
-				if (tokens.length < 3) {
-					var errmsg = "WARNING! this config file's item key["
-							+ itemKey
-							+ "] is not valid because its token length is less than 3";
-					console.log(errmsg);
+				alert(errmsg);
+				return;
+			}
 
-					alert(errmsg);
-					return;
-				}
+			var mainGroupID = tokens[0];
+			
+			var subGroupListItemKey = mainGroupID + ".sub_part_name_list.value";
+			
+			if (undefined === configFileJson[subGroupListItemKey]) {
+				if (mainGroupID2ListOfItemsJson[mainGroupID] == undefined) {
+					mainGroupList.push(mainGroupID);
 
-				var configGroup = tokens[0];
-
-				if (configGroup2ListOfItemsJson[configGroup] == undefined) {
-					listOfConfigGroups.push(configGroup);
-
-					configGroup2ListOfItemsJson[configGroup] = new Array();
+					mainGroupID2ListOfItemsJson[mainGroupID] = new Array();
 				}
 
 				var itemJson = new Object();
-				itemJson[itemKey] = itemValue;
+				itemJson["key"] = itemKey;
+				itemJson["value"] = itemValue;
 
-				configGroup2ListOfItemsJson[configGroup].push(itemJson);
-			}
+				mainGroupID2ListOfItemsJson[mainGroupID].push(itemJson);
+				
+				// FIXME!
+				console.log("1.add item of main group::" + itemKey);
+								
+			} else {
+				var secondToken = tokens[1];
+				var subGroupListItemValue = configFileJson[subGroupListItemKey];
+				
+				if (isSubGroupItem(subGroupListItemValue, secondToken)) {
+					if (tokens.length < 4) {
+						var errmsg = "WARNING! this subproejct item key["
+								+ itemKey
+								+ "] is not valid because its token length is less than 4";
+						console.log(errmsg);
+
+						alert(errmsg);
+						return;
+					}					
+					
+					if (subGroupID2ListOfItemsJson[mainGroupID] === undefined) {
+						subGroupID2ListOfItemsJson[mainGroupID] = new Object();
+					}
+					
+					var subGroupID = secondToken;
+					
+					if (subGroupID2ListOfItemsJson[mainGroupID][subGroupID] === undefined) {
+						subGroupID2ListOfItemsJson[mainGroupID][subGroupID] = new Array();
+					}
+					
+					var itemJson = new Object();
+					itemJson["key"] = itemKey;
+					itemJson["value"] = itemValue;
+					
+					subGroupID2ListOfItemsJson[mainGroupID][subGroupID].push(itemJson);
+					
+					// FIXME!
+					console.log("3.add item of sub group::" + itemKey);
+				} else {
+					if (mainGroupID2ListOfItemsJson[mainGroupID] === undefined) {
+						mainGroupList.push(mainGroupID);
+
+						mainGroupID2ListOfItemsJson[mainGroupID] = new Array();
+					}
+
+					var itemJson = new Object();
+					itemJson["key"] = itemKey;
+					itemJson["value"] = itemValue;
+
+					mainGroupID2ListOfItemsJson[mainGroupID].push(itemJson);
+					
+					// FIXME!
+					console.log("2.add item of main group::" + itemKey);
+				}
+			}			
 		}
 
-		// FIXME!
-		alert(configGroup2ListOfItemsJson["jdf"].length);
+		reDrawGroupOrder();
+		reDrawMainGroupEditorScreen();
+	}
+	
+	/** this func use the global var 'mainGroupID2ListOfItemsJson' and the global var 'mainGroupList' and HTML id 'mainGroupEditorScreen' */
+	function reDrawMainGroupEditorScreen() {
+		var mainGroupEditorScreenObj = document.getElementById("mainGroupEditorScreen");
+		while (mainGroupEditorScreenObj.hasChildNodes()) {
+			mainGroupEditorScreenObj.removeChild(mainGroupEditorScreenObj.firstChild);
+		}	
+		
+		for (let i=0; i < mainGroupList.length; i++) {
+			let mainGroup = mainGroupList[i];
+			
+			let rowDivForTitle = document.createElement("div");
+			rowDivForTitle.setAttribute("class", "row");
+			 
+			let colDivForTitle = document.createElement("col");
+			colDivForTitle.setAttribute("class", "col-sm-12");
+			colDivForTitle.setAttribute("align", "center");
+			
+			let labelForTitle = document.createElement("label");
+			let textNodeForTitle = document.createTextNode(mainGroup);
+			
+			labelForTitle.appendChild(textNodeForTitle);
+			colDivForTitle.appendChild(labelForTitle);
+			rowDivForTitle.appendChild(colDivForTitle);
+			
+			mainGroupEditorScreenObj.appendChild(rowDivForTitle);
+			
+			for (let j=0; j < mainGroupID2ListOfItemsJson[mainGroup].length; j++) {
+				let itemJson = mainGroupID2ListOfItemsJson[mainGroup][j];
+				
+				// FIXME!
+				console.log("itemKey=" + itemJson.key);
+				console.log("itemValue=" + itemJson.value);
+				
+				let tokens = itemJson.key.split(".");
+				let itemType = tokens[tokens.length - 1];
+				
+				if (itemType != 'value') {
+					continue;
+				}
+				
+				let prefixOfItemKey = itemJson.key.substring(0, itemJson.key.length - ".value".length);
+				
+				let descItemKey = prefixOfItemKey + ".desc";
+				let viewTypeItemKey = prefixOfItemKey + ".item_view_type";
+				
+				// FIXME!
+				console.log("prefixOfItemKey=" + prefixOfItemKey);
+				console.log("descItemKey=" + descItemKey);
+				console.log("viewTypeItemKey=" + viewTypeItemKey);
+				
+				
+				let divForItem = document.createElement("div");
+				divForItem.setAttribute("class", "input-group");
+				
+				// <a href="#" data-toggle="tooltip" data-placement="top" title="일반 회원용 사이트의 로그인 페이지 URL, 루트로 시작하는 절대경로 권장함">jdf.member_login_page.value</a>
+				let spanForItem = document.createElement("span");
+				spanForItem.setAttribute("id", "itemKey" + j + "_for_" + mainGroup);
+				spanForItem.setAttribute("class", "input-group-addon");
+				
+				let textNodeForItem = document.createTextNode(itemJson.key);
+				
+				if (undefined != configFileJson[descItemKey]) {
+					let aForItem = document.createElement("a");
+					aForItem.setAttribute("href", "#");
+					aForItem.setAttribute("data-toggle", "tooltip");
+					aForItem.setAttribute("data-placement", "top");
+					aForItem.setAttribute("title", configFileJson[descItemKey]);
+					
+					aForItem.appendChild(textNodeForItem);
+					
+					spanForItem.appendChild(aForItem);
+				} else {
+					spanForItem.appendChild(textNodeForItem);
+				}
+				
+				divForItem.appendChild(spanForItem);
+				
+				
+				// the var viewTypeItemValue : DATA(=default), SET, PATH, FILE, LIST
+				let viewTypeItemValue = configFileJson[viewTypeItemKey];
+				
+				if (undefined === viewTypeItemValue) {
+					viewTypeItemValue = "data";
+				}
+				
+				if ("set" == viewTypeItemValue) {
+					let setItemKey = prefixOfItemKey + ".set";
+					let setItemValue = configFileJson[setItemKey];										
+					
+					let selectForItem = document.createElement("select");
+					selectForItem.setAttribute("id", "itemValue" + j + "_for_" + mainGroup);
+					selectForItem.setAttribute("class", "form-control");
+					
+					let tokens = setItemValue.split(",");
+					
+					for (let k=0; k < tokens.length; k++) {
+						tokens[k] = tokens[k].trim();
+						
+						// <option value="FILE" selected>FILE</option>
+						let optionForItem = document.createElement("option");
+						optionForItem.setAttribute("value", tokens[k]);
+						if (tokens[k] == itemJson.value) {
+							optionForItem.selected = true;
+						}
+						
+						let optionTextForItem = document.createTextNode(tokens[k]);
+						
+						optionForItem.appendChild(optionTextForItem);
+						
+						selectForItem.appendChild(optionForItem);
+					}
+					
+					divForItem.appendChild(selectForItem);
+				} else if ("file" == viewTypeItemValue) {
+					let fileItemKey = prefixOfItemKey + ".file";
+					
+					let inputForItem = document.createElement("input");
+					inputForItem.setAttribute("id", "itemValue" + j + "_for_" + mainGroup);
+					inputForItem.setAttribute("type", "text");
+					inputForItem.setAttribute("class", "form-control");
+					inputForItem.setAttribute("value", itemJson.value);
+					
+					divForItem.appendChild(inputForItem);
+					
+				} else if ("path" == viewTypeItemValue) {
+					let pathItemKey = prefixOfItemKey + ".path";
+					
+					let inputForItem = document.createElement("input");
+					inputForItem.setAttribute("id", "itemValue" + j + "_for_" + mainGroup);
+					inputForItem.setAttribute("type", "text");
+					inputForItem.setAttribute("class", "form-control");
+					inputForItem.setAttribute("value", itemJson.value);
+					
+					divForItem.appendChild(inputForItem);
+					
+				} else if ("list" == viewTypeItemValue) {
+					let inputForItem = document.createElement("input");
+					inputForItem.setAttribute("id", "itemValue" + j + "_for_" + mainGroup);
+					inputForItem.setAttribute("type", "text");
+					inputForItem.setAttribute("class", "form-control");
+					inputForItem.setAttribute("value", itemJson.value);
+					
+					divForItem.appendChild(inputForItem);
+				} else {
+					let inputForItem = document.createElement("input");
+					inputForItem.setAttribute("id", "itemValue" + j + "_for_" + mainGroup);
+					inputForItem.setAttribute("type", "text");
+					inputForItem.setAttribute("class", "form-control");
+					inputForItem.setAttribute("value", itemJson.value);
+					
+					divForItem.appendChild(inputForItem);
+				}				
+				
+				mainGroupEditorScreenObj.appendChild(divForItem);
+			}
+		}
+	}
+	
+	/** this func use the global var 'mainGroupList' and HTML id 'groupOrderScreen' */
+	function reDrawGroupOrder() {
+		var groupOrderScreenObj = document.getElementById("groupOrderScreen");
+		while (groupOrderScreenObj.hasChildNodes()) {
+			groupOrderScreenObj.removeChild(groupOrderScreenObj.firstChild);
+		}	
+		
+		var roopDivForGroupOrder = document.createElement("div");
+		roopDivForGroupOrder.setAttribute("class", "btn-group");
+		
+		for (var i=0; i < mainGroupList.length; i++) {
+			var childDivForGroupOrder = document.createElement("div");
+			childDivForGroupOrder.setAttribute("class", "btn-group");			
+			
+			var buttonForGroupOrder = document.createElement("button");
+			buttonForGroupOrder.setAttribute("type", "button");
+			buttonForGroupOrder.setAttribute("class", "btn btn-primary dropdown-toggle");
+			buttonForGroupOrder.setAttribute("data-toggle", "dropdown");
+			
+			var textNodeForGroupOrder = document.createTextNode(mainGroupList[i]);			
+			
+			var spanForGroupOrder = document.createElement("span");
+			spanForGroupOrder.setAttribute("class", "caret");
+			
+			buttonForGroupOrder.appendChild(textNodeForGroupOrder);
+			buttonForGroupOrder.appendChild(spanForGroupOrder);
+			
+			
+			var ulForGroupOrder = document.createElement("ul");
+			ulForGroupOrder.setAttribute("class", "dropdown-menu");
+			ulForGroupOrder.setAttribute("role", "menu");
+			
+			for (var j=0; j < mainGroupList.length; j++) {
+				if (j === i) {
+					continue;
+				}
+				
+				var liForGroupOrder = document.createElement("li");
+				
+				var aForGroupOrder = document.createElement("a");
+				aForGroupOrder.setAttribute("href", "#");
+				aForGroupOrder.setAttribute("onClick", "changeMainGroupOrder(" + i +  ", " + j + ");");
+				
+				var childTextNodeForGroupOrder = document.createTextNode(mainGroupList[j]);				
+				
+				aForGroupOrder.appendChild(childTextNodeForGroupOrder);
+				
+				liForGroupOrder.appendChild(aForGroupOrder);
+				
+				ulForGroupOrder.appendChild(liForGroupOrder);
+			}
+			
+			
+			childDivForGroupOrder.appendChild(buttonForGroupOrder);
+			childDivForGroupOrder.appendChild(ulForGroupOrder);
+						
+			roopDivForGroupOrder.appendChild(childDivForGroupOrder);
+		}
+		
+		
+		groupOrderScreenObj.appendChild(roopDivForGroupOrder);
+	}
+	
+	function changeMainGroupOrder(from, to) {
+		var temp = mainGroupList[from];
+		mainGroupList[from] = mainGroupList[to];
+		mainGroupList[to] =  temp;
+		
+		reDrawGroupOrder();
 	}
 
 	function init() {
@@ -172,58 +472,91 @@
 							<label>그룹 순서 :</label>
 						</div>
 						<div class="col-sm-10">
-							<div id="listOfGroup">
+							<div id="groupOrderScreen">
 								<div class="btn-group">
 									<div class="btn-group">
 										<button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">JDF<span class="caret"></span></button>
 										<ul class="dropdown-menu" role="menu">
-											<li><a href="#">sessionkey</a></li>
-											<li><a href="#">dbcp</a></li>
-											<li><a href="#">mainproject</a></li>
-											<li><a href="#">subproject</a></li>
+											<li><a href="#" onClick="changeMainGroupOrder(0, 1);">sessionkey</a></li>
+											<li><a href="#" onClick="changeMainGroupOrder(0, 2);">dbcp</a></li>
+											<li><a href="#" onClick="changeMainGroupOrder(0, 3);">mainproject</a></li>
+											<li><a href="#" onClick="changeMainGroupOrder(0, 4);">subproject</a></li>
 										</ul>
 									</div>
 									<div class="btn-group">
 										<button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">sessionkey<span class="caret"></span></button>
 										<ul class="dropdown-menu" role="menu">
-											<li><a href="#">JDF</a></li>
-											<li><a href="#">dbcp</a></li>
-											<li><a href="#">mainproject</a></li>
-											<li><a href="#">subproject</a></li>
+											<li><a href="#" onClick="changeMainGroupOrder(1, 0);">JDF</a></li>
+											<li><a href="#" onClick="changeMainGroupOrder(1, 2);">dbcp</a></li>
+											<li><a href="#" onClick="changeMainGroupOrder(1, 3);">mainproject</a></li>
+											<li><a href="#" onClick="changeMainGroupOrder(1, 4);">subproject</a></li>
 										</ul>
 									</div>
 									<div class="btn-group">
 										<button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">dbcp<span class="caret"></span></button>
 										<ul class="dropdown-menu" role="menu">
-											<li><a href="#">JDF</a></li>
-											<li><a href="#">sessionkey</a></li>
-											<li><a href="#">mainproject</a></li>
-											<li><a href="#">subproject</a></li>
+											<li><a href="#" onClick="changeMainGroupOrder(2, 0);">JDF</a></li>
+											<li><a href="#" onClick="changeMainGroupOrder(2, 1);">sessionkey</a></li>
+											<li><a href="#" onClick="changeMainGroupOrder(2, 3);">mainproject</a></li>
+											<li><a href="#" onClick="changeMainGroupOrder(2, 4);">subproject</a></li>
 										</ul>
 									</div>
 									<div class="btn-group">
 										<button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">mainproject<span class="caret"></span></button>
 										<ul class="dropdown-menu" role="menu">
-											<li><a href="#">JDF</a></li>
-											<li><a href="#">sessionkey</a></li>
-											<li><a href="#">dbcp</a></li>
-											<li><a href="#">subproject</a></li>
+											<li><a href="#" onClick="changeMainGroupOrder(3, 0);">JDF</a></li>
+											<li><a href="#" onClick="changeMainGroupOrder(3, 1);">sessionkey</a></li>
+											<li><a href="#" onClick="changeMainGroupOrder(3, 2);">dbcp</a></li>
+											<li><a href="#" onClick="changeMainGroupOrder(3, 4);">subproject</a></li>
 										</ul>
 									</div>
 									<div class="btn-group">
 										<button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">subproject<span class="caret"></span></button>
 										<ul class="dropdown-menu" role="menu">
-											<li><a href="#">JDF</a></li>
-											<li><a href="#">sessionkey</a></li>
-											<li><a href="#">dbcp</a></li>
-											<li><a href="#">mainproject</a></li>
+											<li><a href="#" onClick="changeMainGroupOrder(4, 0);">JDF</a></li>
+											<li><a href="#" onClick="changeMainGroupOrder(4, 1);">sessionkey</a></li>
+											<li><a href="#" onClick="changeMainGroupOrder(4, 2);">dbcp</a></li>
+											<li><a href="#" onClick="changeMainGroupOrder(4, 3);">mainproject</a></li>
 										</ul>
 									</div>
 								</div>
 							</div>
 						</div>
 					</div>
-
+					<div class="row">
+						<div class="col-sm-12">&nbsp;</div>
+					</div>					
+					<div class="row">
+						<div class="col-sm-12"><label>설정 편집 화면</label></div>
+					</div>
+					<form>
+						<div id="mainGroupEditorScreen">
+							<div class="row">
+								<div class="col-sm-12" align="center"><label>jdf</label></div>
+							</div>
+							<div class="input-group">
+								<span id="itemKey0_for_jdf" class="input-group-addon">
+									<a href="#" data-toggle="tooltip" data-placement="top" title="일반 회원용 사이트의 로그인 페이지 URL, 루트로 시작하는 절대경로 권장함">jdf.member_login_page.value</a>
+								</span>
+								<input id="itemValue0_for_jdf" type="text" class="form-control" value="/sitemenu/member/MemberLoginInput.jsp">
+							</div>
+							<div class="input-group">
+								<span id="itemKey1_for_jdf" class="input-group-addon">jdf.admin_login_page.value</span>
+								<input id="itemValue1_for_jdf" type="text" class="form-control" value="/sitemenu/member/AdminLoginInput.jsp">
+							</div>
+							<div class="row">
+								<div class="col-sm-12" align="center"><label>sessionkey</label></div>
+							</div>										
+							<div class="input-group">
+								<span id="itemKey0_for_sessionkey" class="input-group-addon">sessionkey.rsa.keypair_source.value</span>
+								<select id="itemValue0_for_sessionkey" class="form-control">
+									<option value="FILE" selected>FILE</option>
+									<option value="SERVER">SERVER</option>
+								</select>
+							</div>
+						</div>
+						<div id="subGroupEditorScreen"></div>
+					</form>
 				</div>
 			</div>
 
