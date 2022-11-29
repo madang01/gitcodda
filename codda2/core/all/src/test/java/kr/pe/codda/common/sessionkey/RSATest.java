@@ -32,9 +32,6 @@ import org.junit.Test;
 
 import kr.pe.codda.common.etc.CommonStaticFinalVars;
 import kr.pe.codda.common.exception.SymmetricException;
-import kr.pe.codda.common.sessionkey.ClientRSA;
-import kr.pe.codda.common.sessionkey.ServerRSA;
-import kr.pe.codda.common.sessionkey.ServerRSAKeypairUtil;
 import kr.pe.codda.common.util.JDKLoggerCustomFormatter;
 
 public class RSATest {

@@ -31,7 +31,6 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import kr.pe.codda.common.config.part.DBCPParConfiguration;
 import kr.pe.codda.common.etc.CommonStaticFinalVars;
 import kr.pe.codda.common.util.JDKLoggerCustomFormatter;
 import kr.pe.codda.common.util.SequencedProperties;

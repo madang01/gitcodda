@@ -23,10 +23,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import kr.pe.codda.common.etc.CommonStaticFinalVars;
-import kr.pe.codda.common.sessionkey.ClientSessionKeyIF;
-import kr.pe.codda.common.sessionkey.ClientSymmetricKeyIF;
-import kr.pe.codda.common.sessionkey.ServerSessionkeyIF;
-import kr.pe.codda.common.sessionkey.ServerSymmetricKeyIF;
 
 public class SessionKeyTestThread extends Thread {
 	private Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);

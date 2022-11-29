@@ -23,8 +23,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import kr.pe.codda.common.etc.CommonStaticFinalVars;
-import kr.pe.codda.common.sessionkey.ClientRSA;
-import kr.pe.codda.common.sessionkey.ServerRSA;
 
 public class RSATestThread extends Thread {
 	private final Logger log = Logger.getLogger(CommonStaticFinalVars.CORE_LOG_NAME);
